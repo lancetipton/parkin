@@ -33,6 +33,7 @@ const features = ghb.parse(`feature file text content`)
         <String>
       ]
     },
+  ]
 }]
 */
 
