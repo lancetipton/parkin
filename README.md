@@ -1,4 +1,5 @@
-# Gherkin Browser
+# Parse-Herkin
+Parse gherkin features and map them to step definitions
 
 ## Install
 * TODO
@@ -9,9 +10,9 @@
 
 ```js
 
-import { GherkinBrowser } from 'gherkin-browser'
-const ghb = new GherkinBrowser({ ...world }, { ...steps })
-const features = ghb.parse(`feature file text content`)
+import { ParseHerkin } from 'parse-herkin'
+const pH = new ParseHerkin({ ...world }, { ...steps })
+const features = pH.parse(`feature file text content`)
 
 /*
 // Features array looks like this

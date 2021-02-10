@@ -1,1 +1,1 @@
-export * from './gherkinBrowser'
+export * from './parseHerkin'

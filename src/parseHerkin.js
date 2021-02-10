@@ -5,12 +5,12 @@ import { isObj, capitalize } from '@keg-hub/jsutils'
 
 /**
  * @typedef
- * GherkinBrowser#Given - Register Given step definitions
- * GherkinBrowser#When - Register When step definitions
- * GherkinBrowser#Then - Register Then step definitions
- * GherkinBrowser#run - Run step definitions against feature
- * GherkinBrowser#parse - Parse feature file text into a feature object
- * GherkinBrowser#registerSteps - Register step definitions to be accessible when running features
+ * ParseHerkin#Given - Register Given step definitions
+ * ParseHerkin#When - Register When step definitions
+ * ParseHerkin#Then - Register Then step definitions
+ * ParseHerkin#run - Run step definitions against feature
+ * ParseHerkin#parse - Parse feature file text into a feature object
+ * ParseHerkin#registerSteps - Register step definitions to be accessible when running features
 */
 
 /**
@@ -21,26 +21,26 @@ import { isObj, capitalize } from '@keg-hub/jsutils'
  * @param {Object} world - Holds configuration for the running test environment
  * @param {Object} steps - Object with step type keys containing step definitions
  *
- * @returns {Object} Instance of the GherkinBrowser class
+ * @returns {Object} Instance of the ParseHerkin class
  */
-export class GherkinBrowser{
+export class ParseHerkin{
 
   constructor(world, steps){
     this.steps = new Steps(world)
     this.runner = new Runner(this.steps)
 
-    // Map the runners run method to the GherkinBrowser class instance
+    // Map the runners run method to the ParseHerkin class instance
     // So it to be called directly
     this.run = this.runner.run
 
-    // Map the parse method to the GherkinBrowser class instance
+    // Map the parse method to the ParseHerkin class instance
     // So it to be called directly
     this.parse = parse
     
     // Register in steps passed in on initialization
     isObj(steps) && this.registerSteps(steps)
     
-    // Add the steps type register functions to the GherkinBrowser class instance
+    // Add the steps type register functions to the ParseHerkin class instance
     // So they can be called directly
     this.steps.types.map(type => {
       this[capitalize(type)] = (matcher, func) => this.steps.register(`_${type}`, matcher, func)
@@ -49,8 +49,8 @@ export class GherkinBrowser{
   }
 
   /**
-   * Helper for registering step definitions after the GherkinBrowser class instance has ben created
-   * @memberof GherkinBrowser
+   * Helper for registering step definitions after the ParseHerkin class instance has ben created
+   * @memberof ParseHerkin
    * @function
    * @public
    * @param {Object} steps - Object with step type keys containing step definitions

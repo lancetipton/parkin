@@ -1,12 +1,12 @@
 {
-  "name": "gherkin-browser",
+  "name": "parse-herkin",
   "version": "0.0.1",
-  "description": "Test Gherkin Feature Files in the browser",
+  "description": "Parse gherkin features and map them to step definitions",
   "main": "build/index.js",
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/lancetipton/gerkin-browser.git"
+    "url": "https://github.com/lancetipton/parse-herkin.git"
   },
   "keywords": [
     "gherkin",
@@ -17,16 +17,14 @@
   "author": "Lance Tipton",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lancetipton/gerkin-browser/issues"
+    "url": "https://github.com/lancetipton/parse-herkin/issues"
   },
-  "homepage": "https://github.com/lancetipton/gerkin-browser",
+  "homepage": "https://github.com/lancetipton/parse-herkin",
   "publishConfig": {
     "access": "public"
   },
   "files": [
-    "configs/",
-    "index.js",
-    "src/"
+    "build"
   ],
   "engines": {
     "node": ">= 12.0.0"
