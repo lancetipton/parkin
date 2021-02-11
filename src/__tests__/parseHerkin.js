@@ -55,7 +55,7 @@ describe('ParseHerkin', () => {
     // The uuid is different every time, so don't include it when testing
     // Scenarios can include function identity, so don't include it when testing
     const { uuid, scenarios, ...parsed } = PH.parse.feature(feature)[0]
-    
+
     expect(parsed).toEqual(parsedFeature)
   })
 
@@ -107,7 +107,7 @@ describe('ParseHerkin', () => {
 
     PH.steps.resolve(PH.steps[`_${givenStep.type}`], givenStep.step)
     PH.steps.resolve(PH.steps[`_${whenStep.type}`], whenStep.step)
-    
+
     expect(PH.steps[`_${givenStep.type}`][0].method).toHaveBeenCalled()
     expect(PH.steps[`_${whenStep.type}`][2].method).toHaveBeenCalled()
   })
