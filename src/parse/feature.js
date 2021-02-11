@@ -85,8 +85,8 @@ const stepFactory = (type, step, altType) => {
 const addReason = (feature, reason) => {
   reason
     ? !feature.reason
-      ? (feature.reason = reason)
-      : (feature.reason += `\n${reason}`)
+        ? (feature.reason = reason)
+        : (feature.reason += `\n${reason}`)
     : null
 }
 
@@ -100,86 +100,67 @@ const addReason = (feature, reason) => {
  * @returns {Object} - Parsed feature file as an object
  */
 export const feature = text => {
-
   const features = []
   const lines = (text || '').toString().split(RX_NEWLINE)
   let scenario = scenarioFactory(false)
   let feature = featureFactory(false, text)
 
   /*
-    * Loop over each line of text, and compose the line with corresponding regex to find a match
+   * Loop over each line of text, and compose the line with corresponding regex to find a match
    */
   return lines.reduce((featuresGroup, line, index) => {
-
     /*
-    * Checks for feature file meta-data
-    */
-    if (RX_TAG.test(line)){
+     * Checks for feature file meta-data
+     */
+    if (RX_TAG.test(line)) {
       const tags = extract(line, RX_TAG, 0)
       feature.tags = feature.tags.concat(tags.split(' '))
     }
-
-    else if(RX_COMMENT.test(line)){
+    else if (RX_COMMENT.test(line)) {
       const comment = extract(line, RX_COMMENT, 1)
       feature.comments[index] = comment
     }
-
-    /*
-    * Check for new feature, or feature text
-    */
     else if (RX_FEATURE.test(line)) {
-      if(!feature.feature){
+      /*
+       * Check for new feature, or feature text
+       */
+      if (!feature.feature) {
         feature.feature = extract(line, RX_FEATURE, 1)
         !featuresGroup.includes(feature) && featuresGroup.push(feature)
       }
       else feature = featureFactory(extract(line, RX_FEATURE, 1), text)
     }
-
+    else if (RX_AS.test(line)) feature.perspective = extract(line, RX_AS, 0)
     /*
-    * Checks for feature descriptive content
-    */
-    else if (RX_AS.test(line))
-      feature.perspective = extract(line, RX_AS, 0)
-
-    else if (RX_I_WANT.test(line))
+     * Checks for feature descriptive content
+     */ else if (RX_I_WANT.test(line))
       feature.desire = extract(line, RX_I_WANT, 0)
-
     else if (RX_SO_THAT.test(line))
       addReason(feature, extract(line, RX_SO_THAT, 0))
-
     else if (RX_IN_ORDER.test(line))
       addReason(feature, extract(line, RX_IN_ORDER, 0))
-
     /*
-    * Check for new feature scenario, and add scenario to feature object
-    */
-    else if (RX_SCENARIO.test(line)) {
-      if(!scenario.scenario) scenario.scenario = extract(line, RX_SCENARIO, 1)
+     * Check for new feature scenario, and add scenario to feature object
+     */ else if (RX_SCENARIO.test(line)) {
+      if (!scenario.scenario) scenario.scenario = extract(line, RX_SCENARIO, 1)
       else scenario = scenarioFactory(extract(line, RX_SCENARIO, 1))
 
       !feature.scenarios.includes(scenario) && feature.scenarios.push(scenario)
     }
-
-    /*
-    * Checks for steps, and add to current scenario
-    */
     else if (RX_GIVEN.test(line))
+      /*
+       * Checks for steps, and add to current scenario
+       */
       scenario.steps.push(stepFactory('given', extract(line, RX_GIVEN, 1)))
-
     else if (RX_WHEN.test(line))
       scenario.steps.push(stepFactory('when', extract(line, RX_WHEN, 1)))
-
     else if (RX_THEN.test(line))
       scenario.steps.push(stepFactory('then', extract(line, RX_THEN, 1)))
-
     else if (RX_AND.test(line))
       scenario.steps.push(stepFactory('and', extract(line, RX_AND, 1), `when`))
-
     else if (RX_BUT.test(line))
       scenario.steps.push(stepFactory('but', extract(line, RX_BUT, 1), `then`))
 
     return featuresGroup
   }, features)
-
 }
-

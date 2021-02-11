@@ -3,7 +3,7 @@ import {
   feature,
   parsedFeature,
   parsedDefinition,
-  registerMockSteps
+  registerMockSteps,
 } from '../__mocks__'
 
 import { constants } from '../constants'
@@ -17,7 +17,6 @@ const worldObj = {}
 const { ParseHerkin } = require('../parseHerkin')
 
 describe('ParseHerkin', () => {
-
   it('should allow registering steps', () => {
     const PH = new ParseHerkin(worldObj)
 
@@ -76,7 +75,7 @@ describe('ParseHerkin', () => {
     // match property could be regex based on the variant, but the parsed version is a string
     // So extract them when testing
     const { name, method, match, ...givenDef } = PH.steps._given[0]
-    const { match:parsedMatch, ...parsedDef } = parsedDefinition[0]
+    const { match: parsedMatch, ...parsedDef } = parsedDefinition[0]
 
     expect(givenDef).toEqual(parsedDef)
     expect(typeof method).toBe('function')
@@ -86,7 +85,7 @@ describe('ParseHerkin', () => {
 
     // Parsed definition does not have the name or method properties added to it
     // So extract them when testing
-    const { name:thenName, method:thenMethod, ...thenDef } = PH.steps._then[0]
+    const { name: thenName, method: thenMethod, ...thenDef } = PH.steps._then[0]
     const { ...parsedThenDef } = parsedDefinition[1]
 
     expect(thenDef).toEqual(parsedThenDef)
@@ -111,5 +110,4 @@ describe('ParseHerkin', () => {
     expect(PH.steps[`_${givenStep.type}`][0].method).toHaveBeenCalled()
     expect(PH.steps[`_${whenStep.type}`][2].method).toHaveBeenCalled()
   })
-
 })

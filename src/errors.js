@@ -1,4 +1,3 @@
-
 /**
  * Throws an error when a Steps class instance is not passed to the runner class constructor
  * @function
@@ -8,7 +7,9 @@
  * @returns {void}
  */
 export const throwMissingSteps = () => {
-  throw new Error(`Runner class constructor requires an instance of the Steps class`)
+  throw new Error(
+    `Runner class constructor requires an instance of the Steps class`
+  )
 }
 
 /**
@@ -20,7 +21,9 @@ export const throwMissingSteps = () => {
  * @returns {void}
  */
 export const throwMissingFeatureText = () => {
-  throw new Error(`Runner class requires feature text when calling the run method`)
+  throw new Error(
+    `Runner class requires feature text when calling the run method`
+  )
 }
 
 /**

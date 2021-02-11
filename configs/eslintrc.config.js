@@ -17,8 +17,8 @@ module.exports = {
     node: true,
     'jest/globals': true,
   },
-  plugins: [ 'jest' ],
-  extends: [ 'plugin:jest/recommended' ],
+  plugins: ['jest'],
+  extends: ['plugin:jest/recommended'],
   settings: {},
   rules: {
     /* General */
@@ -73,7 +73,7 @@ module.exports = {
       {
         args: 'none',
         ignoreRestSiblings: true,
-        varsIgnorePattern: '_'
+        varsIgnorePattern: '_',
       },
     ],
     /* Jest */
@@ -81,6 +81,8 @@ module.exports = {
     'jest/no-focused-tests': 'error',
     'jest/no-identical-title': 'error',
     'jest/prefer-to-have-length': 'warn',
-    'jest/valid-expect': 'error'
+    'jest/valid-expect': 'error',
+    'jest/no-mocks-import': 0,
+    'jest/no-export': 0,
   },
 }

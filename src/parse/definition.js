@@ -1,11 +1,13 @@
-import { isArr } from '@keg-hub/jsutils'
 import { constants } from '../constants'
 const { REGEX_VARIANT, EXPRESSION_VARIANT } = constants
 
 const NEWLINES_MATCH = /\n|\r|\r\n/
 const COMMENT_MATCH = /\/\/.*/g
 const MULTI_LINE_MATCH = /\/\*(.*\n)*\*\//
-const FIND_DEFINITION = new RegExp(/(Given|When|Then)\(('|"|`|\/)(.*)('|"|`|\/),/, 'gm')
+const FIND_DEFINITION = new RegExp(
+  /(Given|When|Then)\(('|"|`|\/)(.*)('|"|`|\/),/,
+  'gm'
+)
 const NEXT_DEFINITION = new RegExp(/(Given|When|Then|And|But)\(/, 'g')
 
 /*
@@ -39,7 +41,10 @@ const getContent = definition => {
     : `${definition[0].trim()}${content.split(found[0].trim()).shift()}`
 
   // Removed any empty lines from the parsedContent
-  return parsedContent.split(`\n`).filter(line => line).join(`\n`)
+  return parsedContent
+    .split(`\n`)
+    .filter(line => line)
+    .join(`\n`)
 }
 
 /*
@@ -52,7 +57,8 @@ const getContent = definition => {
  * @return {string} - Passed in text with comments stripped
  */
 const stripComments = text => {
-  return text.trim()
+  return text
+    .trim()
     .split(NEWLINES_MATCH)
     .filter(line => !COMMENT_MATCH.test(line.trim()))
     .join(`\n`)
@@ -73,21 +79,20 @@ export const definition = text => {
   return Array.from(
     // Strip all comments from the text, and find all matching definition calls
     stripComments(text).matchAll(FIND_DEFINITION),
-    // For each found definition call, build the parsed definition object 
+    // For each found definition call, build the parsed definition object
     definition => {
-
       // Extract the content from the matching definition
       const [ _, type, identifier, match ] = definition
 
       // All regex variants start with /, so use that to set the variant to regex of expression
       const variant = identifier === `/` ? REGEX_VARIANT : EXPRESSION_VARIANT
 
-      // Build and return the parsed definition object 
+      // Build and return the parsed definition object
       return {
         match,
         variant,
         type: type.toLowerCase(),
-        content: getContent(definition)
+        content: getContent(definition),
       }
     }
   )

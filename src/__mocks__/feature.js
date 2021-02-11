@@ -20,7 +20,8 @@ export const parsedFeature = {
   // scenarios: [],
   tags: [ '@search', '@google' ],
   comments: {},
-  text: '@search @google\n' +
+  text:
+    '@search @google\n' +
     'Feature: Google Search\n' +
     '  As an internet user\n' +
     '  In order to find out more about Keg-Hub\n' +
@@ -34,5 +35,5 @@ export const parsedFeature = {
     '    Then the element #search contains the text simpleviewinc/keg-hub\n',
   perspective: 'As an internet user',
   reason: 'In order to find out more about Keg-Hub',
-  desire: 'I want to be able to search for information about the Keg-Hub'
+  desire: 'I want to be able to search for information about the Keg-Hub',
 }

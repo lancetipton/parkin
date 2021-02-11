@@ -7,14 +7,14 @@ const config = {
   input: 'src/index.js',
   output: {
     dir: 'build',
-    format: 'esm'
+    format: 'esm',
   },
   plugins: [
     resolve(),
     commonjs(),
     babel({ babelHelpers: 'bundled' }),
-    cleanup()
-  ]
+    cleanup(),
+  ],
 }
 
 export default config

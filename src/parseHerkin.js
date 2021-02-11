@@ -11,7 +11,7 @@ import { isObj, capitalize } from '@keg-hub/jsutils'
  * ParseHerkin#run - Run step definitions against feature
  * ParseHerkin#parse - Parse feature file text into a feature object
  * ParseHerkin#registerSteps - Register step definitions to be accessible when running features
-*/
+ */
 
 /**
  * Main class for handling feature files in the browser
@@ -23,9 +23,8 @@ import { isObj, capitalize } from '@keg-hub/jsutils'
  *
  * @returns {Object} Instance of the ParseHerkin class
  */
-export class ParseHerkin{
-
-  constructor(world, steps){
+export class ParseHerkin {
+  constructor(world, steps) {
     this.steps = new Steps(world)
     this.runner = new Runner(this.steps)
 
@@ -36,21 +35,16 @@ export class ParseHerkin{
     // Map the parse method to the ParseHerkin class instance
     // So it to be called directly
     this.parse = parse
-    
+
     // Register in steps passed in on initialization
     isObj(steps) && this.registerSteps(steps)
-    
+
     // Add the steps type register functions to the ParseHerkin class instance
     // So they can be called directly
     this.steps.types.map(type => {
-      this[capitalize(type)] = (matcher, method) => this.steps.register(
-        `_${type}`,
-        type,
-        matcher,
-        method
-      )
+      this[capitalize(type)] = (matcher, method) =>
+        this.steps.register(`_${type}`, type, matcher, method)
     })
-
   }
 
   /**
@@ -74,15 +68,12 @@ export class ParseHerkin{
    */
   registerSteps = steps => {
     // Loop the steps object
-    Object.entries(steps)
-      .map((type, typedSteps) => (
-        // Loop each step type ( Given, When, Then )
-        Object.entries(typedSteps)
-          .map((matcher, method) => (
-            // Register the step based by type with the Step class instance
-            this.steps[capitalize(type)](matcher, method)
-          ))
-      ))
+    Object.entries(steps).map((type, typedSteps) =>
+      // Loop each step type ( Given, When, Then )
+      Object.entries(typedSteps).map((matcher, method) =>
+        // Register the step based by type with the Step class instance
+        this.steps[capitalize(type)](matcher, method)
+      )
+    )
   }
-
 }

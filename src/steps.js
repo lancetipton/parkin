@@ -24,14 +24,14 @@ const sanitize = step => {
  * @todo - Update to parse expression and regex vars from the text param
  * @function
  * @private
- * @param {Array<Object>} list - Registered step definition 
+ * @param {Array<Object>} list - Registered step definition
  * @param {string} text - Feature step text to compare with step definition text
  *
  * @returns {Object} Found matching step definition and matched arguments
  */
 const findMatch = (list, text) => {
   return list.reduce((found, step) => {
-    if(found.match || !step.match) return found
+    if (found.match || !step.match) return found
 
     let regex = step.match
 
@@ -40,7 +40,7 @@ const findMatch = (list, text) => {
     // And convert them into into regex
     step.variant !== REGEX_VARIANT &&
       step.match.replace(/\s*{(.*?)}\s*/g, (...args) => {
-        const [ match, _, index, full ] = args
+        const [match] = args
         const [ start, end ] = regex.split(match.trim())
         regex = start + `\\s*(.*)\\s*` + end
       })
@@ -51,50 +51,47 @@ const findMatch = (list, text) => {
     // If there is a match,
     // Get all matching items except for the first one
     // Which is the original string
-    return !match
-      ? found
-      : { step, match: match.slice(1, match.length) }
+    return !match ? found : { step, match: match.slice(1, match.length) }
   }, {})
 }
 
 /**
-  * Builds the text content of a step definition call
-  * @function
-  * @private
-  * @param {Object} step - Parsed step definition object
-  * @param {string} step.type - Type of step definition this step belongs to
-  * @param {string} step.match - Text used to match with a features step
-  * @param {function} step.method - Called when a features step matches match property
-  * @param {string} step.variant - Syntax used in the match property
-  *
-  * @returns {string} - Built text content of the step definition
-  */
+ * Builds the text content of a step definition call
+ * @function
+ * @private
+ * @param {Object} step - Parsed step definition object
+ * @param {string} step.type - Type of step definition this step belongs to
+ * @param {string} step.match - Text used to match with a features step
+ * @param {function} step.method - Called when a features step matches match property
+ * @param {string} step.variant - Syntax used in the match property
+ *
+ * @returns {string} - Built text content of the step definition
+ */
 const getContent = step => {
-  const match = step.variant === REGEX_VARIANT
-    ? step.match.toString()
-    : `"${step.match}"`
+  const match =
+    step.variant === REGEX_VARIANT ? step.match.toString() : `"${step.match}"`
 
   return `${capitalize(step.type)}(${match}, ${step.method.toString()})`
 }
 
-
 /**
-  * Registers a step definition by type
-  * @function
-  * @private
-  * @param {string} internalType - Internal references to the step definition type
-  * @param {string} type - Type of step definition to search when matching
-  * @param {string} match - Text used to match with a features step
-  * @param {function} method - Called when a features step matches match property
-  *
-  * @returns {void}
-  */
-const registerFromCall = function(internalType, type, match, method){
+ * Registers a step definition by type
+ * @function
+ * @private
+ * @param {string} internalType - Internal references to the step definition type
+ * @param {string} type - Type of step definition to search when matching
+ * @param {string} match - Text used to match with a features step
+ * @param {function} method - Called when a features step matches match property
+ *
+ * @returns {void}
+ */
+const registerFromCall = function (internalType, type, match, method) {
   const step = {
     type,
     match,
     method,
-    variant: match.toString().indexOf('/') === 0 ? REGEX_VARIANT : EXPRESSION_VARIANT
+    variant:
+      match.toString().indexOf('/') === 0 ? REGEX_VARIANT : EXPRESSION_VARIANT,
   }
 
   step.name = sanitize(step)
@@ -106,34 +103,27 @@ const registerFromCall = function(internalType, type, match, method){
 }
 
 /**
-  * Registers a parsed step definition object
-  * @function
-  * @private
-  * @param {Array|Object} definitions - Array of parsed definition objects
-  *                                    Or a single parsed definition object
-  *
-  * @returns {void}
-  */
-const registerFromParse = function(definitions){
+ * Registers a parsed step definition object
+ * @function
+ * @private
+ * @param {Array|Object} definitions - Array of parsed definition objects
+ *                                    Or a single parsed definition object
+ *
+ * @returns {void}
+ */
+const registerFromParse = function (definitions) {
   // Loop over the passed in definitions
-  return eitherArr(definitions, [definitions])
-    .map(definition => {
-      // Create a dynamic function calling the definition.content
-      // The definition.content should be a call to a global Given, When, Then method
-      // Which is injected from the Steps class instance ( this )
-      const step = Function(`return (Given, When, Then, And, But) => {
+  return eitherArr(definitions, [definitions]).map(definition => {
+    // Create a dynamic function calling the definition.content
+    // The definition.content should be a call to a global Given, When, Then method
+    // Which is injected from the Steps class instance ( this )
+    const step = Function(`return (Given, When, Then, And, But) => {
         return ${definition.content}
-      }`)()(
-        this.Given,
-        this.When,
-        this.Then,
-        this.When,
-        this.When,
-      )
-    
-      // Merge the returned step with the initial definition
-      return { ...step, ...definition }
-    })
+      }`)()(this.Given, this.When, this.Then, this.When, this.When)
+
+    // Merge the returned step with the initial definition
+    return { ...step, ...definition }
+  })
 }
 
 /**
@@ -146,42 +136,39 @@ const registerFromParse = function(definitions){
  * @returns {Object} Instance of the Steps class
  */
 export class Steps {
-
   /**
-  * Allowed step definition types
-  * @todo - Add 'but' and 'and' types, which resolve to `when` and `then`
-  * @memberof Steps
-  * @Array
-  * @private
-  */
+   * Allowed step definition types
+   * @todo - Add 'but' and 'and' types, which resolve to `when` and `then`
+   * @memberof Steps
+   * @Array
+   * @private
+   */
   types = [ 'given', 'when', 'then', 'and', 'but' ]
 
-  constructor(world){
+  constructor(world) {
     this._world = world || {}
     const self = this
-  /**
-   * Creates helpers for registering step definitions by type
-   * @memberof Steps
-   * @function
-   * @public
-   * @param {string} match - Text used to matched with a features step
-   * @param {function} method - Function called when a features step text matches the text param
-   * @example
-   * const steps = new Steps({})
-   * steps.Given(`text`, ()=> {})
-   *
-   * @returns {void}
-   */
+    /**
+     * Creates helpers for registering step definitions by type
+     * @memberof Steps
+     * @function
+     * @public
+     * @param {string} match - Text used to matched with a features step
+     * @param {function} method - Function called when a features step text matches the text param
+     * @example
+     * const steps = new Steps({})
+     * steps.Given(`text`, ()=> {})
+     *
+     * @returns {void}
+     */
     this.types.map(type => {
-      const internalType = type === 'and' || type === 'but'
-        ? `_when`
-        : `_${type}`
+      const internalType =
+        type === 'and' || type === 'but' ? `_when` : `_${type}`
       this[internalType] = []
       this[capitalize(type)] = (match, method) => {
         return self.register(internalType, type, match, method)
       }
     })
-
   }
 
   /**
@@ -199,7 +186,7 @@ export class Steps {
     const { match, step } = findMatch(list, text)
     // If not step of match, then throw
     // No matching step definition exists
-    if(!match || !step) return throwNoMatchingStep(text)
+    if (!match || !step) return throwNoMatchingStep(text)
 
     // Add the steps world to the match arguments
     match.push(this._world)
@@ -227,5 +214,4 @@ export class Steps {
       ? registerFromCall.apply(this, args)
       : registerFromParse.apply(this, args)
   }
-
 }
