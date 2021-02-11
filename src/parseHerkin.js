@@ -43,7 +43,11 @@ export class ParseHerkin{
     // Add the steps type register functions to the ParseHerkin class instance
     // So they can be called directly
     this.steps.types.map(type => {
-      this[capitalize(type)] = (matcher, func) => this.steps.register(`_${type}`, matcher, func)
+      this[capitalize(type)] = (matcher, method) => this.steps.register(
+        `_${type}`,
+        matcher,
+        method
+      )
     })
 
   }
@@ -73,9 +77,9 @@ export class ParseHerkin{
       .map((type, typedSteps) => (
         // Loop each step type ( Given, When, Then )
         Object.entries(typedSteps)
-          .map((matcher, func) => (
+          .map((matcher, method) => (
             // Register the step based by type with the Step class instance
-            this.steps[capitalize(type)](matcher, func)
+            this.steps[capitalize(type)](matcher, method)
           ))
       ))
   }
