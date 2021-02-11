@@ -45,6 +45,7 @@ export class ParseHerkin{
     this.steps.types.map(type => {
       this[capitalize(type)] = (matcher, method) => this.steps.register(
         `_${type}`,
+        type,
         matcher,
         method
       )

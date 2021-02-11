@@ -99,7 +99,7 @@ const addReason = (feature, reason) => {
  *
  * @returns {Object} - Parsed feature file as an object
  */
-export const parse = text => {
+export const feature = text => {
 
   const features = []
   const lines = (text || '').toString().split(RX_NEWLINE)
@@ -110,7 +110,6 @@ export const parse = text => {
     * Loop over each line of text, and compose the line with corresponding regex to find a match
    */
   return lines.reduce((featuresGroup, line, index) => {
-
 
     /*
     * Checks for feature file meta-data
