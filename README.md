@@ -2,6 +2,27 @@
 * Parse gherkin features text and step definition javascript text 
 * Allows mapping feature steps to registered step definition and calls its method
 
+## Outline
+- [Parse-Herkin](#parse-herkin)
+  - [Outline](#outline)
+  - [Install](#install)
+  - [Use](#use)
+  - [API](#api)
+    - [ParseHerkin](#parseherkin)
+    - [ParseHerkin.parse](#parseherkinparse)
+    - [ParseHerkin.parse.feature](#parseherkinparsefeature)
+    - [ParseHerkin.parse.definition](#parseherkinparsedefinition)
+    - [ParseHerkin.Given](#parseherkingiven)
+    - [ParseHerkin.When](#parseherkinwhen)
+    - [ParseHerkin.Then](#parseherkinthen)
+    - [ParseHerkin.registerSteps](#parseherkinregistersteps)
+    - [ParseHerkin.run](#parseherkinrun)
+  - [Model Specs](#model-specs)
+    - [Feature Model](#feature-model)
+    - [Scenario Model](#scenario-model)
+    - [Step Model](#step-model)
+    - [Definition Model](#definition-model)
+
 ## Install
 * With NPM - `npm install @ltipton/parse-herkin`
 * With Yarn - `yarn add @ltipton/parse-herkin`
@@ -29,12 +50,12 @@ const PH = new ParseHerkin()
   * *(Optional)* `<Object>` - Steps object to register steps on initialization 
 
 
-### PH.parse
+### ParseHerkin.parse
 **Description**
 * `<Object>` - Containing methods for parsing features and definitions
 
 
-### PH.parse.feature
+### ParseHerkin.parse.feature
 **Description**
 * `<Function>` - Parses the text content of a feature file `(.feature)`
 * `<Arguments>` - Accepts a single argument
@@ -52,7 +73,7 @@ const featureModels = PH.parse.feature(featureContent)
 ```
 
 
-### PH.parse.definition
+### ParseHerkin.parse.definition
 **Description**
 * `<Function>` - Parses the text content of a step definition file `(.js)`
 * `<Arguments>` - Accepts a single argument
@@ -70,7 +91,7 @@ const definitionModel = PH.parse.definition(definitionContent)
 ```
 
 
-### PH.Given
+### ParseHerkin.Given
 **Description**
 * `<Function>` - Register method for `Given` step definitions
 * `<Arguments>` - Accepts two arguments
@@ -90,7 +111,7 @@ PH.Given(/Given match with (\S+) syntax/, (expression) => { /* Assertion code */
 ```
 
 
-### PH.When
+### ParseHerkin.When
 **Description**
 * `<Function>` - Register method for `When` step definitions
 * `<Arguments>` - Accepts two arguments
@@ -110,7 +131,7 @@ PH.When(/When match with (\S+) syntax/, (expression) => { /* Assertion code */ }
 ```
 
 
-### PH.Then
+### ParseHerkin.Then
 **Description**
 * `<Function>` - Register method for `Then` step definitions
 * `<Arguments>` - Accepts two arguments
@@ -128,7 +149,7 @@ PH.Then(/Then match with (\S+) syntax/, (expression) => { /* Assertion code */ }
 ```
 
 
-### PH.registerSteps
+### ParseHerkin.registerSteps
 **Description**
 * `<Function>` - Helper to register multiple step definitions at one time
 * **(REQUIRED)** `<Arguments>` - Accepts a single `<Object>`, matching the example below
@@ -152,10 +173,11 @@ PH.registerSteps({
 ```
 
 
-### PH.run
+### ParseHerkin.run
 **Description**
 * `<Function>` - Runs tests using the following steps
-  * Parses the passed in feature text
+  * Parses the passed in feature text into a feature model
+    * Bypassed if passed in argument a feature model
   * Matches the parsed feature text with registered step definitions
     * Uses the step definitions `match` property with the `feature step text` 
   * Calls the methods of the matching step definitions
