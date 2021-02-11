@@ -159,7 +159,7 @@ export const feature = text => {
     else if (RX_AND.test(line))
       scenario.steps.push(stepFactory('and', extract(line, RX_AND, 1), `when`))
     else if (RX_BUT.test(line))
-      scenario.steps.push(stepFactory('but', extract(line, RX_BUT, 1), `then`))
+      scenario.steps.push(stepFactory('but', extract(line, RX_BUT, 1), `when`))
 
     return featuresGroup
   }, features)

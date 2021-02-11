@@ -2,7 +2,8 @@
   "name": "parse-herkin",
   "version": "0.0.1",
   "description": "Parse gherkin features and map them to step definitions",
-  "main": "build/index.js",
+  "main": "build/cjs",
+  "module": "build/esm",
   "private": false,
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "node": ">= 12.0.0"
   },
   "scripts": {
+    "prebuild": "yarn test",
     "build": "yarn build:clean && yarn build:rollup",
     "build:clean": "rimraf ./build/esm && rimraf ./build/umd && rimraf ./build/cjs",
     "build:rollup": "NODE_ENV=production rollup -c ./configs/rollup.config.js",

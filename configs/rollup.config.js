@@ -5,10 +5,18 @@ import resolve from '@rollup/plugin-node-resolve'
 
 const config = {
   input: 'src/index.js',
-  output: {
-    dir: 'build',
-    format: 'esm',
-  },
+  output: [
+    {
+      dir: 'build/esm',
+      format: 'esm',
+      sourcemap: true
+    },
+    {
+      dir: `./build/cjs`,
+      format: 'cjs',
+      sourcemap: true
+    },
+  ],
   plugins: [
     resolve(),
     commonjs(),
