@@ -5,12 +5,12 @@ import { isObj, capitalize } from '@keg-hub/jsutils'
 
 /**
  * @typedef
- * ParseHerkin#Given - Register Given step definitions
- * ParseHerkin#When - Register When step definitions
- * ParseHerkin#Then - Register Then step definitions
- * ParseHerkin#run - Run step definitions against feature
- * ParseHerkin#parse - Parse feature file text into a feature object
- * ParseHerkin#registerSteps - Register step definitions to be accessible when running features
+ * Parkin#Given - Register Given step definitions
+ * Parkin#When - Register When step definitions
+ * Parkin#Then - Register Then step definitions
+ * Parkin#run - Run step definitions against feature
+ * Parkin#parse - Parse feature file text into a feature object
+ * Parkin#registerSteps - Register step definitions to be accessible when running features
  */
 
 /**
@@ -21,25 +21,25 @@ import { isObj, capitalize } from '@keg-hub/jsutils'
  * @param {Object} world - Holds configuration for the running test environment
  * @param {Object} steps - Object with step type keys containing step definitions
  *
- * @returns {Object} Instance of the ParseHerkin class
+ * @returns {Object} Instance of the Parkin class
  */
-export class ParseHerkin {
+export class Parkin {
   constructor(world, steps) {
     this.steps = new Steps(world)
     this.runner = new Runner(this.steps)
 
-    // Map the runners run method to the ParseHerkin class instance
+    // Map the runners run method to the Parkin class instance
     // So it to be called directly
     this.run = this.runner.run
 
-    // Map the parse method to the ParseHerkin class instance
+    // Map the parse method to the Parkin class instance
     // So it to be called directly
     this.parse = parse
 
     // Register in steps passed in on initialization
     isObj(steps) && this.registerSteps(steps)
 
-    // Add the steps type register functions to the ParseHerkin class instance
+    // Add the steps type register functions to the Parkin class instance
     // So they can be called directly
     this.steps.types.map(type => {
       this[capitalize(type)] = (matcher, method) =>
@@ -48,8 +48,8 @@ export class ParseHerkin {
   }
 
   /**
-   * Helper for registering step definitions after the ParseHerkin class instance has ben created
-   * @memberof ParseHerkin
+   * Helper for registering step definitions after the Parkin class instance has ben created
+   * @memberof Parkin
    * @function
    * @public
    * @param {Object} steps - Object with step type keys containing step definitions

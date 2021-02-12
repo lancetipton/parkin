@@ -1,22 +1,22 @@
-# Parse-Herkin
+# Parkin
 * Parse gherkin features text and step definition javascript text 
 * Allows mapping feature steps to registered step definition and calls its method
 
 ## Outline
-- [Parse-Herkin](#parse-herkin)
+- [Parkin](#parkin)
   - [Outline](#outline)
   - [Install](#install)
   - [Use](#use)
   - [API](#api)
-    - [ParseHerkin](#parseherkin)
-    - [ParseHerkin.parse](#parseherkinparse)
-    - [ParseHerkin.parse.feature](#parseherkinparsefeature)
-    - [ParseHerkin.parse.definition](#parseherkinparsedefinition)
-    - [ParseHerkin.Given](#parseherkingiven)
-    - [ParseHerkin.When](#parseherkinwhen)
-    - [ParseHerkin.Then](#parseherkinthen)
-    - [ParseHerkin.registerSteps](#parseherkinregistersteps)
-    - [ParseHerkin.run](#parseherkinrun)
+    - [Parkin](#parkin-1)
+    - [Parkin.parse](#parkinparse)
+    - [Parkin.parse.feature](#parkinparsefeature)
+    - [Parkin.parse.definition](#parkinparsedefinition)
+    - [Parkin.Given](#parkingiven)
+    - [Parkin.When](#parkinwhen)
+    - [Parkin.Then](#parkinthen)
+    - [Parkin.registerSteps](#parkinregistersteps)
+    - [Parkin.run](#parkinrun)
   - [Model Specs](#model-specs)
     - [Feature Model](#feature-model)
     - [Scenario Model](#scenario-model)
@@ -24,25 +24,25 @@
     - [Definition Model](#definition-model)
 
 ## Install
-* With NPM - `npm install @ltipton/parse-herkin`
-* With Yarn - `yarn add @ltipton/parse-herkin`
+* With NPM - `npm install @ltipton/parkin`
+* With Yarn - `yarn add @ltipton/parkin`
 
 ## Use
 ```js
 // With esm imports
-import { ParseHerkin } from 'parse-herkin'
+import { Parkin } from 'parkin'
 
 // With cjs require
-const { ParseHerkin } = require('parse-herkin')
+const { Parkin } = require('parkin')
 
-// ParseHerkin is a class, so you should create a new instance of it before using
-const PH = new ParseHerkin()
+// Parkin is a class, so you should create a new instance of it before using
+const PK = new Parkin()
 ```
 
 ## API
 
 
-### ParseHerkin
+### Parkin
 **Description**
 * `<Class>` - Manages features, steps, and definitions
 * `<Arguments>` - Accepts two arguments
@@ -50,12 +50,12 @@ const PH = new ParseHerkin()
   * *(Optional)* `<Object>` - Steps object to register steps on initialization 
 
 
-### ParseHerkin.parse
+### Parkin.parse
 **Description**
 * `<Object>` - Containing methods for parsing features and definitions
 
 
-### ParseHerkin.parse.feature
+### Parkin.parse.feature
 **Description**
 * `<Function>` - Parses the text content of a feature file `(.feature)`
 * `<Arguments>` - Accepts a single argument
@@ -69,11 +69,11 @@ const fs = require('fs')
 const featureContent = fs.readFileSync('path/to/feature/file.feature')
 
 // Returns an array of feature models parsed from the feature content
-const featureModels = PH.parse.feature(featureContent)
+const featureModels = PK.parse.feature(featureContent)
 ```
 
 
-### ParseHerkin.parse.definition
+### Parkin.parse.definition
 **Description**
 * `<Function>` - Parses the text content of a step definition file `(.js)`
 * `<Arguments>` - Accepts a single argument
@@ -87,11 +87,11 @@ const fs = require('fs')
 const definitionContent = fs.readFileSync('path/to/step/definition.js')
 
 // Returns an array of definition models parsed from the definition content
-const definitionModel = PH.parse.definition(definitionContent)
+const definitionModel = PK.parse.definition(definitionContent)
 ```
 
 
-### ParseHerkin.Given
+### Parkin.Given
 **Description**
 * `<Function>` - Register method for `Given` step definitions
 * `<Arguments>` - Accepts two arguments
@@ -100,18 +100,18 @@ const definitionModel = PH.parse.definition(definitionContent)
 
 **Example**
 ```js
-import { ParseHerkin } from 'parse-herkin'
-const PH = new ParseHerkin()
+import { Parkin } from 'parkin'
+const PK = new Parkin()
 
 // Register a step definition with expression syntax
-PH.Given(`Given match with {expression} syntax`, (expression) => { /* Assertion code */ })
+PK.Given(`Given match with {expression} syntax`, (expression) => { /* Assertion code */ })
 
 // Register a step definition with regex syntax
-PH.Given(/Given match with (\S+) syntax/, (expression) => { /* Assertion code */ })
+PK.Given(/Given match with (\S+) syntax/, (expression) => { /* Assertion code */ })
 ```
 
 
-### ParseHerkin.When
+### Parkin.When
 **Description**
 * `<Function>` - Register method for `When` step definitions
 * `<Arguments>` - Accepts two arguments
@@ -120,18 +120,18 @@ PH.Given(/Given match with (\S+) syntax/, (expression) => { /* Assertion code */
 
 **Example**
 ```js
-import { ParseHerkin } from 'parse-herkin'
-const PH = new ParseHerkin()
+import { Parkin } from 'parkin'
+const PK = new Parkin()
 
 // Register a step definition with expression syntax
-PH.When(`When match with {expression} syntax`, (expression) => { /* Assertion code */ })
+PK.When(`When match with {expression} syntax`, (expression) => { /* Assertion code */ })
 
 // Register a step definition with regex syntax
-PH.When(/When match with (\S+) syntax/, (expression) => { /* Assertion code */ })
+PK.When(/When match with (\S+) syntax/, (expression) => { /* Assertion code */ })
 ```
 
 
-### ParseHerkin.Then
+### Parkin.Then
 **Description**
 * `<Function>` - Register method for `Then` step definitions
 * `<Arguments>` - Accepts two arguments
@@ -140,26 +140,26 @@ PH.When(/When match with (\S+) syntax/, (expression) => { /* Assertion code */ }
 
 **Example**
 ```js
-import { ParseHerkin } from 'parse-herkin'
-const PH = new ParseHerkin()
+import { Parkin } from 'parkin'
+const PK = new Parkin()
 // Register a step definition with expression syntax
-PH.Then(`Then match with {expression} syntax`, (expression) => { /* Assertion code */ })
+PK.Then(`Then match with {expression} syntax`, (expression) => { /* Assertion code */ })
 // Register a step definition with regex syntax
-PH.Then(/Then match with (\S+) syntax/, (expression) => { /* Assertion code */ })
+PK.Then(/Then match with (\S+) syntax/, (expression) => { /* Assertion code */ })
 ```
 
 
-### ParseHerkin.registerSteps
+### Parkin.registerSteps
 **Description**
 * `<Function>` - Helper to register multiple step definitions at one time
 * **(REQUIRED)** `<Arguments>` - Accepts a single `<Object>`, matching the example below
 
 **Example**
 ```js
-import { ParseHerkin } from 'parse-herkin'
-const PH = new ParseHerkin()
+import { Parkin } from 'parkin'
+const PK = new Parkin()
 // Accepts an object with properties of the definition types 
-PH.registerSteps({
+PK.registerSteps({
   given: {
     // Register a given step definition with expression syntax
     `I am on {page}`: (page) => { /* ... */ },
@@ -173,7 +173,7 @@ PH.registerSteps({
 ```
 
 
-### ParseHerkin.run
+### Parkin.run
 **Description**
 * `<Function>` - Runs tests using the following steps
   * Parses the passed in feature text into a feature model

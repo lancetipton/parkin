@@ -1,5 +1,5 @@
-export const registerMockSteps = PH => {
-  PH.Given(
+export const registerMockSteps = PK => {
+  PK.Given(
     /I open the site (\S+)$/,
     jest.fn((url, world) => {
       // console.log(`---------- url ----------`)
@@ -7,7 +7,7 @@ export const registerMockSteps = PH => {
     })
   )
 
-  PH.When(
+  PK.When(
     `I press {key}`,
     jest.fn((key, world) => {
       // console.log(`---------- key ----------`)
@@ -15,14 +15,14 @@ export const registerMockSteps = PH => {
     })
   )
 
-  PH.When(
+  PK.When(
     `I wait for the page to load`,
     jest.fn(world => {
       // console.log(`---------- page to load ----------`)
     })
   )
 
-  PH.When(
+  PK.When(
     `I set {input} to the input {selector}`,
     jest.fn((input, selector, world) => {
       // console.log(`---------- input ----------`)
@@ -32,7 +32,7 @@ export const registerMockSteps = PH => {
     })
   )
 
-  PH.Then(
+  PK.Then(
     `the element {selector} contains the text {text}`,
     jest.fn((selector, text, world) => {
       // console.log(`---------- selector ----------`)

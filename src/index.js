@@ -1,1 +1,1 @@
-export * from './parseHerkin'
+export * from './parkin'

@@ -1,26 +1,28 @@
 {
-  "name": "@ltipton/parse-herkin",
-  "version": "0.0.1",
+  "name": "@ltipton/parkin",
+  "version": "0.0.0",
   "description": "Parse gherkin features and map them to step definitions",
   "main": "build/cjs",
   "module": "build/esm",
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/lancetipton/parse-herkin.git"
+    "url": "https://github.com/lancetipton/parkin.git"
   },
   "keywords": [
     "gherkin",
     "feature",
     "cucumber",
-    "browser"
+    "browser",
+    "step definition",
+    "step definitions"
   ],
   "author": "Lance Tipton",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lancetipton/parse-herkin/issues"
+    "url": "https://github.com/lancetipton/parkin/issues"
   },
-  "homepage": "https://github.com/lancetipton/parse-herkin",
+  "homepage": "https://github.com/lancetipton/parkin",
   "publishConfig": {
     "access": "public"
   },
