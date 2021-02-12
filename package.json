@@ -1,5 +1,5 @@
 {
-  "name": "parse-herkin",
+  "name": "@ltipton/parse-herkin",
   "version": "0.0.1",
   "description": "Parse gherkin features and map them to step definitions",
   "main": "build/cjs",
