@@ -93,7 +93,7 @@ describe('Parkin', () => {
     expect(typeof thenName).toBe('string')
   })
 
-  it('finds matching definition from a parsed feature and calls the its method', () => {
+  it.only('finds matching definition from a parsed feature and calls the its method', () => {
     const PK = new Parkin(worldObj)
     registerMockSteps(PK)
 
@@ -104,8 +104,8 @@ describe('Parkin', () => {
     expect(PK.steps[`_${givenStep.type}`][0].method).not.toHaveBeenCalled()
     expect(PK.steps[`_${whenStep.type}`][2].method).not.toHaveBeenCalled()
 
-    PK.steps.resolve(PK.steps[`_${givenStep.type}`], givenStep.step)
-    PK.steps.resolve(PK.steps[`_${whenStep.type}`], whenStep.step)
+    PK.steps.resolve(givenStep.step)
+    PK.steps.resolve(whenStep.step)
 
     expect(PK.steps[`_${givenStep.type}`][0].method).toHaveBeenCalled()
     expect(PK.steps[`_${whenStep.type}`][2].method).toHaveBeenCalled()

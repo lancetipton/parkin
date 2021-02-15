@@ -1,7 +1,7 @@
 import { capitalize, eitherArr, isStr } from '@keg-hub/jsutils'
 import { throwNoMatchingStep } from './errors'
 import { constants } from './constants'
-const { REGEX_VARIANT, EXPRESSION_VARIANT } = constants
+const { REGEX_VARIANT, EXPRESSION_VARIANT, STEP_TYPES } = constants
 
 /**
  * Sanitize the step definition text to be used as the name
@@ -119,7 +119,7 @@ const registerFromParse = function (definitions) {
     // Which is injected from the Steps class instance ( this )
     const step = Function(`return (Given, When, Then, And, But) => {
         return ${definition.content}
-      }`)()(this.Given, this.When, this.Then, this.When, this.When)
+      }`)()(this.Given, this.When, this.Then, this.And, this.But)
 
     // Merge the returned step with the initial definition
     return { ...step, ...definition }
@@ -143,7 +143,7 @@ export class Steps {
    * @Array
    * @private
    */
-  types = [ 'given', 'when', 'then', 'and', 'but' ]
+  types = STEP_TYPES
 
   constructor(world) {
     this._world = world || {}
@@ -162,8 +162,7 @@ export class Steps {
      * @returns {void}
      */
     this.types.map(type => {
-      const internalType =
-        type === 'and' || type === 'but' ? `_when` : `_${type}`
+      const internalType = `_${type}`
       this[internalType] = []
       this[capitalize(type)] = (match, method) => {
         return self.register(internalType, type, match, method)
@@ -182,7 +181,11 @@ export class Steps {
    *
    * @returns {*} - Response from the step definition function
    */
-  resolve = (list, text) => {
+  resolve = text => {
+    // Join all step types together when finding a match
+    // Cucumber treats all step definition types as the same when matching to step text 
+    const list = this.types.reduce((stepDefs, type) => stepDefs.concat(this[`_${type}`]), [])
+
     const { match, step } = findMatch(list, text)
     // If not step of match, then throw
     // No matching step definition exists

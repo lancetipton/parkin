@@ -1,6 +1,8 @@
 import { parse } from './parse'
 import { isArr, capitalize } from '@keg-hub/jsutils'
 import { throwMissingSteps, throwMissingFeatureText } from './errors'
+import { constants } from './constants'
+const { STEP_TYPES } = constants
 
 /*
  * Helper method to use the a test method can not be found on the global scope
@@ -39,14 +41,6 @@ const testMethodFill = type => {
 const getTestMethod = type => global[type] || testMethodFill(type)
 
 /*
- * Allowed feature step types
- * @TODO - Add 'but' and 'and'
- * @Object
- * @private
- */
-const stepTypes = [ 'given', 'when', 'then' ]
-
-/*
  * Calls the `it` global passing in a registered step function based on the step text
  * @function
  * @private
@@ -60,7 +54,7 @@ const runStep = (stepsInstance, type, text) => {
   const test = getTestMethod('test')
   return test(
     `${capitalize(type)} ${text}`,
-    stepsInstance.resolve(stepsInstance[`_${type}`], text)
+    stepsInstance.resolve(text)
   )
 }
 
@@ -78,7 +72,7 @@ const runScenario = (stepsInstance, scenario) => {
   const describe = getTestMethod('describe')
 
   return describe(`Scenario: ${scenario.scenario}`, () => {
-    stepTypes.map(
+    STEP_TYPES.map(
       type =>
         isArr(scenario[type]) &&
         scenario[type].map(text => runStep(stepsInstance, type, text))
