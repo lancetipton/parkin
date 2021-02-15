@@ -48,6 +48,7 @@ const getContent = definition => {
 }
 
 /*
+ * @todo - Improve comment stripping
  * Very simple comment stripper, that only gets rid of `//` and /* ... *\/
  * Does not cover all used cases, and most likely will fail on edge cases
  * @function
