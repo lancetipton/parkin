@@ -1,7 +1,7 @@
 const $ = selector => document.querySelector(selector)
-const PK = new Parkin()
 const world = {}
 
+let PK
 let debug = true
 
 const logDebug = (...data) => {
@@ -35,3 +35,7 @@ const runFeature = () => {
   setupDefinitions()
   testFeature()
 }
+
+(() => {
+  PK = new Parkin()
+})()
