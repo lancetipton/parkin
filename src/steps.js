@@ -105,7 +105,7 @@ export class Steps {
    * Allowed step definition types
    * @todo - Add 'but' and 'and' types, which resolve to `when` and `then`
    * @memberof Steps
-   * @Array
+   * @type {Array}
    * @private
    */
   types = STEP_TYPES

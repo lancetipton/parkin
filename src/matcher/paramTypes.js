@@ -10,7 +10,7 @@ import { throwParamTypeExists } from '../errors'
 
 /**
  * Default param type model used when registering param types
- * @Object
+ * @type {Object}
  */
 const typeModel = {
   name: '',
@@ -25,7 +25,7 @@ const typeModel = {
  * Maps param types to function, for type conversion
  * Follows the default conversions for cucumber expressions
  * See https://cucumber.io/docs/cucumber/cucumber-expressions/
- * @Object
+ * @type {Object}
  */
 const __paramTypes = {
   any: {

@@ -1,8 +1,8 @@
 import { uuid } from '@keg-hub/jsutils'
 
-/*
+/**
  * Regular expressions for matching feature file keywords
- * @Object
+ * @type {object}
  */
 const RX_NEWLINE = /\r?\n/g
 const RX_TAG = /^\s*@(.*)$/
@@ -25,9 +25,10 @@ const RX_DOCQUOTES = /^\s*"""\s*(.*)$/
 const RX_DOCTICKS = /^\s*```\s*(.*)$/
 const RX_DATATABLE = /^\s*\|\s*(.*)\|\s*$/
 
-/*
+/**
  * Regular expressions and types for matching step keywords
- * @Array
+ * @type {Array}
+ * @private
  */
 const RegStepTags = [
   { regex: RX_GIVEN, type: 'given' },
@@ -38,9 +39,10 @@ const RegStepTags = [
   { regex: RX_ASTERISK, type: 'and', alt: 'when' },
 ]
 
-/*
+/**
  * Regular expressions and types for matching feature meta data keywords
- * @Array
+ * @type {Array}
+ * @private
  */
 const featureMetaTags = [
   { regex: RX_AS, key: 'perspective' },
@@ -127,7 +129,6 @@ const addReason = (feature, reason) => {
 
 
 /**
- * @TODO: Implement doc string parsing
  * Check for doc strings in the steps
  * The string should be passed to the step def as the last argument
  * Space inside the doc string should be left as is
@@ -136,6 +137,8 @@ const addReason = (feature, reason) => {
  * @param {Object} step - Current step being parsed into an object
  * @param {string} line - Current line being parsed
  * @param {string} text - Full text content of the feature file
+ *
+ * @todo Implement doc string parsing
  *
  * @return {Object} Current step being parsed with the doc string added
  */
@@ -147,7 +150,6 @@ const checkDocString = (step, line, text) => {
 }
 
 /**
- * @TODO: Implement data table parsing
  * Check for a data table in the in the steps content
  * The string should be passed to the step def as the last argument
  * Each line of the data stable should be split in to arguments seperated by |
@@ -156,6 +158,8 @@ const checkDocString = (step, line, text) => {
  * @param {Object} step - Current step being parsed into an object
  * @param {string} line - Current line being parsed
  * @param {string} text - Full text content of the feature file
+ *
+ * @todo Implement data table parsing
  *
  * @return {Object} Current step being parsed with the doc string added
  */
@@ -320,7 +324,6 @@ const ensureScenario = (feature, scenario, line) => {
 }
 
 /**
- * @TODO: Implement background parsing
  * Check for background in a feature, These steps should run before all steps of a scenario
  * Should be added to each scenario, where a background exists in the feature
  * @function
@@ -328,6 +331,8 @@ const ensureScenario = (feature, scenario, line) => {
  * @param {Object} feature - Current feature being parsed into an object
  * @param {Object} scenario - Current scenario being parsed into an object
  * @param {string} line - Current line being parsed
+ *
+ * @todo Implement background parsing
  *
  * @return {Object} Current background being parsed
  */

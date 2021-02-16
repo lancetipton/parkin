@@ -43,7 +43,6 @@ const PK = new Parkin()
 
 
 ### Parkin
-**Description**
 * `<Class>` - Manages features, steps, and definitions
 * `<Arguments>` - Accepts two arguments
   * *(Optional)* `<Object>` - World object passed to all step definition calls
@@ -51,12 +50,10 @@ const PK = new Parkin()
 
 
 ### Parkin.parse
-**Description**
 * `<Object>` - Containing methods for parsing features and definitions
 
 
 ### Parkin.parse.feature
-**Description**
 * `<Function>` - Parses the text content of a feature file `(.feature)`
 * `<Arguments>` - Accepts a single argument
   * **(REQUIRED)** `<String>` - Feature file text content
@@ -74,7 +71,6 @@ const featureModels = PK.parse.feature(featureContent)
 
 
 ### Parkin.parse.definition
-**Description**
 * `<Function>` - Parses the text content of a step definition file `(.js)`
 * `<Arguments>` - Accepts a single argument
   * **(REQUIRED)** `<String>` - Definition text content ( Valid javascript code as text )
@@ -92,7 +88,6 @@ const definitionModel = PK.parse.definition(definitionContent)
 
 
 ### Parkin.Given
-**Description**
 * `<Function>` - Register method for `Given` step definitions
 * `<Arguments>` - Accepts two arguments
   * **(REQUIRED)** `<String>` - Match expression string or regex
@@ -112,7 +107,6 @@ PK.Given(/Given match with (\S+) syntax/, (expression) => { /* Assertion code */
 
 
 ### Parkin.When
-**Description**
 * `<Function>` - Register method for `When` step definitions
 * `<Arguments>` - Accepts two arguments
   * **(REQUIRED)** `<String>` - Match expression string or regex
@@ -132,7 +126,6 @@ PK.When(/When match with (\S+) syntax/, (expression) => { /* Assertion code */ }
 
 
 ### Parkin.Then
-**Description**
 * `<Function>` - Register method for `Then` step definitions
 * `<Arguments>` - Accepts two arguments
   * **(REQUIRED)** `<String>` - Match expression string or regex
@@ -150,7 +143,6 @@ PK.Then(/Then match with (\S+) syntax/, (expression) => { /* Assertion code */ }
 
 
 ### Parkin.registerSteps
-**Description**
 * `<Function>` - Helper to register multiple step definitions at one time
 * **(REQUIRED)** `<Arguments>` - Accepts a single `<Object>`, matching the example below
 
@@ -174,7 +166,6 @@ PK.registerSteps({
 
 
 ### Parkin.run
-**Description**
 * `<Function>` - Runs tests using the following steps
   * Parses the passed in feature text into a feature model
     * Bypassed if passed in argument a feature model
