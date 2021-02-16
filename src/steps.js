@@ -103,7 +103,6 @@ const registerFromParse = function (definitions) {
 export class Steps {
   /**
    * Allowed step definition types
-   * @todo - Add 'but' and 'and' types, which resolve to `when` and `then`
    * @memberof Steps
    * @type {Array}
    * @private
@@ -187,4 +186,17 @@ export class Steps {
       ? registerFromCall.apply(this, args)
       : registerFromParse.apply(this, args)
   }
+
+  /**
+   * Clears out all registered step definitions for all types
+   * @memberof Steps
+   * @function
+   * @public
+   *
+   * @returns {void}
+   */
+  clear = () => {
+    this.types.map(type => this[`_${type}`] = [])
+  }
+  
 }

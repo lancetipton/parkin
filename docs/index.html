@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Perkin Example</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="stylesheet" href="bootstrap.css">
+        <link rel="stylesheet" href="index.css">
+        <!-- Hack to allow importing parkin cjs build -->
+        <script>
+          window.global = window.global || window
+          window.exports = {}
+        </script>
+        <script src="jest.js"></script>
+        <script src="modernizr.min.js"></script>
+    </head>
+    <body>
+    <div class="content-wrapper container" >
+      <header class="header mt-4" >
+        <h2>Perkin Example</h2>
+      </header>
+
+      <section class="gherkin-section mt-4" >
+        <form>
+          <div class="form-group">
+            <h4 class="label feature-label" for="feature-text">Feature</h4>
+
+<textarea class="form-control" rows="11" id="feature-text" >
+@add @world
+Feature: Add to world
+  As a math wiz
+  In order to show my math skills
+  I want to add a number to the world
+  
+  Scenario: Add a number to the $world.number
+    Given I have 1 as $world.number
+    When I add 1 to $world.number
+    Then I expect $world.number to be 2
+</textarea>
+
+            </div>
+          <div class="form-group mt-4">
+            <h4 class="label definition-label" for="definition-text">Definitions</h4>
+
+<textarea class="form-control" rows="13" id="definition-text" >
+Given("I have {int} as $world.number", (num, world) => {
+  world.number = num
+})
+
+When("I add {int} to $world.number", (num, world) => {
+  world.number = world.number + num
+})
+
+Then("I expect $world.number to be {int}", (num, world) => {
+  const areEqual = world.number === num
+  alert("world.number is equal to num? \n" + areEqual)
+})
+</textarea>
+
+            </div>
+          </form>
+      </section>
+      <section class="action-section mt-4" >
+        <div class="actions">
+          <button onclick="runFeature()" >
+            Run Feature
+          </button>
+        </div>
+      </section>
+
+
+    </div>
+    <script src="../build/cjs/index.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>

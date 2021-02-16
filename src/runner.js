@@ -1,6 +1,6 @@
 import { parse } from './parse'
 import { constants } from './constants'
-import { isArr, capitalize } from '@keg-hub/jsutils'
+import { isArr, capitalize, isObj, isStr } from '@keg-hub/jsutils'
 import {
   throwMissingSteps,
   throwMissingFeatureText,
@@ -28,9 +28,9 @@ const getTestMethod = type => global[type] || testMethodFill(type)
  *
  * @returns {Void}
  */
-const runStep = (stepsInstance, type, text) => {
+const runStep = (stepsInstance, step) => {
   const test = getTestMethod('test')
-  return test(`${capitalize(type)} ${text}`, stepsInstance.resolve(text))
+  return test(`${capitalize(step.type)} ${step.step}`, stepsInstance.resolve(step.step))
 }
 
 /*
@@ -39,7 +39,6 @@ const runStep = (stepsInstance, type, text) => {
  * @private
  * @param {Object} stepsInstance - Instance of the Steps class
  * @param {Object} scenario - Parsed feature scenario object containing the steps to run
- * @param {Object} testMethods - Test methods resolved from the global scope
  *
  * @returns {Void}
  */
@@ -47,11 +46,7 @@ const runScenario = (stepsInstance, scenario) => {
   const describe = getTestMethod('describe')
 
   return describe(`Scenario: ${scenario.scenario}`, () => {
-    STEP_TYPES.map(
-      type =>
-        isArr(scenario[type]) &&
-        scenario[type].map(text => runStep(stepsInstance, type, text))
-    )
+    scenario.steps.map(step => runStep(stepsInstance, step))
   })
 }
 
@@ -77,20 +72,26 @@ export class Runner {
    * @memberof Runner
    * @function
    * @public
-   * @param {Object} stepsInstance - Instance of the Steps class
+   * @param {string|Array<Object>|Object} data - Feature data as a string or parsed Feature model
    *
    * @returns {void}
    */
-  run = featureText => {
-    !isStr(featureText) && throwMissingFeatureText()
+  run = data => {
+  
+    const features = isStr(data)
+      ? parse(data)
+      : isObj(data)
+        ? [data]
+        : isArr(data)
+          ? data
+          : throwMissingFeatureText()
 
-    const features = parse(featureText)
     const describe = getTestMethod('describe')
 
     features.map(feature => {
       describe(`Feature: ${feature.feature}`, () => {
         feature.scenarios.map(scenario =>
-          runScenario(this.steps, scenario, testMethods)
+          runScenario(this.steps, scenario)
         )
       })
     })

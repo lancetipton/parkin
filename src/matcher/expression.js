@@ -9,6 +9,16 @@ const RX_EXP_REPLACE = `(.*)`
 const RX_MATCH_REPLACE = /{|}/g
 
 /**
+ * Escapes a string so it can be converted into a regular expression
+ * @function
+ * @private
+ * @param {string} str - Step match text to be escaped
+ *
+ * @return {string} Escaped string to allow converting into a regular expression
+ */
+const escapeStr = str => str.replace(/[.*+?^$()|[\]\\]/g, '\\$&')
+
+/**
  * Replace the passed in matcher string with the passed in replaceWith data based on the testRx
  * @function
  * @private
@@ -111,7 +121,11 @@ const checkAlternative = match => {
  * @returns {Object} Found matching step definition and matched arguments
  */
 export const matchExpression = (step, text) => {
-  const { regex } = checkOptional(step.match)
+  // TODO: This needs move investigation
+  // Need to ensure correct chars are escaped for all edge cases
+  const escaped = escapeStr(step.match)
+
+  const { regex } = checkOptional(escaped)
   const { regex: regexAlts } = checkAlternative(regex)
   const { regex: match, transformers } = convertToRegex(regexAlts)
 
