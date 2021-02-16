@@ -171,11 +171,11 @@ export class Steps {
    * @function
    * @public
    * @param {Array} args - All arguments passed to the method
-   * @param {string|Array|Object} args[0] - Type of step definition to search when matching
+   * @param {string|Array|Object} args.0 - Type of step definition to search when matching
    *                                        Or an array of parsed definition objects
    *                                        Or a single parsed definition object
-   * @param {string} args[1] - Text used to matched with a features step
-   * @param {function} args[2] - Function called when a features step text matches the text param
+   * @param {string} args.1 - Text used to matched with a features step
+   * @param {function} args.2 - Function called when a features step text matches the text param
    *
    * @returns {void}
    */
