@@ -1,0 +1,47 @@
+.content-wrapper {
+  padding: 0px
+}
+
+.header h2 {
+  border-bottom: 2px solid #64CEAA;
+}
+
+.content-wrapper .helper-label {
+  font-size: 12px;
+  position: absolute;
+  text-align: left;
+  z-index: 1;
+  right: 0px;
+  bottom: -25px;
+}
+
+.content-wrapper .gherkin-section .container-fluid {
+  padding: 0px
+}
+
+.content-wrapper .gherkin-section textarea.text-content {
+  font-size: 0.8rem;
+}
+
+.action-section .actions {
+  text-align: right;
+  position: relative 
+}
+
+.action-section .actions .run-feature {
+  background-color: #64CEAA;
+  color: #ffffff;
+  font-weight: bold;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 3px;
+  transition: background-color 0.3s ease;
+}
+
+.action-section .actions .run-feature:hover {
+  background-color: #52a98c;
+}
+
+.action-section .actions .run-feature:active {
+  background-color: #377460;
+}
