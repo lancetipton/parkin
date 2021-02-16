@@ -1,4 +1,10 @@
 
+/*
+ * Simple polyfill for jest when in a browser context.
+ * For example purposes only, for real apps use something like jest-lite
+ * Overrides required - "describe" and "test"
+ * Methods from other test frameworks could implemented using this pattern
+ */
 (() => {
 
   const isFunc = item => typeof item === 'function'
@@ -12,7 +18,5 @@
     console.log(message)
     isFunc(method) && method()
   }
-
-  window.it = window.test
 
 })()
