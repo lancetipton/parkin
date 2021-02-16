@@ -3,11 +3,15 @@ import {
   toStr,
   toInt,
   toFloat,
+  checkCall,
+  exists,
 } from '@keg-hub/jsutils'
+import { throwParamTypeExists } from '../errors'
 
-// TODO: implement registering custom types following this model
-// Which matches cucumbers param types model
-// Arguments for transformer should match the number of capture groups from the regexp
+/**
+ * Default param type model used when registering param types
+ * @Object
+ */
 const typeModel = {
   name: '',
   regexp: '',
@@ -23,7 +27,7 @@ const typeModel = {
  * See https://cucumber.io/docs/cucumber/cucumber-expressions/
  * @Object
  */
-export const paramTypes = {
+const __paramTypes = {
   any: {
     ...typeModel,
     name: 'any',
@@ -50,4 +54,50 @@ export const paramTypes = {
     name: 'string',
     transformer: arg => arg.trim().replace(/^("|')/, '').replace(/("|')$/, '')
   },
+}
+
+/**
+ * Get the registered __paramTypes
+ * @function
+ * @public
+ * @export
+ *
+ * @return {Object} Registered param types
+ */
+export const getParamTypes = () => __paramTypes
+
+/**
+ * Register custom types following the typeModel object
+ * See https://cucumber.io/docs/cucumber/cucumber-expressions/ for more info
+ * @function
+ * @public
+ * @export
+ *
+ * @return {Object} Registered param types
+ */
+export const registerParamType = (model=noOpObj, key=model.name) => {
+  __paramTypes[key]
+    ? throwParamTypeExists(key)
+    : (__paramTypes[key] = { ...typeModel, ...model })
+}
+
+/**
+ * Converts the found matching values into the correct types
+ * Using transformer methods of the matched paramType names
+ * @function
+ * @public
+ * @export
+ * @param {Array<string>} matches - All found dynamic arguments
+ * @param {Array<function>} transformers - Matching paramTypes by index
+ *
+ * @returns {Array<*>} Matches converted into the correct type
+ */
+export const convertTypes = (matches, transformers) => {
+  return matches.map((item, i) => {
+    const paramType = transformers[i]
+    const asType = checkCall(paramType.transformer, item)
+
+    return typeof asType === paramType.type ? asType : null
+  })
+  .filter(item => exists(item) && item)
 }

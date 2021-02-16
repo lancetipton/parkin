@@ -5,7 +5,6 @@ jest.resetModules()
 jest.resetAllMocks()
 jest.clearAllMocks()
 
-const worldObj = {}
 const { matchExpression } = require('../expression')
 
 describe('Match matchExpression', () => {

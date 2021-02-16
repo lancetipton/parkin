@@ -1,6 +1,7 @@
 import { Steps } from './steps'
 import { parse } from './parse'
 import { Runner } from './runner'
+import { registerParamType } from './matcher'
 import { isObj, capitalize } from '@keg-hub/jsutils'
 
 /**
@@ -9,8 +10,12 @@ import { isObj, capitalize } from '@keg-hub/jsutils'
  * Parkin#When - Register When step definitions
  * Parkin#Then - Register Then step definitions
  * Parkin#run - Run step definitions against feature
- * Parkin#parse - Parse feature file text into a feature object
+ * Parkin#parse - Object containing parse helper methods
+ * Parkin#parse#feature - Parse feature file text into a feature object
+ * Parkin#parse#definition - Parse definition file text into a step definition objects
  * Parkin#registerSteps - Register step definitions to be accessible when running features
+ * Parkin#paramTypes - Object containing param type helper methods
+ * Parkin#paramTypes#register - Register custom paramTypes for step definitions
  */
 
 /**
@@ -35,6 +40,10 @@ export class Parkin {
     // Map the parse method to the Parkin class instance
     // So it to be called directly
     this.parse = parse
+
+    // Add the paramTypes register method
+    // Allows registering custom paramTypes
+    this.paramTypes = { register: registerParamType }
 
     // Register in steps passed in on initialization
     isObj(steps) && this.registerSteps(steps)

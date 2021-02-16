@@ -1,22 +1,13 @@
 import { matchRegex } from './regex'
 import { constants } from '../constants'
-import { paramTypes } from './paramTypes'
-import {
-  noOpObj,
-  toStr,
-  toInt,
-  toFloat,
-  isFunc,
-  checkCall,
-  exists
-} from '@keg-hub/jsutils'
+import { noOpObj, isFunc } from '@keg-hub/jsutils'
+import { getParamTypes, convertTypes } from './paramTypes'
 
 const RX_OPTIONAL = /\s*\S*\(s\)\s*/g
 const RX_ALT = /\s*\S*\/\S*\s*/g
 const RX_EXPRESSION = /\s*{(.*?)}\s*/g
-const RX_EXP_REPLACE = `\\s*(.*)\\s*`
+const RX_EXP_REPLACE = `(.*)`
 const RX_MATCH_REPLACE = /{|}/g
-
 
 /**
  * Replace the passed in matcher string with the passed in replaceWith data based on the testRx
@@ -36,11 +27,11 @@ const runRegexCheck = (matcher, testRx, replaceWith) => {
   let regexStr = matcher
   // Replace any expressions with regex, and convert the param types
   matcher.replace(testRx, (...args) => {
-    const [match] = args
-    const [ start, end ] = regexStr.split(match.trim())
+    const match = args[0].trim()
+    const [ start, ...end ] = regexStr.split(match)
     const replace = isFunc(replaceWith) ? replaceWith(...args) : replaceWith
 
-    regexStr = `${start}${replace}${end}`
+    regexStr = `${start}${replace}${end.join(match)}`
   })
 
   return regexStr
@@ -56,16 +47,21 @@ const runRegexCheck = (matcher, testRx, replaceWith) => {
  * @return {string} match string with expression replaced
  */
 const convertToRegex = match => {
+  const paramTypes = getParamTypes()
   const transformers = []
-  const regex = runRegexCheck(match, RX_EXPRESSION, match => {
-    // Get the expression type
-    const type = match.trim().replace(RX_MATCH_REPLACE, '')
+  const regex = runRegexCheck(
+    match,
+    RX_EXPRESSION,
+    (val, ...args) => {
+      // Get the expression type
+      const type = val.trim().replace(RX_MATCH_REPLACE, '')
+      // Add the transformer for the type to the transformers array
+      transformers.push(paramTypes[type] || paramTypes.any)
 
-    // Add the transformer for the type to the transformers array
-    transformers.push(paramTypes[type] || paramTypes.any)
-    // Return the regex 
-    return RX_EXP_REPLACE
-  })
+      // Return the regex
+      return RX_EXP_REPLACE
+    }
+  )
 
   return { regex, transformers }
 }
@@ -79,21 +75,16 @@ const convertToRegex = match => {
  * @return {string} match string with optional syntax replaced
  */
 const checkOptional = match => {
-  const regex = runRegexCheck(match, RX_OPTIONAL, match => `${match.trim().replace('(s)', '')}s*`)
+  const regex = runRegexCheck(
+    match,
+    RX_OPTIONAL,
+    (val, ...args) => `${val.trim().replace('(s)', '')}s*`
+  )
+
   return { regex }
 }
 
 /**
- *
- * ---------------------------- FIX ME ----------------------------
- * This is failing, because optional is not finding required
- * In the regex match. Need to update optional regex to include all optional types
- * Problem is, by doing this they are then included in the final regex args
- * Which are used as the actual values
- * Need to figure out a way to filter them out, so they are not included,
- * But still used when matching step to step definition
- * ---------------------------- FIX ME ----------------------------
- *
  * Find all alternate syntax in the match string, and convert them into into regex
  * @function
  * @private
@@ -102,8 +93,15 @@ const checkOptional = match => {
  * @return {string} match string with alternate syntax replaced
  */
 const checkAlternative = match => {
-  const regex = runRegexCheck(match, RX_ALT, match => match.trim().replace('/', '|'))
-  return { regex }
+  const altIndexes = []
+  const regex = runRegexCheck(
+    match,
+    RX_ALT,
+    // Use a non-capture group to allow matching, but don't include in the results (?:)
+    (val, ...args) => `(?:${val.trim().replace('/', '|')})`
+  )
+
+  return { regex, altIndexes }
 }
 
 /**
@@ -120,25 +118,18 @@ const checkAlternative = match => {
  */
 export const matchExpression = (step, text) => {
 
-  const { regex } = checkOptional(step.match, text)
-  const { regex:regexAlts, alternates } = checkAlternative(regex)
+  const { regex } = checkOptional(step.match)
+  const { regex:regexAlts } = checkAlternative(regex)
   const { regex:match, transformers } = convertToRegex(regexAlts)
 
-  // // Then call the regex matcher to get the content
+  // Then call the regex matcher to get the content
   const found = matchRegex({ ...step, match }, text)
 
   // If no found step definition of match, return an empty object
   if(!found || !found.step || !found.match) return noOpObj
 
   // Convert the found variables into their type based on the mapped transformers
-  const converted = found.match
-    .map((item, index) => {
-      const paramType = transformers[index]
-      const asType = checkCall(transformers[index].transformer, item)
-
-      return typeof asType === paramType.type ? asType : null
-    })
-    .filter(item => exists(item) && item)
+  const converted = convertTypes(found.match, transformers)
 
   // If the conversion fails, and no type is returned
   // Then assume the type does not match, so the step does not match

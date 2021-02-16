@@ -66,3 +66,18 @@ export const throwMissingFeatureText = () => {
 export const throwNoMatchingStep = text => {
   throw new ReferenceError(text)
 }
+
+/**
+ * Throws an error when a registering a param type that already exists
+ * @function
+ * @public
+ * @export
+ * @param {string} name - Name of the param type that is being registered
+ *
+ * @returns {void}
+ */
+export const throwParamTypeExists = () => {
+  throw new Error(
+    `Cannot register param type "${name}". It already exists!`
+  )
+}
