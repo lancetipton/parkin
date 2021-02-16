@@ -196,7 +196,6 @@ export class Steps {
    * @returns {void}
    */
   clear = () => {
-    this.types.map(type => this[`_${type}`] = [])
+    this.types.map(type => (this[`_${type}`] = []))
   }
-  
 }

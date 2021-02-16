@@ -7,6 +7,7 @@ const RX_ALT = /\s*\S*\/\S*\s*/g
 const RX_EXPRESSION = /\s*{(.*?)}\s*/g
 const RX_EXP_REPLACE = `(.*)`
 const RX_MATCH_REPLACE = /{|}/g
+const inBrowser = Boolean(typeof window !== 'undefined')
 
 /**
  * Escapes a string so it can be converted into a regular expression
@@ -16,7 +17,9 @@ const RX_MATCH_REPLACE = /{|}/g
  *
  * @return {string} Escaped string to allow converting into a regular expression
  */
-const escapeStr = str => str.replace(/[.*+?^$()|[\]\\]/g, '\\$&')
+const escapeStr = str => {
+  return inBrowser ? str.replace(/[.*+?^$()|[\]\\]/g, '\\$&') : str
+}
 
 /**
  * Replace the passed in matcher string with the passed in replaceWith data based on the testRx

@@ -30,7 +30,10 @@ const getTestMethod = type => global[type] || testMethodFill(type)
  */
 const runStep = (stepsInstance, step) => {
   const test = getTestMethod('test')
-  return test(`${capitalize(step.type)} ${step.step}`, stepsInstance.resolve(step.step))
+  return test(
+    `${capitalize(step.type)} ${step.step}`,
+    stepsInstance.resolve(step.step)
+  )
 }
 
 /*
@@ -77,7 +80,6 @@ export class Runner {
    * @returns {void}
    */
   run = data => {
-  
     const features = isStr(data)
       ? parse(data)
       : isObj(data)
@@ -90,9 +92,7 @@ export class Runner {
 
     features.map(feature => {
       describe(`Feature: ${feature.feature}`, () => {
-        feature.scenarios.map(scenario =>
-          runScenario(this.steps, scenario)
-        )
+        feature.scenarios.map(scenario => runScenario(this.steps, scenario))
       })
     })
   }
