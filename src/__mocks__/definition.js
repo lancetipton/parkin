@@ -44,35 +44,30 @@ export const expressionDefs = [
       content: 'Then("I have {int} item(s) ready to go", ()=>{})',
     },
     tests: {
-      pass: [
-        `I have 1 item ready to go`,
-        `I have 2 items ready to go`,
-      ],
-      fail: [
-        `I have 1 item`,
-        `I have 1 items ready`,
-        `I have 1 ready to go`,
-      ]
-    }
+      pass: [ `I have 1 item ready to go`, `I have 2 items ready to go` ],
+      fail: [ `I have 1 item`, `I have 1 items ready`, `I have 1 ready to go` ],
+    },
   },
   {
     step: {
       type: 'then',
-      match: 'The number {int} is optional/required for {word} as {word} by law',
+      match:
+        'The number {int} is optional/required for {word} as {word} by law',
       variant: 'expression',
-      content: 'Then("The number {int} is optional/required for {word} as {word} by law", ()=>{})',
+      content:
+        'Then("The number {int} is optional/required for {word} as {word} by law", ()=>{})',
     },
     tests: {
       pass: [
         `The number 5 is optional for entry as optional by law`,
-        `The number 6 is required for entry as required by law`
+        `The number 6 is required for entry as required by law`,
       ],
       fail: [
         `The number 5 is needed for entry as optional`,
         `The number 6 is required as optional`,
         `The number 6 is for entry as optional`,
-      ]
-    }
+      ],
+    },
   },
   {
     step: {
@@ -88,9 +83,7 @@ export const expressionDefs = [
         arg => isStr(arg) && !arg.includes(' '),
         arg => isStr(arg) && arg.includes(' '),
       ],
-      pass: [
-        `Convert 5 and 4.5 and something and "A string" properly`,
-      ],
-    }
+      pass: [`Convert 5 and 4.5 and something and "A string" properly`],
+    },
   },
 ]

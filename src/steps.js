@@ -148,8 +148,11 @@ export class Steps {
    */
   resolve = text => {
     // Join all step types together when finding a match
-    // Cucumber treats all step definition types as the same when matching to step text 
-    const list = this.types.reduce((stepDefs, type) => stepDefs.concat(this[`_${type}`]), [])
+    // Cucumber treats all step definition types as the same when matching to step text
+    const list = this.types.reduce(
+      (stepDefs, type) => stepDefs.concat(this[`_${type}`]),
+      []
+    )
 
     // Call the matcher to find a matching step definition
     const { match, step } = matcher(list, text)

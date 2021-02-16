@@ -1,7 +1,11 @@
 import { parse } from './parse'
 import { constants } from './constants'
 import { isArr, capitalize } from '@keg-hub/jsutils'
-import { throwMissingSteps, throwMissingFeatureText, testMethodFill } from './errors'
+import {
+  throwMissingSteps,
+  throwMissingFeatureText,
+  testMethodFill,
+} from './errors'
 const { STEP_TYPES } = constants
 
 /*
@@ -26,10 +30,7 @@ const getTestMethod = type => global[type] || testMethodFill(type)
  */
 const runStep = (stepsInstance, type, text) => {
   const test = getTestMethod('test')
-  return test(
-    `${capitalize(type)} ${text}`,
-    stepsInstance.resolve(text)
-  )
+  return test(`${capitalize(type)} ${text}`, stepsInstance.resolve(text))
 }
 
 /*

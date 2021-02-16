@@ -1,5 +1,4 @@
 import { matchRegex } from './regex'
-import { constants } from '../constants'
 import { noOpObj, isFunc } from '@keg-hub/jsutils'
 import { getParamTypes, convertTypes } from './paramTypes'
 
@@ -21,9 +20,9 @@ const RX_MATCH_REPLACE = /{|}/g
  * @return {string} match string with matched content replaced with regex
  */
 const runRegexCheck = (matcher, testRx, replaceWith) => {
-  if(!testRx.test(matcher)) return matcher
+  if (!testRx.test(matcher)) return matcher
 
-   // Set the default regex match
+  // Set the default regex match
   let regexStr = matcher
   // Replace any expressions with regex, and convert the param types
   matcher.replace(testRx, (...args) => {
@@ -35,7 +34,6 @@ const runRegexCheck = (matcher, testRx, replaceWith) => {
   })
 
   return regexStr
-
 }
 
 /**
@@ -49,19 +47,15 @@ const runRegexCheck = (matcher, testRx, replaceWith) => {
 const convertToRegex = match => {
   const paramTypes = getParamTypes()
   const transformers = []
-  const regex = runRegexCheck(
-    match,
-    RX_EXPRESSION,
-    (val, ...args) => {
-      // Get the expression type
-      const type = val.trim().replace(RX_MATCH_REPLACE, '')
-      // Add the transformer for the type to the transformers array
-      transformers.push(paramTypes[type] || paramTypes.any)
+  const regex = runRegexCheck(match, RX_EXPRESSION, (val, ...args) => {
+    // Get the expression type
+    const type = val.trim().replace(RX_MATCH_REPLACE, '')
+    // Add the transformer for the type to the transformers array
+    transformers.push(paramTypes[type] || paramTypes.any)
 
-      // Return the regex
-      return RX_EXP_REPLACE
-    }
-  )
+    // Return the regex
+    return RX_EXP_REPLACE
+  })
 
   return { regex, transformers }
 }
@@ -117,16 +111,15 @@ const checkAlternative = match => {
  * @returns {Object} Found matching step definition and matched arguments
  */
 export const matchExpression = (step, text) => {
-
   const { regex } = checkOptional(step.match)
-  const { regex:regexAlts } = checkAlternative(regex)
-  const { regex:match, transformers } = convertToRegex(regexAlts)
+  const { regex: regexAlts } = checkAlternative(regex)
+  const { regex: match, transformers } = convertToRegex(regexAlts)
 
   // Then call the regex matcher to get the content
   const found = matchRegex({ ...step, match }, text)
 
   // If no found step definition of match, return an empty object
-  if(!found || !found.step || !found.match) return noOpObj
+  if (!found || !found.step || !found.match) return noOpObj
 
   // Convert the found variables into their type based on the mapped transformers
   const converted = convertTypes(found.match, transformers)
@@ -137,5 +130,4 @@ export const matchExpression = (step, text) => {
   return converted.length !== found.match.length
     ? noOpObj
     : { step, match: converted }
-
 }

@@ -25,4 +25,3 @@ export const matcher = (stepDefs, text) => {
         : matchRegex(step, text)
   }, noOpObj)
 }
-

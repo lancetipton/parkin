@@ -73,7 +73,7 @@ module.exports = {
       {
         args: 'none',
         ignoreRestSiblings: true,
-        varsIgnorePattern: '_',
+        varsIgnorePattern: '_|__|checkDocString|checkDataTable|checkBackground',
       },
     ],
     /* Jest */

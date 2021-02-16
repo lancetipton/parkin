@@ -9,6 +9,8 @@ import { isObj, capitalize } from '@keg-hub/jsutils'
  * Parkin#Given - Register Given step definitions
  * Parkin#When - Register When step definitions
  * Parkin#Then - Register Then step definitions
+ * Parkin#And - Register And step definitions
+ * Parkin#But - Register But step definitions
  * Parkin#run - Run step definitions against feature
  * Parkin#parse - Object containing parse helper methods
  * Parkin#parse#feature - Parse feature file text into a feature object
@@ -33,23 +35,66 @@ export class Parkin {
     this.steps = new Steps(world)
     this.runner = new Runner(this.steps)
 
-    // Map the runners run method to the Parkin class instance
-    // So it to be called directly
+    /**
+     * Runs the step definition methods matching the steps of a feature
+     * @memberof Parkin
+     * @alias instance&period;run
+     * @function
+     * @public
+     *
+     * @returns {function} - Run tests method for executing a features steps
+     */
     this.run = this.runner.run
 
-    // Map the parse method to the Parkin class instance
-    // So it to be called directly
+    /**
+     * Access parse object containing feature and definition parse methods
+     * @memberof Parkin
+     * @alias instance&period;parse
+     * @function
+     * @public
+     *
+     * @returns {Object} - parse object container `feature` and `definition` parse methods
+     */
     this.parse = parse
 
-    // Add the paramTypes register method
-    // Allows registering custom paramTypes
+    /**
+     * Access paramTypes object containing the paramTypes register method
+     * <br>Allows registering custom paramTypes within registered step definitions
+     * @memberof Parkin
+     * @alias instance&period;paramTypes
+     * @function
+     * @public
+     * @example
+     * const PK = new Parkin()
+     * PK.paramTypes.register({ ...paramType model })
+     *
+     * @returns {Object} - paramTypes object container `register` param types method
+     */
     this.paramTypes = { register: registerParamType }
 
     // Register in steps passed in on initialization
     isObj(steps) && this.registerSteps(steps)
 
-    // Add the steps type register functions to the Parkin class instance
-    // So they can be called directly
+    /**
+     * Step Definition Register methods
+     * @memberof Parkin
+     * @alias instance&period;When
+     * @function
+     * @public
+     * @param {string} match - Text used to matched with a features step
+     * @param {function} method - Function called when a features step text matches the text param
+     * @example
+     *
+     * @example
+     * const PK = new Parkin()
+     * PK.Given(`Given step definition matching string || regex`, ()=> {})
+     * PK.When(`When step definition matching string || regex`, ()=> {})
+     * PK.Then(`Then step definition matching string || regex`, ()=> {})
+     * PK.And(`And step definition matching string || regex`, ()=> {})
+     * PK.But(`But tep definition matching string || regex`, ()=> {})
+     *
+     * @returns {void}
+     */
     this.steps.types.map(type => {
       this[capitalize(type)] = (matcher, method) =>
         this.steps.register(`_${type}`, type, matcher, method)
@@ -59,6 +104,7 @@ export class Parkin {
   /**
    * Helper for registering step definitions after the Parkin class instance has ben created
    * @memberof Parkin
+   * @alias instance&period;registerSteps
    * @function
    * @public
    * @param {Object} steps - Object with step type keys containing step definitions

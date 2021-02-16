@@ -35,24 +35,28 @@ const __paramTypes = {
   word: {
     ...typeModel,
     name: 'word',
-    transformer: arg => toStr(arg)
+    transformer: arg => toStr(arg),
   },
   float: {
     ...typeModel,
     name: 'float',
     type: 'number',
-    transformer: arg => toFloat(arg)
+    transformer: arg => toFloat(arg),
   },
   int: {
     ...typeModel,
     name: 'int',
     type: 'number',
-    transformer: arg => !arg.includes('.') && toInt(arg)
+    transformer: arg => !arg.includes('.') && toInt(arg),
   },
   string: {
     ...typeModel,
     name: 'string',
-    transformer: arg => arg.trim().replace(/^("|')/, '').replace(/("|')$/, '')
+    transformer: arg =>
+      arg
+        .trim()
+        .replace(/^("|')/, '')
+        .replace(/("|')$/, ''),
   },
 }
 
@@ -75,7 +79,7 @@ export const getParamTypes = () => __paramTypes
  *
  * @return {Object} Registered param types
  */
-export const registerParamType = (model=noOpObj, key=model.name) => {
+export const registerParamType = (model = noOpObj, key = model.name) => {
   __paramTypes[key]
     ? throwParamTypeExists(key)
     : (__paramTypes[key] = { ...typeModel, ...model })
@@ -93,11 +97,12 @@ export const registerParamType = (model=noOpObj, key=model.name) => {
  * @returns {Array<*>} Matches converted into the correct type
  */
 export const convertTypes = (matches, transformers) => {
-  return matches.map((item, i) => {
-    const paramType = transformers[i]
-    const asType = checkCall(paramType.transformer, item)
+  return matches
+    .map((item, i) => {
+      const paramType = transformers[i]
+      const asType = checkCall(paramType.transformer, item)
 
-    return typeof asType === paramType.type ? asType : null
-  })
-  .filter(item => exists(item) && item)
+      return typeof asType === paramType.type ? asType : null
+    })
+    .filter(item => exists(item) && item)
 }

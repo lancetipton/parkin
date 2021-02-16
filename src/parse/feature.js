@@ -105,7 +105,7 @@ const stepFactory = (type, step, altType) => {
   // TODO: Investigate calling checkDocString and checkDataTable here
   // For doc string and data table variables of steps
   // Will need to pass in the full text
-  // Then pase from the current line down to the end of the doc string or data table 
+  // Then pase from the current line down to the end of the doc string or data table
 
   return built
 }
@@ -126,7 +126,6 @@ const addReason = (feature, reason) => {
         : (feature.reason += `\n${reason}`)
     : null
 }
-
 
 /**
  * Check for doc strings in the steps
@@ -170,7 +169,6 @@ const checkDataTable = (step, line, text) => {
   return step
 }
 
-
 /**
  * Checks each step tag type, and adds it to current scenario when it exists
  * @function
@@ -183,16 +181,15 @@ const checkDataTable = (step, line, text) => {
 const checkStepTag = (scenario, line) => {
   return RegStepTags.reduce((added, regTag) => {
     // If the line was already added, just return
-    if(added) return added
+    if (added) return added
 
     // Check if the line is a step tag
     const hasTag = regTag.regex.test(line)
     // If if is, add the extracted line to the steps of the current scenario
-    hasTag && scenario.steps.push(stepFactory(
-      regTag.type,
-      getRXMatch(line, regTag.regex, 1),
-      regTag.alt
-    ))
+    hasTag &&
+      scenario.steps.push(
+        stepFactory(regTag.type, getRXMatch(line, regTag.regex, 1), regTag.alt)
+      )
 
     // Return if the line was added to the steps
     return hasTag
@@ -210,16 +207,15 @@ const checkStepTag = (scenario, line) => {
  */
 const featureMeta = (feature, line) => {
   return featureMetaTags.reduce((added, regTag) => {
-    if(added) return added
-    
+    if (added) return added
+
     const hasTag = regTag.regex.test(line)
-  
+
     return hasTag
       ? regTag.key === 'reason'
-        ? addReason(feature, getRXMatch(line, regTag.regex, 0))
-        : (feature[regTag.key] = getRXMatch(line, regTag.regex, 0))
+          ? addReason(feature, getRXMatch(line, regTag.regex, 0))
+          : (feature[regTag.key] = getRXMatch(line, regTag.regex, 0))
       : hasTag
-
   }, false)
 }
 
@@ -233,7 +229,7 @@ const featureMeta = (feature, line) => {
  * @return {boolean} - True if a line was added to the current feature object
  */
 const featureTag = (feature, line) => {
-  if(!RX_TAG.test(line)) return false
+  if (!RX_TAG.test(line)) return false
 
   const tags = getRXMatch(line, RX_TAG, 0)
   feature.tags = feature.tags.concat(tags.split(' '))
@@ -252,7 +248,7 @@ const featureTag = (feature, line) => {
  * @return {boolean} - True if a line was added to the current feature object
  */
 const featureComment = (feature, line, index) => {
-  if(!RX_COMMENT.test(line)) return false
+  if (!RX_COMMENT.test(line)) return false
 
   const comment = getRXMatch(line, RX_COMMENT, 1)
   feature.comments[index] = comment
@@ -273,7 +269,7 @@ const featureComment = (feature, line, index) => {
  */
 const ensureFeature = (featuresGroup, feature, line, text) => {
   // Check for Feature: keyword text
-  if(!RX_FEATURE.test(line)) return feature
+  if (!RX_FEATURE.test(line)) return feature
 
   // Get the text from the line
   const featureText = getRXMatch(line, RX_FEATURE, 1)
@@ -282,8 +278,7 @@ const ensureFeature = (featuresGroup, feature, line, text) => {
   // Then ensure the feature was added to the full group
   if (!feature.feature) {
     feature.feature = featureText
-    !featuresGroup.includes(feature) &&
-      featuresGroup.push(feature)
+    !featuresGroup.includes(feature) && featuresGroup.push(feature)
 
     return feature
   }
@@ -304,7 +299,7 @@ const ensureFeature = (featuresGroup, feature, line, text) => {
  */
 const ensureScenario = (feature, scenario, line) => {
   // Check for "Scenario:" or "Example:" keywords
-  if(!RX_SCENARIO.test(line) && !RX_EXAMPLE.test(line)) return scenario
+  if (!RX_SCENARIO.test(line) && !RX_EXAMPLE.test(line)) return scenario
 
   // Check for "Scenario:", if not found then check for "Example:"
   let scenarioText = getRXMatch(line, RX_SCENARIO, 1)
@@ -317,8 +312,7 @@ const ensureScenario = (feature, scenario, line) => {
     : (scenario = scenarioFactory(scenarioText))
 
   // Add the scenario if needed to the current feature
-  !feature.scenarios.includes(scenario) &&
-    feature.scenarios.push(scenario)
+  !feature.scenarios.includes(scenario) && feature.scenarios.push(scenario)
 
   return scenario
 }
@@ -362,7 +356,6 @@ export const feature = text => {
    * Loop over each line of text, and compose the line with corresponding regex to find a match
    */
   return lines.reduce((featuresGroup, line, index) => {
-
     /*
      * Check for new feature, or parse the current features text
      */

@@ -1,4 +1,3 @@
-
 /*
  * Helper method to use the a test method can not be found on the global scope
  * @function
@@ -77,7 +76,5 @@ export const throwNoMatchingStep = text => {
  * @returns {void}
  */
 export const throwParamTypeExists = () => {
-  throw new Error(
-    `Cannot register param type "${name}". It already exists!`
-  )
+  throw new Error(`Cannot register param type "${name}". It already exists!`)
 }

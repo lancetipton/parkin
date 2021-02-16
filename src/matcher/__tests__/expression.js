@@ -8,7 +8,6 @@ jest.clearAllMocks()
 const { matchExpression } = require('../expression')
 
 describe('Match matchExpression', () => {
-
   it('should match optional expression syntax', () => {
     const optionalDef = expressionDefs[0]
     optionalDef.tests.pass.map(text => {
@@ -47,7 +46,10 @@ describe('Match matchExpression', () => {
 
   it('should convert a variable to the correct type', () => {
     const optionalDef = expressionDefs[0]
-    const { match } = matchExpression(optionalDef.step, `I have 1 item ready to go`)
+    const { match } = matchExpression(
+      optionalDef.step,
+      `I have 1 item ready to go`
+    )
     expect(match[0]).toBe(1)
     expect(isInt(match[0])).toBe(true)
   })
@@ -56,7 +58,8 @@ describe('Match matchExpression', () => {
     const convertDef = expressionDefs[2]
     const { match } = matchExpression(convertDef.step, convertDef.tests.pass[0])
     expect(match.length).toBe(4)
-    match.map((item, index) => expect(convertDef.tests.validate[index](item)).toBe(true))
+    match.map((item, index) =>
+      expect(convertDef.tests.validate[index](item)).toBe(true)
+    )
   })
-
 })
