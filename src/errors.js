@@ -1,3 +1,31 @@
+
+/*
+ * Helper method to use the a test method can not be found on the global scope
+ * @function
+ * @public
+ * @export
+ * @param {string} type - Name of test method to get from the global scope
+ *
+ * @returns {function} - Test method
+ */
+export const testMethodFill = type => {
+  /*
+   * Internal method that throws an error when a test method does not exist on the global scope
+   * @function
+   * @private
+   * @inner
+   *
+   * @returns {void}
+   */
+  return () => {
+    throw new Error(
+      `` +
+        `Test method ${type} does not exist on the global scope.\n` +
+        `Please ensure ${type} exists before calling the run method!\n`
+    )
+  }
+}
+
 /**
  * Throws an error when a Steps class instance is not passed to the runner class constructor
  * @function

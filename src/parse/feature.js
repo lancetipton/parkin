@@ -25,7 +25,6 @@ const RX_DOCQUOTES = /^\s*"""\s*(.*)$/
 const RX_DOCTICKS = /^\s*```\s*(.*)$/
 const RX_DATATABLE = /^\s*\|\s*(.*)\|\s*$/
 
-
 /*
  * Regular expressions and types for matching step keywords
  * @Array
@@ -132,6 +131,8 @@ const addReason = (feature, reason) => {
  * Check for doc strings in the steps
  * The string should be passed to the step def as the last argument
  * Space inside the doc string should be left as is
+ * @function
+ * @private
  * @param {Object} step - Current step being parsed into an object
  * @param {string} line - Current line being parsed
  * @param {string} text - Full text content of the feature file
@@ -150,6 +151,8 @@ const checkDocString = (step, line, text) => {
  * Check for a data table in the in the steps content
  * The string should be passed to the step def as the last argument
  * Each line of the data stable should be split in to arguments seperated by |
+ * @function
+ * @private
  * @param {Object} step - Current step being parsed into an object
  * @param {string} line - Current line being parsed
  * @param {string} text - Full text content of the feature file
@@ -166,6 +169,8 @@ const checkDataTable = (step, line, text) => {
 
 /**
  * Checks each step tag type, and adds it to current scenario when it exists
+ * @function
+ * @private
  * @param {Object} scenario - Parsed scenario object of the current scenario
  * @param {string} line - Current line being parsed
  *
@@ -192,6 +197,8 @@ const checkStepTag = (scenario, line) => {
 
 /**
  * Checks for feature descriptive content
+ * @function
+ * @private
  * @param {Object} feature - Current feature being parsed into an object
  * @param {string} line - Current line being parsed
  *
@@ -214,6 +221,8 @@ const featureMeta = (feature, line) => {
 
 /*
  * Checks for feature file meta-data
+ * @function
+ * @private
  * @param {Object} feature - Current feature being parsed into an object
  * @param {string} line - Current line being parsed
  *
@@ -230,6 +239,8 @@ const featureTag = (feature, line) => {
 
 /*
  * Checks for feature file comments
+ * @function
+ * @private
  * @param {Object} feature - Current feature being parsed into an object
  * @param {string} line - Current line being parsed
  * @param {number} index - Location of the current feature in the features group array
@@ -247,6 +258,8 @@ const featureComment = (feature, line, index) => {
 
 /**
  * Check for new feature, or add feature text to current feature
+ * @function
+ * @private
  * @param {Array} featuresGroup - All Parsed features as an array
  * @param {Object} feature - Current feature being parsed into an object
  * @param {string} line - Current line being parsed
@@ -277,6 +290,8 @@ const ensureFeature = (featuresGroup, feature, line, text) => {
 
 /**
  * Check for new feature scenario, and add scenario to feature object
+ * @function
+ * @private
  * @param {Object} feature - Current feature being parsed into an object
  * @param {Object} scenario - Current scenario being parsed into an object
  * @param {string} line - Current line being parsed
@@ -308,6 +323,8 @@ const ensureScenario = (feature, scenario, line) => {
  * @TODO: Implement background parsing
  * Check for background in a feature, These steps should run before all steps of a scenario
  * Should be added to each scenario, where a background exists in the feature
+ * @function
+ * @private
  * @param {Object} feature - Current feature being parsed into an object
  * @param {Object} scenario - Current scenario being parsed into an object
  * @param {string} line - Current line being parsed

@@ -1,6 +1,7 @@
-import { capitalize, eitherArr, isStr } from '@keg-hub/jsutils'
-import { throwNoMatchingStep } from './errors'
+import { matcher } from './matcher'
 import { constants } from './constants'
+import { throwNoMatchingStep } from './errors'
+import { capitalize, eitherArr, isStr } from '@keg-hub/jsutils'
 const { REGEX_VARIANT, EXPRESSION_VARIANT, STEP_TYPES } = constants
 
 /**
@@ -17,42 +18,6 @@ const sanitize = step => {
   if (name.charAt(name.length - 1) === '$') name = name.slice(0, -1)
 
   return name.replace(/\(\?:([^\|]+)+\|+([^\)]+)?\)/, '$1')
-}
-
-/**
- * Finds a matching registered step definition from the passed in list and text
- * @todo - Update to parse expression and regex vars from the text param
- * @function
- * @private
- * @param {Array<Object>} list - Registered step definition
- * @param {string} text - Feature step text to compare with step definition text
- *
- * @returns {Object} Found matching step definition and matched arguments
- */
-const findMatch = (list, text) => {
-  return list.reduce((found, step) => {
-    if (found.match || !step.match) return found
-
-    let regex = step.match
-
-    // If step variant is not regex
-    // Then find all expressions in the match string
-    // And convert them into into regex
-    step.variant !== REGEX_VARIANT &&
-      step.match.replace(/\s*{(.*?)}\s*/g, (...args) => {
-        const [match] = args
-        const [ start, end ] = regex.split(match.trim())
-        regex = start + `\\s*(.*)\\s*` + end
-      })
-
-    const match = text.match(new RegExp(regex))
-
-    // If NO match, just return found variable
-    // If there is a match,
-    // Get all matching items except for the first one
-    // Which is the original string
-    return !match ? found : { step, match: match.slice(1, match.length) }
-  }, {})
 }
 
 /**
@@ -186,7 +151,9 @@ export class Steps {
     // Cucumber treats all step definition types as the same when matching to step text 
     const list = this.types.reduce((stepDefs, type) => stepDefs.concat(this[`_${type}`]), [])
 
-    const { match, step } = findMatch(list, text)
+    // Call the matcher to find a matching step definition
+    const { match, step } = matcher(list, text)
+
     // If not step of match, then throw
     // No matching step definition exists
     if (!match || !step) return throwNoMatchingStep(text)

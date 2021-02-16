@@ -93,7 +93,7 @@ describe('Parkin', () => {
     expect(typeof thenName).toBe('string')
   })
 
-  it.only('finds matching definition from a parsed feature and calls the its method', () => {
+  it('finds matching definition from a parsed feature and calls the its method', () => {
     const PK = new Parkin(worldObj)
     registerMockSteps(PK)
 

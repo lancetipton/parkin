@@ -1,34 +1,8 @@
 import { parse } from './parse'
-import { isArr, capitalize } from '@keg-hub/jsutils'
-import { throwMissingSteps, throwMissingFeatureText } from './errors'
 import { constants } from './constants'
+import { isArr, capitalize } from '@keg-hub/jsutils'
+import { throwMissingSteps, throwMissingFeatureText, testMethodFill } from './errors'
 const { STEP_TYPES } = constants
-
-/*
- * Helper method to use the a test method can not be found on the global scope
- * @function
- * @private
- * @param {string} type - Name of test method to get from the global scope
- *
- * @returns {function} - Test method
- */
-const testMethodFill = type => {
-  /*
-   * Internal method that throws an error when a test method does not exist on the global scope
-   * @function
-   * @private
-   * @inner
-   *
-   * @returns {void}
-   */
-  return () => {
-    throw new Error(
-      `` +
-        `Test method ${type} does not exist on the global scope.\n` +
-        `Please ensure ${type} exists before calling the run method!\n`
-    )
-  }
-}
 
 /*
  * Resolves a test method from the global scope
