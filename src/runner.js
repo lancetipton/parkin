@@ -8,26 +8,24 @@ import {
 } from './errors'
 const { STEP_TYPES } = constants
 
-// Check if were running in the tests Parkin, and not external tests
-const { PARKIN_RUNNER_TESTS } = process.env
-
-/*
+/**
  * Resolves a test method from the global scope
- * Returns a NOOP when PARKIN_RUNNER_TESTS env is true
+ * Returns a NOOP when getTestMethod.PARKIN_TEST_MODE is true
  * This allows testing the runner methods, without running the tests
  * @function
  * @private
  * @param {string} type - Name of test method to get from the global scope
+ * @param {boolean} testMode - Allows testing the runner methods, without running the tests
  *
  * @returns {function} - Test method
  */
-const getTestMethod = type => {
+const getTestMethod = (type, testMode) => {
   // To write tests for the runner, we have to override the default test methods
   // This allows testing the runner methods, without running the tests
-  return Boolean(PARKIN_RUNNER_TESTS) ? noOp : (global[type] || testMethodFill(type))
+  return testMode ? noOp : (global[type] || testMethodFill(type))
 }
 
-/*
+/**
  * Resolves and parses features based on the data type passed in
  * Ensures an array of parsed features is returned
  * @function
@@ -49,18 +47,18 @@ const resolveFeatures = data => {
         : throwMissingFeatureText()
 }
 
-/*
+/**
  * Calls the `it` global passing in a registered step function based on the step text
  * @function
  * @private
  * @param {Object} stepsInstance - Instance of the Steps class
- * @param {string} type - Type of step being run
- * @param {string} text - Text of the step from the parsed feature text
+ * @param {Object} step - Parsed Step mode object
+ * @param {boolean} testMode - Allows testing the runner methods, without running the tests
  *
  * @returns {Void}
  */
-const runStep = async (stepsInstance, step) => {
-  const test = getTestMethod('test')
+const runStep = async (stepsInstance, step, testMode) => {
+  const test = getTestMethod('test', testMode)
   // eslint-disable-next-line jest/no-test-callback
   test(`${capitalize(step.type)} ${step.step}`, async done => {
     await stepsInstance.resolve(step.step)
@@ -68,17 +66,18 @@ const runStep = async (stepsInstance, step) => {
   })
 }
 
-/*
+/**
  * Loops through the passed in scenarios steps and calls runStep for each
  * @function
  * @private
  * @param {Object} stepsInstance - Instance of the Steps class
  * @param {Object} scenario - Parsed feature scenario object containing the steps to run
+ * @param {boolean} testMode - Allows testing the runner methods, without running the tests
  *
  * @returns {Void}
  */
-const runScenario = (stepsInstance, scenario) => {
-  const describe = getTestMethod('describe')
+const runScenario = (stepsInstance, scenario, testMode) => {
+  const describe = getTestMethod('describe', testMode)
 
   // Holder for the steps of each scenario
   let responses = []
@@ -86,7 +85,7 @@ const runScenario = (stepsInstance, scenario) => {
     // Map over the steps and call them
     // Store the returned promise in the responses array
     responses = scenario.steps.map(
-      async step => await runStep(stepsInstance, step)
+      async step => await runStep(stepsInstance, step, testMode)
     )
 
     // Ensure we resolve all promises inside the describe block
@@ -96,7 +95,7 @@ const runScenario = (stepsInstance, scenario) => {
   return responses
 }
 
-/*
+/**
  * Parses and runs the steps of a feature text string
  * Uses the registered steps of the passed in Steps class instance to evaluate the feature steps
  * @class
@@ -112,7 +111,7 @@ export class Runner {
     this.steps = steps
   }
 
-  /*
+  /**
    * Parses and runs the steps of a feature text string
    * Matches each step to a registered steps of the Steps class instance
    * @memberof Runner
@@ -123,8 +122,12 @@ export class Runner {
    * @returns {void}
    */
   run = async data => {
+    // Set if were running tests for Parkin, or external tests
+    // Only used for testing purposes
+    const testMode = this.run.PARKIN_TEST_MODE
+
     const features = resolveFeatures(data)
-    const describe = getTestMethod('describe')
+    const describe = getTestMethod('describe', testMode)
 
     // Ensures all tests resolve before ending by
     // Using promises to resolve each feature / scenario / step
@@ -134,7 +137,7 @@ export class Runner {
       // Store the returned promise in the responses array
       describe(`Feature: ${feature.feature}`, () => {
         responses = feature.scenarios.map(
-          async scenario => await runScenario(this.steps, scenario)
+          async scenario => await runScenario(this.steps, scenario, testMode)
         )
 
         // Ensure we resolve all promises inside the describe block

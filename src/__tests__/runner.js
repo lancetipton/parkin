@@ -1,5 +1,6 @@
 import { feature, registerMockSteps, parsedFeature } from '../__mocks__'
 import { constants } from '../constants'
+
 const { REGEX_VARIANT, EXPRESSION_VARIANT } = constants
 
 jest.resetModules()
@@ -14,6 +15,8 @@ describe('Runner', () => {
 
   beforeAll(() => {
     PK = new Parkin(worldObj)
+    PK.run.PARKIN_TEST_MODE = true
+
     registerMockSteps(PK)
   })
 
