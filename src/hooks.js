@@ -11,7 +11,6 @@ const { HOOK_TYPES } = constants
  * @returns {Object} Instance of the Hooks class
  */
 export class Hooks {
-
   /**
    * Allowed hook types
    * @memberof Hooks
@@ -20,7 +19,7 @@ export class Hooks {
    */
   types = HOOK_TYPES
 
-  constructor () {
+  constructor() {
     this._registeredHooks = {}
 
     /**
@@ -32,11 +31,11 @@ export class Hooks {
      * @example
      * const hooks = new Hooks()
      * hooks.beforeAll(() => setupEnvironment())
-     * 
+     *
      * @returns {void}
      */
     this.types.map(type => {
-      this[type] = (clientHookFn) => {
+      this[type] = clientHookFn => {
         if (!isFunc(clientHookFn)) return
         this._registeredHooks[type] = clientHookFn
       }
@@ -44,7 +43,7 @@ export class Hooks {
   }
 
   /**
-   * @param {string} type 
+   * @param {string} type
    * @return {Function} the function registered to the hook type, or a noOp function by default
    */
   getRegistered = type => {
@@ -53,7 +52,7 @@ export class Hooks {
         `Expected client hook type to be one of ', ${HOOK_TYPES.join(', ')}.
          Found: ${type}`
       )
-    
+
     return this._registeredHooks[type] || noOp
   }
 }

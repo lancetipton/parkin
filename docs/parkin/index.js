@@ -80,6 +80,7 @@ const constants = deepFreeze({
   REGEX_VARIANT: 'regex',
   EXPRESSION_VARIANT: 'expression',
   STEP_TYPES: ['given', 'when', 'then', 'and', 'but'],
+  HOOK_TYPES: ['beforeAll', 'afterAll', 'beforeEach', 'afterEach'],
   FEATURE_META: ['feature', 'perspective', 'desire', 'reason', 'comments']
 });
 
@@ -292,6 +293,27 @@ class Steps {
       this[internalType] = [];
       this[capitalize(type)] = (match, method) => {
         return self.register(internalType, type, match, method);
+      };
+    });
+  }
+}
+
+const {
+  HOOK_TYPES
+} = constants;
+class Hooks {
+  constructor() {
+    _defineProperty(this, "types", HOOK_TYPES);
+    _defineProperty(this, "getRegistered", type => {
+      if (!this.types.includes(type)) throw new Error(`Expected client hook type to be one of ', ${HOOK_TYPES.join(', ')}.
+         Found: ${type}`);
+      return this._registeredHooks[type] || noOp;
+    });
+    this._registeredHooks = {};
+    this.types.map(type => {
+      this[type] = clientHookFn => {
+        if (!isFunc(clientHookFn)) return;
+        this._registeredHooks[type] = clientHookFn;
       };
     });
   }
@@ -510,31 +532,56 @@ const runScenario = (stepsInstance, scenario, testMode) => {
   });
   return responses;
 };
-const getTaggedItems = (items, tags) => {
-  return items.filter(item => {
-    if (!isArr(item.tags) || !item.tags.length) return false;
-    const itemTags = item.tags.map(tag => tag.replace('@', ''));
-    return tags.find(tag => itemTags.includes(tag.replace('@', '')));
-  }, []);
+const parseFeatureTags = tags => {
+  return isStr(tags) && tags.match(/[@]\w*/g);
 };
-const filterFromTags = (features, tags) => {
-  return !tags || isArr(tags) && !tags.length ? features :
-  getTaggedItems(features, tags).reduce((filtered, feature) => {
-    const tagScenarios = getTaggedItems(feature.scenarios, tags);
-    tagScenarios.length ? filtered.push({ ...features,
-      scenarios: tagScenarios
-    }) : filtered.push(feature);
+const itemMatch = (name = '', tags = [], filterOptions = {}) => {
+  const {
+    name: filterName,
+    tags: filterTags
+  } = filterOptions;
+  const parsedTags = isStr(filterTags) ? parseFeatureTags(filterTags) : eitherArr(filterTags, []);
+  const nameMatch = !filterName || name.includes(filterName);
+  const tagMatch = !parsedTags.length || parsedTags.every(clientTag => tags.includes(clientTag));
+  return nameMatch && tagMatch;
+};
+const filterFeatures = (features, filterOptions = {}) => {
+  return features.reduce((filtered, feature) => {
+    const isMatchingFeature = itemMatch(feature.feature, feature.tags, filterOptions);
+    if (isMatchingFeature) {
+      filtered.push(feature);
+      return filtered;
+    }
+    const matchingScenarios = feature.scenarios.filter(scenario => itemMatch(scenario.scenario, [...(scenario.tags || []), ...(feature.tags || [])], filterOptions));
+    if (matchingScenarios.length) {
+      filtered.push({ ...feature,
+        scenarios: matchingScenarios
+      });
+    }
     return filtered;
   }, []);
 };
 class Runner {
-  constructor(steps) {
+  constructor(steps, hooks) {
+    _defineProperty(this, "getFeatures", (data, options) => {
+      const features = resolveFeatures(data);
+      return filterFeatures(features, options);
+    });
     _defineProperty(this, "run", async (data, options = noOpObj) => {
       const testMode = this.run.PARKIN_TEST_MODE;
       const describe = getTestMethod('describe', testMode);
-      const features = filterFromTags(resolveFeatures(data), options.tags);
+      const beforeAll = getTestMethod('beforeAll', testMode);
+      const afterAll = getTestMethod('afterAll', testMode);
+      const beforeEach = getTestMethod('beforeEach', testMode);
+      const afterEach = getTestMethod('afterEach', testMode);
+      const features = this.getFeatures(data, options);
+      if (!features.length) return false;
       const promises = await features.map(async feature => {
         let responses = [];
+        beforeAll(this.hooks.getRegistered('beforeAll'));
+        afterAll(this.hooks.getRegistered('afterAll'));
+        beforeEach(this.hooks.getRegistered('beforeEach'));
+        afterEach(this.hooks.getRegistered('afterEach'));
         describe(`Feature: ${feature.feature}`, () => {
           responses = feature.scenarios.map(async scenario => await runScenario(this.steps, scenario, testMode));
         });
@@ -544,7 +591,9 @@ class Runner {
       return true;
     });
     !steps && throwMissingSteps();
+    !hooks && throwMissingHooks();
     this.steps = steps;
+    this.hooks = hooks;
   }
 }
 
@@ -623,7 +672,8 @@ class Parkin {
       this.steps[capitalize(type)](matcher, method)));
     });
     this.steps = new Steps(world);
-    this.runner = new Runner(this.steps);
+    this.hooks = new Hooks();
+    this.runner = new Runner(this.steps, this.hooks);
     this.run = this.runner.run;
     this.parse = parse;
     this.assemble = assemble;

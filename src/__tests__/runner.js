@@ -1,4 +1,10 @@
-import { feature, featureWithScenarioTags, registerMockSteps, parsedFeature, mockHooks } from '../__mocks__'
+import {
+  feature,
+  featureWithScenarioTags,
+  registerMockSteps,
+  parsedFeature,
+  mockHooks,
+} from '../__mocks__'
 
 jest.resetModules()
 jest.resetAllMocks()
@@ -6,13 +12,11 @@ jest.clearAllMocks()
 
 const worldObj = {}
 const { Parkin } = require('../parkin')
-let PK;
-let ogTest;
-let resetHooks;
-
+let PK
+let ogTest
+let resetHooks
 
 describe('Runner', () => {
-
   beforeAll(() => {
     PK = new Parkin(worldObj)
     PK.run.PARKIN_TEST_MODE = true
@@ -57,10 +61,10 @@ describe('Runner', () => {
   })
 
   it('should filter on tags', () => {
-    let features = PK.runner.getFeatures(feature, { tags: [ '@random-tag'] })
+    let features = PK.runner.getFeatures(feature, { tags: ['@random-tag'] })
     expect(features).toHaveLength(0)
 
-    features = PK.runner.getFeatures(feature, { tags: [ '@search'] })
+    features = PK.runner.getFeatures(feature, { tags: ['@search'] })
     expect(features).toHaveLength(1)
 
     features = PK.runner.getFeatures(feature, { tags: '@google' })
@@ -72,7 +76,9 @@ describe('Runner', () => {
     features = PK.runner.getFeatures(feature, { tags: '@google,@search' })
     expect(features).toHaveLength(1)
 
-    features = PK.runner.getFeatures(featureWithScenarioTags, { tags: '@scenario' })
+    features = PK.runner.getFeatures(featureWithScenarioTags, {
+      tags: '@scenario',
+    })
     expect(features).toHaveLength(1)
     expect(features[0].scenarios).toHaveLength(1)
   })
@@ -93,7 +99,7 @@ describe('Runner', () => {
     expect(features[0].scenarios).toHaveLength(1)
   })
 
-  it ('should return false if filters result in no tests', async () => {
+  it('should return false if filters result in no tests', async () => {
     const testsRan = await PK.run(feature, { tags: '@non-existent-tag' })
     expect(testsRan).toEqual(false)
   })
