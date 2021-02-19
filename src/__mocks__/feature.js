@@ -5,7 +5,6 @@ Feature: Google Search
   # Test comment in the feature meta
   I want to be able to search for information about the Keg-Hub
 
-  @scenario
   Scenario: Search the web for google
     Given I open the site https://www.google.com
     When I set keg-hub to the input .gLFyf
@@ -14,6 +13,22 @@ Feature: Google Search
     When I wait for the page to load
     Then the element #search contains the text simpleviewinc/keg-hub`
 
+export const featureWithScenarioTags = `@search @google
+  Feature: Google Search
+    As an internet user
+    In order to find out more about Keg-Hub
+    # Test comment in the feature meta
+    I want to be able to search for information about the Keg-Hub
+  
+    @scenario
+    Scenario: Search the web for google
+      Given I open the site https://www.google.com
+      When I set keg-hub to the input .gLFyf
+      When I press enter
+      # comment for testing in the scenario steps
+      When I wait for the page to load
+      Then the element #search contains the text simpleviewinc/keg-hub`
+  
 export const parsedFeature = {
   index: 1,
   // The uuid is different every time, so comment it out for testing
@@ -53,7 +68,6 @@ export const parsedFeature = {
     {
       index: 7,
       scenario: 'Search the web for google',
-      tags: [ '@scenario' ],
       // uuid: 'f75d10d8-645c-4da0-b4b2-70696e3588b3',
       steps: [
         {

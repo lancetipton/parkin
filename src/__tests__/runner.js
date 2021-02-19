@@ -1,4 +1,4 @@
-import { feature, registerMockSteps, parsedFeature, mockHooks } from '../__mocks__'
+import { feature, featureWithScenarioTags, registerMockSteps, parsedFeature, mockHooks } from '../__mocks__'
 
 jest.resetModules()
 jest.resetAllMocks()
@@ -72,7 +72,7 @@ describe('Runner', () => {
     features = PK.runner.getFeatures(feature, { tags: '@google,@search' })
     expect(features).toHaveLength(1)
 
-    features = PK.runner.getFeatures(feature, { tags: '@scenario' })
+    features = PK.runner.getFeatures(featureWithScenarioTags, { tags: '@scenario' })
     expect(features).toHaveLength(1)
     expect(features[0].scenarios).toHaveLength(1)
   })
