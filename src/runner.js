@@ -223,7 +223,6 @@ export class Runner {
 
     // Get all the features to be run
     // Then filter them based on any options tags
-    // const features = filterFromTags(resolveFeatures(data), options.tags)
     const features = this.getFeatures(data, options)
     if (!features.length) return false
 
