@@ -28,7 +28,7 @@ export const featureWithScenarioTags = `@search @google
       # comment for testing in the scenario steps
       When I wait for the page to load
       Then the element #search contains the text simpleviewinc/keg-hub`
-  
+
 export const parsedFeature = {
   index: 1,
   // The uuid is different every time, so comment it out for testing

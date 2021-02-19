@@ -102,7 +102,7 @@ const runScenario = (stepsInstance, scenario, testMode) => {
 }
 
 /**
- * @param {string} tags 
+ * @param {string} tags
  * @return {Array<string>?} A match of all words starting with '@', the tag indicator.
  * Returns false if input is invalid.
  */
@@ -117,15 +117,17 @@ const parseFeatureTags = tags => {
  * @param {string | Array<string>} filterOptions.tags - tags filter
  * @return {Boolean} - true if feature matches the filter options
  */
-const itemMatch = (name='', tags=[], filterOptions={}) => {
+const itemMatch = (name = '', tags = [], filterOptions = {}) => {
   const { name: filterName, tags: filterTags } = filterOptions
 
-  const parsedTags = isStr(filterTags) 
-    ? parseFeatureTags(filterTags) 
+  const parsedTags = isStr(filterTags)
+    ? parseFeatureTags(filterTags)
     : eitherArr(filterTags, [])
 
   const nameMatch = !filterName || name.includes(filterName)
-  const tagMatch = !parsedTags.length || parsedTags.every(clientTag => tags.includes(clientTag))
+  const tagMatch =
+    !parsedTags.length ||
+    parsedTags.every(clientTag => tags.includes(clientTag))
 
   return nameMatch && tagMatch
 }
@@ -136,23 +138,27 @@ const itemMatch = (name='', tags=[], filterOptions={}) => {
  * @private
  * @param {Array} features - Features to be run
  * @param {Object} tags - Tags to filter which Features and scenarios will be run
- *  * @param {string?} filterOptions.name - name of feature 
+ *  * @param {string?} filterOptions.name - name of feature
  * @param {string | Array<string>} filterOptions.tags - feature tags to match
  *
  * @returns {Array} - Filtered features that should be run
  */
-const filterFeatures = (features, filterOptions={}) => {
+const filterFeatures = (features, filterOptions = {}) => {
   return features.reduce((filtered, feature) => {
-    const isMatchingFeature = itemMatch(feature.feature, feature.tags, filterOptions)
+    const isMatchingFeature = itemMatch(
+      feature.feature,
+      feature.tags,
+      filterOptions
+    )
     if (isMatchingFeature) {
       filtered.push(feature)
       return filtered
     }
 
     // check for matching scenarios, where scenarios inherit their parent feature's tags
-    const matchingScenarios = feature.scenarios.filter(
-      scenario => itemMatch(
-        scenario.scenario, 
+    const matchingScenarios = feature.scenarios.filter(scenario =>
+      itemMatch(
+        scenario.scenario,
         [ ...(scenario.tags || []), ...(feature.tags || []) ],
         filterOptions
       )
@@ -160,7 +166,7 @@ const filterFeatures = (features, filterOptions={}) => {
     if (matchingScenarios.length) {
       filtered.push({
         ...feature,
-        scenarios: matchingScenarios
+        scenarios: matchingScenarios,
       })
     }
     return filtered

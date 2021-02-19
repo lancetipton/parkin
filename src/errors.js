@@ -47,7 +47,7 @@ export const throwMissingSteps = () => {
  *
  * @returns {void}
  */
-export const throwMissingHooks = (found) => {
+export const throwMissingHooks = found => {
   throw new Error(
     `Runner class constructor requires an instance of the Hooks class. Found: ${found}`
   )
