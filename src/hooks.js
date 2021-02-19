@@ -3,7 +3,15 @@ import { constants } from './constants'
 
 const { HOOK_TYPES } = constants
 
+/**
+ * Allows registering hook functions, which are then called when
+ * the runner runs a feature
+ * @class
+ * @public
+ * @returns {Object} Instance of the Hooks class
+ */
 export class Hooks {
+
   /**
    * Allowed hook types
    * @memberof Steps
@@ -37,7 +45,7 @@ export class Hooks {
 
   /**
    * @param {string} type 
-   * @return {Function} the function registered to the hook type
+   * @return {Function} the function registered to the hook type, or a noOp function by default
    */
   getRegistered = type => {
     if (!this.types.includes(type))
