@@ -162,7 +162,7 @@ const formatAssembled = assembled => {
         ? formatComment(assembled, line, index)
         : `${line}\n`
 
-  }).join('')
+  }).join('').trim()
 }
 
 /**
