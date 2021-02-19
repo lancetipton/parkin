@@ -1,4 +1,5 @@
 import { Steps } from './steps'
+import { Hooks } from './hooks'
 import { parse } from './parse'
 import { Runner } from './runner'
 import { registerParamType } from './matcher'
@@ -34,6 +35,7 @@ export class Parkin {
   constructor(world, steps) {
     this.steps = new Steps(world)
     this.runner = new Runner(this.steps)
+    this.hooks = new Hooks()
 
     /**
      * Runs the step definition methods matching the steps of a feature
@@ -44,7 +46,7 @@ export class Parkin {
      *
      * @returns {function} - Run tests method for executing a features steps
      */
-    this.run = this.runner.run
+    this.run = data => this.runner.run(data, this.hooks)
 
     /**
      * Access parse object containing feature and definition parse methods

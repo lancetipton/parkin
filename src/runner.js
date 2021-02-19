@@ -110,10 +110,11 @@ export class Runner {
    * @function
    * @public
    * @param {string|Array<Object>|Object} data - Feature data as a string or parsed Feature model
+   * @param {Hooks} hooks - instance of the hooks class, storing the client's registered test callbacks
    *
    * @returns {void}
    */
-  run = async data => {
+  run = async (data, hooks) => {
     const features = resolveFeatures(data)
     const describe = getTestMethod('describe')
 
@@ -121,6 +122,12 @@ export class Runner {
     // Using promises to resolve each feature / scenario / step
     const promises = await features.map(async feature => {
       let responses = []
+
+      beforeAll(hooks.getRegistered('beforeAll'))
+      afterAll(hooks.getRegistered('afterAll'))
+      beforeEach(hooks.getRegistered('beforeEach'))
+      afterEach(hooks.getRegistered('afterEach'))
+
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
       describe(`Feature: ${feature.feature}`, () => {

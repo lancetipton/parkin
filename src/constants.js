@@ -4,4 +4,5 @@ export const constants = deepFreeze({
   REGEX_VARIANT: 'regex',
   EXPRESSION_VARIANT: 'expression',
   STEP_TYPES: [ 'given', 'when', 'then', 'and', 'but' ],
+  HOOK_TYPES: [ 'beforeAll', 'afterAll', 'beforeEach', 'afterEach' ]
 })
