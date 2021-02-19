@@ -158,8 +158,10 @@ const filterFeatures = (features, filterOptions={}) => {
       )
     )
     if (matchingScenarios.length) {
-      feature.scenarios = matchingScenarios
-      filtered.push(feature)
+      filtered.push({
+        ...feature,
+        scenarios: matchingScenarios
+      })
     }
     return filtered
   }, [])
@@ -207,7 +209,7 @@ export class Runner {
    * @param {Array<string>? | string?} options.tags - Tags to filter which features or scenarios are run
    * @param {string?} options.name - Name of feature
    *
-   * @returns {void}
+   * @returns {boolean} - whether any tests ran
    */
   run = async (data, options = noOpObj) => {
     // Set if were running tests for Parkin, or external tests
@@ -223,6 +225,7 @@ export class Runner {
     // Then filter them based on any options tags
     // const features = filterFromTags(resolveFeatures(data), options.tags)
     const features = this.getFeatures(data, options)
+    if (!features.length) return false
 
     // Ensures all tests resolve before ending by
     // Using promises to resolve each feature / scenario / step

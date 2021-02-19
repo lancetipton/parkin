@@ -92,4 +92,9 @@ describe('Runner', () => {
     expect(features).toHaveLength(1)
     expect(features[0].scenarios).toHaveLength(1)
   })
+
+  it ('should return false if filters result in no tests', async () => {
+    const testsRan = await PK.run(feature, { tags: '@non-existent-tag' })
+    expect(testsRan).toEqual(false)
+  })
 })
