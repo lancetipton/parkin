@@ -41,29 +41,22 @@ export const registerMockSteps = (PK, withPromises) => {
       // console.log(text)
     })
   )
-  
-  if(!withPromises) return
 
-  PK.Given(
-    `I wait for {int}`,
-    async (amount, world) => {
-      const testPromise = new Promise((res, rej) => {
-        setTimeout(() => {
-          world.iWaited = true
-          world.testMethod()
-          res()
-        }, amount)
-      })
-      return await testPromise
-    }
-  )
+  if (!withPromises) return
 
-  PK.Then(
-    `the world test method should be called`,
-    async (world) => {
-      expect(world.iWaited).toBe(true)
-      expect(world.testMethod).toHaveBeenCalled()
-    }
-  )
-  
+  PK.Given(`I wait for {int}`, async (amount, world) => {
+    const testPromise = new Promise((res, rej) => {
+      setTimeout(() => {
+        world.iWaited = true
+        world.testMethod()
+        res()
+      }, amount)
+    })
+    return await testPromise
+  })
+
+  PK.Then(`the world test method should be called`, async world => {
+    expect(world.iWaited).toBe(true)
+    expect(world.testMethod).toHaveBeenCalled()
+  })
 }

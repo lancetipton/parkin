@@ -19,7 +19,9 @@ const inBrowser = Boolean(typeof window !== 'undefined')
  */
 const escapeStr = str => {
   // return inBrowser ? str.replace(/[.*+?^$()|[\]\\]/g, '\\$&') : str
-  return inBrowser ? str.replace(/[|\\()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d') : str
+  return inBrowser
+    ? str.replace(/[|\\()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d')
+    : str
 }
 
 /**

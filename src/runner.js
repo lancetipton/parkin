@@ -33,7 +33,10 @@ const resolveFeatures = data => {
     : isObj(data)
       ? [data]
       : isArr(data)
-        ? data.reduce((features, feature) => features.concat(resolveFeatures(feature)), [])
+        ? data.reduce(
+            (features, feature) => features.concat(resolveFeatures(feature)),
+            []
+          )
         : throwMissingFeatureText()
 }
 
@@ -49,13 +52,11 @@ const resolveFeatures = data => {
  */
 const runStep = async (stepsInstance, step) => {
   const test = getTestMethod('test')
-  test(
-    `${capitalize(step.type)} ${step.step}`,
-    async done => {
-      await stepsInstance.resolve(step.step)
-      done()
-    }
-  )
+  // eslint-disable-next-line jest/no-test-callback
+  test(`${capitalize(step.type)} ${step.step}`, async done => {
+    await stepsInstance.resolve(step.step)
+    done()
+  })
 }
 
 /*
@@ -75,8 +76,9 @@ const runScenario = (stepsInstance, scenario) => {
   describe(`Scenario: ${scenario.scenario}`, () => {
     // Map over the steps and call them
     // Store the returned promise in the responses array
-    responses = scenario.steps
-      .map(async step => await runStep(stepsInstance, step))
+    responses = scenario.steps.map(
+      async step => await runStep(stepsInstance, step)
+    )
 
     // Ensure we resolve all promises inside the describe block
     Promise.all(responses)
@@ -115,15 +117,16 @@ export class Runner {
     const features = resolveFeatures(data)
     const describe = getTestMethod('describe')
 
-    // Ensures all tests resolve before ending by 
+    // Ensures all tests resolve before ending by
     // Using promises to resolve each feature / scenario / step
     const promises = await features.map(async feature => {
       let responses = []
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
       describe(`Feature: ${feature.feature}`, () => {
-        responses = feature.scenarios
-          .map(async scenario => await runScenario(this.steps, scenario))
+        responses = feature.scenarios.map(
+          async scenario => await runScenario(this.steps, scenario)
+        )
 
         // Ensure we resolve all promises inside the describe block
         Promise.all(responses)
@@ -131,7 +134,7 @@ export class Runner {
 
       return responses
     })
-    
+
     await Promise.all(promises)
 
     return true

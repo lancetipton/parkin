@@ -470,31 +470,38 @@ const parse = {
 };
 
 const getTestMethod = type => global[type] || testMethodFill(type);
-const runStep = (stepsInstance, step) => {
-  const test = getTestMethod('test');
-  return test(`${capitalize(step.type)} ${step.step}`, stepsInstance.resolve(step.step));
-};
-const runScenario = (stepsInstance, scenario) => {
-  const describe = getTestMethod('describe');
-  return describe(`Scenario: ${scenario.scenario}`, () => {
-    scenario.steps.map(step => runStep(stepsInstance, step));
-  });
-};
 const resolveFeatures = data => {
   return isStr(data) ? parse.feature(data) : isObj(data) ? [data] : isArr(data) ? data.reduce((features, feature) => features.concat(resolveFeatures(feature)), []) : throwMissingFeatureText();
 };
+const runStep = async (stepsInstance, step) => {
+  const test = getTestMethod('test');
+  test(`${capitalize(step.type)} ${step.step}`, async done => {
+    await stepsInstance.resolve(step.step);
+    done();
+  });
+};
+const runScenario = (stepsInstance, scenario) => {
+  const describe = getTestMethod('describe');
+  let responses = [];
+  describe(`Scenario: ${scenario.scenario}`, () => {
+    responses = scenario.steps.map(async step => await runStep(stepsInstance, step));
+  });
+  return responses;
+};
 class Runner {
   constructor(steps) {
-    _defineProperty(this, "run", data => {
+    _defineProperty(this, "run", async data => {
       const features = resolveFeatures(data);
-      console.log(`---------- features ----------`);
-      console.log(features);
       const describe = getTestMethod('describe');
-      features.map(feature => {
+      const promises = await features.map(async feature => {
+        let responses = [];
         describe(`Feature: ${feature.feature}`, () => {
-          feature.scenarios.map(scenario => runScenario(this.steps, scenario));
+          responses = feature.scenarios.map(async scenario => await runScenario(this.steps, scenario));
         });
+        return responses;
       });
+      await Promise.all(promises);
+      return true;
     });
     !steps && throwMissingSteps();
     this.steps = steps;

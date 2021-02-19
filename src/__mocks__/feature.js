@@ -38,7 +38,6 @@ export const parsedFeature = {
   desire: 'I want to be able to search for information about the Keg-Hub',
 }
 
-
 export const promiseFeature = `@promises
 Feature: Test Promises
   Scenario: Test definitions with promises 
