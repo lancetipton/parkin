@@ -25,7 +25,7 @@ const addContent = (assembled, content, index) => {
 }
 
 /**
- * Converts a array of tags into a string and adds them to the assembled array 
+ * Converts a array of tags into a string and adds them to the assembled array
  * @function
  * @private
  * @param {Array<String>} assembled - Array of strings converted from a feature model
@@ -33,14 +33,14 @@ const addContent = (assembled, content, index) => {
  *
  * @return {void}
  */
-const addTags = (assembled, tags, spacer='') => {
+const addTags = (assembled, tags, spacer = '') => {
   isArr(tags) &&
     tags.length &&
     addContent(assembled, `${spacer}${tags.join(' ')}`)
 }
 
 /**
- * Converts a features meta data into strings and adds them to the assembled array 
+ * Converts a features meta data into strings and adds them to the assembled array
  * @function
  * @private
  * @param {Array<String>} assembled - Array of strings converted from a feature model
@@ -50,21 +50,25 @@ const addTags = (assembled, tags, spacer='') => {
  */
 const addMeta = (assembled, feature) => {
   FEATURE_META.map(key => {
-    switch(key){
-      case 'feature':
-        addContent(assembled, `Feature: ${feature[key]}`, feature.index)
+    switch (key) {
+    case 'feature':
+      addContent(assembled, `Feature: ${feature[key]}`, feature.index)
       break
-      case 'comments':
-        isArr(feature[key]) &&
-          feature[key].map(item => addContent(assembled, item.content, item.index))
-        break
-      case 'reason':
-        isArr(feature[key]) &&
-          feature[key].map(item => addContent(assembled, `  ${item.content}`, item.index))
+    case 'comments':
+      isArr(feature[key]) &&
+          feature[key].map(item =>
+            addContent(assembled, item.content, item.index)
+          )
       break
-      case 'desire':
-      case 'perspective':
-        feature[key] &&
+    case 'reason':
+      isArr(feature[key]) &&
+          feature[key].map(item =>
+            addContent(assembled, `  ${item.content}`, item.index)
+          )
+      break
+    case 'desire':
+    case 'perspective':
+      feature[key] &&
           addContent(assembled, `  ${feature[key].content}`, feature[key].index)
       break
     }
@@ -72,7 +76,7 @@ const addMeta = (assembled, feature) => {
 }
 
 /**
- * Converts a scenarios steps into strings and adds them to the assembled array 
+ * Converts a scenarios steps into strings and adds them to the assembled array
  * @function
  * @private
  * @param {Array<String>} assembled - Array of strings converted from a feature model
@@ -83,15 +87,17 @@ const addMeta = (assembled, feature) => {
 const addSteps = (assembled, scenario) => {
   isArr(scenario.steps) &&
     scenario.steps.length &&
-    scenario.steps.map(step => addContent(
-      assembled,
-      `    ${capitalize(step.type)} ${step.step}`,
-      step.index
-    ))
+    scenario.steps.map(step =>
+      addContent(
+        assembled,
+        `    ${capitalize(step.type)} ${step.step}`,
+        step.index
+      )
+    )
 }
 
 /**
- * Converts a features scenarios into strings and adds them to the assembled array 
+ * Converts a features scenarios into strings and adds them to the assembled array
  * @function
  * @private
  * @param {Array<String>} assembled - Array of strings converted from a feature model
@@ -125,18 +131,20 @@ const formatComment = (assembled, line, index) => {
   let compareLine = exists(next) ? next : prev
 
   // If no line to compare with just return the comment
-  if(!compareLine) return `${line}\n`
+  if (!compareLine) return `${line}\n`
 
   // Split on the comment char, so we have just the text of the comment
   const comment = line.split('#').pop()
 
   // Get the white space of the compose line
-  const whiteSpace = Array(compareLine.length - compareLine.trimStart().length).join(' ')
+  const whiteSpace = Array(
+    compareLine.length - compareLine.trimStart().length
+  ).join(' ')
 
   // Add that to the comment and replace the comment char #
   // This allows the comments to be spaced relative the the adjacent lines
   // Must add an extra space after addSpace because whiteSpace is 1 space short
-  return `${addSpace} # ${line}\n`
+  return `${whiteSpace} # ${comment}\n`
 }
 
 /**
@@ -161,8 +169,9 @@ const formatAssembled = assembled => {
       : line.startsWith('#')
         ? formatComment(assembled, line, index)
         : `${line}\n`
-
-  }).join('').trim()
+  })
+    .join('')
+    .trim()
 }
 
 /**
@@ -175,15 +184,14 @@ const formatAssembled = assembled => {
  * @return {Array<String>} - Reassembled features as an array of strings
  */
 export const assembleFeature = toAssemble => {
-  return eitherArr(toAssemble, [toAssemble])
-    .map(feature => {
-      let assembled = []
-      !isObj(feature) && throwFeatureNotAnObj(feature)
+  return eitherArr(toAssemble, [toAssemble]).map(feature => {
+    let assembled = []
+    !isObj(feature) && throwFeatureNotAnObj(feature)
 
-      addTags(assembled, feature.tags)
-      addMeta(assembled, feature)
-      addScenarios(assembled, feature)
+    addTags(assembled, feature.tags)
+    addMeta(assembled, feature)
+    addScenarios(assembled, feature)
 
-      return formatAssembled(assembled)
-    })
+    return formatAssembled(assembled)
+  })
 }

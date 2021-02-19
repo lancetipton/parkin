@@ -1,6 +1,13 @@
 import { parse } from './parse'
 import { constants } from './constants'
-import { isArr, capitalize, isObj, isStr, get, noOp, noOpObj, noPropArr } from '@keg-hub/jsutils'
+import {
+  isArr,
+  capitalize,
+  isObj,
+  isStr,
+  noOp,
+  noOpObj,
+} from '@keg-hub/jsutils'
 import {
   throwMissingSteps,
   throwMissingFeatureText,
@@ -22,7 +29,7 @@ const { STEP_TYPES } = constants
 const getTestMethod = (type, testMode) => {
   // To write tests for the runner, we have to override the default test methods
   // This allows testing the runner methods, without running the tests
-  return testMode ? noOp : (global[type] || testMethodFill(type))
+  return testMode ? noOp : global[type] || testMethodFill(type)
 }
 
 /**
@@ -66,7 +73,6 @@ const runStep = async (stepsInstance, step, testMode) => {
   })
 }
 
-
 /**
  * Loops through the passed in scenarios steps and calls runStep for each
  * @function
@@ -107,7 +113,7 @@ const runScenario = (stepsInstance, scenario, testMode) => {
  */
 const getTaggedItems = (items, tags) => {
   return items.filter(item => {
-    if(!isArr(item.tags) || !item.tags.length) return false
+    if (!isArr(item.tags) || !item.tags.length) return false
 
     const itemTags = item.tags.map(tag => tag.replace('@', ''))
     return tags.find(tag => itemTags.includes(tag.replace('@', '')))
@@ -125,23 +131,22 @@ const getTaggedItems = (items, tags) => {
  */
 const filterFromTags = (features, tags) => {
   // If no tags, then run all features
-  return !tags || isArr(tags) && !tags.length
+  return !tags || (isArr(tags) && !tags.length)
     ? features
-    // Get all the tagged features, removing any non-tagged features
-    : getTaggedItems(features, tags)
-        .reduce((filtered, feature) => {
-          // Get all tagged scenarios, removing any non-tagged scenarios
-          const tagScenarios = getTaggedItems(feature.scenarios, tags)
+    : // Get all the tagged features, removing any non-tagged features
+    getTaggedItems(features, tags).reduce((filtered, feature) => {
+      // Get all tagged scenarios, removing any non-tagged scenarios
+      const tagScenarios = getTaggedItems(feature.scenarios, tags)
 
-          // If tagged scenarios were 
-          //  * FOUND - Only include the matching tagged scenarios
-          //  * NOT FOUND - All scenarios will be run, because the feature had a matching tag
-          tagScenarios.length
-            ? filtered.push({ ...features, scenarios: tagScenarios })
-            : filtered.push(feature)
+      // If tagged scenarios were
+      //  * FOUND - Only include the matching tagged scenarios
+      //  * NOT FOUND - All scenarios will be run, because the feature had a matching tag
+      tagScenarios.length
+        ? filtered.push({ ...features, scenarios: tagScenarios })
+        : filtered.push(feature)
 
-          return filtered
-        }, [])
+      return filtered
+    }, [])
 }
 
 /**
@@ -172,7 +177,7 @@ export class Runner {
    *
    * @returns {void}
    */
-  run = async (data, options=noOpObj) => {
+  run = async (data, options = noOpObj) => {
     // Set if were running tests for Parkin, or external tests
     // Only used for testing purposes
     const testMode = this.run.PARKIN_TEST_MODE

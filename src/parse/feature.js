@@ -193,7 +193,12 @@ const checkStepTag = (scenario, line, index) => {
     // If if is, add the extracted line to the steps of the current scenario
     hasTag &&
       scenario.steps.push(
-        stepFactory(regTag.type, getRXMatch(line, regTag.regex, 1), regTag.alt, index)
+        stepFactory(
+          regTag.type,
+          getRXMatch(line, regTag.regex, 1),
+          regTag.alt,
+          index
+        )
       )
 
     // Return if the line was added to the steps
@@ -219,7 +224,10 @@ const featureMeta = (feature, line, index) => {
     return hasTag
       ? regTag.key === 'reason'
           ? addReason(feature, getRXMatch(line, regTag.regex, 0), index)
-          : (feature[regTag.key] = { content: getRXMatch(line, regTag.regex, 0), index })
+          : (feature[regTag.key] = {
+              content: getRXMatch(line, regTag.regex, 0),
+              index,
+            })
       : hasTag
   }, false)
 }
@@ -239,7 +247,7 @@ const featureTag = (feature, line, index) => {
   const tags = getRXMatch(line, RX_TAG, 0)
   feature.tags = feature.tags.concat(tags.split(' '))
   // Tags must always come before the feature directive, so storing the index is not needed
-  
+
   return true
 }
 
@@ -262,7 +270,6 @@ const featureComment = (feature, line, index) => {
   // This could cause some issues if the user starts using different white space settings
   // But not much we can do about it
   const comment = line.match(RX_COMMENT)[0]
-  
 
   feature.comments.push({ content: comment, index })
 
@@ -294,8 +301,8 @@ const ensureFeature = (featuresGroup, feature, line, content, index) => {
     feature.feature = featureText
 
     // Ensure the index is added if needed
-    if(!feature.index) feature.index = index
-    
+    if (!feature.index) feature.index = index
+
     !featuresGroup.includes(feature) && featuresGroup.push(feature)
 
     return feature

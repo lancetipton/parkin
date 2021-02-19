@@ -12,7 +12,6 @@ const { Parkin } = require('../parkin')
 let PK
 
 describe('Runner', () => {
-
   beforeAll(() => {
     PK = new Parkin(worldObj)
     PK.run.PARKIN_TEST_MODE = true
@@ -26,7 +25,7 @@ describe('Runner', () => {
   })
 
   it('should handel features as an array of strings', async () => {
-    const resp = await PK.run([feature, feature])
+    const resp = await PK.run([ feature, feature ])
     expect(resp).toBe(true)
   })
 
@@ -36,13 +35,12 @@ describe('Runner', () => {
   })
 
   it('should handel features as an array of parsed feature objects', async () => {
-    const resp = await PK.run([parsedFeature, parsedFeature])
+    const resp = await PK.run([ parsedFeature, parsedFeature ])
     expect(resp).toBe(true)
   })
 
   it('should handel a mixed array of parsed feature objects and feature strings', async () => {
-    const resp = await PK.run([feature, parsedFeature])
+    const resp = await PK.run([ feature, parsedFeature ])
     expect(resp).toBe(true)
   })
-
 })

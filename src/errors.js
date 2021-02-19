@@ -89,5 +89,8 @@ export const throwParamTypeExists = () => {
  * @returns {void}
  */
 export const throwFeatureNotAnObj = feature => {
-  throw new Error(`Assemble feature requires an object matching the feature model spec!`, feature)
+  throw new Error(
+    `Assemble feature requires an object matching the feature model spec!`,
+    feature
+  )
 }

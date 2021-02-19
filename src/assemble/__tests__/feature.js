@@ -1,5 +1,4 @@
 import { parsedFeature, feature } from '../../__mocks__'
-import { isInt } from '@keg-hub/jsutils'
 
 jest.resetModules()
 jest.resetAllMocks()
@@ -10,7 +9,6 @@ const { Parkin } = require('../../parkin')
 const { assembleFeature } = require('../feature')
 
 describe('Assemble Feature', () => {
-
   it('should rebuild a feature into a string', () => {
     const content = parsedFeature.content
     const [assembled] = assembleFeature([parsedFeature])
@@ -19,7 +17,10 @@ describe('Assemble Feature', () => {
 
   it('should work with multiple features', () => {
     const content = parsedFeature.content
-    const [assembled1, assembled2] = assembleFeature([parsedFeature, parsedFeature])
+    const [ assembled1, assembled2 ] = assembleFeature([
+      parsedFeature,
+      parsedFeature,
+    ])
     expect(assembled1).toEqual(content)
     expect(assembled2).toEqual(content)
   })
@@ -37,5 +38,4 @@ describe('Assemble Feature', () => {
 
     expect(assembled).toEqual(feature)
   })
-
 })
