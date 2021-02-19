@@ -72,8 +72,17 @@ const getRXMatch = (line, regex, index) => line.match(regex)[index].trim()
  *
  * @returns {Object} - Parsed feature object
  */
-const featureFactory = (feature, text) => {
-  return { feature, uuid: uuid(), tags: [], comments: {}, scenarios: [], text }
+const featureFactory = (feature, content, index) => {
+  return {
+    index,
+    content,
+    feature,
+    tags: [],
+    reason: [],
+    uuid: uuid(),
+    comments: [],
+    scenarios: [],
+  }
 }
 
 /*
@@ -84,8 +93,8 @@ const featureFactory = (feature, text) => {
  *
  * @returns {Object} - Parsed scenario object
  */
-const scenarioFactory = scenario => {
-  return { scenario, uuid: uuid(), steps: [] }
+const scenarioFactory = (scenario, index) => {
+  return { scenario, uuid: uuid(), steps: [], index }
 }
 
 /*
@@ -98,8 +107,8 @@ const scenarioFactory = scenario => {
  *
  * @returns {Object} - Parsed step object
  */
-const stepFactory = (type, step, altType) => {
-  const built = { step, type, uuid: uuid() }
+const stepFactory = (type, step, altType, index) => {
+  const built = { step, type, uuid: uuid(), index }
   altType && (built.altType = altType)
 
   // TODO: Investigate calling checkDocString and checkDataTable here
@@ -119,12 +128,8 @@ const stepFactory = (type, step, altType) => {
  *
  * @returns {void}
  */
-const addReason = (feature, reason) => {
-  reason
-    ? !feature.reason
-        ? (feature.reason = reason)
-        : (feature.reason += `\n${reason}`)
-    : null
+const addReason = (feature, reason, index) => {
+  reason && feature.reason.push({ content: reason, index })
 }
 
 /**
@@ -178,7 +183,7 @@ const checkDataTable = (step, line, text) => {
  *
  * @return {boolean} - True if a line was added to the current scenario object
  */
-const checkStepTag = (scenario, line) => {
+const checkStepTag = (scenario, line, index) => {
   return RegStepTags.reduce((added, regTag) => {
     // If the line was already added, just return
     if (added) return added
@@ -188,7 +193,12 @@ const checkStepTag = (scenario, line) => {
     // If if is, add the extracted line to the steps of the current scenario
     hasTag &&
       scenario.steps.push(
-        stepFactory(regTag.type, getRXMatch(line, regTag.regex, 1), regTag.alt)
+        stepFactory(
+          regTag.type,
+          getRXMatch(line, regTag.regex, 1),
+          regTag.alt,
+          index
+        )
       )
 
     // Return if the line was added to the steps
@@ -205,7 +215,7 @@ const checkStepTag = (scenario, line) => {
  *
  * @return {boolean} - True if a line was added to the current feature object
  */
-const featureMeta = (feature, line) => {
+const featureMeta = (feature, line, index) => {
   return featureMetaTags.reduce((added, regTag) => {
     if (added) return added
 
@@ -213,8 +223,11 @@ const featureMeta = (feature, line) => {
 
     return hasTag
       ? regTag.key === 'reason'
-          ? addReason(feature, getRXMatch(line, regTag.regex, 0))
-          : (feature[regTag.key] = getRXMatch(line, regTag.regex, 0))
+          ? addReason(feature, getRXMatch(line, regTag.regex, 0), index)
+          : (feature[regTag.key] = {
+              content: getRXMatch(line, regTag.regex, 0),
+              index,
+            })
       : hasTag
   }, false)
 }
@@ -228,11 +241,12 @@ const featureMeta = (feature, line) => {
  *
  * @return {boolean} - True if a line was added to the current feature object
  */
-const featureTag = (feature, line) => {
+const featureTag = (feature, line, index) => {
   if (!RX_TAG.test(line)) return false
 
   const tags = getRXMatch(line, RX_TAG, 0)
   feature.tags = feature.tags.concat(tags.split(' '))
+  // Tags must always come before the feature directive, so storing the index is not needed
 
   return true
 }
@@ -250,8 +264,14 @@ const featureTag = (feature, line) => {
 const featureComment = (feature, line, index) => {
   if (!RX_COMMENT.test(line)) return false
 
-  const comment = getRXMatch(line, RX_COMMENT, 1)
-  feature.comments[index] = comment
+  // const comment = getRXMatch(line, RX_COMMENT, 1)
+  // Don't use getRXMatch because we want the full white space
+  // Because comments are added globally and not by line
+  // This could cause some issues if the user starts using different white space settings
+  // But not much we can do about it
+  const comment = line.match(RX_COMMENT)[0]
+
+  feature.comments.push({ content: comment, index })
 
   return true
 }
@@ -263,11 +283,12 @@ const featureComment = (feature, line, index) => {
  * @param {Array} featuresGroup - All Parsed features as an array
  * @param {Object} feature - Current feature being parsed into an object
  * @param {string} line - Current line being parsed
- * @param {string} text - Full text content of the feature file
+ * @param {string} content - Full text content of the feature file
+ * @param {number} index - The current line number of the feature text content
  *
  * @return {Object} Current feature being parsed
  */
-const ensureFeature = (featuresGroup, feature, line, text) => {
+const ensureFeature = (featuresGroup, feature, line, content, index) => {
   // Check for Feature: keyword text
   if (!RX_FEATURE.test(line)) return feature
 
@@ -278,13 +299,17 @@ const ensureFeature = (featuresGroup, feature, line, text) => {
   // Then ensure the feature was added to the full group
   if (!feature.feature) {
     feature.feature = featureText
+
+    // Ensure the index is added if needed
+    if (!feature.index) feature.index = index
+
     !featuresGroup.includes(feature) && featuresGroup.push(feature)
 
     return feature
   }
 
-  // Otherwise create a new feature, with the feature text
-  return featureFactory(featureText, text)
+  // Otherwise create a new feature, with the feature text and content
+  return featureFactory(featureText, content, index)
 }
 
 /**
@@ -294,10 +319,11 @@ const ensureFeature = (featuresGroup, feature, line, text) => {
  * @param {Object} feature - Current feature being parsed into an object
  * @param {Object} scenario - Current scenario being parsed into an object
  * @param {string} line - Current line being parsed
+ * @param {number} index - The current line number of the feature text content
  *
  * @return {Object} Current scenario being parsed
  */
-const ensureScenario = (feature, scenario, line) => {
+const ensureScenario = (feature, scenario, line, index) => {
   // Check for "Scenario:" or "Example:" keywords
   if (!RX_SCENARIO.test(line) && !RX_EXAMPLE.test(line)) return scenario
 
@@ -309,7 +335,10 @@ const ensureScenario = (feature, scenario, line) => {
   // Otherwise create a new scenario with the scenario text
   !scenario.scenario
     ? (scenario.scenario = scenarioText)
-    : (scenario = scenarioFactory(scenarioText))
+    : (scenario = scenarioFactory(scenarioText, index))
+
+  // Ensure the line index is added
+  !scenario.index && (scenario.index = index)
 
   // Add the scenario if needed to the current feature
   !feature.scenarios.includes(scenario) && feature.scenarios.push(scenario)
@@ -359,12 +388,12 @@ export const feature = text => {
     /*
      * Check for new feature, or parse the current features text
      */
-    feature = ensureFeature(featuresGroup, feature, line, text)
+    feature = ensureFeature(featuresGroup, feature, line, text, index)
 
     /*
      * Check for new feature scenario, and add scenario to feature object
      */
-    scenario = ensureScenario(feature, scenario, line)
+    scenario = ensureScenario(feature, scenario, line, index)
 
     /*
      * Check for new feature scenario, and add scenario to feature object
@@ -374,10 +403,10 @@ export const feature = text => {
     /*
      * Check for feature and scenario content and parse the line when matched
      */
-    featureTag(feature, line) ||
+    featureTag(feature, line, index) ||
       featureComment(feature, line, index) ||
-      featureMeta(feature, line) ||
-      checkStepTag(scenario, line)
+      featureMeta(feature, line, index) ||
+      checkStepTag(scenario, line, index)
 
     return featuresGroup
   }, features)

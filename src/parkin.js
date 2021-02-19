@@ -2,6 +2,7 @@ import { Steps } from './steps'
 import { Hooks } from './hooks'
 import { parse } from './parse'
 import { Runner } from './runner'
+import { assemble } from './assemble'
 import { registerParamType } from './matcher'
 import { isObj, capitalize } from '@keg-hub/jsutils'
 
@@ -12,6 +13,8 @@ import { isObj, capitalize } from '@keg-hub/jsutils'
  * Parkin#Then - Register Then step definitions
  * Parkin#And - Register And step definitions
  * Parkin#But - Register But step definitions
+ * Parkin#assemble - Object containing assemble helper methods
+ * Parkin#assemble#feature - Assemble feature models into feature text
  * Parkin#run - Run step definitions against feature
  * Parkin#parse - Object containing parse helper methods
  * Parkin#parse#feature - Parse feature file text into a feature object
@@ -34,19 +37,23 @@ import { isObj, capitalize } from '@keg-hub/jsutils'
 export class Parkin {
   constructor(world, steps) {
     this.steps = new Steps(world)
-    this.runner = new Runner(this.steps)
     this.hooks = new Hooks()
+    this.runner = new Runner(this.steps, this.hooks)
 
     /**
      * Runs the step definition methods matching the steps of a feature
      * @memberof Parkin
      * @alias instance&period;run
+     * @param {string|Array<Object>|Object} data - Feature data as a string or parsed Feature model
+     * @param {Object} options - options object
+     * @param {string?} options.name - optional name to filter features by
+     * @param {Array<string>} options.tags - optional tags to filter features by
      * @function
      * @public
      *
      * @returns {function} - Run tests method for executing a features steps
      */
-    this.run = data => this.runner.run(data, this.hooks)
+    this.run = this.runner.run
 
     /**
      * Access parse object containing feature and definition parse methods
@@ -55,9 +62,21 @@ export class Parkin {
      * @function
      * @public
      *
-     * @returns {Object} - parse object container `feature` and `definition` parse methods
+     * @property {function} feature - Method to parse a feature string into an object
+     * @property {function} definition - Method to parse a definition string an object
      */
     this.parse = parse
+
+    /**
+     * Access assemble object containing feature assemble methods
+     * @memberof Parkin
+     * @alias instance&period;assemble
+     * @function
+     * @public
+     *
+     * @property {function} feature - Method to assemble a feature model into a string
+     */
+    this.assemble = assemble
 
     /**
      * Access paramTypes object containing the paramTypes register method
@@ -84,7 +103,7 @@ export class Parkin {
      * @function
      * @public
      * @param {string} match - Text used to matched with a features step
-     * @param {function} method - Function called when a features step text matches the text param
+     * @param {function} method - Called when a features step matches the text param
      * @example
      *
      * @example

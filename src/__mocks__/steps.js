@@ -1,45 +1,27 @@
 export const registerMockSteps = (PK, withPromises) => {
   PK.Given(
     /I open the site (\S+)$/,
-    jest.fn((url, world) => {
-      // console.log(`---------- url ----------`)
-      // console.log(url)
-    })
+    jest.fn((url, world) => {})
   )
 
   PK.When(
     `I press {word}`,
-    jest.fn((key, world) => {
-      // console.log(`---------- key ----------`)
-      // console.log(key)
-    })
+    jest.fn((key, world) => {})
   )
 
   PK.When(
     `I wait for the page to load`,
-    jest.fn(world => {
-      // console.log(`---------- page to load ----------`)
-    })
+    jest.fn(world => {})
   )
 
   PK.When(
     `I set {string} to the input {word}`,
-    jest.fn((input, selector, world) => {
-      // console.log(`---------- input ----------`)
-      // console.log(input)
-      // console.log(`---------- selector ----------`)
-      // console.log(selector)
-    })
+    jest.fn((input, selector, world) => {})
   )
 
   PK.Then(
     `the element {word} contains the text {string}`,
-    jest.fn((selector, text, world) => {
-      // console.log(`---------- selector ----------`)
-      // console.log(selector)
-      // console.log(`---------- text ----------`)
-      // console.log(text)
-    })
+    jest.fn((selector, text, world) => {})
   )
 
   if (!withPromises) return

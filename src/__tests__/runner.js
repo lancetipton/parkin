@@ -1,5 +1,4 @@
-import { feature, registerMockSteps, mockHooks } from '../__mocks__'
-import { constants } from '../constants'
+import { feature, registerMockSteps, parsedFeature, mockHooks } from '../__mocks__'
 
 jest.resetModules()
 jest.resetAllMocks()
@@ -7,42 +6,90 @@ jest.clearAllMocks()
 
 const worldObj = {}
 const { Parkin } = require('../parkin')
+let PK;
+let ogTest;
+let resetHooks;
+
 
 describe('Runner', () => {
 
-  let ogTest;
-  let resetHooks;
+  beforeAll(() => {
+    PK = new Parkin(worldObj)
+    PK.run.PARKIN_TEST_MODE = true
+
+    registerMockSteps(PK)
+  })
+
   beforeEach(() => {
     ogTest = global.test
     global.test = () => {}
     resetHooks = mockHooks()
   })
+
   afterEach(() => {
     global.test = ogTest
     resetHooks()
   })
 
   it('should handle features as a string', async () => {
-    const PK = new Parkin(worldObj)
-    registerMockSteps(PK)
-
     const resp = await PK.run(feature)
     expect(resp).toBe(true)
   })
 
-  it ('should call hooks', async () => {
-    const PK = new Parkin(worldObj)
-    registerMockSteps(PK)
+  it('should handle features as an array of strings', async () => {
+    const resp = await PK.run([ feature, feature ])
+    expect(resp).toBe(true)
+  })
 
-    const testBefore = jest.fn()
-    const testAfter = jest.fn()
-    PK.hooks.beforeAll(testBefore)
-    PK.hooks.afterAll(testAfter)
+  it('should handle features as a parsed feature object', async () => {
+    const resp = await PK.run(parsedFeature)
+    expect(resp).toBe(true)
+  })
 
-    const resp = await PK.run(feature)
-    expect(resp).toBe(true)    
+  it('should handle features as an array of parsed feature objects', async () => {
+    const resp = await PK.run([ parsedFeature, parsedFeature ])
+    expect(resp).toBe(true)
+  })
 
-    expect(testBefore).toHaveBeenCalled()
-    expect(testAfter).toHaveBeenCalled()
+  it('should handle a mixed array of parsed feature objects and feature strings', async () => {
+    const resp = await PK.run([ feature, parsedFeature ])
+    expect(resp).toBe(true)
+  })
+
+  it('should filter on tags', () => {
+    let features = PK.runner.getFeatures(feature, { tags: [ '@random-tag'] })
+    expect(features).toHaveLength(0)
+
+    features = PK.runner.getFeatures(feature, { tags: [ '@search'] })
+    expect(features).toHaveLength(1)
+
+    features = PK.runner.getFeatures(feature, { tags: '@google' })
+    expect(features).toHaveLength(1)
+
+    features = PK.runner.getFeatures(feature, { tags: '@google and @search' })
+    expect(features).toHaveLength(1)
+
+    features = PK.runner.getFeatures(feature, { tags: '@google,@search' })
+    expect(features).toHaveLength(1)
+
+    features = PK.runner.getFeatures(feature, { tags: '@scenario' })
+    expect(features).toHaveLength(1)
+    expect(features[0].scenarios).toHaveLength(1)
+  })
+
+  it('should filter on name', () => {
+    let features = PK.runner.getFeatures(feature, { name: 'boo' })
+    expect(features).toHaveLength(0)
+
+    features = PK.runner.getFeatures(feature, { name: 'Google Search' })
+    expect(features).toHaveLength(1)
+
+    features = PK.runner.getFeatures(feature, { name: 'Google' })
+    expect(features).toHaveLength(1)
+
+    // test filtering on scenario name
+    features = PK.runner.getFeatures(feature, { name: 'Search the web' })
+    expect(features).toHaveLength(1)
+    expect(features[0].scenarios).toHaveLength(1)
   })
 })

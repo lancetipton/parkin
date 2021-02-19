@@ -54,8 +54,21 @@ describe('Parkin', () => {
     // The uuid is different every time, so don't include it when testing
     // Scenarios can include function identity, so don't include it when testing
     const { uuid, scenarios, ...parsed } = PK.parse.feature(feature)[0]
+    const { scenarios: parsedScenarios, ...featureWOScenarios } = parsedFeature
 
-    expect(parsed).toEqual(parsedFeature)
+    expect(parsed).toEqual(featureWOScenarios)
+
+    // Remove the uuid from the scenarios so we can validate them
+    const noUuidScenarios = scenarios.map(scenario => {
+      const { uuid, ...noUuidScenario } = scenario
+      noUuidScenario.steps = scenario.steps.map(step => {
+        const { uuid, ...noUuidStep } = step
+        return noUuidStep
+      })
+      return noUuidScenario
+    })
+
+    expect(noUuidScenarios).toEqual(parsedScenarios)
   })
 
   it('should parse step definition text', () => {

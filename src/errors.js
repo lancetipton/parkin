@@ -40,6 +40,20 @@ export const throwMissingSteps = () => {
 }
 
 /**
+ * Throws an error when a Hooks class instance is not passed to the runner class constructor
+ * @function
+ * @public
+ * @export
+ *
+ * @returns {void}
+ */
+export const throwMissingHooks = (found) => {
+  throw new Error(
+    `Runner class constructor requires an instance of the Hooks class. Found: ${found}`
+  )
+}
+
+/**
  * Throws an error when a feature text is not passed to the Runner class instance
  * @function
  * @public
@@ -77,4 +91,20 @@ export const throwNoMatchingStep = text => {
  */
 export const throwParamTypeExists = () => {
   throw new Error(`Cannot register param type "${name}". It already exists!`)
+}
+
+/**
+ * Throws an error when a assembling a parsed feature, and no parsed feature object exists
+ * @function
+ * @public
+ * @export
+ * @param {*} feature - Argument that was passed instead of the parsed feature object
+ *
+ * @returns {void}
+ */
+export const throwFeatureNotAnObj = feature => {
+  throw new Error(
+    `Assemble feature requires an object matching the feature model spec!`,
+    feature
+  )
 }
