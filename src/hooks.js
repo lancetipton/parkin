@@ -14,7 +14,7 @@ export class Hooks {
 
   /**
    * Allowed hook types
-   * @memberof Steps
+   * @memberof Hooks
    * @type {Array}
    * @private
    */
