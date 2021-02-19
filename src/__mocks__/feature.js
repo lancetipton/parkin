@@ -68,6 +68,7 @@ export const parsedFeature = {
     {
       index: 7,
       scenario: 'Search the web for google',
+      tags: [],
       // uuid: 'f75d10d8-645c-4da0-b4b2-70696e3588b3',
       steps: [
         {
