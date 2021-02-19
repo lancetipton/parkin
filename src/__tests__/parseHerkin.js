@@ -2,6 +2,7 @@ import {
   definition,
   feature,
   parsedFeature,
+  parsedScenarios,
   parsedDefinition,
   registerMockSteps,
 } from '../__mocks__'
@@ -56,6 +57,18 @@ describe('Parkin', () => {
     const { uuid, scenarios, ...parsed } = PK.parse.feature(feature)[0]
 
     expect(parsed).toEqual(parsedFeature)
+    
+    // Remove the uuid from the scenarios so we can validate them
+    const noUuidScenarios = scenarios.map(scenario => {
+      const { uuid, ...noUuidScenario } = scenario
+      noUuidScenario.steps = scenario.steps.map(step => {
+        const { uuid, ...noUuidStep } = step
+        return noUuidStep
+      })
+      return noUuidScenario
+    })
+
+    expect(noUuidScenarios).toEqual(parsedScenarios)
   })
 
   it('should parse step definition text', () => {

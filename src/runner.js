@@ -1,6 +1,6 @@
 import { parse } from './parse'
 import { constants } from './constants'
-import { isArr, capitalize, isObj, isStr } from '@keg-hub/jsutils'
+import { isArr, capitalize, isObj, isStr, get, noOp } from '@keg-hub/jsutils'
 import {
   throwMissingSteps,
   throwMissingFeatureText,
@@ -8,15 +8,24 @@ import {
 } from './errors'
 const { STEP_TYPES } = constants
 
+// Check if were running in the tests Parkin, and not external tests
+const { PARKIN_RUNNER_TESTS } = process.env
+
 /*
  * Resolves a test method from the global scope
+ * Returns a NOOP when PARKIN_RUNNER_TESTS env is true
+ * This allows testing the runner methods, without running the tests
  * @function
  * @private
  * @param {string} type - Name of test method to get from the global scope
  *
  * @returns {function} - Test method
  */
-const getTestMethod = type => global[type] || testMethodFill(type)
+const getTestMethod = type => {
+  // To write tests for the runner, we have to override the default test methods
+  // This allows testing the runner methods, without running the tests
+  return Boolean(PARKIN_RUNNER_TESTS) ? noOp : (global[type] || testMethodFill(type))
+}
 
 /*
  * Resolves and parses features based on the data type passed in
@@ -135,6 +144,7 @@ export class Runner {
       return responses
     })
 
+    // Ensure all promises are resolved before returning
     await Promise.all(promises)
 
     return true

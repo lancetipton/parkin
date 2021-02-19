@@ -1,6 +1,6 @@
 # Parkin
 * Parse gherkin features text and step definition javascript text 
-* Allows mapping feature steps to registered step definition and calls its method
+* Allows mapping feature steps to registered step definition and calls their method
 
 ## Outline
 - [Parkin](#parkin)
@@ -19,6 +19,7 @@
     - [Parkin.run](#parkinrun)
   - [Model Specs](#model-specs)
     - [Feature Model](#feature-model)
+    - [Meta Model](#meta-model)
     - [Scenario Model](#scenario-model)
     - [Step Model](#step-model)
     - [Definition Model](#definition-model)
@@ -166,15 +167,16 @@ PK.registerSteps({
 
 
 ### Parkin.run
-* `<Function>` - Runs tests using the following steps
-  * Parses the passed in feature text into a feature model
-    * Bypassed if passed in argument a feature model
-  * Matches the parsed feature text with registered step definitions
-    * Uses the step definitions `match` property with the `feature step text` 
-  * Calls the methods of the matching step definitions
+* `<Function>` - Runs tests using the following steps:
+  1. Parses the passed in feature text into a feature model
+    * Bypassed if argument is a feature model object
+  2. Matches the parsed feature text with registered step definitions
+    * Uses the step definitions `match` property to match with the `feature step text` 
+  3. Calls the methods of the matching step definitions
     * Passes in dynamic arguments of the feature step when method is called
+    * World object is always the last argument passed to a step definition method
 * `<Arguments>` - Accepts a single argument
-  * **(REQUIRED)** `<String|Object>` - Feature text content or parsed feature matching feature model
+  * **(REQUIRED)** `<String|Object|Array<String|Object>>` - Feature text content or parsed feature matching feature model
 
 
 ## Model Specs
@@ -182,32 +184,41 @@ PK.registerSteps({
 ### Feature Model
 ```ts
 {
-  feature: <String>, /* Name of the feature */
-  perspective: <String>, /* Meta information about the feature */
-  desire: <String>, /* Meta information about the feature */
-  reason: <String>, /* Meta information about the feature */
+  index: <Number> /* Line number within the parse feature text content */
+  feature: <String> /* Name of the feature */
+  perspective: <Meta> /* Meta information about the feature */
+  desire: <Meta> /* Meta information about the feature */
+  comments: <Array> [ /* Array of defined Meta Models */
+    <Meta> /* Meta Model */
+  ]
+  reason: <Array> [ /* Array of defined Meta Models */
+    <Meta> /* Meta Model */
+  ]
   tags: <Array> [ /* Array of defined tags for the feature */
     <String>
-  ],
-  scenarios: <Array> [ /* Array of defined Scenario Models */
-    <Scenario>, /* Scenario Model */
   ]
+  scenarios: <Array> [ /* Array of defined Scenario Models */
+    <Scenario> /* Scenario Model */
+  ]
+}
+```
+
+### Meta Model
+```ts
+{
+  content: <String> /* Meta information about the feature */
+  index: <Number> /* Line number within the parse feature text content */
 }
 ```
 
 ### Scenario Model
 ```ts
 {
-  scenario: <String>, /* Name of the scenario */
-  uuid: <String>, /* Id of scenario created at the time it was parsed */
-  tags: <Array> [ /* Array of defined tags for the scenario */
-  given: <Array> [ /* Array of defined Given Step Models */
-    <Step> /* Step Model */
-  ],
-  when: <Array> [ /* Array of defined When Step Models */
-    <Step> /* Step Model */
-  ],
-  then: <Array> [ /* Array of defined Then Step Models */
+  index: <Number> /* Line number within the parse feature text content */
+  scenario: <String> /* Name of the scenario */
+  uuid: <String> /* Id of scenario created at the time it was parsed */
+  tags: <Array> /* Array of defined tags for the scenario */
+  steps: <Array> [ /* Array of defined Step Models */
     <Step> /* Step Model */
   ]
 }
@@ -216,20 +227,21 @@ PK.registerSteps({
 ### Step Model
 ```ts
 {
-  step: <String>, /* Text content of the step used to match with definitions */
-  type: <String>, /* Gherkin definition type ( Given, When, Then, And, But ) */
-  uuid: <String>, /* Id of step created at the time it was parsed */
+  index: <Number> /* Line number within the parse feature text content */
+  step: <String> /* Text content of the step used to match with definitions */
+  type: <String> /* Gherkin definition type ( Given, When, Then, And, But ) */
+  uuid: <String> /* Id of step created at the time it was parsed */
 }
 ```
 
 ### Definition Model
 ```ts
 {
-  type: <String>, /* Gherkin definition type ( Given, When, Then, And, But ) */
-  name: <String>, /* Cleaned and formatted string of the match property */
-  match: <String>, /* Step matching string to match feature steps with definition methods */
-  variant: <String>, /* Syntax used for defining the match property ( regex || expression ) */
-  content: <String>, /* Text content of step definition ( Valid javascript code ) */
-  method: <Function>, /* Method called when the step definition matches a feature step */
+  type: <String> /* Gherkin definition type ( Given, When, Then, And, But ) */
+  name: <String> /* Cleaned and formatted string of the match property */
+  match: <String> /* Step matching string to match feature steps with definition methods */
+  variant: <String> /* Syntax used for defining the match property ( regex || expression ) */
+  content: <String> /* Text content of step definition ( Valid javascript code ) */
+  method: <Function> /* Method called when the step definition matches a feature step */
 }
 ```
