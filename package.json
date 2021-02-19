@@ -42,7 +42,7 @@
     "clean:cache": "yarn cache clean",
     "clean:full": "yarn clean && yarn install",
     "clean:lock": "rimraf ./yarn.lock && rimraf ./package.lock",
-    "dev": "rollup -c ./configs/rollup.config.js -w",
+    "dev": "NODE_ENV=development rollup -c ./configs/rollup.config.js -w",
     "docs:deploy": "yarn build && gh-pages -d docs",
     "docs:serve": "yarn build:copy && cd ./docs && serve .",
     "docs": "yarn docs:serve",

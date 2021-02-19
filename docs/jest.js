@@ -16,7 +16,7 @@
 
   window.test = (message, method) => {
     console.log(message)
-    isFunc(method) && method()
+    isFunc(method) && method(() => {})
   }
 
 })()

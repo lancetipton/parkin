@@ -36,6 +36,7 @@ const isStr = str => typeof str === 'string';
 const equalsNaN = val => typeof val === 'number' && val != val;
 const isNum = val => typeof val === 'number' && !equalsNaN(val);
 
+const noOp = () => {};
 const noOpObj = Object.freeze({});
 const noPropObj = deepFreeze({
   content: {}
@@ -78,7 +79,8 @@ const matchRegex = (step, text) => {
 const constants = deepFreeze({
   REGEX_VARIANT: 'regex',
   EXPRESSION_VARIANT: 'expression',
-  STEP_TYPES: ['given', 'when', 'then', 'and', 'but']
+  STEP_TYPES: ['given', 'when', 'then', 'and', 'but'],
+  FEATURE_META: ['feature', 'perspective', 'desire', 'reason', 'comments']
 });
 
 const testMethodFill = type => {
@@ -97,6 +99,9 @@ const throwNoMatchingStep = text => {
 };
 const throwParamTypeExists = () => {
   throw new Error(`Cannot register param type "${name}". It already exists!`);
+};
+const throwFeatureNotAnObj = feature => {
+  throw new Error(`Assemble feature requires an object matching the feature model spec!`, feature);
 };
 
 const typeModel = {
@@ -151,7 +156,7 @@ const RX_EXP_REPLACE = `(.*)`;
 const RX_MATCH_REPLACE = /{|}/g;
 const inBrowser = Boolean(typeof window !== 'undefined');
 const escapeStr = str => {
-  return inBrowser ? str.replace(/[.*+?^$()|[\]\\]/g, '\\$&') : str;
+  return inBrowser ? str.replace(/[|\\()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d') : str;
 };
 const runRegexCheck = (matcher, testRx, replaceWith) => {
   if (!testRx.test(matcher)) return matcher;
@@ -344,51 +349,61 @@ const featureMetaTags = [{
   key: 'reason'
 }];
 const getRXMatch = (line, regex, index) => line.match(regex)[index].trim();
-const featureFactory = (feature, text) => {
+const featureFactory = (feature, content, index) => {
   return {
+    index,
+    content,
     feature,
-    uuid: uuid(),
     tags: [],
-    comments: {},
-    scenarios: [],
-    text
+    reason: [],
+    uuid: uuid(),
+    comments: [],
+    scenarios: []
   };
 };
-const scenarioFactory = scenario => {
+const scenarioFactory = (scenario, index) => {
   return {
     scenario,
     uuid: uuid(),
-    steps: []
+    steps: [],
+    index
   };
 };
-const stepFactory = (type, step, altType) => {
+const stepFactory = (type, step, altType, index) => {
   const built = {
     step,
     type,
-    uuid: uuid()
+    uuid: uuid(),
+    index
   };
   altType && (built.altType = altType);
   return built;
 };
-const addReason = (feature, reason) => {
-  reason ? !feature.reason ? feature.reason = reason : feature.reason += `\n${reason}` : null;
+const addReason = (feature, reason, index) => {
+  reason && feature.reason.push({
+    content: reason,
+    index
+  });
 };
-const checkStepTag = (scenario, line) => {
+const checkStepTag = (scenario, line, index) => {
   return RegStepTags.reduce((added, regTag) => {
     if (added) return added;
     const hasTag = regTag.regex.test(line);
-    hasTag && scenario.steps.push(stepFactory(regTag.type, getRXMatch(line, regTag.regex, 1), regTag.alt));
+    hasTag && scenario.steps.push(stepFactory(regTag.type, getRXMatch(line, regTag.regex, 1), regTag.alt, index));
     return hasTag;
   }, false);
 };
-const featureMeta = (feature, line) => {
+const featureMeta = (feature, line, index) => {
   return featureMetaTags.reduce((added, regTag) => {
     if (added) return added;
     const hasTag = regTag.regex.test(line);
-    return hasTag ? regTag.key === 'reason' ? addReason(feature, getRXMatch(line, regTag.regex, 0)) : feature[regTag.key] = getRXMatch(line, regTag.regex, 0) : hasTag;
+    return hasTag ? regTag.key === 'reason' ? addReason(feature, getRXMatch(line, regTag.regex, 0), index) : feature[regTag.key] = {
+      content: getRXMatch(line, regTag.regex, 0),
+      index
+    } : hasTag;
   }, false);
 };
-const featureTag = (feature, line) => {
+const featureTag = (feature, line, index) => {
   if (!RX_TAG.test(line)) return false;
   const tags = getRXMatch(line, RX_TAG, 0);
   feature.tags = feature.tags.concat(tags.split(' '));
@@ -396,25 +411,30 @@ const featureTag = (feature, line) => {
 };
 const featureComment = (feature, line, index) => {
   if (!RX_COMMENT.test(line)) return false;
-  const comment = getRXMatch(line, RX_COMMENT, 1);
-  feature.comments[index] = comment;
+  const comment = line.match(RX_COMMENT)[0];
+  feature.comments.push({
+    content: comment,
+    index
+  });
   return true;
 };
-const ensureFeature = (featuresGroup, feature, line, text) => {
+const ensureFeature = (featuresGroup, feature, line, content, index) => {
   if (!RX_FEATURE.test(line)) return feature;
   const featureText = getRXMatch(line, RX_FEATURE, 1);
   if (!feature.feature) {
     feature.feature = featureText;
+    if (!feature.index) feature.index = index;
     !featuresGroup.includes(feature) && featuresGroup.push(feature);
     return feature;
   }
-  return featureFactory(featureText, text);
+  return featureFactory(featureText, content, index);
 };
-const ensureScenario = (feature, scenario, line) => {
+const ensureScenario = (feature, scenario, line, index) => {
   if (!RX_SCENARIO.test(line) && !RX_EXAMPLE.test(line)) return scenario;
   let scenarioText = getRXMatch(line, RX_SCENARIO, 1);
   scenarioText = scenarioText || getRXMatch(line, RX_EXAMPLE, 1);
-  !scenario.scenario ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText);
+  !scenario.scenario ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText, index);
+  !scenario.index && (scenario.index = index);
   !feature.scenarios.includes(scenario) && feature.scenarios.push(scenario);
   return scenario;
 };
@@ -424,9 +444,9 @@ const feature = text => {
   let scenario = scenarioFactory(false);
   let feature = featureFactory(false, text);
   return lines.reduce((featuresGroup, line, index) => {
-    feature = ensureFeature(featuresGroup, feature, line, text);
-    scenario = ensureScenario(feature, scenario, line);
-    featureTag(feature, line) || featureComment(feature, line, index) || featureMeta(feature, line) || checkStepTag(scenario, line);
+    feature = ensureFeature(featuresGroup, feature, line, text, index);
+    scenario = ensureScenario(feature, scenario, line, index);
+    featureTag(feature, line) || featureComment(feature, line, index) || featureMeta(feature, line, index) || checkStepTag(scenario, line, index);
     return featuresGroup;
   }, features);
 };
@@ -469,32 +489,131 @@ const parse = {
   definition
 };
 
-const getTestMethod = type => global[type] || testMethodFill(type);
-const runStep = (stepsInstance, step) => {
-  const test = getTestMethod('test');
-  return test(`${capitalize(step.type)} ${step.step}`, stepsInstance.resolve(step.step));
+const getTestMethod = (type, testMode) => {
+  return testMode ? noOp : global[type] || testMethodFill(type);
 };
-const runScenario = (stepsInstance, scenario) => {
-  const describe = getTestMethod('describe');
-  return describe(`Scenario: ${scenario.scenario}`, () => {
-    scenario.steps.map(step => runStep(stepsInstance, step));
+const resolveFeatures = data => {
+  return isStr(data) ? parse.feature(data) : isObj(data) ? [data] : isArr(data) ? data.reduce((features, feature) => features.concat(resolveFeatures(feature)), []) : throwMissingFeatureText();
+};
+const runStep = async (stepsInstance, step, testMode) => {
+  const test = getTestMethod('test', testMode);
+  test(`${capitalize(step.type)} ${step.step}`, async done => {
+    await stepsInstance.resolve(step.step);
+    done();
   });
+};
+const runScenario = (stepsInstance, scenario, testMode) => {
+  const describe = getTestMethod('describe', testMode);
+  let responses = [];
+  describe(`Scenario: ${scenario.scenario}`, () => {
+    responses = scenario.steps.map(async step => await runStep(stepsInstance, step, testMode));
+  });
+  return responses;
+};
+const getTaggedItems = (items, tags) => {
+  return items.filter(item => {
+    if (!isArr(item.tags) || !item.tags.length) return false;
+    const itemTags = item.tags.map(tag => tag.replace('@', ''));
+    return tags.find(tag => itemTags.includes(tag.replace('@', '')));
+  }, []);
+};
+const filterFromTags = (features, tags) => {
+  return !tags || isArr(tags) && !tags.length ? features :
+  getTaggedItems(features, tags).reduce((filtered, feature) => {
+    const tagScenarios = getTaggedItems(feature.scenarios, tags);
+    tagScenarios.length ? filtered.push({ ...features,
+      scenarios: tagScenarios
+    }) : filtered.push(feature);
+    return filtered;
+  }, []);
 };
 class Runner {
   constructor(steps) {
-    _defineProperty(this, "run", data => {
-      const features = isStr(data) ? parse(data) : isObj(data) ? [data] : isArr(data) ? data : throwMissingFeatureText();
-      const describe = getTestMethod('describe');
-      features.map(feature => {
+    _defineProperty(this, "run", async (data, options = noOpObj) => {
+      const testMode = this.run.PARKIN_TEST_MODE;
+      const describe = getTestMethod('describe', testMode);
+      const features = filterFromTags(resolveFeatures(data), options.tags);
+      const promises = await features.map(async feature => {
+        let responses = [];
         describe(`Feature: ${feature.feature}`, () => {
-          feature.scenarios.map(scenario => runScenario(this.steps, scenario));
+          responses = feature.scenarios.map(async scenario => await runScenario(this.steps, scenario, testMode));
         });
+        return responses;
       });
+      await Promise.all(promises);
+      return true;
     });
     !steps && throwMissingSteps();
     this.steps = steps;
   }
 }
+
+const {
+  FEATURE_META
+} = constants;
+const addContent = (assembled, content, index) => {
+  !exists(index) ? assembled.push(content) : exists(assembled[index]) ? assembled.splice(index, 0, content) : assembled[index] = content;
+};
+const addTags = (assembled, tags, spacer = '') => {
+  isArr(tags) && tags.length && addContent(assembled, `${spacer}${tags.join(' ')}`);
+};
+const addMeta = (assembled, feature) => {
+  FEATURE_META.map(key => {
+    switch (key) {
+      case 'feature':
+        addContent(assembled, `Feature: ${feature[key]}`, feature.index);
+        break;
+      case 'comments':
+        isArr(feature[key]) && feature[key].map(item => addContent(assembled, item.content, item.index));
+        break;
+      case 'reason':
+        isArr(feature[key]) && feature[key].map(item => addContent(assembled, `  ${item.content}`, item.index));
+        break;
+      case 'desire':
+      case 'perspective':
+        feature[key] && addContent(assembled, `  ${feature[key].content}`, feature[key].index);
+        break;
+    }
+  });
+};
+const addSteps = (assembled, scenario) => {
+  isArr(scenario.steps) && scenario.steps.length && scenario.steps.map(step => addContent(assembled, `    ${capitalize(step.type)} ${step.step}`, step.index));
+};
+const addScenarios = (assembled, feature) => {
+  feature.scenarios && feature.scenarios.map(scenario => {
+    addTags(assembled, scenario.tags, `  `);
+    addContent(assembled, `  Scenario: ${scenario.scenario}`, scenario.index);
+    addSteps(assembled, scenario);
+  });
+};
+const formatComment = (assembled, line, index) => {
+  const next = assembled[index + 1];
+  const prev = assembled[index - 1];
+  let compareLine = exists(next) ? next : prev;
+  if (!compareLine) return `${line}\n`;
+  const comment = line.split('#').pop();
+  const whiteSpace = Array(compareLine.length - compareLine.trimStart().length).join(' ');
+  return `${whiteSpace} # ${comment}\n`;
+};
+const formatAssembled = assembled => {
+  return Array.from(assembled, (line, index) => {
+    return !exists(line) ? '\n' : line.startsWith('#') ? formatComment(assembled, line, index) : `${line}\n`;
+  }).join('').trim();
+};
+const assembleFeature = toAssemble => {
+  return eitherArr(toAssemble, [toAssemble]).map(feature => {
+    let assembled = [];
+    !isObj(feature) && throwFeatureNotAnObj(feature);
+    addTags(assembled, feature.tags);
+    addMeta(assembled, feature);
+    addScenarios(assembled, feature);
+    return formatAssembled(assembled);
+  });
+};
+
+const assemble = {
+  feature: assembleFeature
+};
 
 class Parkin {
   constructor(world, _steps) {
@@ -507,6 +626,7 @@ class Parkin {
     this.runner = new Runner(this.steps);
     this.run = this.runner.run;
     this.parse = parse;
+    this.assemble = assemble;
     this.paramTypes = {
       register: registerParamType
     };

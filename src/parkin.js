@@ -1,6 +1,7 @@
 import { Steps } from './steps'
 import { parse } from './parse'
 import { Runner } from './runner'
+import { assemble } from './assemble'
 import { registerParamType } from './matcher'
 import { isObj, capitalize } from '@keg-hub/jsutils'
 
@@ -11,6 +12,8 @@ import { isObj, capitalize } from '@keg-hub/jsutils'
  * Parkin#Then - Register Then step definitions
  * Parkin#And - Register And step definitions
  * Parkin#But - Register But step definitions
+ * Parkin#assemble - Object containing assemble helper methods
+ * Parkin#assemble#feature - Assemble feature models into feature text
  * Parkin#run - Run step definitions against feature
  * Parkin#parse - Object containing parse helper methods
  * Parkin#parse#feature - Parse feature file text into a feature object
@@ -53,9 +56,21 @@ export class Parkin {
      * @function
      * @public
      *
-     * @returns {Object} - parse object container `feature` and `definition` parse methods
+     * @property {function} feature - Method to parse a feature string into an object
+     * @property {function} definition - Method to parse a definition string an object
      */
     this.parse = parse
+
+    /**
+     * Access assemble object containing feature assemble methods
+     * @memberof Parkin
+     * @alias instance&period;assemble
+     * @function
+     * @public
+     *
+     * @property {function} feature - Method to assemble a feature model into a string
+     */
+    this.assemble = assemble
 
     /**
      * Access paramTypes object containing the paramTypes register method
@@ -82,7 +97,7 @@ export class Parkin {
      * @function
      * @public
      * @param {string} match - Text used to matched with a features step
-     * @param {function} method - Function called when a features step text matches the text param
+     * @param {function} method - Called when a features step matches the text param
      * @example
      *
      * @example

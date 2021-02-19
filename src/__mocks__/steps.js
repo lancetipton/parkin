@@ -1,44 +1,44 @@
-export const registerMockSteps = PK => {
+export const registerMockSteps = (PK, withPromises) => {
   PK.Given(
     /I open the site (\S+)$/,
-    jest.fn((url, world) => {
-      // console.log(`---------- url ----------`)
-      // console.log(url)
-    })
+    jest.fn((url, world) => {})
   )
 
   PK.When(
-    `I press {key}`,
-    jest.fn((key, world) => {
-      // console.log(`---------- key ----------`)
-      // console.log(key)
-    })
+    `I press {word}`,
+    jest.fn((key, world) => {})
   )
 
   PK.When(
     `I wait for the page to load`,
-    jest.fn(world => {
-      // console.log(`---------- page to load ----------`)
-    })
+    jest.fn(world => {})
   )
 
   PK.When(
-    `I set {input} to the input {selector}`,
-    jest.fn((input, selector, world) => {
-      // console.log(`---------- input ----------`)
-      // console.log(input)
-      // console.log(`---------- selector ----------`)
-      // console.log(selector)
-    })
+    `I set {string} to the input {word}`,
+    jest.fn((input, selector, world) => {})
   )
 
   PK.Then(
-    `the element {selector} contains the text {text}`,
-    jest.fn((selector, text, world) => {
-      // console.log(`---------- selector ----------`)
-      // console.log(selector)
-      // console.log(`---------- text ----------`)
-      // console.log(text)
-    })
+    `the element {word} contains the text {string}`,
+    jest.fn((selector, text, world) => {})
   )
+
+  if (!withPromises) return
+
+  PK.Given(`I wait for {int}`, async (amount, world) => {
+    const testPromise = new Promise((res, rej) => {
+      setTimeout(() => {
+        world.iWaited = true
+        world.testMethod()
+        res()
+      }, amount)
+    })
+    return await testPromise
+  })
+
+  PK.Then(`the world test method should be called`, async world => {
+    expect(world.iWaited).toBe(true)
+    expect(world.testMethod).toHaveBeenCalled()
+  })
 }
