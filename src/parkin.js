@@ -1,7 +1,7 @@
 import { Steps } from './steps'
 import { parse } from './parse'
 import { Runner } from './runner'
-export { assemble } from './assemble'
+import { assemble } from './assemble'
 import { registerParamType } from './matcher'
 import { isObj, capitalize } from '@keg-hub/jsutils'
 

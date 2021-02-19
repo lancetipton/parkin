@@ -1,5 +1,5 @@
-import { feature } from './feature'
+import { assembleFeature } from './feature'
 
 export const assemble = {
-  feature,
+  feature: assembleFeature
 }
