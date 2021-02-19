@@ -102,24 +102,6 @@ const runScenario = (stepsInstance, scenario, testMode) => {
 }
 
 /**
- * Filters the passed in items based on the passed in tag array
- * @function
- * @private
- * @param {Array} items - Items to filter based on the tags array
- * @param {Array} tags - Tags to filter which items will be returned
- *
- * @returns {Array} - Items with a tag matching a tag in the tags array
- */
-const getTaggedItems = (items, tags) => {
-  return items.filter(item => {
-    if (!isArr(item.tags) || !item.tags.length) return false
-
-    const itemTags = item.tags.map(tag => tag.replace('@', ''))
-    return tags.find(tag => itemTags.includes(tag.replace('@', '')))
-  }, [])
-}
-
-/**
  * @param {string} tags 
  * @return {Array<string>?} A match of all words starting with '@', the tag indicator.
  * Returns false if input is invalid.
@@ -129,9 +111,10 @@ const parseFeatureTags = tags => {
 }
 
 /**
- * @param {Feature} feature - instance of feature class
- * @param {string?} filterOptions.name - name of feature 
- * @param {string | Array<string>} filterOptions.tags - feature tags to match
+ * @param {string?} name - name of item (feature|scenario) to check
+ * @param {string | Array<string>} tags - tags of item (feature|scenario) to check
+ * @param {string?} filterOptions.name - name filter
+ * @param {string | Array<string>} filterOptions.tags - tags filter
  * @return {Boolean} - true if feature matches the filter options
  */
 const itemMatch = (name='', tags=[], filterOptions={}) => {
@@ -180,28 +163,6 @@ const filterFeatures = (features, filterOptions={}) => {
     }
     return filtered
   }, [])
-}
-
-
-const filterFromTags = (features, tags) => {
-  // If no tags, then run all features
-  return !tags || (isArr(tags) && !tags.length)
-    ? features
-    // Get all the tagged features, removing any non-tagged features
-    : 
-    getTaggedItems(features, tags).reduce((filtered, feature) => {
-      // Get all tagged scenarios, removing any non-tagged scenarios
-      const tagScenarios = getTaggedItems(feature.scenarios, tags)
-
-      // If tagged scenarios were
-      //  * FOUND - Only include the matching tagged scenarios
-      //  * NOT FOUND - All scenarios will be run, because the feature had a matching tag
-      tagScenarios.length
-        ? filtered.push({ ...features, scenarios: tagScenarios })
-        : filtered.push(feature)
-
-      return filtered
-    }, [])
 }
 
 /**
