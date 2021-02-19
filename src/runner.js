@@ -1,5 +1,4 @@
 import { parse } from './parse'
-import { constants } from './constants'
 import {
   isArr,
   capitalize,
@@ -7,13 +6,13 @@ import {
   isStr,
   noOp,
   noOpObj,
+  eitherArr,
 } from '@keg-hub/jsutils'
 import {
   throwMissingSteps,
   throwMissingFeatureText,
   testMethodFill,
 } from './errors'
-const { STEP_TYPES } = constants
 
 /**
  * Resolves a test method from the global scope
@@ -103,50 +102,69 @@ const runScenario = (stepsInstance, scenario, testMode) => {
 }
 
 /**
- * Filters the passed in items based on the passed in tag array
- * @function
- * @private
- * @param {Array} items - Items to filter based on the tags array
- * @param {Array} tags - Tags to filter which items will be returned
- *
- * @returns {Array} - Items with a tag matching a tag in the tags array
+ * @param {string} tags 
+ * @return {Array<string>?} A match of all words starting with '@', the tag indicator.
+ * Returns false if input is invalid.
  */
-const getTaggedItems = (items, tags) => {
-  return items.filter(item => {
-    if (!isArr(item.tags) || !item.tags.length) return false
-
-    const itemTags = item.tags.map(tag => tag.replace('@', ''))
-    return tags.find(tag => itemTags.includes(tag.replace('@', '')))
-  }, [])
+const parseFeatureTags = tags => {
+  return isStr(tags) && tags.match(/[@]\w*/g)
 }
 
 /**
- * Filters features and scenarios based on the passed in tag options
+ * @param {string?} name - name of item (feature|scenario) to check
+ * @param {string | Array<string>} tags - tags of item (feature|scenario) to check
+ * @param {string?} filterOptions.name - name filter
+ * @param {string | Array<string>} filterOptions.tags - tags filter
+ * @return {Boolean} - true if feature matches the filter options
+ */
+const itemMatch = (name='', tags=[], filterOptions={}) => {
+  const { name: filterName, tags: filterTags } = filterOptions
+
+  const parsedTags = isStr(filterTags) 
+    ? parseFeatureTags(filterTags) 
+    : eitherArr(filterTags, [])
+
+  const nameMatch = !filterName || name.includes(filterName)
+  const tagMatch = !parsedTags.length || parsedTags.every(clientTag => tags.includes(clientTag))
+
+  return nameMatch && tagMatch
+}
+
+/**
+ * Filters features and scenarios based on the passed in filterOptions
  * @function
  * @private
  * @param {Array} features - Features to be run
- * @param {Array} tags - Tags to filter which Features and scenarios will be run
+ * @param {Object} tags - Tags to filter which Features and scenarios will be run
+ *  * @param {string?} filterOptions.name - name of feature 
+ * @param {string | Array<string>} filterOptions.tags - feature tags to match
  *
  * @returns {Array} - Filtered features that should be run
  */
-const filterFromTags = (features, tags) => {
-  // If no tags, then run all features
-  return !tags || (isArr(tags) && !tags.length)
-    ? features
-    : // Get all the tagged features, removing any non-tagged features
-    getTaggedItems(features, tags).reduce((filtered, feature) => {
-      // Get all tagged scenarios, removing any non-tagged scenarios
-      const tagScenarios = getTaggedItems(feature.scenarios, tags)
-
-      // If tagged scenarios were
-      //  * FOUND - Only include the matching tagged scenarios
-      //  * NOT FOUND - All scenarios will be run, because the feature had a matching tag
-      tagScenarios.length
-        ? filtered.push({ ...features, scenarios: tagScenarios })
-        : filtered.push(feature)
-
+const filterFeatures = (features, filterOptions={}) => {
+  return features.reduce((filtered, feature) => {
+    const isMatchingFeature = itemMatch(feature.feature, feature.tags, filterOptions)
+    if (isMatchingFeature) {
+      filtered.push(feature)
       return filtered
-    }, [])
+    }
+
+    // check for matching scenarios, where scenarios inherit their parent feature's tags
+    const matchingScenarios = feature.scenarios.filter(
+      scenario => itemMatch(
+        scenario.scenario, 
+        [ ...(scenario.tags || []), ...(feature.tags || []) ],
+        filterOptions
+      )
+    )
+    if (matchingScenarios.length) {
+      filtered.push({
+        ...feature,
+        scenarios: matchingScenarios
+      })
+    }
+    return filtered
+  }, [])
 }
 
 /**
@@ -155,14 +173,29 @@ const filterFromTags = (features, tags) => {
  * @class
  * @public
  * @param {Object} stepsInstance - Instance of the Steps class
+ * @param {Hooks} hooksInstance - instance of the Hooks class, storing the client's registered test callbacks
  *
  * @returns {Object} Instance of the Runner class
  */
 export class Runner {
-  constructor(steps) {
+  constructor(steps, hooks) {
     !steps && throwMissingSteps()
+    !hooks && throwMissingHooks()
 
     this.steps = steps
+    this.hooks = hooks
+  }
+
+  /**
+   * Gets the features to be run for a test
+   * @param {string|Array<Object>|Object} data - Feature data as a string or parsed Feature model
+   * @param {Object} options - Define how the steps are run
+   * @param {Array<string>? | string?} options.tags - Tags to filter which features or scenarios are run
+   * @param {string?} options.name - Name of feature
+   */
+  getFeatures = (data, options) => {
+    const features = resolveFeatures(data)
+    return filterFeatures(features, options)
   }
 
   /**
@@ -173,24 +206,36 @@ export class Runner {
    * @public
    * @param {string|Array<Object>|Object} data - Feature data as a string or parsed Feature model
    * @param {Object} options - Define how the steps are run
-   * @param {Object} options.tags - Tags to filter which features or scenarios are run
+   * @param {Array<string>? | string?} options.tags - Tags to filter which features or scenarios are run
+   * @param {string?} options.name - Name of feature
    *
-   * @returns {void}
+   * @returns {boolean} - whether any tests ran
    */
   run = async (data, options = noOpObj) => {
     // Set if were running tests for Parkin, or external tests
     // Only used for testing purposes
     const testMode = this.run.PARKIN_TEST_MODE
     const describe = getTestMethod('describe', testMode)
+    const beforeAll = getTestMethod('beforeAll', testMode)
+    const afterAll = getTestMethod('afterAll', testMode)
+    const beforeEach = getTestMethod('beforeEach', testMode)
+    const afterEach = getTestMethod('afterEach', testMode)
 
     // Get all the features to be run
     // Then filter them based on any options tags
-    const features = filterFromTags(resolveFeatures(data), options.tags)
+    const features = this.getFeatures(data, options)
+    if (!features.length) return false
 
     // Ensures all tests resolve before ending by
     // Using promises to resolve each feature / scenario / step
     const promises = await features.map(async feature => {
       let responses = []
+
+      beforeAll(this.hooks.getRegistered('beforeAll'))
+      afterAll(this.hooks.getRegistered('afterAll'))
+      beforeEach(this.hooks.getRegistered('beforeEach'))
+      afterEach(this.hooks.getRegistered('afterEach'))
+
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
       describe(`Feature: ${feature.feature}`, () => {

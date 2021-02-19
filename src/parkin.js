@@ -1,4 +1,5 @@
 import { Steps } from './steps'
+import { Hooks } from './hooks'
 import { parse } from './parse'
 import { Runner } from './runner'
 import { assemble } from './assemble'
@@ -36,12 +37,17 @@ import { isObj, capitalize } from '@keg-hub/jsutils'
 export class Parkin {
   constructor(world, steps) {
     this.steps = new Steps(world)
-    this.runner = new Runner(this.steps)
+    this.hooks = new Hooks()
+    this.runner = new Runner(this.steps, this.hooks)
 
     /**
      * Runs the step definition methods matching the steps of a feature
      * @memberof Parkin
      * @alias instance&period;run
+     * @param {string|Array<Object>|Object} data - Feature data as a string or parsed Feature model
+     * @param {Object} options - options object
+     * @param {string?} options.name - optional name to filter features by
+     * @param {Array<string>} options.tags - optional tags to filter features by
      * @function
      * @public
      *
