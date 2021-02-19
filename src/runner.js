@@ -19,6 +19,25 @@ const { STEP_TYPES } = constants
 const getTestMethod = type => global[type] || testMethodFill(type)
 
 /*
+ * Resolves and parses features based on the data type passed in
+ * Ensures an array of parsed features is returned
+ * @function
+ * @public
+ * @param {Object|Array<string|Object>|string} data - Feature content
+ *
+ * @returns {Array} - passed in data converted into parsed Features
+ */
+const resolveFeatures = data => {
+  return isStr(data)
+    ? parse.feature(data)
+    : isObj(data)
+      ? [data]
+      : isArr(data)
+        ? data.reduce((features, feature) => features.concat(resolveFeatures(feature)), [])
+        : throwMissingFeatureText()
+}
+
+/*
  * Calls the `it` global passing in a registered step function based on the step text
  * @function
  * @private
@@ -28,11 +47,14 @@ const getTestMethod = type => global[type] || testMethodFill(type)
  *
  * @returns {Void}
  */
-const runStep = (stepsInstance, step) => {
+const runStep = async (stepsInstance, step) => {
   const test = getTestMethod('test')
-  return test(
+  test(
     `${capitalize(step.type)} ${step.step}`,
-    stepsInstance.resolve(step.step)
+    async done => {
+      await stepsInstance.resolve(step.step)
+      done()
+    }
   )
 }
 
@@ -48,9 +70,19 @@ const runStep = (stepsInstance, step) => {
 const runScenario = (stepsInstance, scenario) => {
   const describe = getTestMethod('describe')
 
-  return describe(`Scenario: ${scenario.scenario}`, () => {
-    scenario.steps.map(step => runStep(stepsInstance, step))
+  // Holder for the steps of each scenario
+  let responses = []
+  describe(`Scenario: ${scenario.scenario}`, () => {
+    // Map over the steps and call them
+    // Store the returned promise in the responses array
+    responses = scenario.steps
+      .map(async step => await runStep(stepsInstance, step))
+
+    // Ensure we resolve all promises inside the describe block
+    Promise.all(responses)
   })
+
+  return responses
 }
 
 /*
@@ -79,21 +111,29 @@ export class Runner {
    *
    * @returns {void}
    */
-  run = data => {
-    const features = isStr(data)
-      ? parse(data)
-      : isObj(data)
-        ? [data]
-        : isArr(data)
-          ? data
-          : throwMissingFeatureText()
-
+  run = async data => {
+    const features = resolveFeatures(data)
     const describe = getTestMethod('describe')
 
-    features.map(feature => {
+    // Ensures all tests resolve before ending by 
+    // Using promises to resolve each feature / scenario / step
+    const promises = await features.map(async feature => {
+      let responses = []
+      // Map over the features scenarios and call their steps
+      // Store the returned promise in the responses array
       describe(`Feature: ${feature.feature}`, () => {
-        feature.scenarios.map(scenario => runScenario(this.steps, scenario))
+        responses = feature.scenarios
+          .map(async scenario => await runScenario(this.steps, scenario))
+
+        // Ensure we resolve all promises inside the describe block
+        Promise.all(responses)
       })
+
+      return responses
     })
+    
+    await Promise.all(promises)
+
+    return true
   }
 }

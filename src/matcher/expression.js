@@ -18,7 +18,8 @@ const inBrowser = Boolean(typeof window !== 'undefined')
  * @return {string} Escaped string to allow converting into a regular expression
  */
 const escapeStr = str => {
-  return inBrowser ? str.replace(/[.*+?^$()|[\]\\]/g, '\\$&') : str
+  // return inBrowser ? str.replace(/[.*+?^$()|[\]\\]/g, '\\$&') : str
+  return inBrowser ? str.replace(/[|\\()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d') : str
 }
 
 /**

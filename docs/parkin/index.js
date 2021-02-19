@@ -151,7 +151,7 @@ const RX_EXP_REPLACE = `(.*)`;
 const RX_MATCH_REPLACE = /{|}/g;
 const inBrowser = Boolean(typeof window !== 'undefined');
 const escapeStr = str => {
-  return inBrowser ? str.replace(/[.*+?^$()|[\]\\]/g, '\\$&') : str;
+  return inBrowser ? str.replace(/[|\\()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d') : str;
 };
 const runRegexCheck = (matcher, testRx, replaceWith) => {
   if (!testRx.test(matcher)) return matcher;
@@ -480,10 +480,15 @@ const runScenario = (stepsInstance, scenario) => {
     scenario.steps.map(step => runStep(stepsInstance, step));
   });
 };
+const resolveFeatures = data => {
+  return isStr(data) ? parse.feature(data) : isObj(data) ? [data] : isArr(data) ? data.reduce((features, feature) => features.concat(resolveFeatures(feature)), []) : throwMissingFeatureText();
+};
 class Runner {
   constructor(steps) {
     _defineProperty(this, "run", data => {
-      const features = isStr(data) ? parse(data) : isObj(data) ? [data] : isArr(data) ? data : throwMissingFeatureText();
+      const features = resolveFeatures(data);
+      console.log(`---------- features ----------`);
+      console.log(features);
       const describe = getTestMethod('describe');
       features.map(feature => {
         describe(`Feature: ${feature.feature}`, () => {
