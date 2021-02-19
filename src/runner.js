@@ -1,6 +1,6 @@
 import { parse } from './parse'
 import { constants } from './constants'
-import { isArr, capitalize, isObj, isStr, get, noOp } from '@keg-hub/jsutils'
+import { isArr, capitalize, isObj, isStr, get, noOp, noOpObj, noPropArr } from '@keg-hub/jsutils'
 import {
   throwMissingSteps,
   throwMissingFeatureText,
@@ -66,6 +66,7 @@ const runStep = async (stepsInstance, step, testMode) => {
   })
 }
 
+
 /**
  * Loops through the passed in scenarios steps and calls runStep for each
  * @function
@@ -96,6 +97,54 @@ const runScenario = (stepsInstance, scenario, testMode) => {
 }
 
 /**
+ * Filters the passed in items based on the passed in tag array
+ * @function
+ * @private
+ * @param {Array} items - Items to filter based on the tags array
+ * @param {Array} tags - Tags to filter which items will be returned
+ *
+ * @returns {Array} - Items with a tag matching a tag in the tags array
+ */
+const getTaggedItems = (items, tags) => {
+  return items.filter(item => {
+    if(!isArr(item.tags) || !item.tags.length) return false
+
+    const itemTags = item.tags.map(tag => tag.replace('@', ''))
+    return tags.find(tag => itemTags.includes(tag.replace('@', '')))
+  }, [])
+}
+
+/**
+ * Filters features and scenarios based on the passed in tag options
+ * @function
+ * @private
+ * @param {Array} features - Features to be run
+ * @param {Array} tags - Tags to filter which Features and scenarios will be run
+ *
+ * @returns {Array} - Filtered features that should be run
+ */
+const filterFromTags = (features, tags) => {
+  // If no tags, then run all features
+  return !tags || isArr(tags) && !tags.length
+    ? features
+    // Get all the tagged features, removing any non-tagged features
+    : getTaggedItems(features, tags)
+        .reduce((filtered, feature) => {
+          // Get all tagged scenarios, removing any non-tagged scenarios
+          const tagScenarios = getTaggedItems(feature.scenarios, tags)
+
+          // If tagged scenarios were 
+          //  * FOUND - Only include the matching tagged scenarios
+          //  * NOT FOUND - All scenarios will be run, because the feature had a matching tag
+          tagScenarios.length
+            ? filtered.push({ ...features, scenarios: tagScenarios })
+            : filtered.push(feature)
+
+          return filtered
+        }, [])
+}
+
+/**
  * Parses and runs the steps of a feature text string
  * Uses the registered steps of the passed in Steps class instance to evaluate the feature steps
  * @class
@@ -118,16 +167,20 @@ export class Runner {
    * @function
    * @public
    * @param {string|Array<Object>|Object} data - Feature data as a string or parsed Feature model
+   * @param {Object} options - Define how the steps are run
+   * @param {Object} options.tags - Tags to filter which features or scenarios are run
    *
    * @returns {void}
    */
-  run = async data => {
+  run = async (data, options=noOpObj) => {
     // Set if were running tests for Parkin, or external tests
     // Only used for testing purposes
     const testMode = this.run.PARKIN_TEST_MODE
-
-    const features = resolveFeatures(data)
     const describe = getTestMethod('describe', testMode)
+
+    // Get all the features to be run
+    // Then filter them based on any options tags
+    const features = filterFromTags(resolveFeatures(data), options.tags)
 
     // Ensures all tests resolve before ending by
     // Using promises to resolve each feature / scenario / step
