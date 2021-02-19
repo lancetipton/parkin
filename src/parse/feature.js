@@ -256,9 +256,14 @@ const featureTag = (feature, line, index) => {
 const featureComment = (feature, line, index) => {
   if (!RX_COMMENT.test(line)) return false
 
-  const comment = getRXMatch(line, RX_COMMENT, 1)
-  // Store the comments by line index
-  // This ensures we can put them in the same location if needed
+  // const comment = getRXMatch(line, RX_COMMENT, 1)
+  // Don't use getRXMatch because we want the full white space
+  // Because comments are added globally and not by line
+  // This could cause some issues if the user starts using different white space settings
+  // But not much we can do about it
+  const comment = line.match(RX_COMMENT)[0]
+  
+
   feature.comments.push({ content: comment, index })
 
   return true
