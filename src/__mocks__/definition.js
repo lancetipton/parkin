@@ -86,4 +86,29 @@ export const expressionDefs = [
       pass: [`Convert 5 and 4.5 and something and "A string" properly`],
     },
   },
+  {
+    step: {
+      type: 'then',
+      match: 'I have (some )apple(s) to eat( and savor)',
+      variant: 'expression',
+      content: 'Then("I have (some )apple(s) to eat( and savor)", ()=>{})',
+    },
+    tests: {
+      pass: [ 
+        `I have some apples to eat`, 
+        `I have apples to eat`, 
+        `I have apples to eat and savor`, 
+        `I have some apples to eat and savor`,
+        `I have some apple to eat`, 
+        `I have apple to eat`, 
+        `I have apple to eat and savor`, 
+        `I have some apple to eat and savor`,
+      ],
+      fail: [ 
+        `I have many apples to eat`,
+        `I have apples to eat and spit out`,
+        `I have some apples`
+      ],
+    },
+  },
 ]

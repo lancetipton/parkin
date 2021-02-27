@@ -2,7 +2,7 @@ import { matchRegex } from './regex'
 import { noOpObj, isFunc } from '@keg-hub/jsutils'
 import { getParamTypes, convertTypes } from './paramTypes'
 
-const RX_OPTIONAL = /\s*\S*\(s\)\s*/g
+const RX_OPTIONAL = /\([^)]*?\)/g
 const RX_ALT = /\s*\S*\/\S*\s*/g
 const RX_EXPRESSION = /\s*{(.*?)}\s*/g
 const RX_EXP_REPLACE = `(.*)`
@@ -77,6 +77,20 @@ const convertToRegex = match => {
 }
 
 /**
+ * Replaces any cucumber-expression optional syntax in `str`
+ * with equivalent regex.
+ * @param {string} str 
+ * @return {string} string with replacements
+ */
+const replaceOptionals = str => {
+  const matches = str.matchAll(RX_OPTIONAL)
+  return Array.from(matches).reduce(
+    (result, match) => result.replace(match[0], `${match[0]}?`),
+    str
+  )
+}
+
+/**
  * Find all optional syntax in the match string, and convert them into into regex
  * @function
  * @private
@@ -85,13 +99,9 @@ const convertToRegex = match => {
  * @return {string} match string with optional syntax replaced
  */
 const checkOptional = match => {
-  const regex = runRegexCheck(
-    match,
-    RX_OPTIONAL,
-    (val, ...args) => `${val.trim().replace('(s)', '')}s*`
-  )
-
-  return { regex }
+  return {
+    regex: replaceOptionals(match)
+  }
 }
 
 /**
@@ -115,6 +125,22 @@ const checkAlternative = match => {
 }
 
 /**
+ * Adds regex anchors to the ends of the regex string, if it needs them
+ * @param {string} str 
+ * @return {string} with anchors
+ */
+const checkAnchors = str => {
+  let final = str
+  if (str.charAt(0) !== '^') {
+    final = '^' + final
+  }
+  if (str.charAt(str.length - 1) !== '$') {
+    final += '$'
+  }
+  return { regex: final }
+}
+
+/**
  * Finds a matching step definition from passed in expression text
  * Then extracts the variables from the text to pass to the step definitions method
  * Converts expression strings into regex then calls the matchRegex method
@@ -132,7 +158,8 @@ export const matchExpression = (step, text) => {
   const escaped = escapeStr(step.match)
 
   const { regex } = checkOptional(escaped)
-  const { regex: regexAlts } = checkAlternative(regex)
+  const { regex: regexWithAnchors } = checkAnchors(regex)
+  const { regex: regexAlts } = checkAlternative(regexWithAnchors)
   const { regex: match, transformers } = convertToRegex(regexAlts)
 
   // Then call the regex matcher to get the content

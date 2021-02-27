@@ -62,4 +62,17 @@ describe('Match matchExpression', () => {
       expect(convertDef.tests.validate[index](item)).toBe(true)
     )
   })
+
+  it ('should work with multiple optional text instances', () => {
+    const expressionDef = expressionDefs[3]
+    expressionDef.tests.pass.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeDefined()
+    })
+
+    expressionDef.tests.fail.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeUndefined()
+    })
+  })
 })

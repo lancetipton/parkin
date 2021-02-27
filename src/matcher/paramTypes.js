@@ -100,6 +100,7 @@ export const convertTypes = (matches, transformers) => {
   return matches
     .map((item, i) => {
       const paramType = transformers[i]
+      if (!paramType) return item
       const asType = checkCall(paramType.transformer, item)
 
       return typeof asType === paramType.type ? asType : null
