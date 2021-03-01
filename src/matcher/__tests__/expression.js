@@ -78,6 +78,8 @@ describe('Match matchExpression', () => {
 
   it('should work with single plural optionals', () => {
     const expressionDef = expressionDefs[4]
+    // const { match } = matchExpression(expressionDef.step, expressionDef.tests.fail[3])
+    // expect(match).toBeUndefined()
     expressionDef.tests.pass.map(test => {
       const { match } = matchExpression(expressionDef.step, test)
       expect(match).toBeDefined()
@@ -101,4 +103,31 @@ describe('Match matchExpression', () => {
       expect(match).toBeUndefined()
     })
   })
+
+  it('should match string types correctly', () => {
+    const expressionDef = expressionDefs[6]
+    expressionDef.tests.pass.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeDefined()
+    })
+
+    expressionDef.tests.fail.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeUndefined()
+    })
+  })
+
+  it('should match word types correctly', () => {
+    const expressionDef = expressionDefs[7]
+    expressionDef.tests.pass.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeDefined()
+    })
+
+    expressionDef.tests.fail.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeUndefined()
+    })
+  })
+
 })

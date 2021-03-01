@@ -2,9 +2,13 @@ import { matchRegex } from './regex'
 import { noOpObj, isFunc } from '@keg-hub/jsutils'
 import { getParamTypes, convertTypes } from './paramTypes'
 
-const RX_OPTIONAL = /\([^)]*?\)/g
+const RX_OPTIONAL = /\([^)]*?\)/
 const RX_ALT = /\s*\S*\/\S*\s*/g
-const RX_EXPRESSION = /\s*{(.*?)}\s*/g
+const RX_PARAMETER = /\s*{(.*?)}\s*/
+const RX_EXPRESSION = new RegExp(
+  `${new RegExp(RX_PARAMETER).source}|${new RegExp(RX_OPTIONAL).source}`, 
+  'g'
+)
 const RX_EXP_REPLACE = `(.*)`
 const RX_MATCH_REPLACE = /{|}/g
 const inBrowser = Boolean(typeof window !== 'undefined')
@@ -58,7 +62,7 @@ const runRegexCheck = (matcher, testRx, replaceWith) => {
  * @private
  * @param {string} match - Step match text from feature scenario
  *
- * @return {string} match string with expression replaced
+ * @return {Object} { regex: match string with expression replaced, transformers: Array of transformer objects }
  */
 const convertToRegex = match => {
   const paramTypes = getParamTypes()
@@ -66,42 +70,19 @@ const convertToRegex = match => {
   const regex = runRegexCheck(match, RX_EXPRESSION, (val, ...args) => {
     // Get the expression type
     const type = val.trim().replace(RX_MATCH_REPLACE, '')
+
     // Add the transformer for the type to the transformers array
     transformers.push(paramTypes[type] || paramTypes.any)
 
     // Return the regex
-    return RX_EXP_REPLACE
+    return val.match(RX_PARAMETER)
+      ? RX_EXP_REPLACE
+      : val.match(RX_OPTIONAL)
+        ? `${val}?`
+        : val
   })
 
   return { regex, transformers }
-}
-
-/**
- * Replaces any cucumber-expression optional syntax in `str`
- * with equivalent regex.
- * @param {string} str
- * @return {string} string with replacements
- */
-export const replaceOptionals = str => {
-  const matches = str.matchAll(RX_OPTIONAL)
-  return Array.from(matches).reduce(
-    (result, match) => result.replace(match[0], `${match[0]}?`),
-    str
-  )
-}
-
-/**
- * Find all optional syntax in the match string, and convert them into into regex
- * @function
- * @private
- * @param {string} match - Step match text from feature scenario
- *
- * @return {string} match string with optional syntax replaced
- */
-const checkOptional = match => {
-  return {
-    regex: replaceOptionals(match),
-  }
 }
 
 /**
@@ -157,8 +138,7 @@ export const matchExpression = (step, text) => {
   // Need to ensure correct chars are escaped for all edge cases
   const escaped = escapeStr(step.match)
 
-  const { regex } = checkOptional(escaped)
-  const { regex: regexAlts } = checkAlternative(regex)
+  const { regex: regexAlts } = checkAlternative(escaped)
   const { regex: convertedRegex, transformers } = convertToRegex(regexAlts)
   const { regex: match } = checkAnchors(convertedRegex)
 

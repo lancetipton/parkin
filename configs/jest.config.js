@@ -1,6 +1,5 @@
 const path = require('path')
 const ROOT_DIR = path.join(__dirname, '../')
-console.log(ROOT_DIR)
 
 module.exports = {
   rootDir: ROOT_DIR,

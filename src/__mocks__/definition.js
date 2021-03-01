@@ -150,4 +150,39 @@ export const expressionDefs = [
       ],
     },
   },
+  {
+    step: {
+      type: 'given',
+      match: 'I click the button {string}',
+      variant: 'expression',
+      content: 'I click the button {string}',
+    },
+    tests: {
+      pass: [
+        'I click the button "hey-123"',
+      ],
+      fail: [
+        'I click the button hey-123',
+        'I click the button 34',
+        'I click the button 34.3',
+      ],
+    },
+  },
+  {
+    step: {
+      type: 'given',
+      match: 'I navigate to {word}',
+      variant: 'expression',
+      content: 'I navigate to {word}',
+    },
+    tests: {
+      pass: [
+        'I navigate to google',
+        'I navigate to .google',
+      ],
+      fail: [
+        'I navigate to "google"'
+      ],
+    },
+  }
 ]

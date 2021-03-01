@@ -1,12 +1,24 @@
 import {
   noOpObj,
   toStr,
-  toInt,
-  toFloat,
   isFunc,
   exists,
+  isStr,
 } from '@keg-hub/jsutils'
 import { throwParamTypeExists } from '../errors'
+
+/**
+ * TODO: replace with jsutils.isQuoted once merged
+ * @param {string} str 
+ * @return {boolean} true if `str` is a quoted string
+ * @example
+ * isQuoted('foo') // false
+ * isQuoted('"foo"') // true
+ */
+const isQuoted = str => {
+  return isStr(str) && 
+    ['\"', '\''].some(quote => str.startsWith(quote) && str.endsWith(quote))
+}
 
 /**
  * Default param type model used when registering param types
@@ -35,7 +47,7 @@ const __paramTypes = {
   word: {
     ...typeModel,
     name: 'word',
-    transformer: arg => toStr(arg),
+    transformer: arg => !isQuoted(arg) ? toStr(arg) : undefined,
   },
   float: {
     ...typeModel,
@@ -58,11 +70,13 @@ const __paramTypes = {
   string: {
     ...typeModel,
     name: 'string',
-    transformer: arg =>
-      arg
-        .trim()
-        .replace(/^("|')/, '')
-        .replace(/("|')$/, ''),
+    transformer: arg => {
+      return isQuoted(arg)
+        ? arg.trim()
+            .replace(/^("|')/, '')
+            .replace(/("|')$/, '')
+        : undefined
+    }
   },
 }
 
@@ -110,5 +124,5 @@ export const convertTypes = (matches, transformers) => {
       const asType = isFunc(paramType.transformer) ? paramType.transformer(item) : undefined
       return typeof asType === paramType.type ? asType : null
     })
-    .filter(item => exists(item))
+    .filter(exists)
 }
