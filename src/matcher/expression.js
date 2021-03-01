@@ -79,10 +79,10 @@ const convertToRegex = match => {
 /**
  * Replaces any cucumber-expression optional syntax in `str`
  * with equivalent regex.
- * @param {string} str 
+ * @param {string} str
  * @return {string} string with replacements
  */
-const replaceOptionals = str => {
+export const replaceOptionals = str => {
   const matches = str.matchAll(RX_OPTIONAL)
   return Array.from(matches).reduce(
     (result, match) => result.replace(match[0], `${match[0]}?`),
@@ -100,7 +100,7 @@ const replaceOptionals = str => {
  */
 const checkOptional = match => {
   return {
-    regex: replaceOptionals(match)
+    regex: replaceOptionals(match),
   }
 }
 
@@ -126,7 +126,7 @@ const checkAlternative = match => {
 
 /**
  * Adds regex anchors to the ends of the regex string, if it needs them
- * @param {string} str 
+ * @param {string} str
  * @return {string} with anchors
  */
 const checkAnchors = str => {
@@ -158,9 +158,9 @@ export const matchExpression = (step, text) => {
   const escaped = escapeStr(step.match)
 
   const { regex } = checkOptional(escaped)
-  const { regex: regexWithAnchors } = checkAnchors(regex)
-  const { regex: regexAlts } = checkAlternative(regexWithAnchors)
-  const { regex: match, transformers } = convertToRegex(regexAlts)
+  const { regex: regexAlts } = checkAlternative(regex)
+  const { regex: convertedRegex, transformers } = convertToRegex(regexAlts)
+  const { regex: match } = checkAnchors(convertedRegex)
 
   // Then call the regex matcher to get the content
   const found = matchRegex({ ...step, match }, text)

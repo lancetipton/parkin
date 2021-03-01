@@ -94,20 +94,59 @@ export const expressionDefs = [
       content: 'Then("I have (some )apple(s) to eat( and savor)", ()=>{})',
     },
     tests: {
-      pass: [ 
-        `I have some apples to eat`, 
-        `I have apples to eat`, 
-        `I have apples to eat and savor`, 
+      pass: [
+        `I have some apples to eat`,
+        `I have apples to eat`,
+        `I have apples to eat and savor`,
         `I have some apples to eat and savor`,
-        `I have some apple to eat`, 
-        `I have apple to eat`, 
-        `I have apple to eat and savor`, 
+        `I have some apple to eat`,
+        `I have apple to eat`,
+        `I have apple to eat and savor`,
         `I have some apple to eat and savor`,
       ],
-      fail: [ 
+      fail: [
         `I have many apples to eat`,
         `I have apples to eat and spit out`,
-        `I have some apples`
+        `I have some apples`,
+      ],
+    },
+  },
+  {
+    step: {
+      type: 'given',
+      match: 'I wait {float} second(s)',
+      variant: 'expression',
+      content: 'Then("I wait {float} second(s)", ()=>{})',
+    },
+    tests: {
+      pass: [
+        'I wait 1 second',
+        'I wait 0 seconds',
+      ],
+      fail: [
+        'I wait some seconds',
+        'I wait 1',
+        'I wait 0 minutes',
+        'I wait 3 seconds tomorrow',
+      ],
+    },
+  },
+  {
+    step: {
+      type: 'given',
+      match: 'I do the thing {float} time(s) and I say {string}',
+      variant: 'expression',
+      content: 'I do the thing {float} time(s) and I say {string}',
+    },
+    tests: {
+      pass: [
+        'I do the thing 3 times and I say "wow"',
+        'I do the thing 1 time and I say "okay"'
+      ],
+      fail: [
+        'I do the thing some time',
+        'I do the thing 3 times and I say',
+        'I do the thing 1 time and I sing'
       ],
     },
   },

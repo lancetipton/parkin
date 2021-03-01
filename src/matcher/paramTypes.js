@@ -3,7 +3,7 @@ import {
   toStr,
   toInt,
   toFloat,
-  checkCall,
+  isFunc,
   exists,
 } from '@keg-hub/jsutils'
 import { throwParamTypeExists } from '../errors'
@@ -41,13 +41,19 @@ const __paramTypes = {
     ...typeModel,
     name: 'float',
     type: 'number',
-    transformer: arg => toFloat(arg),
+    transformer: arg => {
+      const result = parseFloat(arg)
+      return (result === NaN) ? undefined : result
+    }
   },
   int: {
     ...typeModel,
     name: 'int',
     type: 'number',
-    transformer: arg => !arg.includes('.') && toInt(arg),
+    transformer: arg => {
+      const result = parseInt(arg)
+      return (arg.includes('.') || result === NaN) ? undefined : result
+    }
   },
   string: {
     ...typeModel,
@@ -101,9 +107,8 @@ export const convertTypes = (matches, transformers) => {
     .map((item, i) => {
       const paramType = transformers[i]
       if (!paramType) return item
-      const asType = checkCall(paramType.transformer, item)
-
+      const asType = isFunc(paramType.transformer) ? paramType.transformer(item) : undefined
       return typeof asType === paramType.type ? asType : null
     })
-    .filter(item => exists(item) && item)
+    .filter(item => exists(item))
 }

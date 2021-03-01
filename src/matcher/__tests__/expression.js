@@ -63,8 +63,34 @@ describe('Match matchExpression', () => {
     )
   })
 
-  it ('should work with multiple optional text instances', () => {
+  it('should work with multiple optional text instances', () => {
     const expressionDef = expressionDefs[3]
+    expressionDef.tests.pass.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeDefined()
+    })
+
+    expressionDef.tests.fail.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeUndefined()
+    })
+  })
+
+  it('should work with single plural optionals', () => {
+    const expressionDef = expressionDefs[4]
+    expressionDef.tests.pass.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeDefined()
+    })
+
+    expressionDef.tests.fail.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeUndefined()
+    })
+  })
+
+  it('should work with optionals nested between arguments', () => {
+    const expressionDef = expressionDefs[5]
     expressionDef.tests.pass.map(test => {
       const { match } = matchExpression(expressionDef.step, test)
       expect(match).toBeDefined()

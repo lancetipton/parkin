@@ -72,7 +72,7 @@ const matchRegex = (step, text) => {
   const match = text.match(new RegExp(step.match));
   return match ? {
     step,
-    match: match.slice(1, match.length)
+    match: match.slice(1, match.length).filter(Boolean)
   } : noOpObj;
 };
 
@@ -145,12 +145,13 @@ const registerParamType = (model = noOpObj, key = model.name) => {
 const convertTypes = (matches, transformers) => {
   return matches.map((item, i) => {
     const paramType = transformers[i];
+    if (!paramType) return item;
     const asType = checkCall(paramType.transformer, item);
     return typeof asType === paramType.type ? asType : null;
   }).filter(item => exists(item) && item);
 };
 
-const RX_OPTIONAL = /\s*\S*\(s\)\s*/g;
+const RX_OPTIONAL = /\([^)]*?\)/g;
 const RX_ALT = /\s*\S*\/\S*\s*/g;
 const RX_EXPRESSION = /\s*{(.*?)}\s*/g;
 const RX_EXP_REPLACE = `(.*)`;
@@ -183,10 +184,13 @@ const convertToRegex = match => {
     transformers
   };
 };
+const replaceOptionals = str => {
+  const matches = str.matchAll(RX_OPTIONAL);
+  return Array.from(matches).reduce((result, match) => result.replace(match[0], `${match[0]}?`), str);
+};
 const checkOptional = match => {
-  const regex = runRegexCheck(match, RX_OPTIONAL, (val, ...args) => `${val.trim().replace('(s)', '')}s*`);
   return {
-    regex
+    regex: replaceOptionals(match)
   };
 };
 const checkAlternative = match => {
@@ -198,14 +202,29 @@ const checkAlternative = match => {
     altIndexes
   };
 };
+const checkAnchors = str => {
+  let final = str;
+  if (str.charAt(0) !== '^') {
+    final = '^' + final;
+  }
+  if (str.charAt(str.length - 1) !== '$') {
+    final += '$';
+  }
+  return {
+    regex: final
+  };
+};
 const matchExpression = (step, text) => {
   const escaped = escapeStr(step.match);
   const {
     regex
   } = checkOptional(escaped);
   const {
+    regex: regexWithAnchors
+  } = checkAnchors(regex);
+  const {
     regex: regexAlts
-  } = checkAlternative(regex);
+  } = checkAlternative(regexWithAnchors);
   const {
     regex: match,
     transformers
@@ -213,6 +232,11 @@ const matchExpression = (step, text) => {
   const found = matchRegex({ ...step,
     match
   }, text);
+  console.log({
+    found,
+    match,
+    step
+  });
   if (!found || !found.step || !found.match) return noOpObj;
   const converted = convertTypes(found.match, transformers);
   return converted.length !== found.match.length ? noOpObj : {

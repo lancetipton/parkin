@@ -1,6 +1,9 @@
 module.exports = {
   parser: 'babel-eslint',
   root: true,
+  ignorePatterns: [
+    'build/',
+  ],
   globals: {
     jest: true,
     __DEV__: true,
