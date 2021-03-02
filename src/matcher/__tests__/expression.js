@@ -139,4 +139,20 @@ describe('Match matchExpression', () => {
 
     expect(match).toEqual(expect.arrayContaining(['$world.app.url']))
   })
+
+  it('should work with string types with single and double quotes', () => {
+    const selector = `.ef-action-button-selected`
+    const textContent = `SELECTED`
+    const stepText = `the descendent '${selector}' contains the text "${textContent}"`
+
+    const { match } = matchExpression({
+      type: 'given',
+      match: 'the descendent {string} contains the text {string}',
+      variant: 'expression',
+      content: 'the descendent {string} contains the text {string}',
+    }, stepText)
+
+    expect(match).toEqual(expect.arrayContaining([ selector, textContent ]))
+
+  })
 })
