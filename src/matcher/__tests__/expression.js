@@ -78,8 +78,6 @@ describe('Match matchExpression', () => {
 
   it('should work with single plural optionals', () => {
     const expressionDef = expressionDefs[4]
-    // const { match } = matchExpression(expressionDef.step, expressionDef.tests.fail[3])
-    // expect(match).toBeUndefined()
     expressionDef.tests.pass.map(test => {
       const { match } = matchExpression(expressionDef.step, test)
       expect(match).toBeDefined()
@@ -96,6 +94,7 @@ describe('Match matchExpression', () => {
     expressionDef.tests.pass.map(test => {
       const { match } = matchExpression(expressionDef.step, test)
       expect(match).toBeDefined()
+      expect(match).toHaveLength(2) // should not include the optional text as arguments
     })
 
     expressionDef.tests.fail.map(test => {
@@ -130,4 +129,14 @@ describe('Match matchExpression', () => {
     })
   })
 
+  it('should work with symbols', () => {
+    const { match } = matchExpression({
+      type: 'given',
+      match: 'I open the site/url/uri {string}',
+      variant: 'expression',
+      content: 'I open the site/url/uri {string}',
+    }, 'I open the site "$world.app.url"')
+
+    expect(match).toEqual(expect.arrayContaining(['$world.app.url']))
+  })
 })

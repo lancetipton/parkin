@@ -14,7 +14,6 @@ import { noOpObj } from '@keg-hub/jsutils'
 export const matchRegex = (step, text) => {
   const match = text.match(new RegExp(step.match))
 
-  // If there is a match, get all matching items except for the first one
   // Which is the original string
   return match
     ? { step, match: match.slice(1, match.length).filter(Boolean) }

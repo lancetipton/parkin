@@ -120,10 +120,11 @@ export const expressionDefs = [
     },
     tests: {
       pass: [
-        'I wait 1 second',
-        'I wait 0 seconds',
+        'I wait 1.0 second',
+        'I wait 0.0 seconds',
       ],
       fail: [
+        'I wait 2 seconds',
         'I wait some seconds',
         'I wait 1',
         'I wait 0 minutes',
@@ -134,9 +135,9 @@ export const expressionDefs = [
   {
     step: {
       type: 'given',
-      match: 'I do the thing {float} time(s) and I say {string}',
+      match: 'I do the thing {int} time(s) and I say {string}',
       variant: 'expression',
-      content: 'I do the thing {float} time(s) and I say {string}',
+      content: 'I do the thing {int} time(s) and I say {string}',
     },
     tests: {
       pass: [
