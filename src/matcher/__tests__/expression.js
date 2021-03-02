@@ -155,4 +155,15 @@ describe('Match matchExpression', () => {
     expect(match).toEqual(expect.arrayContaining([ selector, textContent ]))
 
   })
+
+  it('should work with optionals on the start of a word', () => {
+    const { match } = matchExpression({
+      type: 'given',
+      match: 'I (dont )love regex',
+      variant: 'expression',
+      content: 'I (dont )love regex',
+    }, 'I dont love regex')
+
+    expect(match).toBeDefined()
+  })
 })

@@ -142,7 +142,9 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
   const result = parts.reduce((state, part) => {
     const { params, textIndex, wordMatchIndex } = state
 
+    // look at the section of the text we haven't already evaluated
     const substring = text.substring(textIndex)
+
     const isWord = (part.paramType === 'word')
     const partMatch = substring.match(part.regex)
     const wordMatch = {
@@ -163,10 +165,10 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
     return {
       params,
 
-      // move the text index forward so that we don't reevaluate the same text in a future iteration
+      // increment text index so that we don't reevaluate the same text in future iterations
       textIndex: textIndex + (match && (match.index + match[0].length)),
 
-      // move the word match index forward so we don't repeat a word in a future iteration
+      // increment match index so we don't repeat a word in future iterations
       wordMatchIndex: wordMatchIndex + (isWord && 1) 
     }
   }, { params: [], textIndex: 0, wordMatchIndex: 0 })
@@ -204,6 +206,7 @@ export const matchExpression = (step, text) => {
   // If no found step definition of match, return an empty object
   if (!found || !found.step || !found.match) return noOpObj
 
+  // get all the parameters, without any type coercion
   const params = extractParameters(text, step.match, found.match)
   if (!params) return noOpObj
 
