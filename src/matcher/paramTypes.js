@@ -3,22 +3,9 @@ import {
   toStr,
   isFunc,
   exists,
-  isStr,
+  isQuoted,
 } from '@keg-hub/jsutils'
 import { throwParamTypeExists } from '../errors'
-
-/**
- * TODO: replace with jsutils.isQuoted once merged
- * @param {string} str 
- * @return {boolean} true if `str` is a quoted string
- * @example
- * isQuoted('foo') // false
- * isQuoted('"foo"') // true
- */
-const isQuoted = str => {
-  return isStr(str) && 
-    ['\"', '\''].some(quote => str.startsWith(quote) && str.endsWith(quote))
-}
 
 /**
  * Default param type model used when registering param types
