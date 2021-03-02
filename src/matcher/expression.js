@@ -193,15 +193,17 @@ export const matchExpression = (step, text) => {
       const { params, textIndex, fullMatchIndex } = state
 
       const substring = text.substring(textIndex)
-
       const isWord = (part.paramType === 'word')
       const partMatch = substring.match(part.regex)
-      const fullMatch = found.match[fullMatchIndex]
+      const fullMatch = {
+        0: found.match[fullMatchIndex],
+        index: substring.indexOf(found.match[fullMatchIndex])
+      }
 
       const match = isWord ? fullMatch : partMatch
-      const nextTextIndex = textIndex + (match ? match.index + match[0].length : 0)
+      if (!match) return state
 
-      part.type === 'alternate' && console.log({ rx: part.regex, substring, match, textIndex, nextTextIndex})
+      const nextTextIndex = textIndex + (match && (match.index + match[0].length))
 
       switch(part.type) {
         case 'parameter':
@@ -220,7 +222,7 @@ export const matchExpression = (step, text) => {
           return {
             params,
             textIndex: nextTextIndex,
-            fullMatchIndex: fullMatchIndex + (match ? 1 : 0)
+            fullMatchIndex //: fullMatchIndex + (match ? 1 : 0)
           }
       }
     },
@@ -229,8 +231,6 @@ export const matchExpression = (step, text) => {
 
   const converted = convertTypes(params, transformers)
   const numExpectedParams = parts.filter(part => part.type === 'parameter').length
-
-  // console.log({ text, converted, parts })
 
   return converted.length !== numExpectedParams
     ? noOpObj
