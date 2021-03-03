@@ -4,6 +4,7 @@ import {
   isFunc,
   exists,
   isQuoted,
+  checkCall
 } from '@keg-hub/jsutils'
 import { throwParamTypeExists } from '../errors'
 
@@ -108,7 +109,7 @@ export const convertTypes = (matches, transformers) => {
     .map((item, i) => {
       const paramType = transformers[i]
       if (!paramType) return item
-      const asType = isFunc(paramType.transformer) ? paramType.transformer(item) : undefined
+      const asType = checkCall(paramType.transformer, item)
       return typeof asType === paramType.type ? asType : null
     })
     .filter(exists)
