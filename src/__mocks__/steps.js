@@ -15,7 +15,7 @@ export const registerMockSteps = (PK, withPromises) => {
   )
 
   PK.When(
-    `I set {string} to the input {word}`,
+    `I set {word} to the input {word}`,
     jest.fn((input, selector, world) => {})
   )
 

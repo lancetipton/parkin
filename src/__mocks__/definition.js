@@ -86,4 +86,104 @@ export const expressionDefs = [
       pass: [`Convert 5 and 4.5 and something and "A string" properly`],
     },
   },
+  {
+    step: {
+      type: 'then',
+      match: 'I have (some )apple(s) to eat( and savor)',
+      variant: 'expression',
+      content: 'Then("I have (some )apple(s) to eat( and savor)", ()=>{})',
+    },
+    tests: {
+      pass: [
+        `I have some apples to eat`,
+        `I have apples to eat`,
+        `I have apples to eat and savor`,
+        `I have some apples to eat and savor`,
+        `I have some apple to eat`,
+        `I have apple to eat`,
+        `I have apple to eat and savor`,
+        `I have some apple to eat and savor`,
+      ],
+      fail: [
+        `I have many apples to eat`,
+        `I have apples to eat and spit out`,
+        `I have some apples`,
+      ],
+    },
+  },
+  {
+    step: {
+      type: 'given',
+      match: 'I wait {float} second(s)',
+      variant: 'expression',
+      content: 'Then("I wait {float} second(s)", ()=>{})',
+    },
+    tests: {
+      pass: [
+        'I wait 1.0 second',
+        'I wait 0.0 seconds',
+      ],
+      fail: [
+        'I wait 2 seconds',
+        'I wait some seconds',
+        'I wait 1',
+        'I wait 0 minutes',
+        'I wait 3 seconds tomorrow',
+      ],
+    },
+  },
+  {
+    step: {
+      type: 'given',
+      match: 'I do the thing {int} time(s) and I say {string}',
+      variant: 'expression',
+      content: 'I do the thing {int} time(s) and I say {string}',
+    },
+    tests: {
+      pass: [
+        'I do the thing 3 times and I say "wow"',
+        'I do the thing 1 time and I say "okay"'
+      ],
+      fail: [
+        'I do the thing some time',
+        'I do the thing 3 times and I say',
+        'I do the thing 1 time and I sing'
+      ],
+    },
+  },
+  {
+    step: {
+      type: 'given',
+      match: 'I click the button {string}',
+      variant: 'expression',
+      content: 'I click the button {string}',
+    },
+    tests: {
+      pass: [
+        'I click the button "hey-123"',
+      ],
+      fail: [
+        'I click the button hey-123',
+        'I click the button 34',
+        'I click the button 34.3',
+      ],
+    },
+  },
+  {
+    step: {
+      type: 'given',
+      match: 'I navigate to {word}',
+      variant: 'expression',
+      content: 'I navigate to {word}',
+    },
+    tests: {
+      pass: [
+        'I navigate to google',
+        'I navigate to .google',
+      ],
+      fail: [
+        'I navigate to "google"'
+      ],
+    },
+  }
 ]

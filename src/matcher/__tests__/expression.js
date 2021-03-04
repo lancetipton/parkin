@@ -62,4 +62,119 @@ describe('Match matchExpression', () => {
       expect(convertDef.tests.validate[index](item)).toBe(true)
     )
   })
+
+  it('should work with multiple optional text instances', () => {
+    const expressionDef = expressionDefs[3]
+    expressionDef.tests.pass.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeDefined()
+    })
+
+    expressionDef.tests.fail.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeUndefined()
+    })
+  })
+
+  it('should work with single plural optionals', () => {
+    const expressionDef = expressionDefs[4]
+    expressionDef.tests.pass.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeDefined()
+    })
+
+    expressionDef.tests.fail.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeUndefined()
+    })
+  })
+
+  it('should work with optionals nested between arguments', () => {
+    const expressionDef = expressionDefs[5]
+    expressionDef.tests.pass.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeDefined()
+      expect(match).toHaveLength(2) // should not include the optional text as arguments
+    })
+
+    expressionDef.tests.fail.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeUndefined()
+    })
+  })
+
+  it('should match string types correctly', () => {
+    const expressionDef = expressionDefs[6]
+    expressionDef.tests.pass.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeDefined()
+    })
+
+    expressionDef.tests.fail.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeUndefined()
+    })
+  })
+
+  it('should match word types correctly', () => {
+    const expressionDef = expressionDefs[7]
+    expressionDef.tests.pass.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeDefined()
+    })
+
+    expressionDef.tests.fail.map(test => {
+      const { match } = matchExpression(expressionDef.step, test)
+      expect(match).toBeUndefined()
+    })
+  })
+
+  it('should work with symbols', () => {
+    const { match } = matchExpression({
+      type: 'given',
+      match: 'I open the site/url/uri {string}',
+      variant: 'expression',
+      content: 'I open the site/url/uri {string}',
+    }, 'I open the site "$world.app.url"')
+
+    expect(match).toEqual(expect.arrayContaining(['$world.app.url']))
+  })
+
+  it('should work with string types with single and double quotes', () => {
+    const selector = `.ef-action-button-selected`
+    const textContent = `SELECTED`
+    const stepText = `the descendent '${selector}' contains the text "${textContent}"`
+
+    const { match } = matchExpression({
+      type: 'given',
+      match: 'the descendent {string} contains the text {string}',
+      variant: 'expression',
+      content: 'the descendent {string} contains the text {string}',
+    }, stepText)
+
+    expect(match).toEqual(expect.arrayContaining([ selector, textContent ]))
+
+  })
+
+  it('should work with optionals on the start of a word', () => {
+    const { match } = matchExpression({
+      type: 'given',
+      match: 'I (dont )love regex',
+      variant: 'expression',
+      content: 'I (dont )love regex',
+    }, 'I dont love regex')
+
+    expect(match).toBeDefined()
+  })
+
+  it('should not match word with step def expecting number', () => {
+    const { match } = matchExpression({
+      type: 'given',
+      match: 'I eat {int} apples',
+      variant: 'expression',
+      content: 'I eat {int} apples',
+    }, 'I eat tasty apples')
+
+    expect(match).toBeUndefined()
+  })
 })

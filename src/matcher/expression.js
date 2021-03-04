@@ -1,12 +1,22 @@
-import { matchRegex } from './regex'
+import { 
+  matchRegex, 
+  getRegexParts,
+  getParamRegex,
+  toAlternateRegex,
+  getAlternateRegex
+} from './regex'
+
+import {
+  RX_OPTIONAL,
+  RX_ALT,
+  RX_EXPRESSION,
+  RX_MATCH_REPLACE,
+  RX_PARAMETER
+} from './patterns'
+
 import { noOpObj, isFunc } from '@keg-hub/jsutils'
 import { getParamTypes, convertTypes } from './paramTypes'
 
-const RX_OPTIONAL = /\s*\S*\(s\)\s*/g
-const RX_ALT = /\s*\S*\/\S*\s*/g
-const RX_EXPRESSION = /\s*{(.*?)}\s*/g
-const RX_EXP_REPLACE = `(.*)`
-const RX_MATCH_REPLACE = /{|}/g
 const inBrowser = Boolean(typeof window !== 'undefined')
 
 /**
@@ -18,9 +28,8 @@ const inBrowser = Boolean(typeof window !== 'undefined')
  * @return {string} Escaped string to allow converting into a regular expression
  */
 const escapeStr = str => {
-  // return inBrowser ? str.replace(/[.*+?^$()|[\]\\]/g, '\\$&') : str
   return inBrowser
-    ? str.replace(/[|\\()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d')
+    ? str.replace(/[|\\[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d')
     : str
 }
 
@@ -45,7 +54,6 @@ const runRegexCheck = (matcher, testRx, replaceWith) => {
     const match = args[0].trim()
     const [ start, ...end ] = regexStr.split(match)
     const replace = isFunc(replaceWith) ? replaceWith(...args) : replaceWith
-
     regexStr = `${start}${replace}${end.join(match)}`
   })
 
@@ -58,7 +66,7 @@ const runRegexCheck = (matcher, testRx, replaceWith) => {
  * @private
  * @param {string} match - Step match text from feature scenario
  *
- * @return {string} match string with expression replaced
+ * @return {Object} { regex: match string with expression replaced, transformers: Array of transformer objects }
  */
 const convertToRegex = match => {
   const paramTypes = getParamTypes()
@@ -66,32 +74,21 @@ const convertToRegex = match => {
   const regex = runRegexCheck(match, RX_EXPRESSION, (val, ...args) => {
     // Get the expression type
     const type = val.trim().replace(RX_MATCH_REPLACE, '')
+    const isParameter = val.match(RX_PARAMETER)
+    const isOptional = val.match(RX_OPTIONAL)
+
     // Add the transformer for the type to the transformers array
-    transformers.push(paramTypes[type] || paramTypes.any)
+    isParameter && transformers.push(paramTypes[type] || paramTypes.any)
 
     // Return the regex
-    return RX_EXP_REPLACE
+    return isParameter
+      ? getParamRegex(type)
+      : isOptional
+        ? toAlternateRegex(val)
+        : val
   })
 
   return { regex, transformers }
-}
-
-/**
- * Find all optional syntax in the match string, and convert them into into regex
- * @function
- * @private
- * @param {string} match - Step match text from feature scenario
- *
- * @return {string} match string with optional syntax replaced
- */
-const checkOptional = match => {
-  const regex = runRegexCheck(
-    match,
-    RX_OPTIONAL,
-    (val, ...args) => `${val.trim().replace('(s)', '')}s*`
-  )
-
-  return { regex }
 }
 
 /**
@@ -106,12 +103,84 @@ const checkAlternative = match => {
   const altIndexes = []
   const regex = runRegexCheck(
     match,
-    RX_ALT,
+    new RegExp(RX_ALT, 'g'),
     // Use a non-capture group to allow matching, but don't include in the results (?:)
-    (val, ...args) => `(?:${val.trim().replace('/', '|')})`
+    getAlternateRegex,
   )
 
   return { regex, altIndexes }
+}
+
+/**
+ * Adds regex anchors to the ends of the regex string, if it needs them
+ * @param {string} str
+ * @return {string} with anchors
+ */
+const checkAnchors = str => {
+  let final = str
+  if (!str.startsWith('^')) {
+    final = '^' + final
+  }
+  if (!str.endsWith('$')) {
+    final += '$'
+  }
+
+  return { regex: final }
+}
+
+/**
+ * Extracts the dynamic cucumber-expression parameters from the text,
+ * given the step matcher template and the fullMatchResults
+ * @param {string} text 
+ * @param {RegExp} stepMatcher 
+ * @param {Array} wordMatches - matches for the {word} params
+ */
+const extractParameters = (text, stepMatcher, wordMatches) => {
+  // gets an array of each dynamic element of the step match text,
+  // including: params (e.g. {float}), optionals (e.g. test(s))
+  // and alternate text (e.g. required/optional)
+  const parts = getRegexParts(stepMatcher)
+
+  const expectedParamLength = parts.filter(part => part.type === 'parameter').length
+
+  // extract the params from the text, using the parts array
+  const result = parts.reduce((state, part) => {
+    const { params, textIndex, wordMatchIndex } = state
+
+    // look at the section of the text we haven't already evaluated
+    const substring = text.substring(textIndex)
+
+    const isWord = (part.paramType === 'word')
+    const partMatch = substring.match(part.regex)
+    const wordMatch = {
+      0: wordMatches[wordMatchIndex],
+      index: substring.indexOf(wordMatches[wordMatchIndex])
+    }
+
+    // if matching a param {word}, then use the wordMatch, because
+    // it contains all the {word} matches properly
+    const match = isWord ? wordMatch : partMatch
+    if (!match) return state
+
+    // add the matched parameter if the current part is a param and a match exists
+    ;(part.type === 'parameter') && 
+      match && 
+      params.push(match[0])
+
+    return {
+      params,
+
+      // increment text index so that we don't reevaluate the same text in future iterations
+      textIndex: textIndex + (match && (match.index + match[0].length)),
+
+      // increment match index so we don't repeat a word in future iterations
+      wordMatchIndex: wordMatchIndex + (isWord && 1) 
+    }
+  }, { params: [], textIndex: 0, wordMatchIndex: 0 })
+
+  return expectedParamLength === result.params.length
+    ? result.params
+    : null
 }
 
 /**
@@ -124,16 +193,15 @@ const checkAlternative = match => {
  * @param {Object} step - Registered step definition
  * @param {string} text - Feature step text to compare with step definition text
  *
+ * @returns {Object} 
  * @returns {Object} Found matching step definition and matched arguments
+ *  - form: { step, match: Array of Arguments to pass to step function }
  */
 export const matchExpression = (step, text) => {
-  // TODO: This needs move investigation
-  // Need to ensure correct chars are escaped for all edge cases
   const escaped = escapeStr(step.match)
-
-  const { regex } = checkOptional(escaped)
-  const { regex: regexAlts } = checkAlternative(regex)
-  const { regex: match, transformers } = convertToRegex(regexAlts)
+  const { regex: regexAlts } = checkAlternative(escaped)
+  const { regex: convertedRegex, transformers } = convertToRegex(regexAlts)
+  const { regex: match } = checkAnchors(convertedRegex)
 
   // Then call the regex matcher to get the content
   const found = matchRegex({ ...step, match }, text)
@@ -141,13 +209,18 @@ export const matchExpression = (step, text) => {
   // If no found step definition of match, return an empty object
   if (!found || !found.step || !found.match) return noOpObj
 
-  // Convert the found variables into their type based on the mapped transformers
-  const converted = convertTypes(found.match, transformers)
+  // get all the parameters, without any type coercion
+  const params = extractParameters(text, step.match, found.match)
+  if (!params) return noOpObj
 
-  // If the conversion fails, and no type is returned
-  // Then assume the type does not match, so the step does not match
+  // Convert the found variables into their type based on the mapped transformers
+  const converted = convertTypes(params, transformers)
+
+  // If the conversion fails, and no variable or not enough variables are returned,
+  // Then assume the type does not match, so the step does not match.
   // Otherwise return the matched step definition, and the converted variables
-  return converted.length !== found.match.length
+  return converted.length !== params.length
     ? noOpObj
     : { step, match: converted }
 }
+

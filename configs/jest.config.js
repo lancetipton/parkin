@@ -2,17 +2,26 @@ const path = require('path')
 const ROOT_DIR = path.join(__dirname, '../')
 
 module.exports = {
-  rootDir: '../',
+  rootDir: ROOT_DIR,
   preset: 'rollup-jest',
   transform: {
     '^.+\\.js$': 'babel-jest',
   },
-  testMatch: [`${ROOT_DIR}src/**/__tests__/**/*.js?(x)`],
-  collectCoverageFrom: [`${ROOT_DIR}src/index.js`],
+  testMatch: [
+    `<rootDir>/src/**/__tests__/**/*.js?(x)`
+  ],
+  coverageDirectory: "reports/coverage",
+  coveragePathIgnorePatterns: [
+    "<rootDir>/src/__mocks__",
+    "<rootDir>/src/__tests__"
+  ],
+  collectCoverageFrom: [
+    "src/**/*.{js,jsx,ts,tsx}"
+  ],
   moduleFileExtensions: [ 'js', 'json', 'jsx', 'es6' ],
   globals: {
     __DEV__: true,
   },
   testEnvironment: 'node',
-  setupFilesAfterEnv: [`${ROOT_DIR}configs/setupTests.js`],
+  setupFilesAfterEnv: [`<rootDir>/configs/setupTests.js`],
 }

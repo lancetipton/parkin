@@ -1,11 +1,21 @@
 import {
   noOpObj,
   toStr,
-  toInt,
-  toFloat,
-  checkCall,
   exists,
+  isQuoted,
+  checkCall,
+  equalsNaN,
+  joinRegex,
 } from '@keg-hub/jsutils'
+
+import { 
+  RX_ANY,
+  RX_FLOAT,
+  RX_INT,
+  RX_DOUBLE_QUOTED,
+  RX_SINGLE_QUOTED
+} from './patterns'
+
 import { throwParamTypeExists } from '../errors'
 
 /**
@@ -31,32 +41,45 @@ const __paramTypes = {
   any: {
     ...typeModel,
     name: 'any',
+    regex: RX_ANY,
   },
   word: {
     ...typeModel,
     name: 'word',
-    transformer: arg => toStr(arg),
+    regex: RX_ANY,
+    transformer: arg => !isQuoted(arg) ? toStr(arg) : undefined,
   },
   float: {
     ...typeModel,
     name: 'float',
     type: 'number',
-    transformer: arg => toFloat(arg),
+    regex: RX_FLOAT,
+    transformer: arg => {
+      const result = parseFloat(arg)
+      return equalsNaN(result) ? undefined : result
+    }
   },
   int: {
     ...typeModel,
     name: 'int',
     type: 'number',
-    transformer: arg => !arg.includes('.') && toInt(arg),
+    regex: RX_INT,
+    transformer: arg => {
+      const result = parseInt(arg)
+      return (arg.includes('.') || equalsNaN(result)) ? undefined : result
+    }
   },
   string: {
     ...typeModel,
     name: 'string',
-    transformer: arg =>
-      arg
-        .trim()
-        .replace(/^("|')/, '')
-        .replace(/("|')$/, ''),
+    regex: joinRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED),
+    transformer: arg => {
+      return isQuoted(arg)
+        ? arg.trim()
+            .replace(/^("|')/, '')
+            .replace(/("|')$/, '')
+        : undefined
+    }
   },
 }
 
@@ -100,9 +123,9 @@ export const convertTypes = (matches, transformers) => {
   return matches
     .map((item, i) => {
       const paramType = transformers[i]
+      if (!paramType) return item
       const asType = checkCall(paramType.transformer, item)
-
       return typeof asType === paramType.type ? asType : null
     })
-    .filter(item => exists(item) && item)
+    .filter(exists)
 }
