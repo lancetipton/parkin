@@ -31,11 +31,6 @@ const deepFreeze = obj => {
   return obj;
 };
 
-const isStr = str => typeof str === 'string';
-
-const equalsNaN = val => typeof val === 'number' && val != val;
-const isNum = val => typeof val === 'number' && !equalsNaN(val);
-
 const noOp = () => {};
 const noOpObj = Object.freeze({});
 const noPropObj = deepFreeze({
@@ -45,9 +40,15 @@ const noPropArr = deepFreeze([]);
 
 const exists = value => value === value && value !== undefined && value !== null;
 
+const equalsNaN = val => typeof val === 'number' && val != val;
+
+const isStr = str => typeof str === 'string';
+
 const eitherArr = (a, b) => isArr(a) ? a : b;
 
-const checkCall = (method, ...params) => isFunc(method) && method(...params) || undefined;
+const checkCall = (method, ...params) => {
+  return isFunc(method) ? method(...params) : undefined;
+};
 const uuid = a => a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid);
 
 const toStr = val => val === null || val === undefined ? '' : isStr(val) ? val : JSON.stringify(val);
@@ -57,32 +58,65 @@ const capitalize = (str, lowercaseTail = true) => {
   const tail = lowercaseTail ? str.slice(1).toLowerCase() : str.slice(1);
   return `${str[0].toUpperCase()}${tail}`;
 };
-
-const getNums = val => toStr(val).replace(/([^.\d])/gm, '');
-
-const toFloat = val => val && !equalsNaN(val) && parseFloat(isNum(val) && val || getNums(val)) || 0;
-const toInt = val => val && !equalsNaN(val) && parseInt(isNum(val) && val || getNums(val)) || 0;
+const quoteSymbols = ['\"', '\''];
+const isQuoted = (str, quotes = quoteSymbols) => {
+  return isStr(str) && quotes.some(quote => str.startsWith(quote) && str.endsWith(quote));
+};
+const reverseStr = str => {
+  if (!isStr(str)) return undefined;
+  let reversed = '';
+  for (let char of str) {
+    reversed = char + reversed;
+  }
+  return reversed;
+};
+const getNearestDelimiterIndex = (text, index, delimiters) => {
+  const indices = delimiters.map(str => text.indexOf(str, index)).sort();
+  return indices.find(idx => idx >= 0);
+};
+const getWordStartingAt = (text, index, delimiters = [' ']) => {
+  const endingSpaceIdx = getNearestDelimiterIndex(text, index, delimiters);
+  return text.substring(index, endingSpaceIdx === -1 ? text.length : endingSpaceIdx);
+};
+const getWordEndingAt = (text, index, delimiters = [' ']) => {
+  const reversed = reverseStr(text);
+  const reversedIndex = text.length - index;
+  return reverseStr(getWordStartingAt(reversed, reversedIndex, delimiters));
+};
 
 const defObjProps = Array.from(['caller', 'callee', 'arguments', 'apply', 'bind', 'call', 'toString', '__proto__', '__defineGetter__', '__defineSetter__', 'hasOwnProperty', '__lookupGetter__', '__lookupSetter__', 'isPrototypeOf', 'propertyIsEnumerable', 'valueOf', 'toLocaleString']).concat(Object.getOwnPropertyNames(Object.prototype)).reduce((map, functionName) => {
   map[functionName] = true;
   return map;
 }, {});
 
-const matchRegex = (step, text) => {
-  const match = text.match(new RegExp(step.match));
-  return match ? {
-    step,
-    match: match.slice(1, match.length)
-  } : noOpObj;
+const isRegex = val => Boolean(val && val instanceof RegExp);
+const getRegexSource = maybeRx => isRegex(maybeRx) ? maybeRx.source : isStr(maybeRx) ? maybeRx : null;
+const parseArgs = args => {
+  if (isArr(args[0])) return [args[0], args[1]];
+  const last = args[args.length - 1];
+  const options = isStr(last) ? last : undefined;
+  const expressions = options ? args.splice(0, args.length - 1) : args;
+  return [expressions, options];
+};
+const joinRegex = (...args) => {
+  const [expressions, options] = parseArgs(args);
+  const source = expressions.reduce((joined, next) => {
+    const nextSource = getRegexSource(next);
+    return !nextSource ? joined : joined === '' ? nextSource : `${joined}|${nextSource}`;
+  }, '');
+  return new RegExp(`(${source})`, options);
 };
 
-const constants = deepFreeze({
-  REGEX_VARIANT: 'regex',
-  EXPRESSION_VARIANT: 'expression',
-  STEP_TYPES: ['given', 'when', 'then', 'and', 'but'],
-  HOOK_TYPES: ['beforeAll', 'afterAll', 'beforeEach', 'afterEach'],
-  FEATURE_META: ['feature', 'perspective', 'desire', 'reason', 'comments']
-});
+const RX_OPTIONAL = /\w*\([^)]*?\)/;
+const RX_ALT = /\s*\S*\/\S*\s*/;
+const RX_PARAMETER = /\s*{(.*?)}\s*/;
+const RX_EXPRESSION = joinRegex(RX_PARAMETER, RX_OPTIONAL, 'g');
+const RX_ANY = /(.*)/;
+const RX_MATCH_REPLACE = /{|}/g;
+const RX_DOUBLE_QUOTED = /"[^"]+"/;
+const RX_SINGLE_QUOTED = /'[^']+'/;
+const RX_FLOAT = /-?[0-9]+[.][0-9]+/;
+const RX_INT = /-?[0-9]+/;
 
 const testMethodFill = type => {
   return () => {
@@ -115,25 +149,38 @@ const typeModel = {
 };
 const __paramTypes = {
   any: { ...typeModel,
-    name: 'any'
+    name: 'any',
+    regex: RX_ANY
   },
   word: { ...typeModel,
     name: 'word',
-    transformer: arg => toStr(arg)
+    regex: RX_ANY,
+    transformer: arg => !isQuoted(arg) ? toStr(arg) : undefined
   },
   float: { ...typeModel,
     name: 'float',
     type: 'number',
-    transformer: arg => toFloat(arg)
+    regex: RX_FLOAT,
+    transformer: arg => {
+      const result = parseFloat(arg);
+      return equalsNaN(result) ? undefined : result;
+    }
   },
   int: { ...typeModel,
     name: 'int',
     type: 'number',
-    transformer: arg => !arg.includes('.') && toInt(arg)
+    regex: RX_INT,
+    transformer: arg => {
+      const result = parseInt(arg);
+      return arg.includes('.') || equalsNaN(result) ? undefined : result;
+    }
   },
   string: { ...typeModel,
     name: 'string',
-    transformer: arg => arg.trim().replace(/^("|')/, '').replace(/("|')$/, '')
+    regex: joinRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED),
+    transformer: arg => {
+      return isQuoted(arg) ? arg.trim().replace(/^("|')/, '').replace(/("|')$/, '') : undefined;
+    }
   }
 };
 const getParamTypes = () => __paramTypes;
@@ -145,19 +192,86 @@ const registerParamType = (model = noOpObj, key = model.name) => {
 const convertTypes = (matches, transformers) => {
   return matches.map((item, i) => {
     const paramType = transformers[i];
+    if (!paramType) return item;
     const asType = checkCall(paramType.transformer, item);
     return typeof asType === paramType.type ? asType : null;
-  }).filter(item => exists(item) && item);
+  }).filter(exists);
 };
 
-const RX_OPTIONAL = /\s*\S*\(s\)\s*/g;
-const RX_ALT = /\s*\S*\/\S*\s*/g;
-const RX_EXPRESSION = /\s*{(.*?)}\s*/g;
-const RX_EXP_REPLACE = `(.*)`;
-const RX_MATCH_REPLACE = /{|}/g;
+const matchRegex = (step, text) => {
+  const match = text.match(new RegExp(step.match));
+  return match ? {
+    step,
+    match: match.slice(1, match.length).filter(Boolean)
+  } : noOpObj;
+};
+const toAlternateRegex = optional => {
+  const split = optional.split(/(\(|\))/);
+  const [start,, middle,, end] = split;
+  if (start === '' && end === '') return optional + '?';else if (start === '') return `(${middle}|${middle}${end})`;else if (end === '') return `(${start}|${start}${middle})`;else return `(${start}${end}|${start}${middle}${end})`;
+};
+const getFullOptionalText = match => {
+  const text = match.input;
+  const precedingWord = getWordEndingAt(text, match.index);
+  return precedingWord + match[0];
+};
+const getOptionalRegex = match => {
+  const optionalText = getFullOptionalText(match);
+  return toAlternateRegex(optionalText);
+};
+const getParamRegex = type => {
+  const params = getParamTypes();
+  const spec = params[type] || params.any;
+  return spec.regex.source;
+};
+const getAlternateRegex = value => {
+  return `(${value.trim().replace(/\//g, '|')})`;
+};
+const getMatchRegex = (type, match) => {
+  const [val, paramType] = match;
+  switch (type) {
+    case 'parameter':
+      return new RegExp(getParamRegex(paramType));
+    case 'optional':
+      return new RegExp(getOptionalRegex(match));
+    case 'alternate':
+      return new RegExp(getAlternateRegex(val));
+    default:
+      return null;
+  }
+};
+const parseMatch = (matchArr, type = 'other') => {
+  const val = matchArr[0];
+  return {
+    text: val.trim(),
+    index: matchArr.index,
+    input: matchArr.input,
+    regex: getMatchRegex(type, matchArr),
+    type,
+    ...(type === 'parameter' && {
+      paramType: val.trim().replace(RX_MATCH_REPLACE, '')
+    })
+  };
+};
+const getRegexParts = stepMatcher => {
+  const parameters = [...stepMatcher.matchAll(new RegExp(RX_PARAMETER, 'gi'))].map(match => parseMatch(match, 'parameter'));
+  const optionals = [...stepMatcher.matchAll(new RegExp(RX_OPTIONAL, 'gi'))].map(match => parseMatch(match, 'optional'));
+  const alts = [...stepMatcher.matchAll(new RegExp(RX_ALT, 'gi'))].map(match => parseMatch(match, 'alternate'));
+  const sortedExpressions = [...parameters, ...optionals, ...alts].sort((matchA, matchB) => matchA.index - matchB.index);
+  return sortedExpressions;
+};
+
+const constants = deepFreeze({
+  REGEX_VARIANT: 'regex',
+  EXPRESSION_VARIANT: 'expression',
+  STEP_TYPES: ['given', 'when', 'then', 'and', 'but'],
+  HOOK_TYPES: ['beforeAll', 'afterAll', 'beforeEach', 'afterEach'],
+  FEATURE_META: ['feature', 'perspective', 'desire', 'reason', 'comments']
+});
+
 const inBrowser = Boolean(typeof window !== 'undefined');
 const escapeStr = str => {
-  return inBrowser ? str.replace(/[|\\()[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d') : str;
+  return inBrowser ? str.replace(/[|\\[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d') : str;
 };
 const runRegexCheck = (matcher, testRx, replaceWith) => {
   if (!testRx.test(matcher)) return matcher;
@@ -175,47 +289,88 @@ const convertToRegex = match => {
   const transformers = [];
   const regex = runRegexCheck(match, RX_EXPRESSION, (val, ...args) => {
     const type = val.trim().replace(RX_MATCH_REPLACE, '');
-    transformers.push(paramTypes[type] || paramTypes.any);
-    return RX_EXP_REPLACE;
+    const isParameter = val.match(RX_PARAMETER);
+    const isOptional = val.match(RX_OPTIONAL);
+    isParameter && transformers.push(paramTypes[type] || paramTypes.any);
+    return isParameter ? getParamRegex(type) : isOptional ? toAlternateRegex(val) : val;
   });
   return {
     regex,
     transformers
   };
 };
-const checkOptional = match => {
-  const regex = runRegexCheck(match, RX_OPTIONAL, (val, ...args) => `${val.trim().replace('(s)', '')}s*`);
-  return {
-    regex
-  };
-};
 const checkAlternative = match => {
   const altIndexes = [];
-  const regex = runRegexCheck(match, RX_ALT,
-  (val, ...args) => `(?:${val.trim().replace('/', '|')})`);
+  const regex = runRegexCheck(match, new RegExp(RX_ALT, 'g'),
+  getAlternateRegex);
   return {
     regex,
     altIndexes
   };
 };
+const checkAnchors = str => {
+  let final = str;
+  if (!str.startsWith('^')) {
+    final = '^' + final;
+  }
+  if (!str.endsWith('$')) {
+    final += '$';
+  }
+  return {
+    regex: final
+  };
+};
+const extractParameters = (text, stepMatcher, wordMatches) => {
+  const parts = getRegexParts(stepMatcher);
+  const expectedParamLength = parts.filter(part => part.type === 'parameter').length;
+  const result = parts.reduce((state, part) => {
+    const {
+      params,
+      textIndex,
+      wordMatchIndex
+    } = state;
+    const substring = text.substring(textIndex);
+    const isWord = part.paramType === 'word';
+    const partMatch = substring.match(part.regex);
+    const wordMatch = {
+      0: wordMatches[wordMatchIndex],
+      index: substring.indexOf(wordMatches[wordMatchIndex])
+    };
+    const match = isWord ? wordMatch : partMatch;
+    if (!match) return state;
+    part.type === 'parameter' && match && params.push(match[0]);
+    return {
+      params,
+      textIndex: textIndex + (match && match.index + match[0].length),
+      wordMatchIndex: wordMatchIndex + (isWord && 1)
+    };
+  }, {
+    params: [],
+    textIndex: 0,
+    wordMatchIndex: 0
+  });
+  return expectedParamLength === result.params.length ? result.params : null;
+};
 const matchExpression = (step, text) => {
   const escaped = escapeStr(step.match);
   const {
-    regex
-  } = checkOptional(escaped);
-  const {
     regex: regexAlts
-  } = checkAlternative(regex);
+  } = checkAlternative(escaped);
   const {
-    regex: match,
+    regex: convertedRegex,
     transformers
   } = convertToRegex(regexAlts);
+  const {
+    regex: match
+  } = checkAnchors(convertedRegex);
   const found = matchRegex({ ...step,
     match
   }, text);
   if (!found || !found.step || !found.match) return noOpObj;
-  const converted = convertTypes(found.match, transformers);
-  return converted.length !== found.match.length ? noOpObj : {
+  const params = extractParameters(text, step.match, found.match);
+  if (!params) return noOpObj;
+  const converted = convertTypes(params, transformers);
+  return converted.length !== params.length ? noOpObj : {
     step,
     match: converted
   };

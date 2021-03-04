@@ -1,9 +1,9 @@
-import { 
-  matchRegex, 
+import {
+  matchRegex,
   getRegexParts,
   getParamRegex,
   toAlternateRegex,
-  getAlternateRegex
+  getAlternateRegex,
 } from './regex'
 
 import {
@@ -11,7 +11,7 @@ import {
   RX_ALT,
   RX_EXPRESSION,
   RX_MATCH_REPLACE,
-  RX_PARAMETER
+  RX_PARAMETER,
 } from './patterns'
 
 import { noOpObj, isFunc } from '@keg-hub/jsutils'
@@ -105,7 +105,7 @@ const checkAlternative = match => {
     match,
     new RegExp(RX_ALT, 'g'),
     // Use a non-capture group to allow matching, but don't include in the results (?:)
-    getAlternateRegex,
+    getAlternateRegex
   )
 
   return { regex, altIndexes }
@@ -131,8 +131,8 @@ const checkAnchors = str => {
 /**
  * Extracts the dynamic cucumber-expression parameters from the text,
  * given the step matcher template and the fullMatchResults
- * @param {string} text 
- * @param {RegExp} stepMatcher 
+ * @param {string} text
+ * @param {RegExp} stepMatcher
  * @param {Array} wordMatches - matches for the {word} params
  */
 const extractParameters = (text, stepMatcher, wordMatches) => {
@@ -141,46 +141,47 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
   // and alternate text (e.g. required/optional)
   const parts = getRegexParts(stepMatcher)
 
-  const expectedParamLength = parts.filter(part => part.type === 'parameter').length
+  const expectedParamLength = parts.filter(part => part.type === 'parameter')
+    .length
 
   // extract the params from the text, using the parts array
-  const result = parts.reduce((state, part) => {
-    const { params, textIndex, wordMatchIndex } = state
+  const result = parts.reduce(
+    (state, part) => {
+      const { params, textIndex, wordMatchIndex } = state
 
-    // look at the section of the text we haven't already evaluated
-    const substring = text.substring(textIndex)
+      // look at the section of the text we haven't already evaluated
+      const substring = text.substring(textIndex)
 
-    const isWord = (part.paramType === 'word')
-    const partMatch = substring.match(part.regex)
-    const wordMatch = {
-      0: wordMatches[wordMatchIndex],
-      index: substring.indexOf(wordMatches[wordMatchIndex])
-    }
+      const isWord = part.paramType === 'word'
+      const partMatch = substring.match(part.regex)
+      const wordMatch = {
+        0: wordMatches[wordMatchIndex],
+        index: substring.indexOf(wordMatches[wordMatchIndex]),
+      }
 
-    // if matching a param {word}, then use the wordMatch, because
-    // it contains all the {word} matches properly
-    const match = isWord ? wordMatch : partMatch
-    if (!match) return state
+      // if matching a param {word}, then use the wordMatch, because
+      // it contains all the {word} matches properly
+      const match = isWord ? wordMatch : partMatch
+      if (!match)
+        return state
 
-    // add the matched parameter if the current part is a param and a match exists
-    ;(part.type === 'parameter') && 
-      match && 
-      params.push(match[0])
+      // add the matched parameter if the current part is a param and a match exists
+      part.type === 'parameter' && match && params.push(match[0])
 
-    return {
-      params,
+      return {
+        params,
 
-      // increment text index so that we don't reevaluate the same text in future iterations
-      textIndex: textIndex + (match && (match.index + match[0].length)),
+        // increment text index so that we don't reevaluate the same text in future iterations
+        textIndex: textIndex + (match && match.index + match[0].length),
 
-      // increment match index so we don't repeat a word in future iterations
-      wordMatchIndex: wordMatchIndex + (isWord && 1) 
-    }
-  }, { params: [], textIndex: 0, wordMatchIndex: 0 })
+        // increment match index so we don't repeat a word in future iterations
+        wordMatchIndex: wordMatchIndex + (isWord && 1),
+      }
+    },
+    { params: [], textIndex: 0, wordMatchIndex: 0 }
+  )
 
-  return expectedParamLength === result.params.length
-    ? result.params
-    : null
+  return expectedParamLength === result.params.length ? result.params : null
 }
 
 /**
@@ -193,7 +194,7 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
  * @param {Object} step - Registered step definition
  * @param {string} text - Feature step text to compare with step definition text
  *
- * @returns {Object} 
+ * @returns {Object}
  * @returns {Object} Found matching step definition and matched arguments
  *  - form: { step, match: Array of Arguments to pass to step function }
  */
@@ -223,4 +224,3 @@ export const matchExpression = (step, text) => {
     ? noOpObj
     : { step, match: converted }
 }
-

@@ -8,12 +8,12 @@ import {
   joinRegex,
 } from '@keg-hub/jsutils'
 
-import { 
+import {
   RX_ANY,
   RX_FLOAT,
   RX_INT,
   RX_DOUBLE_QUOTED,
-  RX_SINGLE_QUOTED
+  RX_SINGLE_QUOTED,
 } from './patterns'
 
 import { throwParamTypeExists } from '../errors'
@@ -47,7 +47,7 @@ const __paramTypes = {
     ...typeModel,
     name: 'word',
     regex: RX_ANY,
-    transformer: arg => !isQuoted(arg) ? toStr(arg) : undefined,
+    transformer: arg => (!isQuoted(arg) ? toStr(arg) : undefined),
   },
   float: {
     ...typeModel,
@@ -57,7 +57,7 @@ const __paramTypes = {
     transformer: arg => {
       const result = parseFloat(arg)
       return equalsNaN(result) ? undefined : result
-    }
+    },
   },
   int: {
     ...typeModel,
@@ -66,8 +66,8 @@ const __paramTypes = {
     regex: RX_INT,
     transformer: arg => {
       const result = parseInt(arg)
-      return (arg.includes('.') || equalsNaN(result)) ? undefined : result
-    }
+      return arg.includes('.') || equalsNaN(result) ? undefined : result
+    },
   },
   string: {
     ...typeModel,
@@ -75,11 +75,12 @@ const __paramTypes = {
     regex: joinRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED),
     transformer: arg => {
       return isQuoted(arg)
-        ? arg.trim()
+        ? arg
+            .trim()
             .replace(/^("|')/, '')
             .replace(/("|')$/, '')
         : undefined
-    }
+    },
   },
 }
 

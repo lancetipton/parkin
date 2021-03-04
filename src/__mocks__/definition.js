@@ -119,10 +119,7 @@ export const expressionDefs = [
       content: 'Then("I wait {float} second(s)", ()=>{})',
     },
     tests: {
-      pass: [
-        'I wait 1.0 second',
-        'I wait 0.0 seconds',
-      ],
+      pass: [ 'I wait 1.0 second', 'I wait 0.0 seconds' ],
       fail: [
         'I wait 2 seconds',
         'I wait some seconds',
@@ -142,12 +139,12 @@ export const expressionDefs = [
     tests: {
       pass: [
         'I do the thing 3 times and I say "wow"',
-        'I do the thing 1 time and I say "okay"'
+        'I do the thing 1 time and I say "okay"',
       ],
       fail: [
         'I do the thing some time',
         'I do the thing 3 times and I say',
-        'I do the thing 1 time and I sing'
+        'I do the thing 1 time and I sing',
       ],
     },
   },
@@ -159,9 +156,7 @@ export const expressionDefs = [
       content: 'I click the button {string}',
     },
     tests: {
-      pass: [
-        'I click the button "hey-123"',
-      ],
+      pass: ['I click the button "hey-123"'],
       fail: [
         'I click the button hey-123',
         'I click the button 34',
@@ -177,13 +172,8 @@ export const expressionDefs = [
       content: 'I navigate to {word}',
     },
     tests: {
-      pass: [
-        'I navigate to google',
-        'I navigate to .google',
-      ],
-      fail: [
-        'I navigate to "google"'
-      ],
+      pass: [ 'I navigate to google', 'I navigate to .google' ],
+      fail: ['I navigate to "google"'],
     },
-  }
+  },
 ]
