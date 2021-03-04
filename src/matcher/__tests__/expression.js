@@ -166,4 +166,15 @@ describe('Match matchExpression', () => {
 
     expect(match).toBeDefined()
   })
+
+  it('should not match word with step def expecting number', () => {
+    const { match } = matchExpression({
+      type: 'given',
+      match: 'I eat {int} apples',
+      variant: 'expression',
+      content: 'I eat {int} apples',
+    }, 'I eat tasty apples')
+
+    expect(match).toBeUndefined()
+  })
 })

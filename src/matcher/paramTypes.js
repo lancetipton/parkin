@@ -1,11 +1,21 @@
 import {
   noOpObj,
   toStr,
-  isFunc,
   exists,
   isQuoted,
-  checkCall
+  checkCall,
+  equalsNaN,
+  joinRegex,
 } from '@keg-hub/jsutils'
+
+import { 
+  RX_ANY,
+  RX_FLOAT,
+  RX_INT,
+  RX_DOUBLE_QUOTED,
+  RX_SINGLE_QUOTED
+} from './patterns'
+
 import { throwParamTypeExists } from '../errors'
 
 /**
@@ -31,33 +41,38 @@ const __paramTypes = {
   any: {
     ...typeModel,
     name: 'any',
+    regex: RX_ANY,
   },
   word: {
     ...typeModel,
     name: 'word',
+    regex: RX_ANY,
     transformer: arg => !isQuoted(arg) ? toStr(arg) : undefined,
   },
   float: {
     ...typeModel,
     name: 'float',
     type: 'number',
+    regex: RX_FLOAT,
     transformer: arg => {
       const result = parseFloat(arg)
-      return (result === NaN) ? undefined : result
+      return equalsNaN(result) ? undefined : result
     }
   },
   int: {
     ...typeModel,
     name: 'int',
     type: 'number',
+    regex: RX_INT,
     transformer: arg => {
       const result = parseInt(arg)
-      return (arg.includes('.') || result === NaN) ? undefined : result
+      return (arg.includes('.') || equalsNaN(result)) ? undefined : result
     }
   },
   string: {
     ...typeModel,
     name: 'string',
+    regex: joinRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED),
     transformer: arg => {
       return isQuoted(arg)
         ? arg.trim()

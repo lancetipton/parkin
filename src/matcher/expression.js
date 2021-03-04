@@ -3,12 +3,17 @@ import {
   getRegexParts,
   getParamRegex,
   toAlternateRegex,
+  getAlternateRegex
+} from './regex'
+
+import {
   RX_OPTIONAL,
   RX_ALT,
   RX_EXPRESSION,
   RX_MATCH_REPLACE,
   RX_PARAMETER
-} from './regex'
+} from './patterns'
+
 import { noOpObj, isFunc } from '@keg-hub/jsutils'
 import { getParamTypes, convertTypes } from './paramTypes'
 
@@ -100,7 +105,7 @@ const checkAlternative = match => {
     match,
     new RegExp(RX_ALT, 'g'),
     // Use a non-capture group to allow matching, but don't include in the results (?:)
-    (val, ...args) => `(?:${val.trim().replace(/\//g, '|')})`
+    getAlternateRegex,
   )
 
   return { regex, altIndexes }
@@ -193,8 +198,6 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
  *  - form: { step, match: Array of Arguments to pass to step function }
  */
 export const matchExpression = (step, text) => {
-  // TODO: This needs move investigation
-  // Need to ensure correct chars are escaped for all edge cases
   const escaped = escapeStr(step.match)
   const { regex: regexAlts } = checkAlternative(escaped)
   const { regex: convertedRegex, transformers } = convertToRegex(regexAlts)

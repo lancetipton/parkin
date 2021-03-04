@@ -1,15 +1,13 @@
-import { noOpObj, getWordEndingAt, joinRegex } from '@keg-hub/jsutils'
+import { noOpObj, getWordEndingAt } from '@keg-hub/jsutils'
+import { getParamTypes } from './paramTypes'
 
-export const RX_OPTIONAL = /\w*\([^)]*?\)/
-export const RX_ALT = /\s*\S*\/\S*\s*/
-export const RX_PARAMETER = /\s*{(.*?)}\s*/
-export const RX_EXPRESSION = joinRegex(RX_PARAMETER, RX_OPTIONAL, 'g')
-export const RX_PARAM_REPLACE = /(.*)/
-export const RX_MATCH_REPLACE = /{|}/g
-export const RX_DOUBLE_QUOTED = /"[^"]+"/
-export const RX_SINGLE_QUOTED = /'[^']+'/
-export const RX_FLOAT = /-?[0-9]+[.][0-9]+/
-export const RX_INT = /-?[0-9]+/
+import {
+  RX_OPTIONAL,
+  RX_ALT,
+  RX_PARAMETER,
+  RX_MATCH_REPLACE,
+} from './patterns'
+
 
 /**
  * Finds a matching step definition from passed in regex
@@ -78,22 +76,23 @@ const getOptionalRegex = match => {
 }
 
 /**
- * Returns regex for a given parameter type
+ * Returns regex source for a given parameter type
  * @param {string} type - cucumber-expression parameter type: float, int, word, or string
  * @return {string} regex source text
  */
 export const getParamRegex = type => {
-  switch(type) {
-    case 'float':
-      return RX_FLOAT.source
-    case 'int':
-      return RX_INT.source
-    case 'string':
-      return joinRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED).source
-    case 'word':
-    default:
-      return RX_PARAM_REPLACE.source
-  }
+  const params = getParamTypes()
+  const spec = params[type] || params.any
+  return spec.regex.source
+}
+
+/**
+ * Gets the right regex for an alternate part
+ * @param {string} value the regex match's text
+ * @return {string} regex source for an alternate part
+ */
+export const getAlternateRegex = value => {
+  return `(${value.trim().replace(/\//g, '|')})`
 }
 
 /**
@@ -111,8 +110,7 @@ const getMatchRegex = (type, match) => {
     case 'optional':
       return new RegExp(getOptionalRegex(match))
     case 'alternate':
-      const pattern = `(${val.trim().replace(/\//g, '|')})`
-      return new RegExp(pattern)
+      return new RegExp(getAlternateRegex(val))
     default:
       return null
   }
