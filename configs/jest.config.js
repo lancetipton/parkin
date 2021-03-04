@@ -10,7 +10,14 @@ module.exports = {
   testMatch: [
     `<rootDir>/src/**/__tests__/**/*.js?(x)`
   ],
-  collectCoverageFrom: [`<rootDir>/src/index.js`],
+  coverageDirectory: "reports/coverage",
+  coveragePathIgnorePatterns: [
+    "<rootDir>/src/__mocks__",
+    "<rootDir>/src/__tests__"
+  ],
+  collectCoverageFrom: [
+    "src/**/*.{js,jsx,ts,tsx}"
+  ],
   moduleFileExtensions: [ 'js', 'json', 'jsx', 'es6' ],
   globals: {
     __DEV__: true,
