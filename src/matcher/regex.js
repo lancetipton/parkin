@@ -1,13 +1,7 @@
 import { noOpObj, getWordEndingAt } from '@keg-hub/jsutils'
 import { getParamTypes } from './paramTypes'
 
-import {
-  RX_OPTIONAL,
-  RX_ALT,
-  RX_PARAMETER,
-  RX_MATCH_REPLACE,
-} from './patterns'
-
+import { RX_OPTIONAL, RX_ALT, RX_PARAMETER, RX_MATCH_REPLACE } from './patterns'
 
 /**
  * Finds a matching step definition from passed in regex
@@ -31,8 +25,8 @@ export const matchRegex = (step, text) => {
 
 /**
  * Converts an optional expression into regex
- * @param {string} optional 
- * @return {string} regex for an optional cucumber-expression 
+ * @param {string} optional
+ * @return {string} regex for an optional cucumber-expression
  * @example
  * toAlternateRegex('test(s)')
  * result: '(test|tests)'
@@ -43,21 +37,17 @@ export const toAlternateRegex = optional => {
   const [ start, , middle, , end ] = split
 
   // no words outside of optional boundary
-  if (start === '' && end === '')
-    return optional + '?'
-  else if (start === '')
-    return `(${middle}|${middle}${end})`
-  else if (end === '')
-    return `(${start}|${start}${middle})`
-  else
-    return `(${start}${end}|${start}${middle}${end})`
+  if (start === '' && end === '') return optional + '?'
+  else if (start === '') return `(${middle}|${middle}${end})`
+  else if (end === '') return `(${start}|${start}${middle})`
+  else return `(${start}${end}|${start}${middle}${end})`
 }
 
 /**
  * Gets the full text around an optional
  * @param {Array<string>} match result of optional regex match
  */
-const getFullOptionalText = (match) => {
+const getFullOptionalText = match => {
   const text = match.input
   const precedingWord = getWordEndingAt(text, match.index)
   return precedingWord + match[0]
@@ -97,32 +87,32 @@ export const getAlternateRegex = value => {
 
 /**
  * Helper for `parseMatch` that gets the right regex
- * for a step's dynamic part 
+ * for a step's dynamic part
  * @param {string} type - optional, alternate, or parameter
  * @param {string} match = regex match results
  */
 const getMatchRegex = (type, match) => {
   const [ val, paramType ] = match
 
-  switch(type) {
-    case 'parameter':
-      return new RegExp(getParamRegex(paramType))
-    case 'optional':
-      return new RegExp(getOptionalRegex(match))
-    case 'alternate':
-      return new RegExp(getAlternateRegex(val))
-    default:
-      return null
+  switch (type) {
+  case 'parameter':
+    return new RegExp(getParamRegex(paramType))
+  case 'optional':
+    return new RegExp(getOptionalRegex(match))
+  case 'alternate':
+    return new RegExp(getAlternateRegex(val))
+  default:
+    return null
   }
 }
 
 /**
  * Formats the regex match result into an object,
  * with some computed values
- * @param {Array} matchArr 
- * @param {string} type 
+ * @param {Array} matchArr
+ * @param {string} type
  */
-const parseMatch = (matchArr, type='other') => {
+const parseMatch = (matchArr, type = 'other') => {
   const val = matchArr[0]
 
   return {
@@ -131,9 +121,9 @@ const parseMatch = (matchArr, type='other') => {
     input: matchArr.input,
     regex: getMatchRegex(type, matchArr),
     type,
-    ...(type === 'parameter' && { 
-      paramType: val.trim().replace(RX_MATCH_REPLACE, '')
-    })
+    ...(type === 'parameter' && {
+      paramType: val.trim().replace(RX_MATCH_REPLACE, ''),
+    }),
   }
 }
 
@@ -150,24 +140,22 @@ const parseMatch = (matchArr, type='other') => {
  * ]
  */
 export const getRegexParts = stepMatcher => {
-  const parameters = [ 
-    ...stepMatcher.matchAll(new RegExp(RX_PARAMETER, 'gi'))
+  const parameters = [
+    ...stepMatcher.matchAll(new RegExp(RX_PARAMETER, 'gi')),
   ].map(match => parseMatch(match, 'parameter'))
 
-  const optionals = [ 
-    ...stepMatcher.matchAll(new RegExp(RX_OPTIONAL, 'gi'))
+  const optionals = [
+    ...stepMatcher.matchAll(new RegExp(RX_OPTIONAL, 'gi')),
   ].map(match => parseMatch(match, 'optional'))
 
-  const alts = [ 
-    ...stepMatcher.matchAll(new RegExp(RX_ALT, 'gi'))
-  ].map(match => parseMatch(match, 'alternate'))
+  const alts = [...stepMatcher.matchAll(new RegExp(RX_ALT, 'gi'))].map(match =>
+    parseMatch(match, 'alternate')
+  )
 
   // sort matched expressions by their index in the text
-  const sortedExpressions = [ 
-    ...parameters, 
-    ...optionals,
-    ...alts,
-  ].sort((matchA, matchB) => matchA.index - matchB.index)
+  const sortedExpressions = [ ...parameters, ...optionals, ...alts ].sort(
+    (matchA, matchB) => matchA.index - matchB.index
+  )
 
   return sortedExpressions
 }

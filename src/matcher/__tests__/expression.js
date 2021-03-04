@@ -130,12 +130,15 @@ describe('Match matchExpression', () => {
   })
 
   it('should work with symbols', () => {
-    const { match } = matchExpression({
-      type: 'given',
-      match: 'I open the site/url/uri {string}',
-      variant: 'expression',
-      content: 'I open the site/url/uri {string}',
-    }, 'I open the site "$world.app.url"')
+    const { match } = matchExpression(
+      {
+        type: 'given',
+        match: 'I open the site/url/uri {string}',
+        variant: 'expression',
+        content: 'I open the site/url/uri {string}',
+      },
+      'I open the site "$world.app.url"'
+    )
 
     expect(match).toEqual(expect.arrayContaining(['$world.app.url']))
   })
@@ -145,35 +148,43 @@ describe('Match matchExpression', () => {
     const textContent = `SELECTED`
     const stepText = `the descendent '${selector}' contains the text "${textContent}"`
 
-    const { match } = matchExpression({
-      type: 'given',
-      match: 'the descendent {string} contains the text {string}',
-      variant: 'expression',
-      content: 'the descendent {string} contains the text {string}',
-    }, stepText)
+    const { match } = matchExpression(
+      {
+        type: 'given',
+        match: 'the descendent {string} contains the text {string}',
+        variant: 'expression',
+        content: 'the descendent {string} contains the text {string}',
+      },
+      stepText
+    )
 
     expect(match).toEqual(expect.arrayContaining([ selector, textContent ]))
-
   })
 
   it('should work with optionals on the start of a word', () => {
-    const { match } = matchExpression({
-      type: 'given',
-      match: 'I (dont )love regex',
-      variant: 'expression',
-      content: 'I (dont )love regex',
-    }, 'I dont love regex')
+    const { match } = matchExpression(
+      {
+        type: 'given',
+        match: 'I (dont )love regex',
+        variant: 'expression',
+        content: 'I (dont )love regex',
+      },
+      'I dont love regex'
+    )
 
     expect(match).toBeDefined()
   })
 
   it('should not match word with step def expecting number', () => {
-    const { match } = matchExpression({
-      type: 'given',
-      match: 'I eat {int} apples',
-      variant: 'expression',
-      content: 'I eat {int} apples',
-    }, 'I eat tasty apples')
+    const { match } = matchExpression(
+      {
+        type: 'given',
+        match: 'I eat {int} apples',
+        variant: 'expression',
+        content: 'I eat {int} apples',
+      },
+      'I eat tasty apples'
+    )
 
     expect(match).toBeUndefined()
   })
