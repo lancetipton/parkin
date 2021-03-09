@@ -1,35 +1,14 @@
 import { parse } from './parse'
+import { getTestMethod, skipTestsOnFail } from './testMethods'
+import { throwMissingSteps, throwMissingFeatureText } from './errors'
 import {
   isArr,
   capitalize,
   isObj,
   isStr,
-  noOp,
   noOpObj,
   eitherArr,
 } from '@keg-hub/jsutils'
-import {
-  throwMissingSteps,
-  throwMissingFeatureText,
-  testMethodFill,
-} from './errors'
-
-/**
- * Resolves a test method from the global scope
- * Returns a NOOP when getTestMethod.PARKIN_TEST_MODE is true
- * This allows testing the runner methods, without running the tests
- * @function
- * @private
- * @param {string} type - Name of test method to get from the global scope
- * @param {boolean} testMode - Allows testing the runner methods, without running the tests
- *
- * @returns {function} - Test method
- */
-const getTestMethod = (type, testMode) => {
-  // To write tests for the runner, we have to override the default test methods
-  // This allows testing the runner methods, without running the tests
-  return testMode ? noOp : global[type] || testMethodFill(type)
-}
 
 /**
  * Resolves and parses features based on the data type passed in
@@ -221,6 +200,10 @@ export class Runner {
     // Set if were running tests for Parkin, or external tests
     // Only used for testing purposes
     const testMode = this.run.PARKIN_TEST_MODE
+
+    // Setup step skip on failed
+    skipTestsOnFail(testMode)
+
     const describe = getTestMethod('describe', testMode)
     const beforeAll = getTestMethod('beforeAll', testMode)
     const afterAll = getTestMethod('afterAll', testMode)

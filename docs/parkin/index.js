@@ -666,9 +666,32 @@ const parse = {
   definition
 };
 
+const inBrowser$1 = Boolean(typeof window !== 'undefined');
+const HAS_JASMINE = Boolean(typeof global !== 'undefined' && typeof global.jasmine !== 'undefined');
 const getTestMethod = (type, testMode) => {
   return testMode ? noOp : global[type] || testMethodFill(type);
 };
+const buildReporter = (jasmineEnv, testMode) => {
+  const suites = [];
+  const jasmineDescribe = jasmineEnv.describe;
+  jasmineEnv.describe = (...args) => {
+    const suite = jasmineDescribe.apply(null, args);
+    suites.push(suite);
+  };
+  return {
+    specDone: result => {
+      if (result.status !== 'failed') return;
+      const suite = suites.find(suite => suite.children.find(spec => spec.result === result));
+      suite && suite.children.map(spec => spec.disable());
+    }
+  };
+};
+const skipTestsOnFail = testMode => {
+  if (inBrowser$1 || !HAS_JASMINE) return;
+  const jasmineEnv = global.jasmine.getEnv();
+  jasmineEnv.addReporter(buildReporter(jasmineEnv));
+};
+
 const resolveFeatures = data => {
   return isStr(data) ? parse.feature(data) : isObj(data) ? [data] : isArr(data) ? data.reduce((features, feature) => features.concat(resolveFeatures(feature)), []) : throwMissingFeatureText();
 };
@@ -724,6 +747,7 @@ class Runner {
     });
     _defineProperty(this, "run", async (data, options = noOpObj) => {
       const testMode = this.run.PARKIN_TEST_MODE;
+      skipTestsOnFail();
       const describe = getTestMethod('describe', testMode);
       const beforeAll = getTestMethod('beforeAll', testMode);
       const afterAll = getTestMethod('afterAll', testMode);

@@ -111,3 +111,11 @@ Feature: Test Promises
     Given I wait for 1000
     Then the world test method should be called
 `
+
+export const failStepFeature = `@step @fail
+Feature: Step Fails
+  Scenario: Skip scenario steps when a step fails
+    Given that this step fails
+    Then this step should be skipped
+    And this step should also be skipped
+`

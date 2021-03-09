@@ -3,7 +3,7 @@ import { exec } from 'child_process'
 import path from 'path'
 
 const cmdExec = promisify(exec)
-const { NODE_ENV } = process.env
+const { NODE_ENV, DOC_APP_PATH } = process.env
 
 /**
  * 
@@ -16,7 +16,8 @@ export default function buildHook(){
   return {
     name: 'buildHook',
     buildEnd: async () => {
-      if(NODE_ENV !== 'development') return
+      // If in development mode || in a docker container don't update the docs folder
+      if(NODE_ENV !== 'development' || DOC_APP_PATH) return
 
       const buildDir = path.join(__dirname, '../build/cjs')
       const docsDir = path.join(__dirname, '../docs/parkin')

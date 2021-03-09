@@ -11,6 +11,8 @@ const PK = new Parkin(worldObj)
 
 registerMockSteps(PK, true)
 
-describe('End-2-End', () => {
-  ;(async () => await PK.run(promiseFeature))()
+describe('Steps with promises', () => {
+  ;(async () => {
+    await PK.run(promiseFeature)
+  })()
 })

@@ -162,8 +162,7 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
       // if matching a param {word}, then use the wordMatch, because
       // it contains all the {word} matches properly
       const match = isWord ? wordMatch : partMatch
-      if (!match)
-        return state
+      if (!match) return state
 
       // add the matched parameter if the current part is a param and a match exists
       part.type === 'parameter' && match && params.push(match[0])
