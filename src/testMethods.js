@@ -39,6 +39,8 @@ const buildReporter = (jasmineEnv, testMode) => {
   jasmineEnv.describe = (...args) => {
     const suite = jasmineDescribe.apply(null, args)
     suites.push(suite)
+
+    return suite
   }
 
   return {
