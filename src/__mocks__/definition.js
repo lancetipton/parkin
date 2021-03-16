@@ -5,34 +5,54 @@ const { getBrowserContext } = require('../../support/setup')
 const { getPage } = getBrowserContext()
 
 Given(/I am on (\S+)$/, async url => {
+  const internalMethod = data => { return data }
+  const data = internalMethod ({
+    test: "test-method"
+  })
+
   const page = await getPage()
   await page.goto(url)
 })
 
+const customMethod = () => {
+  console.log('custom method')
+  await page.goto({ url })
+}
+
 Then("The word of the day is {word}", async word => {
+  customMethod({})
   expect(word).toBe("test")
-})`
+  expect({}).toEqual({})
+})
+
+module.exports {}
+`
 
 export const parsedDefinition = [
   {
     type: 'given',
     match: 'I am on (S+)$',
     variant: 'regex',
-    content:
-      'Given(/I am on (S+)$/, async url => {\n' +
+    content: 'Given(/I am on (S+)$/, async url => {\n' +
+      '  const internalMethod = data => { return data }\n' +
+      '  const data = internalMethod ({\n' +
+      '    test: "test-method"\n' +
+      '  })\n' +
+      '\n' +
       '  const page = await getPage()\n' +
       '  await page.goto(url)\n' +
-      '})',
+      '})'
   },
   {
     type: 'then',
     match: 'The word of the day is {word}',
     variant: 'expression',
-    content:
-      'Then("The word of the day is {word}", async word => {\n' +
+    content: 'Then("The word of the day is {word}", async word => {\n' +
+      '  customMethod({})\n' +
       '  expect(word).toBe("test")\n' +
-      '})',
-  },
+      '  expect({}).toEqual({})\n' +
+      '})'
+  }
 ]
 
 export const expressionDefs = [

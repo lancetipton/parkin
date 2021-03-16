@@ -74,7 +74,6 @@ describe('Parkin', () => {
   it('should parse step definition text', () => {
     const PK = new Parkin(worldObj)
     const parsed = PK.parse.definition(definition)
-
     expect(parsed).toEqual(parsedDefinition)
   })
 

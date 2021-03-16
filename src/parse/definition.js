@@ -4,11 +4,12 @@ const { REGEX_VARIANT, EXPRESSION_VARIANT } = constants
 const NEWLINES_MATCH = /\n|\r|\r\n/
 const COMMENT_MATCH = /\/\/.*/g
 const MULTI_LINE_MATCH = /\/\*(.*\n)*\*\//
+const FUNCTION_START = /(\w\s|\w\d|\w)\(\{/
+const FUNCTION_END = /\}\)$|\}\);$/
 const FIND_DEFINITION = new RegExp(
-  /(Given|When|Then)\(('|"|`|\/)(.*)('|"|`|\/),/,
+  /(Given|When|Then|And|But)\(('|"|`|\/)(.*)('|"|`|\/),/,
   'gm'
 )
-const NEXT_DEFINITION = new RegExp(/(Given|When|Then|And|But)\(/, 'g')
 
 /*
  * Parses the definition.input, to extract out a definitions method content
@@ -26,31 +27,51 @@ const getContent = definition => {
   //     * NOTE - This is a NON-VALID javascript due to the trailing )
   const content = definition.input.split(definition[0]).pop()
 
-  // Use regex to look for other definition calls (Given,When,Then)
-  // in the remaining content after the definition call is removed
-  const found = NEXT_DEFINITION.exec(content)
+  // Holds references to function start chars "({"
+  const funcStarts = []
+  // Hold reference to all code within the step definition method
+  const defContent = []
+  
+  // Loop each line of all content after the step definition
+  // Check for function opening and closing characters ( "({" || "})" )
+  // Finds the end of the step definition function when 
+  // The closing characters are found, and there's no previous function starts
+  const funcContent = content.split(NEWLINES_MATCH)
+    .reduce((funcContent, line, index) => {
+      if(funcContent) return funcContent
+      
+      if(FUNCTION_START.test(line)) funcStarts.push(true)
+      const isFuncEnd = FUNCTION_END.test(line)
 
-  // If another definition call
-  //   * Is not found - Join the content with the removed definition call from above
-  //   * Is found - Split content at the next definition call
-  //                Then return the first item from the split array
-  //                This gives us all the content of the method for a definition
+      // Add each line of code to the definition content array
+      defContent.push(line)
+
+      // If line does not contain a function end, then go to the next line
+      if(!isFuncEnd) return funcContent
+      // Check if any function starts exist
+      else if(funcStarts.length){
+        // If they do, remove it, and go to the next line
+        funcStarts.pop()
+        return funcContent
+      }
+
+      // We should only get here when there's no function starts
+      // And the line is a function end
+      // Which means we are at the end of the step definitions method
+      return defContent.join('\n')
+
+    }, false)
+
+  // Join the definition type and match text with the function content
   // * NOTE - returns VALID javascript as text
-  const parsedContent = !found
-    ? `${definition[0].trim()} ${content.trim()}`
-    : `${definition[0].trim()}${content.split(found[0].trim()).shift()}`
+  return `${definition[0].trim()} ${funcContent.trim()}`
 
-  // Removed any empty lines from the parsedContent
-  return parsedContent
-    .split(`\n`)
-    .filter(line => line)
-    .join(`\n`)
 }
 
 /*
  * @todo - Improve comment stripping
  * Very simple comment stripper, that only gets rid of `//` and /* ... *\/
- * Does not cover all used cases, and most likely will fail on edge cases
+ * Does not cover all edge cases, and most likely will fail in some scenarios
  * @function
  * @private
  * @param {string} text - Definition text to strip comments from

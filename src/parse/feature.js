@@ -381,8 +381,7 @@ const ensureBackground = (feature, background, line, index) => {
   if(!RX_BACKGROUND.test(line)) return background
 
   // Check for "Scenario:", if not found then check for "Example:"
-  let backgroundText = getRXMatch(line, RX_SCENARIO, 1)
-  backgroundText = backgroundText || getRXMatch(line, RX_EXAMPLE, 1)
+  const backgroundText = getRXMatch(line, RX_BACKGROUND, 1)
 
   // Check if the background text was already added, and add it if needed
   // Otherwise create a new background with the background text
@@ -453,7 +452,6 @@ export const feature = text => {
      */
     if(featureComment(feature, line, index) || featureMeta(feature, line, index))
       return featuresGroup
-
 
     /*
      * Check for new feature scenario, and add scenario to feature object
