@@ -1,7 +1,7 @@
 import { matcher } from './matcher'
 import { constants } from './constants'
 import { throwNoMatchingStep } from './errors'
-import { capitalize, eitherArr, isStr } from '@keg-hub/jsutils'
+import { capitalize, eitherArr, isStr, uuid } from '@keg-hub/jsutils'
 const { REGEX_VARIANT, EXPRESSION_VARIANT, STEP_TYPES } = constants
 
 /**
@@ -55,8 +55,12 @@ const registerFromCall = function (internalType, type, match, method) {
     type,
     match,
     method,
-    variant:
-      match.toString().indexOf('/') === 0 ? REGEX_VARIANT : EXPRESSION_VARIANT,
+    // TODO: add token parsing
+    tokens: [],
+    uuid: uuid(),
+    variant: match.toString().indexOf('/') === 0
+      ? REGEX_VARIANT
+      : EXPRESSION_VARIANT,
   }
 
   step.name = sanitize(step)
@@ -89,6 +93,21 @@ const registerFromParse = function (definitions) {
     // Merge the returned step with the initial definition
     return { ...step, ...definition }
   })
+}
+
+/**
+ * Join all step types together into a single array
+ * @function
+ * @private
+ * @param {Object} instance - Steps calls instance
+ *
+ * @returns {Array} - Joined steps
+ */
+const joinAllSteps = (instance) => {
+  return instance.types.reduce(
+    (stepDefs, type) => stepDefs.concat(instance[`_${type}`]),
+    []
+  )
 }
 
 /**
@@ -135,6 +154,34 @@ export class Steps {
   }
 
   /**
+   * Gets a list of all step definitions registered with the parkin instance
+   * @memberof Steps
+   * @function
+   * @public
+   *
+   * @returns {Array} - List of all registered step definitions
+   */
+  list = () => {
+    return joinAllSteps(this)
+  }
+
+  /**
+   * Gets a list of all step definitions registered with the parkin instance
+   * @memberof Steps
+   * @function
+   * @public
+   *
+   * @returns {Array} - List of all registered step definitions
+   */
+  typeList = () => {
+    return this.types.reduce((stepDefs, type) => {
+      const internalType = `_${type}`
+      stepDefs[internalType] = [ ...this[internalType] ]
+      return stepDefs
+    }, {})
+  }
+
+  /**
    * Finds a matching step definition from the passed in list and text can calls it
    * This is the method the actually calls a step definition function
    * @memberof Steps
@@ -148,10 +195,7 @@ export class Steps {
   resolve = text => {
     // Join all step types together when finding a match
     // Cucumber treats all step definition types as the same when matching to step text
-    const list = this.types.reduce(
-      (stepDefs, type) => stepDefs.concat(this[`_${type}`]),
-      []
-    )
+    const list = this.getSteps()
 
     // Call the matcher to find a matching step definition
     const { match, step } = matcher(list, text)
