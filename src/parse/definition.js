@@ -2,7 +2,8 @@ import { constants } from '../constants'
 
 const { REGEX_VARIANT, EXPRESSION_VARIANT } = constants
 
-const COMMENT_MATCH = /\/\/.*/g
+const DEFINITION_TYPES = [ 'Given', 'When', 'Then', 'And', 'But' ]
+const COMMENT_MATCH = /\/\/.*/
 const NEWLINES_MATCH = /\n|\r|\r\n/
 const FUNCTION_END = /\}\)$|\}\);$/
 const MULTI_LINE_MATCH = /\/\*(.*\n)*\*\//
@@ -10,10 +11,10 @@ const FUNCTION_START = /(\w\s|\w\d|\w)\(\{/
 const BRACKET_END = /(,.*)(\s*(\w+\s+|\w+)\(.*\)\))|((\w+\s+|\w+)(\)|\)\)))|(\)+(\n|\r|\s)+\)+)/
 const DEFINITION_TAGS = new RegExp(/Given|When|Then|And|But/,'gm')
 const FIND_DEFINITION = new RegExp(
-  /(Given|When|Then|And|But)\(('|"|`|\/)(.*)('|"|`|\/),/,
+  /(Given|When|Then|And|But)\(([\s\S]|\s*)('|"|`|\/)(.*)('|"|`|\/),/,
   'gm'
 )
-
+const EXPORT_CLEANUP = /\s*module.exports.*{[\s\S].*[\s\S]}/gm
 /*
  * Checks the definition content for external content methods
  * If found, parses it out from the rest of the content
@@ -89,15 +90,17 @@ const checkInlineContent = content => {
  *
  * @return {string} - Valid Javascript definition call as text
  */
-const getContent = definition => {
+const getContent = (definition, content) => {
 
   // Get all content after the definition call
   // Example => Given('some description', () => { ... })
   //   * Removed => "Given('some description',"
   //   * content === "() => { ... })"
   //     * NOTE - This is a NON-VALID javascript due to the trailing )
-  const content = definition.input.split(definition[0]).pop()
-  const funcContent = checkInlineContent(content) || checkExternalContent(content) || ''
+  // const content = definition.input.split(definition[0]).pop()
+  const funcContent = content.endsWith(')')
+    ? content
+    : checkInlineContent(content) || checkExternalContent(content) || ''
 
   // Join the definition type and match text with the function content
   // * NOTE - returns VALID javascript as text
@@ -122,6 +125,7 @@ const stripComments = text => {
     .filter(line => !COMMENT_MATCH.test(line.trim()))
     .join(`\n`)
     .replace(MULTI_LINE_MATCH, '')
+    .replace(EXPORT_CLEANUP, '')
 }
 
 /*
@@ -135,13 +139,35 @@ const stripComments = text => {
  * @return {Array} - All parsed definition calls as objects
  */
 export const definition = text => {
+  const funcsByType = {}
+  DEFINITION_TYPES.map(type => {
+    funcsByType[type] = funcsByType[type] || []
+    const source = type + '\\\(\\\s*(\'|"|`).+(\'|"|`)'
+
+    funcsByType[type] = funcsByType[type].concat(
+      stripComments(text)
+        .split(new RegExp(source))
+        .filter(data => (data.trim().startsWith(',')))
+        .map(data => {
+          return DEFINITION_TYPES.reduce((withoutTypes, type) => {
+            return withoutTypes.split(type)
+              .shift()
+              .replace(/module.exports.*/)
+              .trim()
+            
+          }, data.trim().replace(/,\s*/, ''))
+        })
+    )
+  })
+
   return Array.from(
     // Strip all comments from the text, and find all matching definition calls
     stripComments(text).matchAll(FIND_DEFINITION),
     // For each found definition call, build the parsed definition object
     definition => {
       // Extract the content from the matching definition
-      const [ _, type, identifier, match ] = definition
+      const [ _, type, identifier, __, match ] = definition
+      const funcContent = funcsByType[type].shift()
 
       // All regex variants start with /, so use that to set the variant to regex of expression
       const variant = identifier === `/` ? REGEX_VARIANT : EXPRESSION_VARIANT
@@ -151,7 +177,7 @@ export const definition = text => {
         match,
         variant,
         type: type.toLowerCase(),
-        content: getContent(definition),
+        content: getContent(definition, funcContent),
       }
     }
   )

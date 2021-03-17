@@ -1,7 +1,7 @@
 import { matcher } from './matcher'
 import { constants } from './constants'
 import { throwNoMatchingStep } from './errors'
-import { capitalize, eitherArr, isStr, uuid } from '@keg-hub/jsutils'
+import { capitalize, eitherArr, isStr } from '@keg-hub/jsutils'
 const { REGEX_VARIANT, EXPRESSION_VARIANT, STEP_TYPES } = constants
 
 /**
@@ -51,19 +51,21 @@ const getContent = step => {
  * @returns {void}
  */
 const registerFromCall = function (internalType, type, match, method) {
+
   const step = {
     type,
     match,
     method,
     // TODO: add token parsing
     tokens: [],
-    uuid: uuid(),
     variant: match.toString().indexOf('/') === 0
       ? REGEX_VARIANT
       : EXPRESSION_VARIANT,
   }
 
   step.name = sanitize(step)
+  // The name should always be unique, so we can use that as a consistent uuid
+  step.uuid = step.name
   step.content = getContent(step)
 
   this[internalType].push(step)

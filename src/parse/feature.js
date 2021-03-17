@@ -1,4 +1,3 @@
-import { uuid } from '@keg-hub/jsutils'
 
 /**
  * Regular expressions for matching feature file keywords
@@ -52,6 +51,19 @@ const featureMetaTags = [
 ]
 
 /*
+ * Sanitizes the passed in text and joins the texts length
+ * @function
+ * @private
+ * @param {string} text - Text to be sanitized
+ *
+ * @returns {string} - Sanitized text
+ */
+const sanitizeForId = text => {
+  const cleaned = text.trim().toLowerCase().replace(/ /g, '-')
+  return `${text.length}-${cleaned}`
+}
+
+/*
  * Extracts keywords from a text string
  * @function
  * @private
@@ -79,9 +91,10 @@ const featureFactory = (feature, content, index) => {
     feature,
     tags: [],
     reason: [],
-    uuid: uuid(),
     comments: [],
     scenarios: [],
+    // The feature name should always be unique, so use that as a re-usable id
+    ...(feature && { uuid: sanitizeForId(feature) })
   }
 }
 
@@ -94,7 +107,13 @@ const featureFactory = (feature, content, index) => {
  * @returns {Object} - Parsed scenario object
  */
 const scenarioFactory = (scenario, index) => {
-  return { scenario, uuid: uuid(), steps: [], tags: [], index }
+  return {
+    index,
+    scenario,
+    tags: [],
+    steps: [],
+    ...(scenario && { uuid: sanitizeForId(scenario) }),
+  }
 }
 
 /*
@@ -106,7 +125,12 @@ const scenarioFactory = (scenario, index) => {
  * @returns {Object} - Parsed scenario object
  */
 const backgroundFactory = (background, index) => {
-  return { background, uuid: uuid(), steps: [], index }
+  return {
+    index,
+    steps: [],
+    background,
+    ...(background && { uuid: sanitizeForId(background) }),
+  }
 }
 
 /*
@@ -120,7 +144,7 @@ const backgroundFactory = (background, index) => {
  * @returns {Object} - Parsed step object
  */
 const stepFactory = (type, step, altType, index) => {
-  const built = { step, type, uuid: uuid(), index }
+  const built = { step, type, uuid: sanitizeForId(`${type}-${step}`), index }
   altType && (built.altType = altType)
 
   // TODO: Investigate calling checkDocString and checkDataTable here
@@ -322,6 +346,7 @@ const ensureFeature = (featuresGroup, feature, line, content, index) => {
 
     // Ensure the index is added if needed
     if (!feature.index) feature.index = index
+    if (!feature.uuid) feature.uuid = sanitizeForId(feature.feature)
 
     !featuresGroup.includes(feature) && featuresGroup.push(feature)
 
@@ -359,6 +384,8 @@ const ensureScenario = (feature, scenario, line, index) => {
 
   // Ensure the line index is added
   !scenario.index && (scenario.index = index)
+  // Add the uuid from the scenario text if it doesn't exist
+  !scenario.uuid && (scenario.uuid = sanitizeForId(scenario.scenario))
 
   // Add the scenario if needed to the current feature
   !feature.scenarios.includes(scenario) && feature.scenarios.push(scenario)
@@ -391,6 +418,8 @@ const ensureBackground = (feature, background, line, index) => {
 
   // Ensure the line index is added
   !background.index && (background.index = index)
+  // Add the uuid from the background text if it doesn't exist
+  !background.uuid && (background.uuid = sanitizeForId(background.background))
 
   feature.background = background
 
