@@ -139,6 +139,27 @@ const stripComments = text => {
  * @return {Array} - All parsed definition calls as objects
  */
 export const definition = text => {
+  const funcsByType = {}
+  DEFINITION_TYPES.map(type => {
+    funcsByType[type] = funcsByType[type] || []
+    const source = type + '\\\(\\\s*(\'|"|`).+(\'|"|`)'
+
+    funcsByType[type] = funcsByType[type].concat(
+      stripComments(text)
+        .split(new RegExp(source))
+        .filter(data => (data.trim().startsWith(',')))
+        .map(data => {
+          return DEFINITION_TYPES.reduce((withoutTypes, type) => {
+            return withoutTypes.split(type)
+              .shift()
+              .replace(/module.exports.*/)
+              .trim()
+            
+          }, data.trim().replace(/,\s*/, ''))
+        })
+    )
+  })
+
   return Array.from(
     // Strip all comments from the text, and find all matching definition calls
     stripComments(text).matchAll(FIND_DEFINITION),
@@ -146,6 +167,7 @@ export const definition = text => {
     definition => {
       // Extract the content from the matching definition
       const [ _, type, identifier, __, match ] = definition
+      const funcContent = funcsByType[type].shift()
 
       // All regex variants start with /, so use that to set the variant to regex of expression
       const variant = identifier === `/` ? REGEX_VARIANT : EXPRESSION_VARIANT
@@ -155,7 +177,7 @@ export const definition = text => {
         match,
         variant,
         type: type.toLowerCase(),
-        content: '',
+        content: getContent(definition, funcContent),
       }
     }
   )
