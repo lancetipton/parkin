@@ -3,3 +3,11 @@
 
 # Except src:
 !/src
+
+# Add the prebuilt libs
+/src/parse/definition/escodegen.js
+/src/parse/definition/esprima.js
+
+# Ignore mocks where white space matters
+/src/__mocks__/definition.js
+/src/__mocks__/feature.js

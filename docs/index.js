@@ -1,7 +1,7 @@
 const $ = selector => document.querySelector(selector)
 const world = {}
 let PK
-let debug = true
+let debug = false
 
 const logDebug = (...data) => {
   debug && console.log(...data)
@@ -34,7 +34,7 @@ const setupDefinitions = () => {
 
   logDebug(`Parsed definitions:\n`, parsedDefinition)
 
-  // Register the parsed definitions
+  // // Register the parsed definitions
   PK.steps.register(parsedDefinition)
 }
 
@@ -53,4 +53,4 @@ const runFeature = () => {
  * This is ensure the Parkin library has been loaded 
  * We use an iif to ensure it's run when the browser is ready
  */
-(() => PK = new Parkin())()
+(() => PK = new Parkin({}, null, definitionParser))()

@@ -4,7 +4,7 @@ import { parse } from './parse'
 import { Runner } from './runner'
 import { assemble } from './assemble'
 import { registerParamType } from './matcher'
-import { isObj, capitalize } from '@keg-hub/jsutils'
+import { isObj, capitalize, noOpObj, exists, isFunc } from '@keg-hub/jsutils'
 
 /**
  * @typedef
@@ -35,7 +35,21 @@ import { isObj, capitalize } from '@keg-hub/jsutils'
  * @returns {Object} Instance of the Parkin class
  */
 export class Parkin {
-  constructor(world, steps) {
+  constructor(world, steps, definition) {
+    isObj(world) && this.init(world, steps, definition)
+  }
+
+  #isInit = false
+
+  init = (world = noOpObj, steps, definition) => {
+    if (this.#isInit)
+      return console.warn(
+        `This instance of parkin has already been initialized!`
+      )
+
+    // Set isInit, so we can't re-initialized
+    this.#isInit = true
+
     this.steps = new Steps(world)
     this.hooks = new Hooks()
     this.runner = new Runner(this.steps, this.hooks)
@@ -66,6 +80,14 @@ export class Parkin {
      * @property {function} definition - Method to parse a definition string an object
      */
     this.parse = parse
+    // Add in the custom definition parser if its a function
+    exists(definition)
+      ? isFunc(definition)
+          ? (this.parse.definition = definition)
+          : console.error(
+            `The third argument used to parse definitions, must be a function!`
+          )
+      : null
 
     /**
      * Access assemble object containing feature assemble methods
@@ -153,3 +175,7 @@ export class Parkin {
     )
   }
 }
+
+// Also export a instance of the class
+// This allows us to re-use the same instance as a singleton
+export const PKInstance = new Parkin()

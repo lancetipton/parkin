@@ -1,4 +1,3 @@
-
 /**
  * Regular expressions for matching feature file keywords
  * @type {object}
@@ -59,7 +58,8 @@ const featureMetaTags = [
  * @returns {string} - Sanitized text
  */
 const sanitizeForId = text => {
-  const cleaned = text.trim().toLowerCase().replace(/ /g, '-')
+  const cleaned = text.trim().toLowerCase()
+    .replace(/ /g, '-')
   return `${text.length}-${cleaned}`
 }
 
@@ -94,7 +94,7 @@ const featureFactory = (feature, content, index) => {
     comments: [],
     scenarios: [],
     // The feature name should always be unique, so use that as a re-usable id
-    ...(feature && { uuid: sanitizeForId(feature) })
+    ...(feature && { uuid: sanitizeForId(feature) }),
   }
 }
 
@@ -257,7 +257,7 @@ const featureMeta = (feature, line, index) => {
     if (added) return added
 
     const hasTag = regTag.regex.test(line)
-    if(!metaAdded && hasTag) metaAdded = true
+    if (!metaAdded && hasTag) metaAdded = true
 
     return hasTag
       ? regTag.key === 'reason'
@@ -405,7 +405,7 @@ const ensureScenario = (feature, scenario, line, index) => {
  * @return {Object} Current background being parsed
  */
 const ensureBackground = (feature, background, line, index) => {
-  if(!RX_BACKGROUND.test(line)) return background
+  if (!RX_BACKGROUND.test(line)) return background
 
   // Check for "Scenario:", if not found then check for "Example:"
   const backgroundText = getRXMatch(line, RX_BACKGROUND, 1)
@@ -439,7 +439,13 @@ const ensureBackground = (feature, background, line, index) => {
  *
  * @returns {Object} - Found active parent based on the nextLine
  */
-const setActiveParent = (activeParent, feature, scenario, background, nextLine) => {
+const setActiveParent = (
+  activeParent,
+  feature,
+  scenario,
+  background,
+  nextLine
+) => {
   return RX_SCENARIO.test(nextLine) || RX_EXAMPLE.test(nextLine)
     ? scenario
     : RX_FEATURE.test(nextLine)
@@ -470,7 +476,6 @@ export const feature = text => {
    * Loop over each line of text, and compose the line with corresponding regex to find a match
    */
   return lines.reduce((featuresGroup, line, index) => {
-
     /*
      * Check for new feature, or parse the current features text
      */
@@ -479,7 +484,10 @@ export const feature = text => {
     /*
      * Check for child content of the feature or activeParent and parse the line when matched
      */
-    if(featureComment(feature, line, index) || featureMeta(feature, line, index))
+    if (
+      featureComment(feature, line, index) ||
+      featureMeta(feature, line, index)
+    )
       return featuresGroup
 
     /*
@@ -494,8 +502,7 @@ export const feature = text => {
 
     // Check for stepTags before check for the next active parent
     // This way We don't add a step to the wrong parent
-    if(checkStepTag(activeParent, line, index))
-      return featuresGroup
+    if (checkStepTag(activeParent, line, index)) return featuresGroup
 
     /*
      * Get the next line for tag reference checking

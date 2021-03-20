@@ -51,16 +51,14 @@ const getContent = step => {
  * @returns {void}
  */
 const registerFromCall = function (internalType, type, match, method) {
-
   const step = {
     type,
     match,
     method,
     // TODO: add token parsing
     tokens: [],
-    variant: match.toString().indexOf('/') === 0
-      ? REGEX_VARIANT
-      : EXPRESSION_VARIANT,
+    variant:
+      match.toString().indexOf('/') === 0 ? REGEX_VARIANT : EXPRESSION_VARIANT,
   }
 
   step.name = sanitize(step)
@@ -89,7 +87,7 @@ const registerFromParse = function (definitions) {
     // The definition.content should be a call to a global Given, When, Then method
     // Which is injected from the Steps class instance ( this )
     const step = Function(`return (Given, When, Then, And, But) => {
-        return ${definition.content}
+        return ${definition}
       }`)()(this.Given, this.When, this.Then, this.And, this.But)
 
     // Merge the returned step with the initial definition
@@ -105,7 +103,7 @@ const registerFromParse = function (definitions) {
  *
  * @returns {Array} - Joined steps
  */
-const joinAllSteps = (instance) => {
+const joinAllSteps = instance => {
   return instance.types.reduce(
     (stepDefs, type) => stepDefs.concat(instance[`_${type}`]),
     []
@@ -178,7 +176,7 @@ export class Steps {
   typeList = () => {
     return this.types.reduce((stepDefs, type) => {
       const internalType = `_${type}`
-      stepDefs[internalType] = [ ...this[internalType] ]
+      stepDefs[internalType] = [...this[internalType]]
       return stepDefs
     }, {})
   }
@@ -197,7 +195,7 @@ export class Steps {
   resolve = text => {
     // Join all step types together when finding a match
     // Cucumber treats all step definition types as the same when matching to step text
-    const list = this.getSteps()
+    const list = this.list()
 
     // Call the matcher to find a matching step definition
     const { match, step } = matcher(list, text)

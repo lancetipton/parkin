@@ -17,6 +17,40 @@ function _defineProperty(obj, key, value) {
   return obj;
 }
 
+function _classPrivateFieldGet(receiver, privateMap) {
+  var descriptor = privateMap.get(receiver);
+
+  if (!descriptor) {
+    throw new TypeError("attempted to get private field on non-instance");
+  }
+
+  if (descriptor.get) {
+    return descriptor.get.call(receiver);
+  }
+
+  return descriptor.value;
+}
+
+function _classPrivateFieldSet(receiver, privateMap, value) {
+  var descriptor = privateMap.get(receiver);
+
+  if (!descriptor) {
+    throw new TypeError("attempted to set private field on non-instance");
+  }
+
+  if (descriptor.set) {
+    descriptor.set.call(receiver, value);
+  } else {
+    if (!descriptor.writable) {
+      throw new TypeError("attempted to set read only private field");
+    }
+
+    descriptor.value = value;
+  }
+
+  return value;
+}
+
 const isArr = value => Array.isArray(value);
 
 const isObj = obj => typeof obj === 'object' && !Array.isArray(obj) && obj !== null;
@@ -40,18 +74,40 @@ const noPropArr = deepFreeze([]);
 
 const exists = value => value === value && value !== undefined && value !== null;
 
-const equalsNaN = val => typeof val === 'number' && val != val;
-
 const isStr = str => typeof str === 'string';
 
+const equalsNaN = val => typeof val === 'number' && val != val;
+
 const eitherArr = (a, b) => isArr(a) ? a : b;
+
+const toStr = val => val === null || val === undefined ? '' : isStr(val) ? val : JSON.stringify(val);
 
 const checkCall = (method, ...params) => {
   return isFunc(method) ? method(...params) : undefined;
 };
-const uuid = a => a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid);
 
-const toStr = val => val === null || val === undefined ? '' : isStr(val) ? val : JSON.stringify(val);
+const defObjProps = Array.from(['caller', 'callee', 'arguments', 'apply', 'bind', 'call', 'toString', '__proto__', '__defineGetter__', '__defineSetter__', 'hasOwnProperty', '__lookupGetter__', '__lookupSetter__', 'isPrototypeOf', 'propertyIsEnumerable', 'valueOf', 'toLocaleString']).concat(Object.getOwnPropertyNames(Object.prototype)).reduce((map, functionName) => {
+  map[functionName] = true;
+  return map;
+}, {});
+
+const isRegex = val => Boolean(val && val instanceof RegExp);
+const getRegexSource = maybeRx => isRegex(maybeRx) ? maybeRx.source : isStr(maybeRx) ? maybeRx : null;
+const parseArgs = args => {
+  if (isArr(args[0])) return [args[0], args[1]];
+  const last = args[args.length - 1];
+  const options = isStr(last) ? last : undefined;
+  const expressions = options ? args.splice(0, args.length - 1) : args;
+  return [expressions, options];
+};
+const joinRegex = (...args) => {
+  const [expressions, options] = parseArgs(args);
+  const source = expressions.reduce((joined, next) => {
+    const nextSource = getRegexSource(next);
+    return !nextSource ? joined : joined === '' ? nextSource : `${joined}|${nextSource}`;
+  }, '');
+  return new RegExp(`(${source})`, options);
+};
 
 const capitalize = (str, lowercaseTail = true) => {
   if (!isStr(str) || !str[0]) return str;
@@ -82,29 +138,6 @@ const getWordEndingAt = (text, index, delimiters = [' ']) => {
   const reversed = reverseStr(text);
   const reversedIndex = text.length - index;
   return reverseStr(getWordStartingAt(reversed, reversedIndex, delimiters));
-};
-
-const defObjProps = Array.from(['caller', 'callee', 'arguments', 'apply', 'bind', 'call', 'toString', '__proto__', '__defineGetter__', '__defineSetter__', 'hasOwnProperty', '__lookupGetter__', '__lookupSetter__', 'isPrototypeOf', 'propertyIsEnumerable', 'valueOf', 'toLocaleString']).concat(Object.getOwnPropertyNames(Object.prototype)).reduce((map, functionName) => {
-  map[functionName] = true;
-  return map;
-}, {});
-
-const isRegex = val => Boolean(val && val instanceof RegExp);
-const getRegexSource = maybeRx => isRegex(maybeRx) ? maybeRx.source : isStr(maybeRx) ? maybeRx : null;
-const parseArgs = args => {
-  if (isArr(args[0])) return [args[0], args[1]];
-  const last = args[args.length - 1];
-  const options = isStr(last) ? last : undefined;
-  const expressions = options ? args.splice(0, args.length - 1) : args;
-  return [expressions, options];
-};
-const joinRegex = (...args) => {
-  const [expressions, options] = parseArgs(args);
-  const source = expressions.reduce((joined, next) => {
-    const nextSource = getRegexSource(next);
-    return !nextSource ? joined : joined === '' ? nextSource : `${joined}|${nextSource}`;
-  }, '');
-  return new RegExp(`(${source})`, options);
 };
 
 const RX_OPTIONAL = /\w*\([^)]*?\)/;
@@ -405,9 +438,11 @@ const registerFromCall = function (internalType, type, match, method) {
     type,
     match,
     method,
+    tokens: [],
     variant: match.toString().indexOf('/') === 0 ? REGEX_VARIANT$1 : EXPRESSION_VARIANT
   };
   step.name = sanitize(step);
+  step.uuid = step.name;
   step.content = getContent(step);
   this[internalType].push(step);
   return step;
@@ -415,18 +450,31 @@ const registerFromCall = function (internalType, type, match, method) {
 const registerFromParse = function (definitions) {
   return eitherArr(definitions, [definitions]).map(definition => {
     const step = Function(`return (Given, When, Then, And, But) => {
-        return ${definition.content}
+        return ${definition}
       }`)()(this.Given, this.When, this.Then, this.And, this.But);
     return { ...step,
       ...definition
     };
   });
 };
+const joinAllSteps = instance => {
+  return instance.types.reduce((stepDefs, type) => stepDefs.concat(instance[`_${type}`]), []);
+};
 class Steps {
   constructor(world) {
     _defineProperty(this, "types", STEP_TYPES);
+    _defineProperty(this, "list", () => {
+      return joinAllSteps(this);
+    });
+    _defineProperty(this, "typeList", () => {
+      return this.types.reduce((stepDefs, type) => {
+        const internalType = `_${type}`;
+        stepDefs[internalType] = [...this[internalType]];
+        return stepDefs;
+      }, {});
+    });
     _defineProperty(this, "resolve", text => {
-      const list = this.types.reduce((stepDefs, type) => stepDefs.concat(this[`_${type}`]), []);
+      const list = this.list();
       const {
         match,
         step
@@ -484,6 +532,7 @@ const RX_SO_THAT = /^\s*So that (.*)$/;
 const RX_IN_ORDER = /^\s*In order (.*)$/;
 const RX_SCENARIO = /^\s*Scenario:(.*)$/;
 const RX_EXAMPLE = /^\s*Example:(.*)$/;
+const RX_BACKGROUND = /^\s*Background:(.*)$/;
 const RX_GIVEN = /^\s*Given (.*)$/;
 const RX_WHEN = /^\s*When(.*)$/;
 const RX_THEN = /^\s*Then (.*)$/;
@@ -525,6 +574,10 @@ const featureMetaTags = [{
   regex: RX_IN_ORDER,
   key: 'reason'
 }];
+const sanitizeForId = text => {
+  const cleaned = text.trim().toLowerCase().replace(/ /g, '-');
+  return `${text.length}-${cleaned}`;
+};
 const getRXMatch = (line, regex, index) => line.match(regex)[index].trim();
 const featureFactory = (feature, content, index) => {
   return {
@@ -533,24 +586,39 @@ const featureFactory = (feature, content, index) => {
     feature,
     tags: [],
     reason: [],
-    uuid: uuid(),
     comments: [],
-    scenarios: []
+    scenarios: [],
+    ...(feature && {
+      uuid: sanitizeForId(feature)
+    })
   };
 };
 const scenarioFactory = (scenario, index) => {
   return {
+    index,
     scenario,
-    uuid: uuid(),
+    tags: [],
     steps: [],
-    index
+    ...(scenario && {
+      uuid: sanitizeForId(scenario)
+    })
+  };
+};
+const backgroundFactory = (background, index) => {
+  return {
+    index,
+    steps: [],
+    background,
+    ...(background && {
+      uuid: sanitizeForId(background)
+    })
   };
 };
 const stepFactory = (type, step, altType, index) => {
   const built = {
     step,
     type,
-    uuid: uuid(),
+    uuid: sanitizeForId(`${type}-${step}`),
     index
   };
   altType && (built.altType = altType);
@@ -571,19 +639,23 @@ const checkStepTag = (scenario, line, index) => {
   }, false);
 };
 const featureMeta = (feature, line, index) => {
-  return featureMetaTags.reduce((added, regTag) => {
+  let metaAdded = false;
+  featureMetaTags.reduce((added, regTag) => {
     if (added) return added;
     const hasTag = regTag.regex.test(line);
+    if (!metaAdded && hasTag) metaAdded = true;
     return hasTag ? regTag.key === 'reason' ? addReason(feature, getRXMatch(line, regTag.regex, 0), index) : feature[regTag.key] = {
       content: getRXMatch(line, regTag.regex, 0),
       index
     } : hasTag;
   }, false);
+  return metaAdded;
 };
-const featureTag = (feature, line, index) => {
+const checkTag = (parent, feature, line, index) => {
   if (!RX_TAG.test(line)) return false;
+  const tagParent = parent.background ? feature : parent;
   const tags = getRXMatch(line, RX_TAG, 0);
-  feature.tags = feature.tags.concat(tags.split(' '));
+  tagParent.tags = (tagParent.tags || []).concat(tags.split(' '));
   return true;
 };
 const featureComment = (feature, line, index) => {
@@ -601,6 +673,7 @@ const ensureFeature = (featuresGroup, feature, line, content, index) => {
   if (!feature.feature) {
     feature.feature = featureText;
     if (!feature.index) feature.index = index;
+    if (!feature.uuid) feature.uuid = sanitizeForId(feature.feature);
     !featuresGroup.includes(feature) && featuresGroup.push(feature);
     return feature;
   }
@@ -612,58 +685,49 @@ const ensureScenario = (feature, scenario, line, index) => {
   scenarioText = scenarioText || getRXMatch(line, RX_EXAMPLE, 1);
   !scenario.scenario ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText, index);
   !scenario.index && (scenario.index = index);
+  !scenario.uuid && (scenario.uuid = sanitizeForId(scenario.scenario));
   !feature.scenarios.includes(scenario) && feature.scenarios.push(scenario);
   return scenario;
+};
+const ensureBackground = (feature, background, line, index) => {
+  if (!RX_BACKGROUND.test(line)) return background;
+  const backgroundText = getRXMatch(line, RX_BACKGROUND, 1);
+  !background.background ? background.background = backgroundText || '' : background = backgroundFactory(backgroundText, index);
+  !background.index && (background.index = index);
+  !background.uuid && (background.uuid = sanitizeForId(background.background));
+  feature.background = background;
+  return background;
+};
+const setActiveParent = (activeParent, feature, scenario, background, nextLine) => {
+  return RX_SCENARIO.test(nextLine) || RX_EXAMPLE.test(nextLine) ? scenario : RX_FEATURE.test(nextLine) ? feature : RX_BACKGROUND.test(nextLine) ? background : activeParent;
 };
 const feature = text => {
   const features = [];
   const lines = (text || '').toString().split(RX_NEWLINE);
   let scenario = scenarioFactory(false);
+  let background = backgroundFactory(false);
   let feature = featureFactory(false, text);
+  let activeParent = feature;
   return lines.reduce((featuresGroup, line, index) => {
     feature = ensureFeature(featuresGroup, feature, line, text, index);
+    if (featureComment(feature, line, index) || featureMeta(feature, line, index)) return featuresGroup;
     scenario = ensureScenario(feature, scenario, line, index);
-    featureTag(feature, line) || featureComment(feature, line, index) || featureMeta(feature, line, index) || checkStepTag(scenario, line, index);
+    background = ensureBackground(feature, background, line, index);
+    if (checkStepTag(activeParent, line, index)) return featuresGroup;
+    const nextLine = lines[index + 1];
+    activeParent = setActiveParent(activeParent, feature, scenario, background, nextLine);
+    checkTag(activeParent, feature, line);
     return featuresGroup;
   }, features);
 };
 
-const {
-  REGEX_VARIANT: REGEX_VARIANT$2,
-  EXPRESSION_VARIANT: EXPRESSION_VARIANT$1
-} = constants;
-const NEWLINES_MATCH = /\n|\r|\r\n/;
-const COMMENT_MATCH = /\/\/.*/g;
-const MULTI_LINE_MATCH = /\/\*(.*\n)*\*\//;
-const FIND_DEFINITION = new RegExp(/(Given|When|Then)\(('|"|`|\/)(.*)('|"|`|\/),/, 'gm');
-const NEXT_DEFINITION = new RegExp(/(Given|When|Then|And|But)\(/, 'g');
-const getContent$1 = definition => {
-  const content = definition.input.split(definition[0]).pop();
-  const found = NEXT_DEFINITION.exec(content);
-  const parsedContent = !found ? `${definition[0].trim()} ${content.trim()}` : `${definition[0].trim()}${content.split(found[0].trim()).shift()}`;
-  return parsedContent.split(`\n`).filter(line => line).join(`\n`);
+const definitionNoOp = () => {
+  console.error(`Parking.parse.definition method not set!\n`, `A definition parse method must be passed as the third argument on Parkin init.`);
+  return noPropArr;
 };
-const stripComments = text => {
-  return text.trim().split(NEWLINES_MATCH).filter(line => !COMMENT_MATCH.test(line.trim())).join(`\n`).replace(MULTI_LINE_MATCH, '');
-};
-const definition = text => {
-  return Array.from(
-  stripComments(text).matchAll(FIND_DEFINITION),
-  definition => {
-    const [_, type, identifier, match] = definition;
-    const variant = identifier === `/` ? REGEX_VARIANT$2 : EXPRESSION_VARIANT$1;
-    return {
-      match,
-      variant,
-      type: type.toLowerCase(),
-      content: getContent$1(definition)
-    };
-  });
-};
-
 const parse = {
   feature,
-  definition
+  definition: definitionNoOp
 };
 
 const inBrowser$1 = Boolean(typeof window !== 'undefined');
@@ -677,6 +741,7 @@ const buildReporter = (jasmineEnv, testMode) => {
   jasmineEnv.describe = (...args) => {
     const suite = jasmineDescribe.apply(null, args);
     suites.push(suite);
+    return suite;
   };
   return {
     specDone: result => {
@@ -843,28 +908,41 @@ const assemble = {
   feature: assembleFeature
 };
 
+var _isInit = new WeakMap();
 class Parkin {
-  constructor(world, _steps) {
+  constructor(_world, _steps, _definition) {
+    _isInit.set(this, {
+      writable: true,
+      value: false
+    });
+    _defineProperty(this, "init", (world = noOpObj, steps, definition) => {
+      if (_classPrivateFieldGet(this, _isInit)) return console.warn(`This instance of parkin has already been initialized!`);
+      _classPrivateFieldSet(this, _isInit, true);
+      this.steps = new Steps(world);
+      this.hooks = new Hooks();
+      this.runner = new Runner(this.steps, this.hooks);
+      this.run = this.runner.run;
+      this.parse = parse;
+      exists(definition) ? isFunc(definition) ? this.parse.definition = definition : console.error(`The third argument used to parse definitions, must be a function!`) : null;
+      this.assemble = assemble;
+      this.paramTypes = {
+        register: registerParamType
+      };
+      isObj(steps) && this.registerSteps(steps);
+      this.steps.types.map(type => {
+        this[capitalize(type)] = (matcher, method) => this.steps.register(`_${type}`, type, matcher, method);
+      });
+    });
     _defineProperty(this, "registerSteps", steps => {
       Object.entries(steps).map((type, typedSteps) =>
       Object.entries(typedSteps).map((matcher, method) =>
       this.steps[capitalize(type)](matcher, method)));
     });
-    this.steps = new Steps(world);
-    this.hooks = new Hooks();
-    this.runner = new Runner(this.steps, this.hooks);
-    this.run = this.runner.run;
-    this.parse = parse;
-    this.assemble = assemble;
-    this.paramTypes = {
-      register: registerParamType
-    };
-    isObj(_steps) && this.registerSteps(_steps);
-    this.steps.types.map(type => {
-      this[capitalize(type)] = (matcher, method) => this.steps.register(`_${type}`, type, matcher, method);
-    });
+    isObj(_world) && this.init(_world, _steps, _definition);
   }
 }
+const PKInstance = new Parkin();
 
+exports.PKInstance = PKInstance;
 exports.Parkin = Parkin;
 //# sourceMappingURL=index.js.map

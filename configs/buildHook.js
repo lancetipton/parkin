@@ -16,19 +16,24 @@ export default function buildHook(){
   return {
     name: 'buildHook',
     buildEnd: async () => {
-      // If in development mode || in a docker container don't update the docs folder
-      if(NODE_ENV !== 'development' || DOC_APP_PATH) return
+      // If in a docker container don't update the docs folder
+      if(DOC_APP_PATH) return
 
       const buildDir = path.join(__dirname, '../build/cjs')
       const docsDir = path.join(__dirname, '../docs/parkin')
     
-      console.log(`Removing old docs/parkin folder...`)
-      // Remove the old docks build directory
-      await cmdExec(`rm -rf ${docsDir}`)
+      try {
+        console.log(`Removing old docs/parkin folder...`)
+        // Remove the old docks build directory
+        await cmdExec(`rm -rf ${docsDir}`)
 
-      console.log(`Copying build/cjs into docs/parkin folder...`)
-      // Copy over the new build directory
-      await cmdExec(`cp -R ${buildDir} ${docsDir}`)
+        console.log(`Copying build/cjs into docs/parkin folder...`)
+        // Copy over the new build directory
+        await cmdExec(`cp -R ${buildDir} ${docsDir}`)
+      }
+      catch(err){
+        console.error(err.stack)
+      }
 
     }
   }
