@@ -14,7 +14,7 @@ import {
   RX_PARAMETER,
 } from './patterns'
 
-import { hasWindow } from '../globalObj'
+import { hasWindow } from '../utils/globalScope'
 import { noOpObj, isFunc } from '@keg-hub/jsutils'
 import { getParamTypes, convertTypes } from './paramTypes'
 

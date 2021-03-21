@@ -71,40 +71,30 @@ describe('Parkin', () => {
     expect(noUuidScenarios).toEqual(parsedScenarios)
   })
 
-  it.only('should parse step definition text when a definition parse method is passed', () => {
+  it('should parse step definition text when a definition parse method is passed', () => {
     const PK = new Parkin(worldObj)
     const parsed = PK.parse.definition(definition)
-    // TODO: update to match the parsed definition model
-    // Need to add tokens array, uuid, and convert match regex to string 
-    console.log(`---------- parsed ----------`)
-    console.log(parsed)
-    // expect(parsed).toEqual(parsedDefinition)
+
+    const { method:givenMethod, ...givenDef } = parsed.Given[0]
+    expect(typeof givenMethod).toBe('function')
+    expect(givenDef).toEqual(parsedDefinition.Given[0])
+    
+    const { method:thenMethod, ...thenDef } = parsed.Then[0]
+    expect(typeof thenMethod).toBe('function')
+    expect(thenDef).toEqual(parsedDefinition.Then[0])
   })
 
   it('should register parsed step definitions from text', () => {
     const PK = new Parkin(worldObj)
     const parsed = PK.parse.definition(definition)
 
-    // Parsed definition does not have the name or method properties added to it
-    // match property could be regex based on the variant, but the parsed version is a string
-    // So extract them when testing
-    const { name, method, match, ...givenDef } = PK.steps._given[0]
-    const { match: parsedMatch, ...parsedDef } = parsedDefinition[0]
+    const { method:givenMethod, ...givenDef } = PK.steps._given[0]
+    expect(givenDef).toEqual(parsedDefinition.Given[0])
+    expect(typeof givenMethod).toBe('function')
 
-    expect(givenDef).toEqual(parsedDef)
-    expect(typeof method).toBe('function')
-    expect(typeof name).toBe('string')
-    // Convert the both matches to string so they can be compared
-    expect(`/${parsedMatch.toString()}/`).toEqual(match.toString())
-
-    // Parsed definition does not have the name or method properties added to it
-    // So extract them when testing
-    const { name: thenName, method: thenMethod, ...thenDef } = PK.steps._then[0]
-    const { ...parsedThenDef } = parsedDefinition[1]
-
-    expect(thenDef).toEqual(parsedThenDef)
+    const { method:thenMethod, ...thenDef } = PK.steps._then[0]
     expect(typeof thenMethod).toBe('function')
-    expect(typeof thenName).toBe('string')
+    expect(thenDef).toEqual(parsedDefinition.Then[0])
   })
 
   it('finds matching definition from a parsed feature and calls the its method', () => {
@@ -124,4 +114,5 @@ describe('Parkin', () => {
     expect(PK.steps[`_${givenStep.type}`][0].method).toHaveBeenCalled()
     expect(PK.steps[`_${whenStep.type}`][2].method).toHaveBeenCalled()
   })
+
 })

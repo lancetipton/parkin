@@ -1,5 +1,5 @@
 import { constants } from '../constants'
-import { throwFeatureNotAnObj } from '../errors'
+import { throwFeatureNotAnObj } from '../utils/errors'
 import { eitherArr, isObj, isArr, capitalize, exists } from '@keg-hub/jsutils'
 
 const { FEATURE_META } = constants

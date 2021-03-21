@@ -1,6 +1,6 @@
 import { noOp } from '@keg-hub/jsutils'
 import { testMethodFill } from './errors'
-import { hasWindow, hasJasmine } from './globalObj'
+import { hasWindow, hasJasmine } from './globalScope'
 
 /**
  * Resolves a test method from the global scope

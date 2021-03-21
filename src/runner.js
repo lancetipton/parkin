@@ -1,6 +1,6 @@
 import { parseFeature } from './parse'
-import { getTestMethod, skipTestsOnFail } from './testMethods'
-import { throwMissingSteps, throwMissingFeatureText } from './errors'
+import { getTestMethod, skipTestsOnFail } from './utils/testMethods'
+import { throwMissingSteps, throwMissingFeatureText } from './utils/errors'
 import {
   isArr,
   capitalize,

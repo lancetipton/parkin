@@ -1,8 +1,8 @@
 import { matcher } from './matcher'
 import { constants } from './constants'
-import { throwNoMatchingStep } from './errors'
+import { throwNoMatchingStep } from './utils/errors'
 import { capitalize, eitherArr, isStr, isFunc, noOp } from '@keg-hub/jsutils'
-import { resolveGlobalObj, resolveModule, resolveRequire } from './globalObj'
+import { resolveGlobalObj, resolveModule, resolveRequire } from './utils/globalScope'
 const { REGEX_VARIANT, EXPRESSION_VARIANT, STEP_TYPES } = constants
 
 /**

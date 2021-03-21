@@ -22,6 +22,6 @@ module.exports = {
   globals: {
     __DEV__: true,
   },
-  testEnvironment: 'jsdom',
+  testEnvironment: 'node',
   setupFilesAfterEnv: [`<rootDir>/configs/setupTests.js`],
 }

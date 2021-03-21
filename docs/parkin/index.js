@@ -304,7 +304,13 @@ const constants = deepFreeze({
 
 const hasWindow = Boolean(typeof window !== 'undefined');
 const hasGlobal = Boolean(typeof global !== 'undefined');
-const hasJasmine = Boolean(typeof global !== 'undefined' && typeof global.jasmine !== 'undefined');
+const hasModule = Boolean(typeof module === 'object');
+const hasRequire = Boolean(typeof require === 'function');
+const hasJasmine = Boolean(hasGlobal && typeof global.jasmine !== 'undefined');
+const resolveModule = () => hasModule ? checkCall(() => module) : {
+  exports: {}
+};
+const resolveRequire = () => hasRequire ? checkCall(() => require) : noOp;
 const resolveGlobalObj = () => {
   try {
     return hasWindow ? checkCall(() => window) : hasGlobal ? checkCall(() => global) : noOpObj;
@@ -433,7 +439,6 @@ const {
   EXPRESSION_VARIANT,
   STEP_TYPES
 } = constants;
-const globalObj = resolveGlobalObj();
 const sanitize = step => {
   let name = step.match.toString();
   if (name[0] === '^') name = name.substr(1);
@@ -472,10 +477,10 @@ const registerFromParse = function (definitions) {
     return built;
   }, {});
   eitherArr(definitions, [definitions]).map(definition => {
-    const response = Function(`return (global, ${DEF_TYPES.join(',')}) => {
+    const response = Function(`return (global, require, module, ${DEF_TYPES.join(',')}) => {
           return (function(global) { ${definition} }).call(global, global)
         }`)()(
-    globalObj,
+    resolveGlobalObj(), resolveRequire(), resolveModule(),
     ...DEF_TYPES.map(type => tempRegister(this, type, container)));
   });
   return container;

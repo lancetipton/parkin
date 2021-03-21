@@ -23,34 +23,42 @@ Then("The word of the day is {word}", async word => {
 })
 `
 
-export const parsedDefinition = [
-  {
-    type: 'given',
-    // TODO: validate this works
-    // match: 'I am on (S+)$',
-    match: /I am on (S+)$/,
-    variant: 'regex',
-    content: 'Given(/I am on (S+)$/, async url => {\n' +
-      '  const internalMethod = data => { return data }\n' +
-      '  const data = internalMethod ({\n' +
-      '    test: "test-method"\n' +
-      '  })\n' +
-      '\n' +
-      '  const page = await getPage()\n' +
-      '  await page.goto(url)\n' +
-      '})'
-  },
-  {
-    type: 'then',
-    match: 'The word of the day is {word}',
-    variant: 'expression',
-    content: 'Then("The word of the day is {word}", async word => {\n' +
-      '  customMethod({})\n' +
-      '  expect(word).toBe("test")\n' +
-      '  expect({}).toEqual({})\n' +
-      '})'
-  }
-]
+export const parsedDefinition = {
+  Given: [
+    {
+      type: 'given',
+      match: /I am on (S+)$/,
+      tokens: [],
+      variant: 'regex',
+      name: '/I am on (S+)$/',
+      uuid: '/I am on (S+)$/',
+      content: 'Given(/I am on (S+)$/, async url => {\n' +
+        '  const internalMethod = data => { return data }\n' +
+        '  const data = internalMethod ({\n' +
+        '    test: "test-method"\n' +
+        '  })\n' +
+        '\n' +
+        '  const page = await getPage()\n' +
+        '  await page.goto(url)\n' +
+        '})'
+    },
+  ],
+  Then: [
+    {
+      type: 'then',
+      match: 'The word of the day is {word}',
+      tokens: [],
+      variant: 'expression',
+      name: 'The word of the day is {word}',
+      uuid: 'The word of the day is {word}',
+      content: 'Then("The word of the day is {word}", async word => {\n' +
+        '  customMethod({})\n' +
+        '  expect(word).toBe("test")\n' +
+        '  expect({}).toEqual({})\n' +
+        '})'
+    }
+  ]
+}
 
 export const expressionDefs = [
   {

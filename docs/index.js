@@ -1,7 +1,7 @@
 const $ = selector => document.querySelector(selector)
 const world = {}
 let PK
-let debug = false
+let debug = true
 
 const logDebug = (...data) => {
   debug && console.log(...data)
@@ -51,5 +51,3 @@ const runFeature = () => {
  * We use an iif to ensure it's run when the browser is ready
  */
 (() => PK = new Parkin({}))()
-
-runFeature()

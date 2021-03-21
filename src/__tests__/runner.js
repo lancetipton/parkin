@@ -12,6 +12,7 @@ jest.clearAllMocks()
 
 const worldObj = {}
 const { Parkin } = require('../parkin')
+const { Runner } = require('../runner')
 let PK
 let ogTest
 let resetHooks
@@ -103,4 +104,23 @@ describe('Runner', () => {
     const testsRan = await PK.run(feature, { tags: '@non-existent-tag' })
     expect(testsRan).toEqual(false)
   })
+  
+  it('should throw when no steps class is passed to the runner class', async () => {
+    expect(() => {
+      const runner = new Runner()
+    }).toThrow()
+  })
+
+  it('should throw when no hooks class is passed to the runner class', async () => {
+    expect(() => {
+      const runner = new Runner({})
+    }).toThrow()
+  })
+
+  it('should now throw when steps and hooks classes are passed to the runner class', async () => {
+    expect(() => {
+      const runner = new Runner({}, {})
+    }).not.toThrow()
+  })
+
 })
