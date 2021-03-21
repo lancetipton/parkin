@@ -8,7 +8,8 @@
  * @returns {string} - Sanitized text
  */
 export const sanitizeForId = text => {
-  const cleaned = text.trim()
+  const cleaned = text
+    .trim()
     .toLowerCase()
     .replace(/[\s\/\\\(\)\+=_&%\$#@!\*~`\|\?:;"'<>,.{}]/g, '-')
   return `${cleaned}-${text.length}`
@@ -44,13 +45,15 @@ export const sanitize = step => {
  * @returns {Object|boolean} - Returns the passed in definition or false if it already exists
  */
 export const validateDefinition = (definition, definitions) => {
-  return definitions.reduce((validated, def) => {
-    if(!validated || def.content === validated.content) return false
+  return definitions.reduce(
+    (validated, def) => {
+      if (!validated || def.content === validated.content) return false
 
-    def.uuid === validated.uuid &&
-      (validated.uuid = `${validated.uuid}-${validated.content.length}`)
+      def.uuid === validated.uuid &&
+        (validated.uuid = `${validated.uuid}-${validated.content.length}`)
 
-    return validated
-  }, { ...definition })
-
+      return validated
+    },
+    { ...definition }
+  )
 }

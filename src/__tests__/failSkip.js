@@ -9,7 +9,6 @@ const { Parkin } = require('../parkin')
 const worldObj = {}
 const PK = new Parkin(worldObj)
 registerFailSteps(PK)
-
 ;(async () => {
   await PK.run(failStepFeature)
 })()

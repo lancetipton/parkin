@@ -10,8 +10,6 @@ const worldObj = { testMethod: jest.fn() }
 const PK = new Parkin(worldObj)
 
 registerMockSteps(PK)
-
 ;(async () => {
   await PK.run(promiseFeature)
 })()
-

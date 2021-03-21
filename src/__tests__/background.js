@@ -11,8 +11,6 @@ const worldObj = {}
 const PK = new Parkin(worldObj)
 
 registerBackgroundSteps(PK)
-
 ;(async () => {
   await PK.run(backgroundFeature)
 })()
-

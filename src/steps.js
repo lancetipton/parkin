@@ -46,7 +46,7 @@ const registerFromCall = function (
   type,
   match,
   method,
-  meta = noOpObj,
+  meta = noOpObj
 ) {
   const definition = {
     type,
@@ -67,8 +67,7 @@ const registerFromCall = function (
   const definitions = this.list()
   const newDefinition = validateDefinition(definition, definitions)
 
-  newDefinition &&
-    this[internalType].push(newDefinition)
+  newDefinition && this[internalType].push(newDefinition)
 
   return newDefinition
 }

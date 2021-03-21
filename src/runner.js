@@ -67,21 +67,13 @@ const runScenario = (stepsInstance, scenario, background, testMode) => {
   describe(`Scenario: ${scenario.scenario}`, () => {
     background &&
       beforeAll(async () => {
-        await runBackground(
-          stepsInstance,
-          background,
-          testMode
-        )
+        await runBackground(stepsInstance, background, testMode)
       })
 
     // Map over the steps and call them
     // Store the returned promise in the responses array
     responses = scenario.steps.map(
-      async step => await runStep(
-        stepsInstance,
-        step,
-        testMode
-      )
+      async step => await runStep(stepsInstance, step, testMode)
     )
 
     // Ensure we resolve all promises inside the describe block
