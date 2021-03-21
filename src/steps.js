@@ -1,7 +1,7 @@
 import { matcher } from './matcher'
 import { constants } from './constants'
 import { throwNoMatchingStep } from './utils/errors'
-import { capitalize, eitherArr, isStr } from '@keg-hub/jsutils'
+import { capitalize, eitherArr, isStr, noOpObj } from '@keg-hub/jsutils'
 import {
   resolveGlobalObj,
   resolveModule,
@@ -10,7 +10,6 @@ import {
 import { sanitizeForId, sanitize } from './utils/helpers'
 
 const { REGEX_VARIANT, EXPRESSION_VARIANT, STEP_TYPES } = constants
-
 
 /**
  * Builds the text content of a step definition call
@@ -42,9 +41,16 @@ const getContent = step => {
  *
  * @returns {void}
  */
-const registerFromCall = function (internalType, type, match, method) {
+const registerFromCall = function (
+  internalType,
+  type,
+  match,
+  method,
+  meta = noOpObj
+) {
   const step = {
     type,
+    meta,
     match,
     method,
     // TODO: add token parsing
@@ -191,8 +197,8 @@ export class Steps {
     this.types.map(type => {
       const internalType = `_${type}`
       this[internalType] = []
-      this[capitalize(type)] = (match, method) => {
-        return self.register(internalType, type, match, method)
+      this[capitalize(type)] = (match, method, meta) => {
+        return self.register(internalType, type, match, method, meta)
       }
     })
   }

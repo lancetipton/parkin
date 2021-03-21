@@ -1,4 +1,3 @@
-
 /*
  * Sanitizes the passed in text and joins the texts length
  * @function
@@ -9,7 +8,8 @@
  * @returns {string} - Sanitized text
  */
 export const sanitizeForId = text => {
-  const cleaned = text.trim().toLowerCase()
+  const cleaned = text.trim()
+    .toLowerCase()
     .replace(/[\s\/\\\(\)\+=_&%\$#@!\*~`\|\?:;"'<>,.{}]/g, '-')
   return `${text.length}-${cleaned}`
 }

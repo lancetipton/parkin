@@ -65,16 +65,23 @@ const runScenario = (stepsInstance, scenario, background, testMode) => {
   // Holder for the steps of each scenario
   let responses = []
   describe(`Scenario: ${scenario.scenario}`, () => {
-  
     background &&
       beforeAll(async () => {
-        await runBackground(stepsInstance, background, testMode)
+        await runBackground(
+          stepsInstance,
+          background,
+          testMode
+        )
       })
-  
+
     // Map over the steps and call them
     // Store the returned promise in the responses array
     responses = scenario.steps.map(
-      async step => await runStep(stepsInstance, step, testMode)
+      async step => await runStep(
+        stepsInstance,
+        step,
+        testMode
+      )
     )
 
     // Ensure we resolve all promises inside the describe block
@@ -252,9 +259,14 @@ export class Runner {
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
       describe(`Feature: ${feature.feature}`, () => {
-
         responses = feature.scenarios.map(
-          async scenario => await runScenario(this.steps, scenario, feature.background, testMode)
+          async scenario =>
+            await runScenario(
+              this.steps,
+              scenario,
+              feature.background,
+              testMode
+            )
         )
 
         // Ensure we resolve all promises inside the describe block

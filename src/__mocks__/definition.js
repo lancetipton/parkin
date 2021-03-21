@@ -28,6 +28,7 @@ export const parsedDefinition = {
     {
       type: 'given',
       match: /I am on (S+)$/,
+      meta: {},
       tokens: [],
       variant: 'regex',
       name: 'I am on (S+)',
@@ -47,6 +48,7 @@ export const parsedDefinition = {
     {
       type: 'then',
       match: 'The word of the day is {word}',
+      meta: {},
       tokens: [],
       variant: 'expression',
       name: 'The word of the day is {word}',
