@@ -1,9 +1,6 @@
 import { isFloat, isInt, isStr } from '@keg-hub/jsutils'
 
-export const definition = `const { Given } = require("cucumber")
-const { getBrowserContext } = require('../../support/setup')
-const { getPage } = getBrowserContext()
-
+export const definition = `
 Given(/I am on (\S+)$/, async url => {
   const internalMethod = data => { return data }
   const data = internalMethod ({
@@ -14,7 +11,7 @@ Given(/I am on (\S+)$/, async url => {
   await page.goto(url)
 })
 
-const customMethod = () => {
+const customMethod = async () => {
   console.log('custom method')
   await page.goto({ url })
 }
@@ -24,14 +21,14 @@ Then("The word of the day is {word}", async word => {
   expect(word).toBe("test")
   expect({}).toEqual({})
 })
-
-module.exports {}
 `
 
 export const parsedDefinition = [
   {
     type: 'given',
-    match: 'I am on (S+)$',
+    // TODO: validate this works
+    // match: 'I am on (S+)$',
+    match: /I am on (S+)$/,
     variant: 'regex',
     content: 'Given(/I am on (S+)$/, async url => {\n' +
       '  const internalMethod = data => { return data }\n' +

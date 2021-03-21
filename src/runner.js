@@ -1,4 +1,4 @@
-import { parse } from './parse'
+import { parseFeature } from './parse'
 import { getTestMethod, skipTestsOnFail } from './testMethods'
 import { throwMissingSteps, throwMissingFeatureText } from './errors'
 import {
@@ -21,7 +21,7 @@ import {
  */
 const resolveFeatures = data => {
   return isStr(data)
-    ? parse.feature(data)
+    ? parseFeature(data)
     : isObj(data)
       ? [data]
       : isArr(data)

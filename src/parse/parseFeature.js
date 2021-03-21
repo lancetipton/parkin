@@ -464,7 +464,7 @@ const setActiveParent = (
  *
  * @returns {Object} - Parsed feature file as an object
  */
-export const feature = text => {
+export const parseFeature = text => {
   const features = []
   const lines = (text || '').toString().split(RX_NEWLINE)
   let scenario = scenarioFactory(false)

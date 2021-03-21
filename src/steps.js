@@ -1,7 +1,8 @@
 import { matcher } from './matcher'
 import { constants } from './constants'
 import { throwNoMatchingStep } from './errors'
-import { capitalize, eitherArr, isStr } from '@keg-hub/jsutils'
+import { capitalize, eitherArr, isStr, isFunc, noOp } from '@keg-hub/jsutils'
+import { resolveGlobalObj, resolveModule, resolveRequire } from './globalObj'
 const { REGEX_VARIANT, EXPRESSION_VARIANT, STEP_TYPES } = constants
 
 /**
@@ -71,28 +72,83 @@ const registerFromCall = function (internalType, type, match, method) {
   return step
 }
 
+
+/**
+ * Helper method to wrap the default register method of a step definition
+ * Allows capturing the definition when it's registered
+ * Contains only newly registered definitions, NOT all definitions
+ * @function
+ * @private
+ * @param {Object} parent - Parent class to register the definitions to (Step class instance)
+ * @param {string} type - Type of step definition to register
+ * @param {Object} container - Holds the newly registered definitions
+ *
+ * @returns {function} - Method to register step definitions by type
+ */
+const tempRegister = (parent, type, container) => {
+  /**
+   * Captures a registered step definition and adds it the the container object
+   * @function
+   * @internal
+   * @param {string} match - Text used to matched with a features step
+   * @param {function} method - Called when a features step matches the text param
+   * @param {Object} meta - Object describing the functionality of the step definition
+   *
+   * @returns {Object} newly registered definition model
+   */
+  return (...args) => {
+    const definition = parent[type](...args)
+    container[type].push(definition)
+
+    return definition
+  }
+}
+
 /**
  * Registers a parsed step definition object
  * @function
  * @private
- * @param {Array|Object} definitions - Array of parsed definition objects
- *                                    Or a single parsed definition object
+ * @param {Array|string} definitions - Array of strings or single string
+ *                                     of the text content form a definition file
  *
  * @returns {void}
  */
 const registerFromParse = function (definitions) {
-  // Loop over the passed in definitions
-  return eitherArr(definitions, [definitions]).map(definition => {
-    // Create a dynamic function calling the definition.content
-    // The definition.content should be a call to a global Given, When, Then method
-    // Which is injected from the Steps class instance ( this )
-    const step = Function(`return (Given, When, Then, And, But) => {
-        return ${definition}
-      }`)()(this.Given, this.When, this.Then, this.And, this.But)
 
-    // Merge the returned step with the initial definition
-    return { ...step, ...definition }
-  })
+  // Ensures a consistent index due to being an array
+  const DEF_TYPES = this.types.map(type => capitalize(type))
+
+  // Build a container for holding the newly added definitions
+  // Looks like the object below
+  // { Given: [], When: [], Then: [], But: [], And: [] }
+  const container = DEF_TYPES.reduce((built, type) => {
+    built[type] = []
+    return built
+  }, {})
+
+  // Loop over the passed in definitions
+  eitherArr(definitions, [definitions])
+    .map(definition => {
+      // Create a dynamic function calling the definition
+      // The definition should be a call to a global Given, When, Then methods
+      // Which is comes from the tempRegister method for each type
+      const response = Function(`return (global, require, module, ${DEF_TYPES.join(',')}) => {
+          return (function(global) { ${definition} }).call(global, global)
+        }`)()(
+          // Pass in the global object so we can bind the dynamic function to it
+          // Allows referencing values on the global scope directly
+          // For example myGlobalFunction() instead of window.myGlobalFunction()
+          resolveGlobalObj(),
+          resolveRequire(),
+          resolveModule(),
+          // Call the tempRegister for each type,
+          // Then spread the response as arguments to the dynamic function
+          ...DEF_TYPES.map(type => tempRegister(this, type, container)),
+        )
+    })
+
+  // Return the container which should now hold all newly registered definitions ONLY 
+  return container
 }
 
 /**
@@ -182,6 +238,35 @@ export class Steps {
   }
 
   /**
+   * Finds a matching step definition from the passed in text
+   * Steps must be registered with this instance to be found
+   * @memberof Steps
+   * @function
+   * @public
+   * @param {string} text - Feature step text to compare with definition match text
+   *
+   * @returns {Object} - Contains a match property as an array of arguments
+   *                     And the definition property as the found registered definition 
+   */
+  match = text => {
+    // Join all step types together when finding a match
+    // Cucumber treats all step definition types as the same when matching to step text
+    const list = this.list()
+
+    // Call the matcher to find a matching step definition
+    const found = matcher(list, text)
+
+    // If no matching step definition exists, then return false
+    if (!found.match || !found.definition) return false
+
+    // Add the Step instance's world to the match arguments
+    // Always added as the last argument
+    found.match.push(this._world)
+
+    return found
+  }
+
+  /**
    * Finds a matching step definition from the passed in list and text can calls it
    * This is the method the actually calls a step definition function
    * @memberof Steps
@@ -193,22 +278,14 @@ export class Steps {
    * @returns {*} - Response from the step definition function
    */
   resolve = text => {
-    // Join all step types together when finding a match
-    // Cucumber treats all step definition types as the same when matching to step text
-    const list = this.list()
+    // Try to find a step definition match to the passed in text
+    const found = this.match(text)
 
-    // Call the matcher to find a matching step definition
-    const { match, step } = matcher(list, text)
-
-    // If not step of match, then throw
-    // No matching step definition exists
-    if (!match || !step) return throwNoMatchingStep(text)
-
-    // Add the steps world to the match arguments
-    match.push(this._world)
-
-    // Call the step function passing the match array as arguments
-    return step.method(...match)
+    // If found, call the step function passing the match array as arguments
+    // Otherwise throw a no match error
+    return found
+      ? found.definition.method(...found.match)
+      : throwNoMatchingStep(text)
   }
 
   /**

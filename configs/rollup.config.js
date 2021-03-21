@@ -8,10 +8,7 @@ import { terser } from 'rollup-plugin-terser'
 const isProd = process.env.NODE_ENV === 'production'
 
 const config = {
-  input: [
-    'src/index.js',
-    'src/parse/definition/definitionParser.js',
-  ],
+  input: 'src/index.js',
   output: [
     {
       dir: 'build/esm',
@@ -25,11 +22,11 @@ const config = {
     },
   ],
   plugins: [
+    buildHook(),
     resolve(),
     commonjs(),
     babel({ babelHelpers: 'bundled' }),
     cleanup(),
-    buildHook(),
     isProd &&
       terser({
         mangle: true,

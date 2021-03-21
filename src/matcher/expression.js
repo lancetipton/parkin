@@ -14,10 +14,9 @@ import {
   RX_PARAMETER,
 } from './patterns'
 
+import { hasWindow } from '../globalObj'
 import { noOpObj, isFunc } from '@keg-hub/jsutils'
 import { getParamTypes, convertTypes } from './paramTypes'
-
-const inBrowser = Boolean(typeof window !== 'undefined')
 
 /**
  * Escapes a string so it can be converted into a regular expression
@@ -28,7 +27,7 @@ const inBrowser = Boolean(typeof window !== 'undefined')
  * @return {string} Escaped string to allow converting into a regular expression
  */
 const escapeStr = str => {
-  return inBrowser
+  return hasWindow
     ? str.replace(/[|\\[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d')
     : str
 }
@@ -136,7 +135,7 @@ const checkAnchors = str => {
  * @param {Array} wordMatches - matches for the {word} params
  */
 const extractParameters = (text, stepMatcher, wordMatches) => {
-  // gets an array of each dynamic element of the step match text,
+  // Gets an array of each dynamic element of the step match text,
   // including: params (e.g. {float}), optionals (e.g. test(s))
   // and alternate text (e.g. required/optional)
   const parts = getRegexParts(stepMatcher)
@@ -184,33 +183,32 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
 }
 
 /**
- * Finds a matching step definition from passed in expression text
- * Then extracts the variables from the text to pass to the step definitions method
+ * Finds a matching definition from the passed in expression text
+ * Then extracts the variables from the text to pass to the definitions method
  * Converts expression strings into regex then calls the matchRegex method
  * @function
  * @public
  * @export
- * @param {Object} step - Registered step definition
- * @param {string} text - Feature step text to compare with step definition text
+ * @param {Object} definition - Registered definition
+ * @param {string} text - Feature step text to compare with definition text
  *
- * @returns {Object}
- * @returns {Object} Found matching step definition and matched arguments
- *  - form: { step, match: Array of Arguments to pass to step function }
+ * @returns {Object} Found matching definition and matched arguments
+ *  - form: { definition, match: Array of Arguments to pass to definitions function }
  */
-export const matchExpression = (step, text) => {
-  const escaped = escapeStr(step.match)
+export const matchExpression = (definition, text) => {
+  const escaped = escapeStr(definition.match)
   const { regex: regexAlts } = checkAlternative(escaped)
   const { regex: convertedRegex, transformers } = convertToRegex(regexAlts)
   const { regex: match } = checkAnchors(convertedRegex)
 
   // Then call the regex matcher to get the content
-  const found = matchRegex({ ...step, match }, text)
+  const found = matchRegex({ ...definition, match }, text)
 
-  // If no found step definition of match, return an empty object
-  if (!found || !found.step || !found.match) return noOpObj
+  // If no found definition or match, return an empty object
+  if (!found || !found.definition || !found.match) return noOpObj
 
   // get all the parameters, without any type coercion
-  const params = extractParameters(text, step.match, found.match)
+  const params = extractParameters(text, definition.match, found.match)
   if (!params) return noOpObj
 
   // Convert the found variables into their type based on the mapped transformers
@@ -218,8 +216,8 @@ export const matchExpression = (step, text) => {
 
   // If the conversion fails, and no variable or not enough variables are returned,
   // Then assume the type does not match, so the step does not match.
-  // Otherwise return the matched step definition, and the converted variables
+  // Otherwise return the matched definition, and the converted variables
   return converted.length !== params.length
     ? noOpObj
-    : { step, match: converted }
+    : { definition, match: converted }
 }

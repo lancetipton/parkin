@@ -33,9 +33,6 @@ const setupDefinitions = () => {
   const parsedDefinition = PK.parse.definition(definitionText)
 
   logDebug(`Parsed definitions:\n`, parsedDefinition)
-
-  // // Register the parsed definitions
-  PK.steps.register(parsedDefinition)
 }
 
 /*
@@ -53,4 +50,6 @@ const runFeature = () => {
  * This is ensure the Parkin library has been loaded 
  * We use an iif to ensure it's run when the browser is ready
  */
-(() => PK = new Parkin({}, null, definitionParser))()
+(() => PK = new Parkin({}))()
+
+runFeature()

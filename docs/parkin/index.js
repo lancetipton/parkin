@@ -231,10 +231,10 @@ const convertTypes = (matches, transformers) => {
   }).filter(exists);
 };
 
-const matchRegex = (step, text) => {
-  const match = text.match(new RegExp(step.match));
+const matchRegex = (definition, text) => {
+  const match = text.match(new RegExp(definition.match));
   return match ? {
-    step,
+    definition,
     match: match.slice(1, match.length).filter(Boolean)
   } : noOpObj;
 };
@@ -286,10 +286,10 @@ const parseMatch = (matchArr, type = 'other') => {
     })
   };
 };
-const getRegexParts = stepMatcher => {
-  const parameters = [...stepMatcher.matchAll(new RegExp(RX_PARAMETER, 'gi'))].map(match => parseMatch(match, 'parameter'));
-  const optionals = [...stepMatcher.matchAll(new RegExp(RX_OPTIONAL, 'gi'))].map(match => parseMatch(match, 'optional'));
-  const alts = [...stepMatcher.matchAll(new RegExp(RX_ALT, 'gi'))].map(match => parseMatch(match, 'alternate'));
+const getRegexParts = defMatcher => {
+  const parameters = [...defMatcher.matchAll(new RegExp(RX_PARAMETER, 'gi'))].map(match => parseMatch(match, 'parameter'));
+  const optionals = [...defMatcher.matchAll(new RegExp(RX_OPTIONAL, 'gi'))].map(match => parseMatch(match, 'optional'));
+  const alts = [...defMatcher.matchAll(new RegExp(RX_ALT, 'gi'))].map(match => parseMatch(match, 'alternate'));
   const sortedExpressions = [...parameters, ...optionals, ...alts].sort((matchA, matchB) => matchA.index - matchB.index);
   return sortedExpressions;
 };
@@ -302,9 +302,19 @@ const constants = deepFreeze({
   FEATURE_META: ['feature', 'perspective', 'desire', 'reason', 'comments']
 });
 
-const inBrowser = Boolean(typeof window !== 'undefined');
+const hasWindow = Boolean(typeof window !== 'undefined');
+const hasGlobal = Boolean(typeof global !== 'undefined');
+const hasJasmine = Boolean(typeof global !== 'undefined' && typeof global.jasmine !== 'undefined');
+const resolveGlobalObj = () => {
+  try {
+    return hasWindow ? checkCall(() => window) : hasGlobal ? checkCall(() => global) : noOpObj;
+  } catch (err) {
+    return noOpObj;
+  }
+};
+
 const escapeStr = str => {
-  return inBrowser ? str.replace(/[|\\[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d') : str;
+  return hasWindow ? str.replace(/[|\\[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d') : str;
 };
 const runRegexCheck = (matcher, testRx, replaceWith) => {
   if (!testRx.test(matcher)) return matcher;
@@ -384,8 +394,8 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
   });
   return expectedParamLength === result.params.length ? result.params : null;
 };
-const matchExpression = (step, text) => {
-  const escaped = escapeStr(step.match);
+const matchExpression = (definition, text) => {
+  const escaped = escapeStr(definition.match);
   const {
     regex: regexAlts
   } = checkAlternative(escaped);
@@ -396,15 +406,15 @@ const matchExpression = (step, text) => {
   const {
     regex: match
   } = checkAnchors(convertedRegex);
-  const found = matchRegex({ ...step,
+  const found = matchRegex({ ...definition,
     match
   }, text);
-  if (!found || !found.step || !found.match) return noOpObj;
-  const params = extractParameters(text, step.match, found.match);
+  if (!found || !found.definition || !found.match) return noOpObj;
+  const params = extractParameters(text, definition.match, found.match);
   if (!params) return noOpObj;
   const converted = convertTypes(params, transformers);
   return converted.length !== params.length ? noOpObj : {
-    step,
+    definition,
     match: converted
   };
 };
@@ -412,9 +422,9 @@ const matchExpression = (step, text) => {
 const {
   REGEX_VARIANT
 } = constants;
-const matcher = (stepDefs, text) => {
-  return stepDefs.reduce((found, step) => {
-    return found.match || !step.match ? found : step.variant !== REGEX_VARIANT ? matchExpression(step, text) : matchRegex(step, text);
+const matcher = (definitions, text) => {
+  return definitions.reduce((found, definition) => {
+    return found.match || !definition.match ? found : definition.variant !== REGEX_VARIANT ? matchExpression(definition, text) : matchRegex(definition, text);
   }, noOpObj);
 };
 
@@ -423,6 +433,7 @@ const {
   EXPRESSION_VARIANT,
   STEP_TYPES
 } = constants;
+const globalObj = resolveGlobalObj();
 const sanitize = step => {
   let name = step.match.toString();
   if (name[0] === '^') name = name.substr(1);
@@ -447,15 +458,27 @@ const registerFromCall = function (internalType, type, match, method) {
   this[internalType].push(step);
   return step;
 };
+const tempRegister = (parent, type, container) => {
+  return (...args) => {
+    const definition = parent[type](...args);
+    container[type].push(definition);
+    return definition;
+  };
+};
 const registerFromParse = function (definitions) {
-  return eitherArr(definitions, [definitions]).map(definition => {
-    const step = Function(`return (Given, When, Then, And, But) => {
-        return ${definition}
-      }`)()(this.Given, this.When, this.Then, this.And, this.But);
-    return { ...step,
-      ...definition
-    };
+  const DEF_TYPES = this.types.map(type => capitalize(type));
+  const container = DEF_TYPES.reduce((built, type) => {
+    built[type] = [];
+    return built;
+  }, {});
+  eitherArr(definitions, [definitions]).map(definition => {
+    const response = Function(`return (global, ${DEF_TYPES.join(',')}) => {
+          return (function(global) { ${definition} }).call(global, global)
+        }`)()(
+    globalObj,
+    ...DEF_TYPES.map(type => tempRegister(this, type, container)));
   });
+  return container;
 };
 const joinAllSteps = instance => {
   return instance.types.reduce((stepDefs, type) => stepDefs.concat(instance[`_${type}`]), []);
@@ -473,15 +496,16 @@ class Steps {
         return stepDefs;
       }, {});
     });
-    _defineProperty(this, "resolve", text => {
+    _defineProperty(this, "match", text => {
       const list = this.list();
-      const {
-        match,
-        step
-      } = matcher(list, text);
-      if (!match || !step) return throwNoMatchingStep(text);
-      match.push(this._world);
-      return step.method(...match);
+      const found = matcher(list, text);
+      if (!found.match || !found.definition) return false;
+      found.match.push(this._world);
+      return found;
+    });
+    _defineProperty(this, "resolve", text => {
+      const found = this.match(text);
+      return found ? found.definition.method(...found.match) : throwNoMatchingStep(text);
     });
     _defineProperty(this, "register", (...args) => {
       return isStr(args[0]) ? registerFromCall.apply(this, args) : registerFromParse.apply(this, args);
@@ -701,7 +725,7 @@ const ensureBackground = (feature, background, line, index) => {
 const setActiveParent = (activeParent, feature, scenario, background, nextLine) => {
   return RX_SCENARIO.test(nextLine) || RX_EXAMPLE.test(nextLine) ? scenario : RX_FEATURE.test(nextLine) ? feature : RX_BACKGROUND.test(nextLine) ? background : activeParent;
 };
-const feature = text => {
+const parseFeature = text => {
   const features = [];
   const lines = (text || '').toString().split(RX_NEWLINE);
   let scenario = scenarioFactory(false);
@@ -721,17 +745,11 @@ const feature = text => {
   }, features);
 };
 
-const definitionNoOp = () => {
-  console.error(`Parking.parse.definition method not set!\n`, `A definition parse method must be passed as the third argument on Parkin init.`);
-  return noPropArr;
-};
-const parse = {
-  feature,
-  definition: definitionNoOp
+const parseDefinition = function (text) {
+  const registered = this.steps.register([text]);
+  return registered;
 };
 
-const inBrowser$1 = Boolean(typeof window !== 'undefined');
-const HAS_JASMINE = Boolean(typeof global !== 'undefined' && typeof global.jasmine !== 'undefined');
 const getTestMethod = (type, testMode) => {
   return testMode ? noOp : global[type] || testMethodFill(type);
 };
@@ -752,13 +770,13 @@ const buildReporter = (jasmineEnv, testMode) => {
   };
 };
 const skipTestsOnFail = testMode => {
-  if (inBrowser$1 || !HAS_JASMINE) return;
+  if (hasWindow || !hasJasmine) return;
   const jasmineEnv = global.jasmine.getEnv();
   jasmineEnv.addReporter(buildReporter(jasmineEnv));
 };
 
 const resolveFeatures = data => {
-  return isStr(data) ? parse.feature(data) : isObj(data) ? [data] : isArr(data) ? data.reduce((features, feature) => features.concat(resolveFeatures(feature)), []) : throwMissingFeatureText();
+  return isStr(data) ? parseFeature(data) : isObj(data) ? [data] : isArr(data) ? data.reduce((features, feature) => features.concat(resolveFeatures(feature)), []) : throwMissingFeatureText();
 };
 const runStep = async (stepsInstance, step, testMode) => {
   const test = getTestMethod('test', testMode);
@@ -910,35 +928,37 @@ const assemble = {
 
 var _isInit = new WeakMap();
 class Parkin {
-  constructor(_world, _steps, _definition) {
+  constructor(_world, _steps) {
     _isInit.set(this, {
       writable: true,
       value: false
     });
-    _defineProperty(this, "init", (world = noOpObj, steps, definition) => {
+    _defineProperty(this, "init", (world = noOpObj, steps) => {
       if (_classPrivateFieldGet(this, _isInit)) return console.warn(`This instance of parkin has already been initialized!`);
       _classPrivateFieldSet(this, _isInit, true);
       this.steps = new Steps(world);
       this.hooks = new Hooks();
       this.runner = new Runner(this.steps, this.hooks);
       this.run = this.runner.run;
-      this.parse = parse;
-      exists(definition) ? isFunc(definition) ? this.parse.definition = definition : console.error(`The third argument used to parse definitions, must be a function!`) : null;
+      this.parse = {
+        feature: parseFeature.bind(this),
+        definition: parseDefinition.bind(this)
+      };
       this.assemble = assemble;
       this.paramTypes = {
         register: registerParamType
       };
       isObj(steps) && this.registerSteps(steps);
       this.steps.types.map(type => {
-        this[capitalize(type)] = (matcher, method) => this.steps.register(`_${type}`, type, matcher, method);
+        this[capitalize(type)] = (matcher, method, meta) => this.steps.register(`_${type}`, type, matcher, method, meta);
       });
     });
     _defineProperty(this, "registerSteps", steps => {
       Object.entries(steps).map((type, typedSteps) =>
-      Object.entries(typedSteps).map((matcher, method) =>
-      this.steps[capitalize(type)](matcher, method)));
+      Object.entries(typedSteps).map((matcher, content) =>
+      this.steps[capitalize(type)](matcher, ...eitherArr(content, [content]))));
     });
-    isObj(_world) && this.init(_world, _steps, _definition);
+    isObj(_world) && this.init(_world, _steps);
   }
 }
 const PKInstance = new Parkin();

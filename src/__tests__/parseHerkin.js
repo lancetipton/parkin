@@ -71,17 +71,19 @@ describe('Parkin', () => {
     expect(noUuidScenarios).toEqual(parsedScenarios)
   })
 
-  it.skip('should parse step definition text when a definition parse method is passed', () => {
-    const PK = new Parkin(worldObj, null, definitionParser)
-    const parsed = PK.parse.definition(definition)
-    expect(parsed).toEqual(parsedDefinition)
-  })
-
-  it.skip('should register parsed step definitions from text', () => {
+  it.only('should parse step definition text when a definition parse method is passed', () => {
     const PK = new Parkin(worldObj)
     const parsed = PK.parse.definition(definition)
+    // TODO: update to match the parsed definition model
+    // Need to add tokens array, uuid, and convert match regex to string 
+    console.log(`---------- parsed ----------`)
+    console.log(parsed)
+    // expect(parsed).toEqual(parsedDefinition)
+  })
 
-    PK.steps.register(parsed)
+  it('should register parsed step definitions from text', () => {
+    const PK = new Parkin(worldObj)
+    const parsed = PK.parse.definition(definition)
 
     // Parsed definition does not have the name or method properties added to it
     // match property could be regex based on the variant, but the parsed version is a string
