@@ -44,10 +44,8 @@ const resolveFeatures = data => {
  */
 const runStep = async (stepsInstance, step, testMode) => {
   const test = getTestMethod('test', testMode)
-  // eslint-disable-next-line jest/no-test-callback
-  test(`${capitalize(step.type)} ${step.step}`, async done => {
-    await stepsInstance.resolve(step.step)
-    done()
+  test(`${capitalize(step.type)} ${step.step}`, async () => {
+    return await stepsInstance.resolve(step.step)
   })
 }
 

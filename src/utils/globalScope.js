@@ -12,10 +12,20 @@ export const hasWindow = Boolean(typeof window !== 'undefined')
 export const hasGlobal = Boolean(typeof global !== 'undefined')
 export const hasModule = Boolean(typeof module === 'object')
 export const hasRequire = Boolean(typeof require === 'function')
-
 export const hasJasmine = Boolean(
   hasGlobal && typeof global.jasmine !== 'undefined'
 )
+
+/**
+ * Resolve the jasmine object if it exists
+ * @function
+ * @export
+ * @public
+ *
+ * @returns {Object} Resolved jasmine object with the getEnv property
+ */
+export const resolveJasmine = () =>
+  hasJasmine ? checkCall(() => global.jasmine) : { getEnv: () => ({}) }
 
 /**
  * Resolve the module object if it exists
