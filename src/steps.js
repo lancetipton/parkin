@@ -7,7 +7,7 @@ import {
   resolveModule,
   resolveRequire,
 } from './utils/globalScope'
-import { sanitizeForId, sanitize } from './utils/helpers'
+import { sanitizeForId, sanitize, validateDefinition } from './utils/helpers'
 
 const { REGEX_VARIANT, EXPRESSION_VARIANT, STEP_TYPES } = constants
 
@@ -46,9 +46,9 @@ const registerFromCall = function (
   type,
   match,
   method,
-  meta = noOpObj
+  meta = noOpObj,
 ) {
-  const step = {
+  const definition = {
     type,
     meta,
     match,
@@ -59,14 +59,18 @@ const registerFromCall = function (
       match.toString().indexOf('/') === 0 ? REGEX_VARIANT : EXPRESSION_VARIANT,
   }
 
-  step.name = sanitize(step)
+  definition.name = sanitize(definition)
   // The name should always be unique, so we can use that as a consistent uuid
-  step.uuid = sanitizeForId(step.name)
-  step.content = getContent(step)
+  definition.uuid = sanitizeForId(`${type}-${definition.name}`)
+  definition.content = getContent(definition)
 
-  this[internalType].push(step)
+  const definitions = this.list()
+  const newDefinition = validateDefinition(definition, definitions)
 
-  return step
+  newDefinition &&
+    this[internalType].push(newDefinition)
+
+  return newDefinition
 }
 
 /**
