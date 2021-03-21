@@ -1,8 +1,12 @@
 import { matcher } from './matcher'
 import { constants } from './constants'
 import { throwNoMatchingStep } from './utils/errors'
-import { capitalize, eitherArr, isStr, isFunc, noOp } from '@keg-hub/jsutils'
-import { resolveGlobalObj, resolveModule, resolveRequire } from './utils/globalScope'
+import { capitalize, eitherArr, isStr } from '@keg-hub/jsutils'
+import {
+  resolveGlobalObj,
+  resolveModule,
+  resolveRequire,
+} from './utils/globalScope'
 const { REGEX_VARIANT, EXPRESSION_VARIANT, STEP_TYPES } = constants
 
 /**
@@ -72,7 +76,6 @@ const registerFromCall = function (internalType, type, match, method) {
   return step
 }
 
-
 /**
  * Helper method to wrap the default register method of a step definition
  * Allows capturing the definition when it's registered
@@ -114,7 +117,6 @@ const tempRegister = (parent, type, container) => {
  * @returns {void}
  */
 const registerFromParse = function (definitions) {
-
   // Ensures a consistent index due to being an array
   const DEF_TYPES = this.types.map(type => capitalize(type))
 
@@ -127,27 +129,26 @@ const registerFromParse = function (definitions) {
   }, {})
 
   // Loop over the passed in definitions
-  eitherArr(definitions, [definitions])
-    .map(definition => {
-      // Create a dynamic function calling the definition
-      // The definition should be a call to a global Given, When, Then methods
-      // Which is comes from the tempRegister method for each type
-      const response = Function(`return (global, require, module, ${DEF_TYPES.join(',')}) => {
+  eitherArr(definitions, [definitions]).map(definition => {
+    // Create a dynamic function calling the definition
+    // The definition should be a call to a global Given, When, Then methods
+    // Which is comes from the tempRegister method for each type
+    Function(`return (global, require, module, ${DEF_TYPES.join(',')}) => {
           return (function(global) { ${definition} }).call(global, global)
         }`)()(
-          // Pass in the global object so we can bind the dynamic function to it
-          // Allows referencing values on the global scope directly
-          // For example myGlobalFunction() instead of window.myGlobalFunction()
-          resolveGlobalObj(),
-          resolveRequire(),
-          resolveModule(),
-          // Call the tempRegister for each type,
-          // Then spread the response as arguments to the dynamic function
-          ...DEF_TYPES.map(type => tempRegister(this, type, container)),
-        )
-    })
+      // Pass in the global object so we can bind the dynamic function to it
+      // Allows referencing values on the global scope directly
+      // For example myGlobalFunction() instead of window.myGlobalFunction()
+      resolveGlobalObj(),
+      resolveRequire(),
+      resolveModule(),
+      // Call the tempRegister for each type,
+      // Then spread the response as arguments to the dynamic function
+      ...DEF_TYPES.map(type => tempRegister(this, type, container))
+    )
+  })
 
-  // Return the container which should now hold all newly registered definitions ONLY 
+  // Return the container which should now hold all newly registered definitions ONLY
   return container
 }
 
@@ -246,7 +247,7 @@ export class Steps {
    * @param {string} text - Feature step text to compare with definition match text
    *
    * @returns {Object} - Contains a match property as an array of arguments
-   *                     And the definition property as the found registered definition 
+   *                     And the definition property as the found registered definition
    */
   match = text => {
     // Join all step types together when finding a match

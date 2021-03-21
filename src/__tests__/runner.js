@@ -104,23 +104,22 @@ describe('Runner', () => {
     const testsRan = await PK.run(feature, { tags: '@non-existent-tag' })
     expect(testsRan).toEqual(false)
   })
-  
+
   it('should throw when no steps class is passed to the runner class', async () => {
     expect(() => {
-      const runner = new Runner()
+      new Runner()
     }).toThrow()
   })
 
   it('should throw when no hooks class is passed to the runner class', async () => {
     expect(() => {
-      const runner = new Runner({})
+      new Runner({})
     }).toThrow()
   })
 
   it('should now throw when steps and hooks classes are passed to the runner class', async () => {
     expect(() => {
-      const runner = new Runner({}, {})
+      new Runner({}, {})
     }).not.toThrow()
   })
-
 })

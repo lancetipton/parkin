@@ -1,4 +1,4 @@
-import { checkCall, noOpObj, noOp } from '@keg-hub/jsutils' 
+import { checkCall, noOpObj, noOp } from '@keg-hub/jsutils'
 
 /**
  * Helpers to ensure the right code is run in the right environments
@@ -13,7 +13,9 @@ export const hasGlobal = Boolean(typeof global !== 'undefined')
 export const hasModule = Boolean(typeof module === 'object')
 export const hasRequire = Boolean(typeof require === 'function')
 
-export const hasJasmine = Boolean(hasGlobal && typeof global.jasmine !== 'undefined')
+export const hasJasmine = Boolean(
+  hasGlobal && typeof global.jasmine !== 'undefined'
+)
 
 /**
  * Resolve the module object if it exists
@@ -23,7 +25,8 @@ export const hasJasmine = Boolean(hasGlobal && typeof global.jasmine !== 'undefi
  *
  * @returns {Object} Resolved module object with the exports property
  */
-export const resolveModule = () => (hasModule ? checkCall(() => (module)) : { exports: {} })
+export const resolveModule = () =>
+  hasModule ? checkCall(() => module) : { exports: {} }
 
 /**
  * Resolve the require function if it exists
@@ -33,7 +36,8 @@ export const resolveModule = () => (hasModule ? checkCall(() => (module)) : { ex
  *
  * @returns {Object} Resolved module object with the exports property
  */
-export const resolveRequire = () => (hasRequire ? checkCall(() => (require)) : noOp)
+export const resolveRequire = () =>
+  hasRequire ? checkCall(() => require) : noOp
 
 /**
  * Resolve the global object based on if the window or global objects exit
@@ -46,12 +50,12 @@ export const resolveRequire = () => (hasRequire ? checkCall(() => (require)) : n
 export const resolveGlobalObj = () => {
   try {
     return hasWindow
-      ? checkCall(() => (window))
+      ? checkCall(() => window)
       : hasGlobal
-        ? checkCall(() => (global))
+        ? checkCall(() => global)
         : noOpObj
   }
-  catch(err){
+  catch (err) {
     return noOpObj
   }
 }

@@ -1,13 +1,10 @@
-
 jest.resetModules()
 jest.resetAllMocks()
 jest.clearAllMocks()
 
-
 const { testMethodFill, ...errorMethods } = require('../errors')
 
 describe('Errors', () => {
-
   describe('testMethodFill', () => {
     it('should return a function', () => {
       expect(typeof testMethodFill()).toBe('function')
@@ -24,5 +21,4 @@ describe('Errors', () => {
       })
     })
   })
-
 })

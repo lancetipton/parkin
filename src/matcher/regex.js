@@ -89,7 +89,7 @@ export const getAlternateRegex = value => {
  * Helper for `parseMatch` that gets the right regex for a step's dynamic content
  * @param {string} type - optional, alternate, or parameter
  * @param {string} match = regex match results
- * 
+ *
  * @returns {Object|null} - RegEx object if the type matches
  */
 const getMatchRegex = (type, match) => {
@@ -113,7 +113,7 @@ const getMatchRegex = (type, match) => {
  * @param {Array} matchArr
  * @param {string} type
  *
- * @returns {Object} - Formatted dynamic step parameter as a metadata object 
+ * @returns {Object} - Formatted dynamic step parameter as a metadata object
  */
 const parseMatch = (matchArr, type = 'other') => {
   const val = matchArr[0]

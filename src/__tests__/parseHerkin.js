@@ -75,24 +75,24 @@ describe('Parkin', () => {
     const PK = new Parkin(worldObj)
     const parsed = PK.parse.definition(definition)
 
-    const { method:givenMethod, ...givenDef } = parsed.Given[0]
+    const { method: givenMethod, ...givenDef } = parsed.Given[0]
     expect(typeof givenMethod).toBe('function')
     expect(givenDef).toEqual(parsedDefinition.Given[0])
-    
-    const { method:thenMethod, ...thenDef } = parsed.Then[0]
+
+    const { method: thenMethod, ...thenDef } = parsed.Then[0]
     expect(typeof thenMethod).toBe('function')
     expect(thenDef).toEqual(parsedDefinition.Then[0])
   })
 
   it('should register parsed step definitions from text', () => {
     const PK = new Parkin(worldObj)
-    const parsed = PK.parse.definition(definition)
+    PK.parse.definition(definition)
 
-    const { method:givenMethod, ...givenDef } = PK.steps._given[0]
+    const { method: givenMethod, ...givenDef } = PK.steps._given[0]
     expect(givenDef).toEqual(parsedDefinition.Given[0])
     expect(typeof givenMethod).toBe('function')
 
-    const { method:thenMethod, ...thenDef } = PK.steps._then[0]
+    const { method: thenMethod, ...thenDef } = PK.steps._then[0]
     expect(typeof thenMethod).toBe('function')
     expect(thenDef).toEqual(parsedDefinition.Then[0])
   })
@@ -114,5 +114,4 @@ describe('Parkin', () => {
     expect(PK.steps[`_${givenStep.type}`][0].method).toHaveBeenCalled()
     expect(PK.steps[`_${whenStep.type}`][2].method).toHaveBeenCalled()
   })
-
 })

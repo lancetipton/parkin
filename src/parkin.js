@@ -4,7 +4,7 @@ import { Runner } from './runner'
 import { assemble } from './assemble'
 import { registerParamType } from './matcher'
 import { parseFeature, parseDefinition } from './parse'
-import { isObj, capitalize, noOpObj, exists, isFunc, eitherArr } from '@keg-hub/jsutils'
+import { isObj, capitalize, noOpObj, eitherArr } from '@keg-hub/jsutils'
 
 /**
  * @typedef
@@ -81,7 +81,7 @@ export class Parkin {
      */
     this.parse = {
       feature: parseFeature.bind(this),
-      definition: parseDefinition.bind(this)
+      definition: parseDefinition.bind(this),
     }
 
     /**

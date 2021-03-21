@@ -1,4 +1,3 @@
-
 /**
  * Parses definitions from text content by calling the steps.register function
  * @function
@@ -8,7 +7,7 @@
  *
  * @returns {Object} - Parsed feature file as an object
  */
-export const parseDefinition = function(text) {
+export const parseDefinition = function (text) {
   const registered = this.steps.register([text])
   return registered
 }

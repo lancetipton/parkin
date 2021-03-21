@@ -7,13 +7,10 @@ jest.clearAllMocks()
 const testMethodMock = jest.fn()
 jest.setMock('../errors', { testMethodFill: testMethodMock })
 
-const { testMethodFill, ...errorMethods } = require('../errors')
 const { getTestMethod } = require('../testMethods')
 
 describe('testMethods', () => {
-
   describe('getTestMethod', () => {
-
     it('should return a noOp when the second argument is true', () => {
       expect(getTestMethod('test', true).toString()).toEqual(noOp.toString())
     })
@@ -26,7 +23,5 @@ describe('testMethods', () => {
       getTestMethod('__test_no_exists_global')
       expect(testMethodMock).toHaveBeenCalledWith('__test_no_exists_global')
     })
-
   })
-
 })
