@@ -7,23 +7,10 @@ import {
   resolveModule,
   resolveRequire,
 } from './utils/globalScope'
+import { sanitizeForId, sanitize } from './utils/helpers'
+
 const { REGEX_VARIANT, EXPRESSION_VARIANT, STEP_TYPES } = constants
 
-/**
- * Sanitize the step definition text to be used as the name
- * @function
- * @private
- * @param {Object} step - Parsed step definition object
- *
- * @returns {string} Sanitized string version of the step definition text
- */
-const sanitize = step => {
-  let name = step.match.toString()
-  if (name[0] === '^') name = name.substr(1)
-  if (name.charAt(name.length - 1) === '$') name = name.slice(0, -1)
-
-  return name.replace(/\(\?:([^\|]+)+\|+([^\)]+)?\)/, '$1')
-}
 
 /**
  * Builds the text content of a step definition call
@@ -68,7 +55,7 @@ const registerFromCall = function (internalType, type, match, method) {
 
   step.name = sanitize(step)
   // The name should always be unique, so we can use that as a consistent uuid
-  step.uuid = step.name
+  step.uuid = sanitizeForId(step.name)
   step.content = getContent(step)
 
   this[internalType].push(step)

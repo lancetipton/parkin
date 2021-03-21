@@ -120,3 +120,14 @@ Feature: Step Fails
     Then this step should be skipped
     And this step should also be skipped
 `
+
+export const backgroundFeature = `@background
+Feature: Background steps
+  Background:
+    Given that background exists
+    Then the background steps should be called before each scenario
+
+  Scenario: Run scenario after the background
+    Given that this Feature has a background
+    Then this scenario's steps should be run after the background's steps
+`

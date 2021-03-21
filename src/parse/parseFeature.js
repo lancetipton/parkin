@@ -1,3 +1,5 @@
+import { sanitizeForId } from '../utils/helpers'
+
 /**
  * Regular expressions for matching feature file keywords
  * @type {object}
@@ -48,20 +50,6 @@ const featureMetaTags = [
   { regex: RX_SO_THAT, key: 'reason' },
   { regex: RX_IN_ORDER, key: 'reason' },
 ]
-
-/*
- * Sanitizes the passed in text and joins the texts length
- * @function
- * @private
- * @param {string} text - Text to be sanitized
- *
- * @returns {string} - Sanitized text
- */
-const sanitizeForId = text => {
-  const cleaned = text.trim().toLowerCase()
-    .replace(/ /g, '-')
-  return `${text.length}-${cleaned}`
-}
 
 /*
  * Extracts keywords from a text string
@@ -407,8 +395,9 @@ const ensureScenario = (feature, scenario, line, index) => {
 const ensureBackground = (feature, background, line, index) => {
   if (!RX_BACKGROUND.test(line)) return background
 
-  // Check for "Scenario:", if not found then check for "Example:"
-  const backgroundText = getRXMatch(line, RX_BACKGROUND, 1)
+  // Generate the background text from the feature uuid and background keyword
+  // background's don't have a text title, so we have to generate one when parsing
+  const backgroundText = `${feature.uuid}-background`
 
   // Check if the background text was already added, and add it if needed
   // Otherwise create a new background with the background text

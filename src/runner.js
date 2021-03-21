@@ -61,12 +61,18 @@ const runStep = async (stepsInstance, step, testMode) => {
  *
  * @returns {Void}
  */
-const runScenario = (stepsInstance, scenario, testMode) => {
+const runScenario = (stepsInstance, scenario, background, testMode) => {
   const describe = getTestMethod('describe', testMode)
 
   // Holder for the steps of each scenario
   let responses = []
   describe(`Scenario: ${scenario.scenario}`, () => {
+  
+    background &&
+      beforeAll(async () => {
+        await runBackground(stepsInstance, background, testMode)
+      })
+  
     // Map over the steps and call them
     // Store the returned promise in the responses array
     responses = scenario.steps.map(
@@ -78,6 +84,26 @@ const runScenario = (stepsInstance, scenario, testMode) => {
   })
 
   return responses
+}
+
+/**
+ * Loops through the passed in background steps and calls the matching definition method
+ * @function
+ * @private
+ * @param {Object} stepsInstance - Instance of the Steps class
+ * @param {Object} background - Parsed feature scenario background containing the steps to run
+ *
+ * @returns {Array} - Responses from the background steps
+ */
+const runBackground = async (stepsInstance, background) => {
+  // Map over the steps and call them
+  // Store the returned promise in the responses array
+  const responses = background.steps.map(
+    async step => await stepsInstance.resolve(step.step)
+  )
+
+  // Ensure we resolve all promises from the background before returning
+  return await Promise.all(responses)
 }
 
 /**
@@ -228,8 +254,9 @@ export class Runner {
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
       describe(`Feature: ${feature.feature}`, () => {
+
         responses = feature.scenarios.map(
-          async scenario => await runScenario(this.steps, scenario, testMode)
+          async scenario => await runScenario(this.steps, scenario, feature.background, testMode)
         )
 
         // Ensure we resolve all promises inside the describe block

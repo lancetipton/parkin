@@ -9,10 +9,9 @@ const { Parkin } = require('../parkin')
 const worldObj = { testMethod: jest.fn() }
 const PK = new Parkin(worldObj)
 
-registerMockSteps(PK, true)
+registerMockSteps(PK)
 
-describe('Steps with promises', () => {
-  ;(async () => {
-    await PK.run(promiseFeature)
-  })()
-})
+;(async () => {
+  await PK.run(promiseFeature)
+})()
+
