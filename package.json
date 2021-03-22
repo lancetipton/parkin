@@ -1,6 +1,6 @@
 {
   "name": "@ltipton/parkin",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Parse gherkin features and map them to step definitions",
   "main": "build/cjs",
   "module": "build/esm",
