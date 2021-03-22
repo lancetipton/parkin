@@ -73,7 +73,7 @@ When("I add {int} to $world.number", (num, world) => {
 })
 
 Then("I expect $world.number to be {int}", (num, world) => {
-  alert("world.number is equal to num? \n" + (world.number === num))
+  alert(`world.number (${world.number}) is equal to num (${num})? \n` + (world.number === num))
 })
 </textarea>
 
