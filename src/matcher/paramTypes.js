@@ -16,7 +16,7 @@ import {
   RX_SINGLE_QUOTED,
 } from './patterns'
 
-import { throwParamTypeExists } from '../errors'
+import { throwParamTypeExists } from '../utils/errors'
 
 /**
  * Default param type model used when registering param types

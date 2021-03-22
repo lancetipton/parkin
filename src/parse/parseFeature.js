@@ -1,4 +1,4 @@
-import { uuid } from '@keg-hub/jsutils'
+import { sanitizeForId } from '../utils/helpers'
 
 /**
  * Regular expressions for matching feature file keywords
@@ -79,9 +79,10 @@ const featureFactory = (feature, content, index) => {
     feature,
     tags: [],
     reason: [],
-    uuid: uuid(),
     comments: [],
     scenarios: [],
+    // The feature name should always be unique, so use that as a re-usable id
+    ...(feature && { uuid: sanitizeForId(feature) }),
   }
 }
 
@@ -94,7 +95,30 @@ const featureFactory = (feature, content, index) => {
  * @returns {Object} - Parsed scenario object
  */
 const scenarioFactory = (scenario, index) => {
-  return { scenario, uuid: uuid(), steps: [], index }
+  return {
+    index,
+    scenario,
+    tags: [],
+    steps: [],
+    ...(scenario && { uuid: sanitizeForId(scenario) }),
+  }
+}
+
+/*
+ * Helper factory function to build a background object
+ * @function
+ * @private
+ * @param {string} scenario - Text containing the scenario keyword and text
+ *
+ * @returns {Object} - Parsed scenario object
+ */
+const backgroundFactory = (background, index) => {
+  return {
+    index,
+    steps: [],
+    background,
+    ...(background && { uuid: sanitizeForId(background) }),
+  }
 }
 
 /*
@@ -108,7 +132,7 @@ const scenarioFactory = (scenario, index) => {
  * @returns {Object} - Parsed step object
  */
 const stepFactory = (type, step, altType, index) => {
-  const built = { step, type, uuid: uuid(), index }
+  const built = { step, type, uuid: sanitizeForId(`${type}-${step}`), index }
   altType && (built.altType = altType)
 
   // TODO: Investigate calling checkDocString and checkDataTable here
@@ -216,10 +240,12 @@ const checkStepTag = (scenario, line, index) => {
  * @return {boolean} - True if a line was added to the current feature object
  */
 const featureMeta = (feature, line, index) => {
-  return featureMetaTags.reduce((added, regTag) => {
+  let metaAdded = false
+  featureMetaTags.reduce((added, regTag) => {
     if (added) return added
 
     const hasTag = regTag.regex.test(line)
+    if (!metaAdded && hasTag) metaAdded = true
 
     return hasTag
       ? regTag.key === 'reason'
@@ -230,6 +256,8 @@ const featureMeta = (feature, line, index) => {
             })
       : hasTag
   }, false)
+
+  return metaAdded
 }
 
 /*
@@ -241,12 +269,16 @@ const featureMeta = (feature, line, index) => {
  *
  * @return {boolean} - True if a line was added to the current feature object
  */
-const featureTag = (feature, line, index) => {
+const checkTag = (parent, feature, line, index) => {
   if (!RX_TAG.test(line)) return false
 
+  // background can not have tags, so add them to the feature instead
+  const tagParent = parent.background ? feature : parent
+
   const tags = getRXMatch(line, RX_TAG, 0)
-  feature.tags = feature.tags.concat(tags.split(' '))
-  // Tags must always come before the feature directive, so storing the index is not needed
+
+  // Join the tags with the tagParents current tags
+  tagParent.tags = (tagParent.tags || []).concat(tags.split(' '))
 
   return true
 }
@@ -302,6 +334,7 @@ const ensureFeature = (featuresGroup, feature, line, content, index) => {
 
     // Ensure the index is added if needed
     if (!feature.index) feature.index = index
+    if (!feature.uuid) feature.uuid = sanitizeForId(feature.feature)
 
     !featuresGroup.includes(feature) && featuresGroup.push(feature)
 
@@ -339,6 +372,8 @@ const ensureScenario = (feature, scenario, line, index) => {
 
   // Ensure the line index is added
   !scenario.index && (scenario.index = index)
+  // Add the uuid from the scenario text if it doesn't exist
+  !scenario.uuid && (scenario.uuid = sanitizeForId(scenario.scenario))
 
   // Add the scenario if needed to the current feature
   !feature.scenarios.includes(scenario) && feature.scenarios.push(scenario)
@@ -355,18 +390,61 @@ const ensureScenario = (feature, scenario, line, index) => {
  * @param {Object} scenario - Current scenario being parsed into an object
  * @param {string} line - Current line being parsed
  *
- * @todo Implement background parsing
- *
  * @return {Object} Current background being parsed
  */
-const checkBackground = (feature, scenario, background, line) => {
-  // TODO: Implement background parsing
-  // if(!RX_BACKGROUND.test(line)) return background
+const ensureBackground = (feature, background, line, index) => {
+  if (!RX_BACKGROUND.test(line)) return background
+
+  // Generate the background text from the feature uuid and background keyword
+  // background's don't have a text title, so we have to generate one when parsing
+  const backgroundText = `${feature.uuid}-background`
+
+  // Check if the background text was already added, and add it if needed
+  // Otherwise create a new background with the background text
+  !background.background
+    ? (background.background = backgroundText || '')
+    : (background = backgroundFactory(backgroundText, index))
+
+  // Ensure the line index is added
+  !background.index && (background.index = index)
+  // Add the uuid from the background text if it doesn't exist
+  !background.uuid && (background.uuid = sanitizeForId(background.background))
+
+  feature.background = background
 
   return background
 }
 
-/*
+/**
+ * Determine the active parent base on the nextLine to be evaluated
+ * If a new parent is not found, then returns the current activeParent
+ * @function
+ * @private
+ * @param {Object} activeParent - Current parent object to have properties added to it
+ * @param {Object} feature - Feature model object
+ * @param {Object} scenario - Scenario model object
+ * @param {Object} background - Background model object
+ * @param {string} nextLine - Next line of the text to be evaluated
+ *
+ * @returns {Object} - Found active parent based on the nextLine
+ */
+const setActiveParent = (
+  activeParent,
+  feature,
+  scenario,
+  background,
+  nextLine
+) => {
+  return RX_SCENARIO.test(nextLine) || RX_EXAMPLE.test(nextLine)
+    ? scenario
+    : RX_FEATURE.test(nextLine)
+      ? feature
+      : RX_BACKGROUND.test(nextLine)
+        ? background
+        : activeParent
+}
+
+/**
  * Parses a feature files text content into an object
  * @function
  * @public
@@ -375,11 +453,13 @@ const checkBackground = (feature, scenario, background, line) => {
  *
  * @returns {Object} - Parsed feature file as an object
  */
-export const feature = text => {
+export const parseFeature = text => {
   const features = []
   const lines = (text || '').toString().split(RX_NEWLINE)
   let scenario = scenarioFactory(false)
+  let background = backgroundFactory(false)
   let feature = featureFactory(false, text)
+  let activeParent = feature
 
   /*
    * Loop over each line of text, and compose the line with corresponding regex to find a match
@@ -391,6 +471,15 @@ export const feature = text => {
     feature = ensureFeature(featuresGroup, feature, line, text, index)
 
     /*
+     * Check for child content of the feature or activeParent and parse the line when matched
+     */
+    if (
+      featureComment(feature, line, index) ||
+      featureMeta(feature, line, index)
+    )
+      return featuresGroup
+
+    /*
      * Check for new feature scenario, and add scenario to feature object
      */
     scenario = ensureScenario(feature, scenario, line, index)
@@ -398,15 +487,31 @@ export const feature = text => {
     /*
      * Check for new feature scenario, and add scenario to feature object
      */
-    // background = checkBackground(feature, scenario, background, line)
+    background = ensureBackground(feature, background, line, index)
+
+    // Check for stepTags before check for the next active parent
+    // This way We don't add a step to the wrong parent
+    if (checkStepTag(activeParent, line, index)) return featuresGroup
 
     /*
-     * Check for feature and scenario content and parse the line when matched
+     * Get the next line for tag reference checking
      */
-    featureTag(feature, line, index) ||
-      featureComment(feature, line, index) ||
-      featureMeta(feature, line, index) ||
-      checkStepTag(scenario, line, index)
+    const nextLine = lines[index + 1]
+
+    /*
+     * Get the currently active parent based on the next line to be parsed
+     * This allows setting the active parent before the next iteration
+     */
+    activeParent = setActiveParent(
+      activeParent,
+      feature,
+      scenario,
+      background,
+      nextLine
+    )
+
+    // Check for tags after the next active parent has been set
+    checkTag(activeParent, feature, line, index)
 
     return featuresGroup
   }, features)

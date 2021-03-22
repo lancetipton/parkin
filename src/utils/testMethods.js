@@ -1,10 +1,6 @@
 import { noOp } from '@keg-hub/jsutils'
 import { testMethodFill } from './errors'
-
-const inBrowser = Boolean(typeof window !== 'undefined')
-const HAS_JASMINE = Boolean(
-  typeof global !== 'undefined' && typeof global.jasmine !== 'undefined'
-)
+import { hasWindow, hasJasmine, resolveJasmine } from './globalScope'
 
 /**
  * Resolves a test method from the global scope
@@ -56,7 +52,7 @@ const buildReporter = (jasmineEnv, testMode) => {
 }
 
 /**
- * Checks i jasmine is available on the global scope
+ * Checks if jasmine is available on the global scope
  * If it is, then builds and adds a custom reporter to it
  * @function
  * @export
@@ -64,8 +60,10 @@ const buildReporter = (jasmineEnv, testMode) => {
  * @returns {Void}
  */
 export const skipTestsOnFail = testMode => {
-  if (inBrowser || !HAS_JASMINE) return
+  if (hasWindow || !hasJasmine) return
 
-  const jasmineEnv = global.jasmine.getEnv()
-  jasmineEnv.addReporter(buildReporter(jasmineEnv, testMode))
+  const jasmineEnv = resolveJasmine().getEnv()
+  jasmineEnv &&
+    jasmineEnv.describe &&
+    jasmineEnv.addReporter(buildReporter(jasmineEnv, testMode))
 }

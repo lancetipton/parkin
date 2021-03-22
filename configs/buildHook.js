@@ -1,9 +1,14 @@
 import { promisify } from 'util'
 import { exec } from 'child_process'
 import path from 'path'
+import { uuid } from '@keg-hub/jsutils'
 
 const cmdExec = promisify(exec)
 const { NODE_ENV, DOC_APP_PATH } = process.env
+const buildDir = path.join(__dirname, '../build/cjs')
+const docsDir = path.join(__dirname, '../docs/parkin')
+
+let buildId
 
 /**
  * 
@@ -12,24 +17,38 @@ const { NODE_ENV, DOC_APP_PATH } = process.env
  *
  * @returns {void}
  */
-export default function buildHook(){
+export default function build(){
   return {
     name: 'buildHook',
-    buildEnd: async () => {
-      // If in development mode || in a docker container don't update the docs folder
-      if(NODE_ENV !== 'development' || DOC_APP_PATH) return
+    buildStart: async () => {
+      // If in a docker container don't update the docs folder
+      if(DOC_APP_PATH) return
 
-      const buildDir = path.join(__dirname, '../build/cjs')
-      const docsDir = path.join(__dirname, '../docs/parkin')
-    
-      console.log(`Removing old docs/parkin folder...`)
-      // Remove the old docks build directory
-      await cmdExec(`rm -rf ${docsDir}`)
+      try {
+        console.log(`Removing old docs/parkin folder...`)
+        // Remove the old docks build directory
+        await cmdExec(`rm -rf ${docsDir}`)
+      }
+      catch(err){
+        console.error(err.stack)
+      }
+    },
+    writeBundle: async (...args) => {
 
-      console.log(`Copying build/cjs into docs/parkin folder...`)
-      // Copy over the new build directory
-      await cmdExec(`cp -R ${buildDir} ${docsDir}`)
+      // If in a docker container don't update the docs folder
+      if(DOC_APP_PATH || buildId) return (buildId = false)
+      
+      // Set the id tracker so we only run the copy cmd once
+      buildId = uuid()
 
+      try {
+        console.log(`Copying build/cjs into docs/parkin folder...`)
+        // Copy over the new build directory
+        await cmdExec(`cp -R ${buildDir} ${docsDir}`)
+      }
+      catch(err){
+        console.error(err.stack)
+      }
     }
   }
 }

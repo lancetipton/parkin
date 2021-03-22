@@ -3,6 +3,9 @@ import commonjs from '@rollup/plugin-commonjs'
 import cleanup from 'rollup-plugin-cleanup'
 import resolve from '@rollup/plugin-node-resolve'
 import buildHook from './buildHook'
+import { terser } from 'rollup-plugin-terser'
+
+const isProd = process.env.NODE_ENV === 'production'
 
 const config = {
   input: 'src/index.js',
@@ -10,20 +13,27 @@ const config = {
     {
       dir: 'build/esm',
       format: 'esm',
-      sourcemap: true
+      sourcemap: !isProd
     },
     {
       dir: `./build/cjs`,
       format: 'cjs',
-      sourcemap: true
+      sourcemap: !isProd
     },
   ],
   plugins: [
+    buildHook(),
     resolve(),
     commonjs(),
     babel({ babelHelpers: 'bundled' }),
     cleanup(),
-    buildHook(),
+    isProd &&
+      terser({
+        mangle: true,
+        toplevel: false,
+        keep_fnames: true,
+        keep_classnames: true,
+      }),
   ],
 }
 

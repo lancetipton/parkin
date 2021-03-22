@@ -68,6 +68,7 @@ export const parsedFeature = {
     {
       index: 7,
       scenario: 'Search the web for google',
+      tags: [],
       // uuid: 'f75d10d8-645c-4da0-b4b2-70696e3588b3',
       steps: [
         {
@@ -115,7 +116,19 @@ Feature: Test Promises
 export const failStepFeature = `@step @fail
 Feature: Step Fails
   Scenario: Skip scenario steps when a step fails
-    Given that this step fails
+    Given that the default describe is overwritten
+    And this step fails
     Then this step should be skipped
     And this step should also be skipped
+`
+
+export const backgroundFeature = `@background
+Feature: Background steps
+  Background:
+    Given that background exists
+    Then the background steps should be called before each scenario
+
+  Scenario: Run scenario after the background
+    Given that this Feature has a background
+    Then this scenario's steps should be run after the background's steps
 `

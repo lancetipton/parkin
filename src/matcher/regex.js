@@ -4,22 +4,22 @@ import { getParamTypes } from './paramTypes'
 import { RX_OPTIONAL, RX_ALT, RX_PARAMETER, RX_MATCH_REPLACE } from './patterns'
 
 /**
- * Finds a matching step definition from passed in regex
- * Then extracts the variables from the text to pass to the step definitions method
+ * Finds a matching definition from passed in regex
+ * Then extracts the variables from the text to pass to the definitions method
  * @function
  * @public
  * @export
- * @param {Object} step - Registered step definition
- * @param {string} text - Feature step text to compare with step definition text
+ * @param {Object} definition - Registered definition model
+ * @param {string} text - Feature step text to compare with definition match text
  *
- * @returns {Object} Found matching step definition and matched arguments
+ * @returns {Object} Found matching definition and matched arguments
  */
-export const matchRegex = (step, text) => {
-  const match = text.match(new RegExp(step.match))
+export const matchRegex = (definition, text) => {
+  const match = text.match(new RegExp(definition.match))
 
   // Which is the original string
   return match
-    ? { step, match: match.slice(1, match.length).filter(Boolean) }
+    ? { definition, match: match.slice(1, match.length).filter(Boolean) }
     : noOpObj
 }
 
@@ -56,9 +56,9 @@ const getFullOptionalText = match => {
 /**
  * Helper for `getParamRegex` to get the optional types regex
  * @param {Array<string>} match result of optional regex match
- * @return {string} the correct regex source text for an step definition
- * optional part. This regex will be used for matching values in the
- * feature step text.
+ *
+ * @return {string} - The correct regex source text for a definition optional part
+ *                    This regex will be used for matching values in the feature step text
  */
 const getOptionalRegex = match => {
   const optionalText = getFullOptionalText(match)
@@ -86,10 +86,11 @@ export const getAlternateRegex = value => {
 }
 
 /**
- * Helper for `parseMatch` that gets the right regex
- * for a step's dynamic part
+ * Helper for `parseMatch` that gets the right regex for a step's dynamic content
  * @param {string} type - optional, alternate, or parameter
  * @param {string} match = regex match results
+ *
+ * @returns {Object|null} - RegEx object if the type matches
  */
 const getMatchRegex = (type, match) => {
   const [ val, paramType ] = match
@@ -111,6 +112,8 @@ const getMatchRegex = (type, match) => {
  * with some computed values
  * @param {Array} matchArr
  * @param {string} type
+ *
+ * @returns {Object} - Formatted dynamic step parameter as a metadata object
  */
 const parseMatch = (matchArr, type = 'other') => {
   const val = matchArr[0]
@@ -128,8 +131,8 @@ const parseMatch = (matchArr, type = 'other') => {
 }
 
 /**
- * Extracts all the dynamic parts to a step definition's match text
- * @param {string} stepMatcher - step definition match text
+ * Extracts all the dynamic parts to a  definition's match text
+ * @param {string} defMatcher - Registered definition match text
  * @return {Array<Object>} array of matches. See `parseMatch` for the structure.
  * @example
  * const parts = getRegexParts('I eat {int} apple(s)')
@@ -138,17 +141,19 @@ const parseMatch = (matchArr, type = 'other') => {
  *  { type: 'parameter', text: '{int}', regex: /-?[0-9]+/, paramType: 'int', ... } ,
  *  { type: 'optional', text: 'apple(s)', regex: /(apple|apples)/, ... } ,
  * ]
+ *
+ * @returns {Array} - Sorted found dynamic content match the order from a features step text
  */
-export const getRegexParts = stepMatcher => {
+export const getRegexParts = defMatcher => {
   const parameters = [
-    ...stepMatcher.matchAll(new RegExp(RX_PARAMETER, 'gi')),
+    ...defMatcher.matchAll(new RegExp(RX_PARAMETER, 'gi')),
   ].map(match => parseMatch(match, 'parameter'))
 
   const optionals = [
-    ...stepMatcher.matchAll(new RegExp(RX_OPTIONAL, 'gi')),
+    ...defMatcher.matchAll(new RegExp(RX_OPTIONAL, 'gi')),
   ].map(match => parseMatch(match, 'optional'))
 
-  const alts = [...stepMatcher.matchAll(new RegExp(RX_ALT, 'gi'))].map(match =>
+  const alts = [...defMatcher.matchAll(new RegExp(RX_ALT, 'gi'))].map(match =>
     parseMatch(match, 'alternate')
   )
 
