@@ -49,7 +49,6 @@ const runStep = async (stepsInstance, step, testMode) => {
   })
 }
 
-
 /**
  * Loops through the parents steps and calls the matching definition method
  * @function
@@ -62,6 +61,8 @@ const runStep = async (stepsInstance, step, testMode) => {
  * @returns {Array} - Responses from the parents steps
  */
 const loopSteps = (parent, title, stepsInstance, testMode) => {
+  const describe = getTestMethod('describe', testMode)
+
   let responses = []
   describe(title, () => {
     // Map over the steps and call them
@@ -88,16 +89,8 @@ const loopSteps = (parent, title, stepsInstance, testMode) => {
  * @returns {Void}
  */
 const runScenario = (stepsInstance, scenario, background, testMode) => {
-  const describe = getTestMethod('describe', testMode)
-
   // If there's a background, run the background steps first
-  background &&
-    loopSteps(
-      background,
-      `Background:`,
-      stepsInstance,
-      testMode
-    )
+  background && loopSteps(background, `Background:`, stepsInstance, testMode)
 
   // Next run the scenario steps once the background completes
   return loopSteps(
