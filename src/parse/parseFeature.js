@@ -494,11 +494,6 @@ export const parseFeature = text => {
     if (checkStepTag(activeParent, line, index)) return featuresGroup
 
     /*
-     * Get the next line for tag reference checking
-     */
-    const nextLine = lines[index + 1]
-
-    /*
      * Get the currently active parent based on the next line to be parsed
      * This allows setting the active parent before the next iteration
      */
@@ -507,7 +502,7 @@ export const parseFeature = text => {
       feature,
       scenario,
       background,
-      nextLine
+      line
     )
 
     // Check for tags after the next active parent has been set

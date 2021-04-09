@@ -67,8 +67,8 @@ const loopSteps = (parent, title, stepsInstance, testMode) => {
   describe(title, () => {
     // Map over the steps and call them
     // Store the returned promise in the responses array
-    const responses = parent.steps.map(
-      async step => await runStep(stepsInstance, step, testMode)
+    const responses = parent.steps.map(step =>
+      runStep(stepsInstance, step, testMode)
     )
 
     // Ensure we resolve all promises inside the describe block
@@ -88,9 +88,15 @@ const loopSteps = (parent, title, stepsInstance, testMode) => {
  *
  * @returns {Void}
  */
-const runScenario = (stepsInstance, scenario, background, testMode) => {
+const runScenario = (stepsInstance, scenario, background, index, testMode) => {
   // If there's a background, run the background steps first
-  background && loopSteps(background, `Background:`, stepsInstance, testMode)
+  background &&
+    loopSteps(
+      background,
+      `Background: For Scenario ${index}`,
+      stepsInstance,
+      testMode
+    )
 
   // Next run the scenario steps once the background completes
   return loopSteps(
@@ -249,14 +255,14 @@ export class Runner {
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
       describe(`Feature: ${feature.feature}`, () => {
-        responses = feature.scenarios.map(
-          async scenario =>
-            await runScenario(
-              this.steps,
-              scenario,
-              feature.background,
-              testMode
-            )
+        responses = feature.scenarios.map((scenario, index) =>
+          runScenario(
+            this.steps,
+            scenario,
+            feature.background,
+            index + 1,
+            testMode
+          )
         )
 
         // Ensure we resolve all promises inside the describe block

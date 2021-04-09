@@ -124,6 +124,7 @@ Feature: Step Fails
 
 export const backgroundFeature = `@background
 Feature: Background steps
+  # This is a test comment
   Background:
     Given that background exists
     Then the background steps should be called before each scenario
@@ -131,4 +132,28 @@ Feature: Background steps
   Scenario: Run scenario after the background
     Given that this Feature has a background
     Then this scenario's steps should be run after the background's steps
+
+  Scenario: Run second scenario after a second background
+    Given that a second scenario exists
+    Then the second scenario's steps should be run after a second background's steps
 `
+
+export const testCommentsFeature = `Feature: Test
+  # This is a test comment
+  Background:
+    Given I open the site "https://www.google.com"
+
+  Scenario: Search the google for keg-hub
+    When I set "keg-hub" to the input ".gLFyf"
+    When I press the key "enter"
+    When I wait for the page to load
+    Then the element "#search" contains the text "simpleviewinc/keg-hub"
+    
+  Scenario: Search the google for parkin
+    When I set "@ltipton/parkin" to the input ".gLFyf"
+    When I press the key "enter"
+    When I wait for the page to load
+    Then the element "#search" contains the text "parkin"
+    
+    
+    `
