@@ -49,6 +49,34 @@ const runStep = async (stepsInstance, step, testMode) => {
   })
 }
 
+
+/**
+ * Loops through the parents steps and calls the matching definition method
+ * @function
+ * @private
+ * @param {Object} parent - Parent object containing the steps to run
+ * @param {Object} title - Text passed as the first argument to the describe method
+ * @param {Object} stepsInstance - Instance of the Steps class
+ * @param {boolean} testMode - Allows testing the runner methods, without running the tests
+ *
+ * @returns {Array} - Responses from the parents steps
+ */
+const loopSteps = (parent, title, stepsInstance, testMode) => {
+  let responses = []
+  describe(title, () => {
+    // Map over the steps and call them
+    // Store the returned promise in the responses array
+    const responses = parent.steps.map(
+      async step => await runStep(stepsInstance, step, testMode)
+    )
+
+    // Ensure we resolve all promises inside the describe block
+    Promise.all(responses)
+  })
+
+  return responses
+}
+
 /**
  * Loops through the passed in scenarios steps and calls runStep for each
  * @function
@@ -62,45 +90,22 @@ const runStep = async (stepsInstance, step, testMode) => {
 const runScenario = (stepsInstance, scenario, background, testMode) => {
   const describe = getTestMethod('describe', testMode)
 
-  // Holder for the steps of each scenario
-  let responses = []
-  describe(`Scenario: ${scenario.scenario}`, () => {
-    background &&
-      beforeAll(async () => {
-        await runBackground(stepsInstance, background, testMode)
-      })
-
-    // Map over the steps and call them
-    // Store the returned promise in the responses array
-    responses = scenario.steps.map(
-      async step => await runStep(stepsInstance, step, testMode)
+  // If there's a background, run the background steps first
+  background &&
+    loopSteps(
+      background,
+      `Background:`,
+      stepsInstance,
+      testMode
     )
 
-    // Ensure we resolve all promises inside the describe block
-    Promise.all(responses)
-  })
-
-  return responses
-}
-
-/**
- * Loops through the passed in background steps and calls the matching definition method
- * @function
- * @private
- * @param {Object} stepsInstance - Instance of the Steps class
- * @param {Object} background - Parsed feature scenario background containing the steps to run
- *
- * @returns {Array} - Responses from the background steps
- */
-const runBackground = async (stepsInstance, background) => {
-  // Map over the steps and call them
-  // Store the returned promise in the responses array
-  const responses = background.steps.map(
-    async step => await stepsInstance.resolve(step.step)
+  // Next run the scenario steps once the background completes
+  return loopSteps(
+    scenario,
+    `Scenario: ${scenario.scenario}`,
+    stepsInstance,
+    testMode
   )
-
-  // Ensure we resolve all promises from the background before returning
-  return await Promise.all(responses)
 }
 
 /**
