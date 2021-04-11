@@ -1,4 +1,4 @@
-import { backgroundFeature } from '../../__mocks__'
+import { backgroundFeature, stepsFeature } from '../../__mocks__'
 
 jest.resetModules()
 jest.resetAllMocks()
@@ -87,4 +87,15 @@ describe('parseFeature', () => {
       expect(thenStep.index).not.toBe(undefined)
     })
   })
+
+  describe('Feature Steps', () => {
+
+    it.only("should parse a step with a doc-string", () => {
+      const parsedFeature = parseFeature(stepsFeature)[0]
+      // console.log(parsedFeature)
+
+    })
+
+  })
+
 })

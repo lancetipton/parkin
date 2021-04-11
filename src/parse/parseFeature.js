@@ -1,4 +1,5 @@
-import { sanitizeForId } from '../utils/helpers'
+import { sanitizeForId, getRXMatch } from '../utils/helpers'
+import { parseStep } from './parseStep'
 
 /**
  * Regular expressions for matching feature file keywords
@@ -15,29 +16,6 @@ const RX_IN_ORDER = /^\s*In order (.*)$/
 const RX_SCENARIO = /^\s*Scenario:(.*)$/
 const RX_EXAMPLE = /^\s*Example:(.*)$/
 const RX_BACKGROUND = /^\s*Background:(.*)$/
-const RX_GIVEN = /^\s*Given (.*)$/
-const RX_WHEN = /^\s*When(.*)$/
-const RX_THEN = /^\s*Then (.*)$/
-const RX_AND = /^\s*And (.*)$/
-const RX_BUT = /^\s*But (.*)$/
-const RX_ASTERISK = /^\s*\* (.*)$/
-const RX_DOCQUOTES = /^\s*"""\s*(.*)$/
-const RX_DOCTICKS = /^\s*```\s*(.*)$/
-const RX_DATATABLE = /^\s*\|\s*(.*)\|\s*$/
-
-/**
- * Regular expressions and types for matching step keywords
- * @type {Array}
- * @private
- */
-const RegStepTags = [
-  { regex: RX_GIVEN, type: 'given' },
-  { regex: RX_WHEN, type: 'when' },
-  { regex: RX_THEN, type: 'then' },
-  { regex: RX_AND, type: 'and', alt: 'when' },
-  { regex: RX_BUT, type: 'but', alt: 'when' },
-  { regex: RX_ASTERISK, type: 'and', alt: 'when' },
-]
 
 /**
  * Regular expressions and types for matching feature meta data keywords
@@ -50,18 +28,6 @@ const featureMetaTags = [
   { regex: RX_SO_THAT, key: 'reason' },
   { regex: RX_IN_ORDER, key: 'reason' },
 ]
-
-/*
- * Extracts keywords from a text string
- * @function
- * @private
- * @param {string} line - Text content to extract the keyword from
- * @param {Object} regex - Regex object used for finding a keyword
- * @param {number} index - Current inject of the line being parsed
- *
- * @returns {string} - Found keyword text from the line argument
- */
-const getRXMatch = (line, regex, index) => line.match(regex)[index].trim()
 
 /*
  * Helper factory function to build a feature object
@@ -122,28 +88,6 @@ const backgroundFactory = (background, index) => {
 }
 
 /*
- * Helper factory function to build a step object
- * @function
- * @private
- * @param {string} type - The type of step definition
- * @param {string} step - Text containing the step text
- * @param {string} altType - The alternate type of the step definition ( And || But )
- *
- * @returns {Object} - Parsed step object
- */
-const stepFactory = (type, step, altType, index) => {
-  const built = { step, type, uuid: sanitizeForId(`${type}-${step}`), index }
-  altType && (built.altType = altType)
-
-  // TODO: Investigate calling checkDocString and checkDataTable here
-  // For doc string and data table variables of steps
-  // Will need to pass in the full text
-  // Then pase from the current line down to the end of the doc string or data table
-
-  return built
-}
-
-/*
  * Helper function to add reason text to a feature when it exists
  * @function
  * @private
@@ -154,80 +98,6 @@ const stepFactory = (type, step, altType, index) => {
  */
 const addReason = (feature, reason, index) => {
   reason && feature.reason.push({ content: reason, index })
-}
-
-/**
- * Check for doc strings in the steps
- * The string should be passed to the step def as the last argument
- * Space inside the doc string should be left as is
- * @function
- * @private
- * @param {Object} step - Current step being parsed into an object
- * @param {string} line - Current line being parsed
- * @param {string} text - Full text content of the feature file
- *
- * @todo Implement doc string parsing
- *
- * @return {Object} Current step being parsed with the doc string added
- */
-const checkDocString = (step, line, text) => {
-  // TODO: doc string parsing
-  // if(!RX_DOCQUOTES.test(line) || !RX_DOCTICKS.test(line)) return step
-
-  return step
-}
-
-/**
- * Check for a data table in the in the steps content
- * The string should be passed to the step def as the last argument
- * Each line of the data stable should be split in to arguments seperated by |
- * @function
- * @private
- * @param {Object} step - Current step being parsed into an object
- * @param {string} line - Current line being parsed
- * @param {string} text - Full text content of the feature file
- *
- * @todo Implement data table parsing
- *
- * @return {Object} Current step being parsed with the doc string added
- */
-const checkDataTable = (step, line, text) => {
-  // TODO: data table parsing
-  // if(!RX_DATATABLE.test(line)) return step
-
-  return step
-}
-
-/**
- * Checks each step tag type, and adds it to current scenario when it exists
- * @function
- * @private
- * @param {Object} scenario - Parsed scenario object of the current scenario
- * @param {string} line - Current line being parsed
- *
- * @return {boolean} - True if a line was added to the current scenario object
- */
-const checkStepTag = (scenario, line, index) => {
-  return RegStepTags.reduce((added, regTag) => {
-    // If the line was already added, just return
-    if (added) return added
-
-    // Check if the line is a step tag
-    const hasTag = regTag.regex.test(line)
-    // If if is, add the extracted line to the steps of the current scenario
-    hasTag &&
-      scenario.steps.push(
-        stepFactory(
-          regTag.type,
-          getRXMatch(line, regTag.regex, 1),
-          regTag.alt,
-          index
-        )
-      )
-
-    // Return if the line was added to the steps
-    return hasTag
-  }, false)
 }
 
 /**
@@ -491,7 +361,7 @@ export const parseFeature = text => {
 
     // Check for stepTags before check for the next active parent
     // This way We don't add a step to the wrong parent
-    if (checkStepTag(activeParent, line, index)) return featuresGroup
+    if (parseStep(activeParent, lines, line, index)) return featuresGroup
 
     /*
      * Get the currently active parent based on the next line to be parsed

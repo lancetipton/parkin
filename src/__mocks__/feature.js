@@ -154,6 +154,22 @@ export const testCommentsFeature = `Feature: Test
     When I press the key "enter"
     When I wait for the page to load
     Then the element "#search" contains the text "parkin"
-    
-    
-    `
+`
+
+export const stepsFeature = `
+Feature: Parse Steps
+
+  Scenario: Parse step with doc-string ticks
+    Given I have the following doc-string data in ticks
+      \`\`\`
+        Test tick data to be parsed
+      \`\`\`
+    Then the doc-string data should be "Test tick data to be parsed"
+
+  Scenario: Parse step with doc-string quotes
+    Given I have the following doc-string data in quotes
+      """
+        Test quote data to be parsed
+      """
+    Then the doc-string data should be "Test quote data to be parsed"
+`
