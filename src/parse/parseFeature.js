@@ -298,13 +298,7 @@ const ensureBackground = (feature, background, line, index) => {
  *
  * @returns {Object} - Found active parent based on the line
  */
-const setActiveParent = (
-  activeParent,
-  feature,
-  scenario,
-  background,
-  line
-) => {
+const setActiveParent = (activeParent, feature, scenario, background, line) => {
   return RX_SCENARIO.test(line) || RX_EXAMPLE.test(line)
     ? scenario
     : RX_FEATURE.test(line)

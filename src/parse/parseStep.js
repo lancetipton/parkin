@@ -43,7 +43,7 @@ const RegStepTags = [
  * @return {Object} Current step being parsed with the doc string added
  */
 const checkDataTable = (step, lines, line, index) => {
-  if(!RX_DATA_TABLE.test(line)) return step
+  if (!RX_DATA_TABLE.test(line)) return step
 
   let tableEnd
 
@@ -62,12 +62,11 @@ const checkDataTable = (step, lines, line, index) => {
         )
 
       return table
-    }, [])
+    }, []),
   }
 
   return step
 }
-
 
 /**
  * Check for doc strings in the steps
@@ -88,14 +87,15 @@ const checkDocString = (step, lines, line, index) => {
   let docMatch = RX_DOC_QUOTES.test(line) && '"""'
   docMatch = docMatch || (RX_DOC_TICKS.test(line) && '```')
 
-  if(!docMatch) return step
+  if (!docMatch) return step
 
   // Get the white space leading up to the doc-string identifier
   // Create a regex white space chars to remove the same amount of white space
   // from the start of each line relative to the doc-string identifier
   // See here for more info => https://cucumber.io/docs/gherkin/reference/
   const whiteSpace = line.split(docMatch)[0]
-  const spacer = new Array(whiteSpace.length).fill('\\s').join('')
+  const spacer = new Array(whiteSpace.length).fill('\\s')
+    .join('')
   const spacerRegex = new RegExp(`^${spacer}`)
 
   step.doc = {
@@ -106,7 +106,8 @@ const checkDocString = (step, lines, line, index) => {
     // Then pull the second element from the array
     // Which is the content between the opening and closing doc-string identifiers
     // Then split it into an array single lines, and remove the starting white-space
-    content: lines.split(docMatch)
+    content: lines
+      .split(docMatch)
       .slice(1)
       .shift()
       .split('\n')
@@ -114,7 +115,7 @@ const checkDocString = (step, lines, line, index) => {
         cleaned.push(ln.replace(spacerRegex, ''))
         return cleaned
       }, [])
-      .join('\n')
+      .join('\n'),
   }
 
   return step
@@ -141,7 +142,7 @@ const stepFactory = (type, stepText, lines, index) => {
   // If it is, then need to go to line after that
   // And use that line for checking data tables and dock strings
   // Otherwise this will fail unless the table or doc comes directly after the step
-  const nextIndex = index+1
+  const nextIndex = index + 1
   const nextLine = lines[nextIndex]
   const afterLines = lines.slice(nextIndex)
 

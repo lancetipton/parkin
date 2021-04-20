@@ -1,4 +1,3 @@
-
 export const registerDocSteps = PK => {
   PK.Given(
     'I have the following doc-string data in {word}',

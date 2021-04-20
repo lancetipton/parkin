@@ -1,4 +1,4 @@
-import { backgroundFeature, docAndDataFeature } from '../../__mocks__'
+import { backgroundFeature } from '../../__mocks__'
 
 jest.resetModules()
 jest.resetAllMocks()

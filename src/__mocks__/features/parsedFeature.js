@@ -1,4 +1,3 @@
-
 export const parsedFeature = {
   index: 1,
   // The uuid is different every time, so comment it out for testing
