@@ -286,7 +286,7 @@ const ensureBackground = (feature, background, line, index) => {
 }
 
 /**
- * Determine the active parent base on the nextLine to be evaluated
+ * Determine the active parent base on the line to be evaluated
  * If a new parent is not found, then returns the current activeParent
  * @function
  * @private
@@ -294,22 +294,22 @@ const ensureBackground = (feature, background, line, index) => {
  * @param {Object} feature - Feature model object
  * @param {Object} scenario - Scenario model object
  * @param {Object} background - Background model object
- * @param {string} nextLine - Next line of the text to be evaluated
+ * @param {string} line - Next line of the text to be evaluated
  *
- * @returns {Object} - Found active parent based on the nextLine
+ * @returns {Object} - Found active parent based on the line
  */
 const setActiveParent = (
   activeParent,
   feature,
   scenario,
   background,
-  nextLine
+  line
 ) => {
-  return RX_SCENARIO.test(nextLine) || RX_EXAMPLE.test(nextLine)
+  return RX_SCENARIO.test(line) || RX_EXAMPLE.test(line)
     ? scenario
-    : RX_FEATURE.test(nextLine)
+    : RX_FEATURE.test(line)
       ? feature
-      : RX_BACKGROUND.test(nextLine)
+      : RX_BACKGROUND.test(line)
         ? background
         : activeParent
 }
