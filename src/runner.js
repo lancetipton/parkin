@@ -93,7 +93,7 @@ const runScenario = (stepsInstance, scenario, background, index, testMode) => {
   background &&
     loopSteps(
       background,
-      `Background: For Scenario ${index}`,
+      `Background > ${scenario.scenario}`,
       stepsInstance,
       testMode
     )
@@ -101,7 +101,7 @@ const runScenario = (stepsInstance, scenario, background, index, testMode) => {
   // Next run the scenario steps once the background completes
   return loopSteps(
     scenario,
-    `Scenario: ${scenario.scenario}`,
+    `Scenario > ${scenario.scenario}`,
     stepsInstance,
     testMode
   )
@@ -254,7 +254,7 @@ export class Runner {
 
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
-      describe(`Feature: ${feature.feature}`, () => {
+      describe(`${feature.feature} Feature`, () => {
         responses = feature.scenarios.map((scenario, index) =>
           runScenario(
             this.steps,
