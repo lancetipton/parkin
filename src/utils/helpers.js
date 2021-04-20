@@ -1,3 +1,16 @@
+
+/*
+ * Extracts keywords from a text string
+ * @function
+ * @private
+ * @param {string} line - Text content to extract the keyword from
+ * @param {Object} regex - Regex object used for finding a keyword
+ * @param {number} index - Current inject of the line being parsed
+ *
+ * @returns {string} - Found keyword text from the line argument
+ */
+export const getRXMatch = (line, regex, index) => line.match(regex)[index].trim()
+
 /*
  * Sanitizes the passed in text and joins the texts length
  * @function

@@ -1,33 +1,3 @@
-export const feature = `@search @google
-Feature: Google Search
-  As an internet user
-  In order to find out more about Keg-Hub
-  # Test comment in the feature meta
-  I want to be able to search for information about the Keg-Hub
-
-  Scenario: Search the web for google
-    Given I open the site https://www.google.com
-    When I set keg-hub to the input .gLFyf
-    When I press enter
-    # comment for testing in the scenario steps
-    When I wait for the page to load
-    Then the element #search contains the text simpleviewinc/keg-hub`
-
-export const featureWithScenarioTags = `@search @google
-  Feature: Google Search
-    As an internet user
-    In order to find out more about Keg-Hub
-    # Test comment in the feature meta
-    I want to be able to search for information about the Keg-Hub
-  
-    @scenario
-    Scenario: Search the web for google
-      Given I open the site https://www.google.com
-      When I set keg-hub to the input .gLFyf
-      When I press enter
-      # comment for testing in the scenario steps
-      When I wait for the page to load
-      Then the element #search contains the text simpleviewinc/keg-hub`
 
 export const parsedFeature = {
   index: 1,
@@ -105,30 +75,3 @@ export const parsedFeature = {
     },
   ],
 }
-
-export const promiseFeature = `@promises
-Feature: Test Promises
-  Scenario: Test definitions with promises 
-    Given I wait for 1000
-    Then the world test method should be called
-`
-
-export const failStepFeature = `@step @fail
-Feature: Step Fails
-  Scenario: Skip scenario steps when a step fails
-    Given that the default describe is overwritten
-    And this step fails
-    Then this step should be skipped
-    And this step should also be skipped
-`
-
-export const backgroundFeature = `@background
-Feature: Background steps
-  Background:
-    Given that background exists
-    Then the background steps should be called before each scenario
-
-  Scenario: Run scenario after the background
-    Given that this Feature has a background
-    Then this scenario's steps should be run after the background's steps
-`

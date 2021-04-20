@@ -2,6 +2,7 @@ const path = require('path')
 const ROOT_DIR = path.join(__dirname, '../')
 
 module.exports = {
+  maxWorkers: 1,
   rootDir: ROOT_DIR,
   preset: 'rollup-jest',
   transform: {

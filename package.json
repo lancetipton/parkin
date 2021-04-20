@@ -49,7 +49,7 @@
     "format:eslint": "eslint --config ./configs/eslintrc.config.js . --fix --quiet",
     "format:prettier": "prettier --config ./configs/prettier.config.js --ignore-path .eslintignore --write '**/*.{js,jsx}'",
     "format": "yarn format:prettier && yarn format:eslint",
-    "test": "NODE_ENV=test jest --detectOpenHandles --no-cache --verbose --config=./configs/jest.config.js",
+    "test": "NODE_ENV=test jest --detectOpenHandles --no-cache --verbose --config=./configs/jest.config.js --maxWorkers=50%",
     "test:cov": "yarn test:reports",
     "test:reports": "yarn test --coverage && yarn view:reports",
     "view:reports": "open reports/coverage/lcov-report/index.html"

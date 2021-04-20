@@ -50,30 +50,25 @@ const runStep = async (stepsInstance, step, testMode) => {
 }
 
 /**
- * Loops through the passed in scenarios steps and calls runStep for each
+ * Loops through the parents steps and calls the matching definition method
  * @function
  * @private
+ * @param {Object} parent - Parent object containing the steps to run
+ * @param {Object} title - Text passed as the first argument to the describe method
  * @param {Object} stepsInstance - Instance of the Steps class
- * @param {Object} scenario - Parsed feature scenario object containing the steps to run
  * @param {boolean} testMode - Allows testing the runner methods, without running the tests
  *
- * @returns {Void}
+ * @returns {Array} - Responses from the parents steps
  */
-const runScenario = (stepsInstance, scenario, background, testMode) => {
+const loopSteps = (parent, title, stepsInstance, testMode) => {
   const describe = getTestMethod('describe', testMode)
 
-  // Holder for the steps of each scenario
   let responses = []
-  describe(`Scenario: ${scenario.scenario}`, () => {
-    background &&
-      beforeAll(async () => {
-        await runBackground(stepsInstance, background, testMode)
-      })
-
+  describe(title, () => {
     // Map over the steps and call them
     // Store the returned promise in the responses array
-    responses = scenario.steps.map(
-      async step => await runStep(stepsInstance, step, testMode)
+    const responses = parent.steps.map(step =>
+      runStep(stepsInstance, step, testMode)
     )
 
     // Ensure we resolve all promises inside the describe block
@@ -84,23 +79,32 @@ const runScenario = (stepsInstance, scenario, background, testMode) => {
 }
 
 /**
- * Loops through the passed in background steps and calls the matching definition method
+ * Loops through the passed in scenarios steps and calls runStep for each
  * @function
  * @private
  * @param {Object} stepsInstance - Instance of the Steps class
- * @param {Object} background - Parsed feature scenario background containing the steps to run
+ * @param {Object} scenario - Parsed feature scenario object containing the steps to run
+ * @param {boolean} testMode - Allows testing the runner methods, without running the tests
  *
- * @returns {Array} - Responses from the background steps
+ * @returns {Void}
  */
-const runBackground = async (stepsInstance, background) => {
-  // Map over the steps and call them
-  // Store the returned promise in the responses array
-  const responses = background.steps.map(
-    async step => await stepsInstance.resolve(step.step)
-  )
+const runScenario = (stepsInstance, scenario, background, index, testMode) => {
+  // If there's a background, run the background steps first
+  background &&
+    loopSteps(
+      background,
+      `Background > ${scenario.scenario}`,
+      stepsInstance,
+      testMode
+    )
 
-  // Ensure we resolve all promises from the background before returning
-  return await Promise.all(responses)
+  // Next run the scenario steps once the background completes
+  return loopSteps(
+    scenario,
+    `Scenario > ${scenario.scenario}`,
+    stepsInstance,
+    testMode
+  )
 }
 
 /**
@@ -250,15 +254,15 @@ export class Runner {
 
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
-      describe(`Feature: ${feature.feature}`, () => {
-        responses = feature.scenarios.map(
-          async scenario =>
-            await runScenario(
-              this.steps,
-              scenario,
-              feature.background,
-              testMode
-            )
+      describe(`${feature.feature} Feature`, () => {
+        responses = feature.scenarios.map((scenario, index) =>
+          runScenario(
+            this.steps,
+            scenario,
+            feature.background,
+            index + 1,
+            testMode
+          )
         )
 
         // Ensure we resolve all promises inside the describe block

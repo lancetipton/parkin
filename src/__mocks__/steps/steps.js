@@ -1,3 +1,4 @@
+import { registerDocSteps } from './docSteps'
 import { registerFailSteps } from './failSteps'
 import { registerBasicSteps } from './basicSteps'
 import { registerPromiseSteps } from './promiseSteps'
@@ -10,4 +11,5 @@ export const registerMockSteps = PK => {
   registerFailSteps(PK)
   registerPromiseSteps(PK)
   registerBackgroundSteps(PK)
+  registerDocSteps(PK)
 }
