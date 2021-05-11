@@ -14,6 +14,7 @@ import {
   RX_INT,
   RX_DOUBLE_QUOTED,
   RX_SINGLE_QUOTED,
+  RX_WORLD,
 } from './patterns'
 
 import { throwParamTypeExists } from '../utils/errors'
@@ -27,8 +28,26 @@ const typeModel = {
   regexp: '',
   type: 'string',
   useForSnippets: true,
-  transformer: arg => arg,
+  transformer: (arg, $world) => arg,
   preferForRegexpMatch: false,
+}
+
+const removeQuotes = arg => arg.trim().replace(/^("|')/, '').replace(/("|')$/, '')
+
+/**
+ * Checks if the arg is a path to a value on the world object
+ * If it is, it pulls the value from the world
+ * @type {function}
+ * @param {*} arg - Value to check if it's a world path
+ * @param {object} $world - Parkin global world object
+ * 
+ * @returns {*} Found value on the world object or undefined
+ */
+const checkWorldValue = (arg, $world) => {
+  // TODO validate this test works properly
+  return arg.match(RX_WORLD)
+    ? get($world, removeQuotes(val).replace('$world.', ''))
+    : undefined
 }
 
 /**
@@ -47,15 +66,20 @@ const __paramTypes = {
     ...typeModel,
     name: 'word',
     regex: RX_ANY,
-    transformer: arg => (!isQuoted(arg) ? toStr(arg) : undefined),
+    transformer: (arg, $world) => {
+      const val = checkWorldValue(arg, $world)
+      return exists(val) ? val : !isQuoted(arg) ? toStr(arg) : undefined
+    },
   },
   float: {
     ...typeModel,
     name: 'float',
     type: 'number',
     regex: RX_FLOAT,
-    transformer: arg => {
-      const result = parseFloat(arg)
+    transformer: (arg, $world) => {
+      const val = checkWorldValue(arg, $world)
+      const result = parseFloat(exists(val) ? val : arg)
+
       return equalsNaN(result) ? undefined : result
     },
   },
@@ -64,22 +88,25 @@ const __paramTypes = {
     name: 'int',
     type: 'number',
     regex: RX_INT,
-    transformer: arg => {
-      const result = parseInt(arg)
-      return arg.includes('.') || equalsNaN(result) ? undefined : result
+    transformer: (arg, $world) => {
+      const val = checkWorldValue(arg, $world)
+      const result = parseInt(exists(val) ? val : arg)
+
+      return equalsNaN(result) || (!exists(val) && arg.includes('.'))
+        ? undefined
+        : result
     },
   },
   string: {
     ...typeModel,
     name: 'string',
     regex: joinRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED),
-    transformer: arg => {
-      return isQuoted(arg)
-        ? arg
-            .trim()
-            .replace(/^("|')/, '')
-            .replace(/("|')$/, '')
-        : undefined
+    transformer: (arg, $world) => {
+      const val = checkWorldValue(arg, $world)
+
+      return val
+        ? val
+        : isQuoted(arg) ? removeQuotes(arg) : undefined
     },
   },
 }
@@ -117,15 +144,16 @@ export const registerParamType = (model = noOpObj, key = model.name) => {
  * @export
  * @param {Array<string>} matches - All found dynamic arguments
  * @param {Array<function>} transformers - Matching paramTypes by index
+ * @param {Object} $world - Global parkin world object
  *
  * @returns {Array<*>} Matches converted into the correct type
  */
-export const convertTypes = (matches, transformers) => {
+export const convertTypes = (matches, transformers, $world) => {
   return matches
     .map((item, i) => {
       const paramType = transformers[i]
       if (!paramType) return item
-      const asType = checkCall(paramType.transformer, item)
+      const asType = checkCall(paramType.transformer, item, $world)
       return typeof asType === paramType.type ? asType : null
     })
     .filter(exists)

@@ -251,7 +251,7 @@ export class Steps {
     const list = this.list()
 
     // Call the matcher to find a matching step definition
-    const found = matcher(list, text)
+    const found = matcher(list, text, this._world)
 
     // If no matching step definition exists, then return false
     if (!found.match || !found.definition) return false

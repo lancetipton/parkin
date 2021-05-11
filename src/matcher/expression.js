@@ -195,7 +195,7 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
  * @returns {Object} Found matching definition and matched arguments
  *  - form: { definition, match: Array of Arguments to pass to definitions function }
  */
-export const matchExpression = (definition, text) => {
+export const matchExpression = (definition, text, $world) => {
   const escaped = escapeStr(definition.match)
   const { regex: regexAlts } = checkAlternative(escaped)
   const { regex: convertedRegex, transformers } = convertToRegex(regexAlts)
@@ -212,7 +212,7 @@ export const matchExpression = (definition, text) => {
   if (!params) return noOpObj
 
   // Convert the found variables into their type based on the mapped transformers
-  const converted = convertTypes(params, transformers)
+  const converted = convertTypes(params, transformers, $world)
 
   // If the conversion fails, and no variable or not enough variables are returned,
   // Then assume the type does not match, so the step does not match.
