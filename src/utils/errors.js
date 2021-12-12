@@ -108,3 +108,20 @@ export const throwFeatureNotAnObj = feature => {
     feature
   )
 }
+
+/**
+ * Throws an error when a registering a param type that already exists
+ * @function
+ * @public
+ * @export
+ * @param {string} name - Name of the param type that is being registered
+ *
+ * @returns {void}
+ */
+ export const throwMissingWorldValue = (arg, world) => {
+  throw new Error(
+    `Can not replace ${arg} with value from $world, it does not exist on the world object`,
+    world,
+    arg
+  )
+}

@@ -1,4 +1,5 @@
 import {
+  get,
   noOpObj,
   toStr,
   exists,
@@ -17,7 +18,10 @@ import {
   RX_WORLD,
 } from './patterns'
 
-import { throwParamTypeExists } from '../utils/errors'
+import {
+  throwParamTypeExists,
+  throwMissingWorldValue,
+} from '../utils/errors'
 
 /**
  * Default param type model used when registering param types
@@ -32,6 +36,12 @@ const typeModel = {
   preferForRegexpMatch: false,
 }
 
+/**
+ * Remove single and double quotes from a string's starting and ending
+ * @param {string} arg - String containing single or double quotes at the start and end
+ * 
+ * @returns {string} - Passed in arg string with start and end quotes removed
+ */
 const removeQuotes = arg => arg.trim().replace(/^("|')/, '').replace(/("|')$/, '')
 
 /**
@@ -43,11 +53,20 @@ const removeQuotes = arg => arg.trim().replace(/^("|')/, '').replace(/("|')$/, '
  * 
  * @returns {*} Found value on the world object or undefined
  */
-const checkWorldValue = (arg, $world) => {
-  // TODO validate this test works properly
-  return arg.match(RX_WORLD)
-    ? get($world, removeQuotes(val).replace('$world.', ''))
-    : undefined
+const checkWorldValue = func => {
+  return (arg, $world) => {
+    const hasWorldVal = arg.match(RX_WORLD)
+    // If not world value, just return func response
+    if(!hasWorldVal) return func(arg)
+
+    // Try to pull from world object
+    const worldVal = get($world, removeQuotes(arg).replace('$world.', ''))
+
+    // If has a wold value, then return world value else thrown an error
+    return exists(worldVal)
+      ? worldVal
+      : throwMissingWorldValue(arg, $world)
+  }
 }
 
 /**
@@ -66,48 +85,39 @@ const __paramTypes = {
     ...typeModel,
     name: 'word',
     regex: RX_ANY,
-    transformer: (arg, $world) => {
-      const val = checkWorldValue(arg, $world)
-      return exists(val) ? val : !isQuoted(arg) ? toStr(arg) : undefined
-    },
+    transformer: checkWorldValue(arg => {
+      return !isQuoted(arg) ? toStr(arg) : undefined
+    }),
   },
   float: {
     ...typeModel,
     name: 'float',
     type: 'number',
     regex: RX_FLOAT,
-    transformer: (arg, $world) => {
-      const val = checkWorldValue(arg, $world)
-      const result = parseFloat(exists(val) ? val : arg)
-
+    transformer: checkWorldValue(arg => {
+      const result = parseFloat(arg)
       return equalsNaN(result) ? undefined : result
-    },
+    }),
   },
   int: {
     ...typeModel,
     name: 'int',
     type: 'number',
     regex: RX_INT,
-    transformer: (arg, $world) => {
-      const val = checkWorldValue(arg, $world)
-      const result = parseInt(exists(val) ? val : arg)
-
-      return equalsNaN(result) || (!exists(val) && arg.includes('.'))
+    transformer: checkWorldValue(arg => {
+      const result = parseInt(arg)
+      return equalsNaN(result) || arg.includes('.')
         ? undefined
         : result
-    },
+    }),
   },
   string: {
     ...typeModel,
     name: 'string',
     regex: joinRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED),
-    transformer: (arg, $world) => {
-      const val = checkWorldValue(arg, $world)
-
-      return val
-        ? val
-        : isQuoted(arg) ? removeQuotes(arg) : undefined
-    },
+    transformer: checkWorldValue(arg => {
+      return isQuoted(arg) ? removeQuotes(arg) : undefined
+    }),
   },
 }
 
@@ -124,6 +134,7 @@ export const getParamTypes = () => __paramTypes
 /**
  * Register custom types following the typeModel object
  * See https://cucumber.io/docs/cucumber/cucumber-expressions/ for more info
+ * Wraps the transformer method in the checkWorldValue HOF
  * @function
  * @public
  * @export
@@ -131,9 +142,16 @@ export const getParamTypes = () => __paramTypes
  * @return {Object} Registered param types
  */
 export const registerParamType = (model = noOpObj, key = model.name) => {
-  __paramTypes[key]
-    ? throwParamTypeExists(key)
-    : (__paramTypes[key] = { ...typeModel, ...model })
+  if(__paramTypes[key])
+    return throwParamTypeExists(key)
+
+  // Build the new type joining with the default
+  __paramTypes[key] = {...typeModel, ...model}
+
+  // Wrap the transformer in the world value check helper
+  __paramTypes[key].transformer = checkWorldValue(__paramTypes[key].transformer)
+
+  return __paramTypes
 }
 
 /**
