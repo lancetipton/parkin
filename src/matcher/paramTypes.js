@@ -1,5 +1,6 @@
 import {
   get,
+  isObj,
   noOpObj,
   toStr,
   exists,
@@ -24,19 +25,6 @@ import {
 } from '../utils/errors'
 
 /**
- * Default param type model used when registering param types
- * @type {Object}
- */
-const typeModel = {
-  name: '',
-  regexp: '',
-  type: 'string',
-  useForSnippets: true,
-  transformer: (arg, $world) => arg,
-  preferForRegexpMatch: false,
-}
-
-/**
  * Remove single and double quotes from a string's starting and ending
  * @param {string} arg - String containing single or double quotes at the start and end
  * 
@@ -53,11 +41,12 @@ const removeQuotes = arg => arg.trim().replace(/^("|')/, '').replace(/("|')$/, '
  * 
  * @returns {*} Found value on the world object or undefined
  */
-const checkWorldValue = func => {
+const checkWorldValue = (func, type) => {
   return (arg, $world) => {
     const hasWorldVal = arg.match(RX_WORLD)
+
     // If not world value, just return func response
-    if(!hasWorldVal) return func(arg)
+    if(!isObj($world) || !hasWorldVal) return matchType(func(arg), type)
 
     // Try to pull from world object
     const worldVal = get($world, removeQuotes(arg).replace('$world.', ''))
@@ -67,6 +56,25 @@ const checkWorldValue = func => {
       ? worldVal
       : throwMissingWorldValue(arg, $world)
   }
+}
+
+// Checks if the val matches the type
+// If matching, returns val, else return null
+const matchType = (val, type) => {
+  return typeof val === type ? val : null
+}
+
+/**
+ * Default param type model used when registering param types
+ * @type {Object}
+ */
+ const typeModel = {
+  name: '',
+  regex: '',
+  type: 'string',
+  useForSnippets: true,
+  preferForRegexpMatch: false,
+  transformer: checkWorldValue(arg => (arg), 'string'),
 }
 
 /**
@@ -87,7 +95,7 @@ const __paramTypes = {
     regex: RX_ANY,
     transformer: checkWorldValue(arg => {
       return !isQuoted(arg) ? toStr(arg) : undefined
-    }),
+    }, typeModel.type),
   },
   float: {
     ...typeModel,
@@ -97,7 +105,7 @@ const __paramTypes = {
     transformer: checkWorldValue(arg => {
       const result = parseFloat(arg)
       return equalsNaN(result) ? undefined : result
-    }),
+    }, 'number'),
   },
   int: {
     ...typeModel,
@@ -109,7 +117,7 @@ const __paramTypes = {
       return equalsNaN(result) || arg.includes('.')
         ? undefined
         : result
-    }),
+    }, 'number'),
   },
   string: {
     ...typeModel,
@@ -117,7 +125,7 @@ const __paramTypes = {
     regex: joinRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED),
     transformer: checkWorldValue(arg => {
       return isQuoted(arg) ? removeQuotes(arg) : undefined
-    }),
+    }, typeModel.type),
   },
 }
 
@@ -149,7 +157,10 @@ export const registerParamType = (model = noOpObj, key = model.name) => {
   __paramTypes[key] = {...typeModel, ...model}
 
   // Wrap the transformer in the world value check helper
-  __paramTypes[key].transformer = checkWorldValue(__paramTypes[key].transformer)
+  __paramTypes[key].transformer = checkWorldValue(
+    __paramTypes[key].transformer,
+    __paramTypes[key].type,
+  )
 
   return __paramTypes
 }
@@ -169,10 +180,8 @@ export const registerParamType = (model = noOpObj, key = model.name) => {
 export const convertTypes = (matches, transformers, $world) => {
   return matches
     .map((item, i) => {
-      const paramType = transformers[i]
-      if (!paramType) return item
-      const asType = checkCall(paramType.transformer, item, $world)
-      return typeof asType === paramType.type ? asType : null
+      const paramType = transformers[i] || __paramTypes.any
+      return checkCall(paramType.transformer, item, $world)
     })
     .filter(exists)
 }

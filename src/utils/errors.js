@@ -125,3 +125,20 @@ export const throwFeatureNotAnObj = feature => {
     arg
   )
 }
+
+/**
+ * Throws an error when a registering an invalid hook type
+ * @function
+ * @public
+ * @export
+ * @param {string} hookTypes - List of allowed hook types
+ * @param {string} type - Invalid hook type being registered
+ *
+ * @returns {void}
+ */
+ export const throwInvalidHookType = (hookTypes, type) => {
+  throw new Error([
+    `Expected client hook type to be one of ', ${hookTypes}.`,
+    `Found: ${type}`
+  ].join('\n'))
+}
