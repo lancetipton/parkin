@@ -87,5 +87,6 @@ module.exports = {
     'jest/valid-expect': 'error',
     'jest/no-mocks-import': 0,
     'jest/no-export': 0,
+    'jest/valid-title': 0,
   },
 }

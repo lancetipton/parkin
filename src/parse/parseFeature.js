@@ -121,11 +121,11 @@ const featureMeta = (feature, line, index) => {
 
     return hasTag
       ? regTag.key === 'reason'
-          ? addReason(feature, getRXMatch(line, regTag.regex, 0), index)
-          : (feature[regTag.key] = {
-              content: getRXMatch(line, regTag.regex, 0),
-              index,
-            })
+        ? addReason(feature, getRXMatch(line, regTag.regex, 0), index)
+        : (feature[regTag.key] = {
+            content: getRXMatch(line, regTag.regex, 0),
+            index,
+          })
       : hasTag
   }, false)
 

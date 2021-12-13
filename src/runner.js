@@ -27,10 +27,10 @@ const resolveFeatures = (data, $world) => {
       ? [data]
       : isArr(data)
         ? data.reduce(
-            (features, feature) =>
-              features.concat(resolveFeatures(feature, $world)),
-            []
-          )
+          (features, feature) =>
+            features.concat(resolveFeatures(feature, $world)),
+          []
+        )
         : throwMissingFeatureText()
 }
 
@@ -56,7 +56,7 @@ const runStep = async (stepsInstance, step, testMode) => {
  * @function
  * @private
  * @param {Object} parent - Parent object containing the steps to run
- * @param {Object} title - Text passed as the first argument to the describe method
+ * @param {string} title - Text passed as the first argument to the describe method
  * @param {Object} stepsInstance - Instance of the Steps class
  * @param {boolean} testMode - Allows testing the runner methods, without running the tests
  *
