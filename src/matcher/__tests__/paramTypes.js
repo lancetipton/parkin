@@ -1,8 +1,4 @@
-import { expressionDefs } from '../../__mocks__'
-import {
-  isArr,
-  typeOf,
-} from '@keg-hub/jsutils'
+import { isArr, typeOf } from '@keg-hub/jsutils'
 
 jest.resetModules()
 jest.resetAllMocks()
@@ -13,12 +9,12 @@ const mockMissingVal = jest.fn()
 
 jest.setMock('../../utils/errors', {
   throwParamTypeExists: mockParamType,
-  throwMissingWorldValue: mockMissingVal
+  throwMissingWorldValue: mockMissingVal,
 })
 
 const typeModel = {
   name: ['string'],
-  regex: ['string', 'regexp'],
+  regex: [ 'string', 'regexp' ],
   type: ['string'],
   useForSnippets: ['boolean'],
   transformer: ['function'],
@@ -28,15 +24,22 @@ const typeModel = {
 const {
   convertTypes,
   getParamTypes,
-  registerParamType
+  registerParamType,
 } = require('../paramTypes')
-
 
 const initialParamTypes = getParamTypes()
 
 const convertTypeTests = {
   input: [
-    [ '5', '4.5', 'something', '"A string"', 'any-match', 'mis-match-type', 'NO-MATCH' ],
+    [
+      '5',
+      '4.5',
+      'something',
+      '"A string"',
+      'any-match',
+      'mis-match-type',
+      'NO-MATCH',
+    ],
     [
       initialParamTypes.int,
       initialParamTypes.float,
@@ -44,9 +47,9 @@ const convertTypeTests = {
       initialParamTypes.string,
       initialParamTypes.any,
       initialParamTypes.float,
-    ]
+    ],
   ],
-  output: [ 5, 4.5, 'something', 'A string', 'any-match', 'NO-MATCH' ]
+  output: [ 5, 4.5, 'something', 'A string', 'any-match', 'NO-MATCH' ],
 }
 
 const convertWorldTests = {
@@ -56,7 +59,7 @@ const convertWorldTests = {
       '$world.first.value',
       '$world.first.second.0',
       '"$world.first.second.1.third"',
-      '$world.first.second.2.forth'
+      '$world.first.second.2.forth',
     ],
     [
       initialParamTypes.string,
@@ -72,28 +75,21 @@ const convertWorldTests = {
         second: [
           'second-value',
           { third: 'third-value-NOT-RETURNED-NOT-INTEGER' },
-          { forth: 4 }
-        ]
-      }
-    }
+          { forth: 4 },
+        ],
+      },
+    },
   ],
-  output: [ 'root-value', 'first-value', 'second-value', 4 ]
+  output: [ 'root-value', 'first-value', 'second-value', 4 ],
 }
 
 const convertWorldMissingTests = {
-  input: [
-    [ '$world.value'],
-    [],
-    {}
-  ],
-  output: []
+  input: [['$world.value'], [], {}],
+  output: [],
 }
 
-
 describe('paramTypes', () => {
-  
   describe('getParamTypes', () => {
-
     afterEach(() => {
       mockParamType.mockClear()
       mockMissingVal.mockClear()
@@ -101,44 +97,45 @@ describe('paramTypes', () => {
 
     it('should return the registered paramTypes with the correct properties', () => {
       const paramTypes = getParamTypes()
-      Object.entries(paramTypes).map(([type, meta]) => {
-        Object.entries(meta).map(([key, value]) => {
+      Object.entries(paramTypes).map(([ type, meta ]) => {
+        Object.entries(meta).map(([ key, value ]) => {
           const mathTypes = typeModel[key]
-          if(!mathTypes) throw new Error(`Extra key ${key} in param type "${type}"`)
+          if (!mathTypes)
+            throw new Error(`Extra key ${key} in param type "${type}"`)
 
           expect(isArr(mathTypes)).toBe(true)
           expect(mathTypes.includes(typeOf(value).toLowerCase())).toBe(true)
         })
       })
-      expect(getParamTypes)
     })
   })
-  
-  describe('convertTypes', () => {
 
+  describe('convertTypes', () => {
     afterEach(() => {
       mockParamType.mockClear()
       mockMissingVal.mockClear()
     })
 
     it('should convert types to the correct values, removing mis-matched types', () => {
-      expect(convertTypes(...convertTypeTests.input)).toEqual(convertTypeTests.output)
+      expect(convertTypes(...convertTypeTests.input)).toEqual(
+        convertTypeTests.output
+      )
     })
 
     it('should convert types to world values', () => {
-      expect(convertTypes(...convertWorldTests.input)).toEqual(convertWorldTests.output)
+      expect(convertTypes(...convertWorldTests.input)).toEqual(
+        convertWorldTests.output
+      )
     })
-    
+
     it('should call throwMissingWorldValue when world value does not exist', () => {
       expect(mockMissingVal).not.toHaveBeenCalled()
       convertTypes(...convertWorldMissingTests.input)
       expect(mockMissingVal).toHaveBeenCalled()
     })
-    
   })
 
   describe('registerParamType', () => {
-
     afterEach(() => {
       mockParamType.mockClear()
       mockMissingVal.mockClear()
@@ -147,13 +144,14 @@ describe('paramTypes', () => {
     it('should register a new type with the param types', () => {
       registerParamType({
         name: 'custom',
-        transformer: (arg) => (arg)
+        transformer: arg => arg,
       })
       const paramTypes = getParamTypes()
       expect(typeof paramTypes.custom).toBe('object')
-      Object.entries(paramTypes.custom).map(([key, value]) => {
+      Object.entries(paramTypes.custom).map(([ key, value ]) => {
         const mathTypes = typeModel[key]
-        if(!mathTypes) throw new Error(`Extra key ${key} in param type "custom"`)
+        if (!mathTypes)
+          throw new Error(`Extra key ${key} in param type "custom"`)
 
         expect(isArr(mathTypes)).toBe(true)
         expect(mathTypes.includes(typeOf(value).toLowerCase())).toBe(true)
@@ -164,15 +162,15 @@ describe('paramTypes', () => {
       expect(mockParamType).not.toHaveBeenCalled()
       registerParamType({
         name: 'any',
-        transformer: (arg) => (arg)
+        transformer: arg => arg,
       })
       expect(mockParamType).toHaveBeenCalled()
     })
-    
+
     it('should wrap the registered transfrom with a world check helper method', () => {
       const custom2 = {
         name: 'custom2',
-        transformer: (arg) => (arg)
+        transformer: arg => arg,
       }
       registerParamType(custom2)
       const paramTypes = getParamTypes()
@@ -191,5 +189,4 @@ describe('paramTypes', () => {
       expect(custom3.transformer).toHaveBeenCalled()
     })
   })
-
 })

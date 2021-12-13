@@ -20,10 +20,7 @@ import {
   RX_WORLD,
 } from './patterns'
 
-import {
-  throwParamTypeExists,
-  throwMissingWorldValue,
-} from '../utils/errors'
+import { throwParamTypeExists, throwMissingWorldValue } from '../utils/errors'
 
 /**
  * Checks if the arg is a path to a value on the world object
@@ -31,7 +28,7 @@ import {
  * @type {function}
  * @param {*} arg - Value to check if it's a world path
  * @param {object} $world - Parkin global world object
- * 
+ *
  * @returns {*} Found value on the world object or undefined
  */
 const checkWorldValue = (func, type) => {
@@ -39,7 +36,7 @@ const checkWorldValue = (func, type) => {
     const hasWorldVal = arg.match(RX_WORLD)
 
     // If not world value, just return func response
-    if(!isObj($world) || !hasWorldVal) return matchType(func(arg), type)
+    if (!isObj($world) || !hasWorldVal) return matchType(func(arg), type)
 
     // Try to pull from world object
     const worldVal = get($world, removeQuotes(arg).replace('$world.', ''))
@@ -61,13 +58,13 @@ const matchType = (val, type) => {
  * Default param type model used when registering param types
  * @type {Object}
  */
- const typeModel = {
+const typeModel = {
   name: '',
   regex: '',
   type: 'string',
   useForSnippets: true,
   preferForRegexpMatch: false,
-  transformer: checkWorldValue(arg => (arg), 'string'),
+  transformer: checkWorldValue(arg => arg, 'string'),
 }
 
 /**
@@ -107,9 +104,7 @@ const __paramTypes = {
     regex: RX_INT,
     transformer: checkWorldValue(arg => {
       const result = parseInt(arg)
-      return equalsNaN(result) || arg.includes('.')
-        ? undefined
-        : result
+      return equalsNaN(result) || arg.includes('.') ? undefined : result
     }, 'number'),
   },
   string: {
@@ -143,16 +138,15 @@ export const getParamTypes = () => __paramTypes
  * @return {Object} Registered param types
  */
 export const registerParamType = (model = noOpObj, key = model.name) => {
-  if(__paramTypes[key])
-    return throwParamTypeExists(key)
+  if (__paramTypes[key]) return throwParamTypeExists(key)
 
   // Build the new type joining with the default
-  __paramTypes[key] = {...typeModel, ...model}
+  __paramTypes[key] = { ...typeModel, ...model }
 
   // Wrap the transformer in the world value check helper
   __paramTypes[key].transformer = checkWorldValue(
     __paramTypes[key].transformer,
-    __paramTypes[key].type,
+    __paramTypes[key].type
   )
 
   return __paramTypes

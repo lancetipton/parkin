@@ -10,7 +10,7 @@ const { WORLD_AT_RUNTIME } = constants
  * If the world value does not exist, the text is left as is
  * If there is text matching `$::world`, the `::` replaced as `$world`
  * This allows variables in step definitions to be replaced at run time
- * 
+ *
  * @param {string} text - String to have `$world` text replaced
  * @param {Object} world - Parking global config object
  *
@@ -25,12 +25,12 @@ export const worldReplace = (text, world) => {
     return text.replace(RX_WORLD_REPLACE, match => {
       currentMatch = match
       const cleaned = match.trim()
-      if(cleaned.indexOf(WORLD_AT_RUNTIME) === 0)
+      if (cleaned.indexOf(WORLD_AT_RUNTIME) === 0)
         return cleaned.replace(WORLD_AT_RUNTIME, `$`)
-  
+
       const location = cleaned.replace(/^\$world\./, '')
       const replaceWith = get(world, location)
-  
+
       return isFunc(replaceWith)
         ? replaceWith(world, path)
         : exists(replaceWith)
@@ -38,8 +38,7 @@ export const worldReplace = (text, world) => {
           : match
     })
   }
-  catch(err){
+  catch (err) {
     throwWorldReplace(err, currentMatch)
   }
 }
-

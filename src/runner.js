@@ -27,7 +27,8 @@ const resolveFeatures = (data, $world) => {
       ? [data]
       : isArr(data)
         ? data.reduce(
-            (features, feature) => features.concat(resolveFeatures(feature, $world)),
+            (features, feature) =>
+              features.concat(resolveFeatures(feature, $world)),
             []
           )
         : throwMissingFeatureText()

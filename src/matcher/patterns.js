@@ -20,6 +20,6 @@ export const RX_FLOAT = /-?[0-9]+[.][0-9]+/
 
 export const RX_INT = /-?[0-9]+/
 
-export const RX_WORLD=/^["]?\$world\.\S+["]?/
+export const RX_WORLD = /^["]?\$world\.\S+["]?/
 
-export const RX_WORLD_REPLACE= /(\$::world|\$world)+\.[^"'\s]*/gm
+export const RX_WORLD_REPLACE = /(\$::world|\$world)+\.[^"'\s]*/gm

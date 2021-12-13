@@ -142,7 +142,7 @@ describe('Match matchExpression', () => {
 
     expect(match).toEqual(expect.arrayContaining(['$myUrl']))
   })
-  
+
   it('should replace $wold values with world values', () => {
     const { match } = matchExpression(
       {
@@ -154,8 +154,8 @@ describe('Match matchExpression', () => {
       'I open the site "$world.app.url"',
       {
         app: {
-          url: 'http://google.com'
-        }
+          url: 'http://google.com',
+        },
       }
     )
 

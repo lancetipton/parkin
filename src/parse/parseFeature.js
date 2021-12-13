@@ -3,7 +3,6 @@ import { noOpObj } from '@keg-hub/jsutils'
 import { worldReplace } from '../utils/worldReplace'
 import { sanitizeForId, getRXMatch } from '../utils/helpers'
 
-
 /**
  * Regular expressions for matching feature file keywords
  * @type {object}
@@ -320,7 +319,7 @@ const setActiveParent = (activeParent, feature, scenario, background, line) => {
  *
  * @returns {Object} - Parsed feature file as an object
  */
-export const parseFeature = function(text, world) {
+export const parseFeature = function (text, world) {
   world = world || (this && this.world) || noOpObj
   const features = []
 

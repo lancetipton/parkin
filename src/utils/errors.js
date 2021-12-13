@@ -118,7 +118,7 @@ export const throwFeatureNotAnObj = feature => {
  *
  * @returns {void}
  */
- export const throwMissingWorldValue = (arg, world) => {
+export const throwMissingWorldValue = (arg, world) => {
   throw new Error(
     `Can not replace ${arg} with value from $world, it does not exist on the world object`,
     world,
@@ -136,11 +136,13 @@ export const throwFeatureNotAnObj = feature => {
  *
  * @returns {void}
  */
- export const throwInvalidHookType = (hookTypes, type) => {
-  throw new Error([
-    `Expected client hook type to be one of ', ${hookTypes}.`,
-    `Found: ${type}`
-  ].join('\n'))
+export const throwInvalidHookType = (hookTypes, type) => {
+  throw new Error(
+    [
+      `Expected client hook type to be one of ', ${hookTypes}.`,
+      `Found: ${type}`,
+    ].join('\n')
+  )
 }
 
 /**
@@ -152,6 +154,8 @@ export const throwFeatureNotAnObj = feature => {
  * @param {string} currentMatch - Current $world text that was matched
  */
 export const throwWorldReplace = (err, currentMatch) => {
-  console.log(`Error in $world replace of text content. Current match was ${currentMatch}`)
+  console.log(
+    `Error in $world replace of text content. Current match was ${currentMatch}`
+  )
   throw err
 }

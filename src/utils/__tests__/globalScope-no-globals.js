@@ -6,20 +6,22 @@ jest.clearAllMocks()
 
 let shouldThrow = false
 const mockCheckCall = jest.fn((func, ...args) => {
-  if(shouldThrow) throw new Error('Force throw error')
+  if (shouldThrow) throw new Error('Force throw error')
   return func(...args)
 })
 
 jest.setMock('@keg-hub/jsutils', {
   ...jsutils,
-  checkCall: mockCheckCall
+  checkCall: mockCheckCall,
 })
 
 describe('globalScope', () => {
   const orgBool = global.Boolean
 
   beforeAll(() => {
-    global.Boolean = function(){ return false }
+    global.Boolean = function () {
+      return false
+    }
   })
 
   afterAll(() => {
@@ -38,7 +40,7 @@ describe('globalScope', () => {
     it('should return empty exports object when module does not exist', () => {
       const { resolveModule } = require('../globalScope')
       const mod = resolveModule()
-      expect(mod).toEqual({exports: {}})
+      expect(mod).toEqual({ exports: {} })
     })
   })
 

@@ -6,13 +6,13 @@ jest.clearAllMocks()
 
 let shouldThrow = false
 const mockCheckCall = jest.fn((func, ...args) => {
-  if(shouldThrow) throw new Error('Force throw error')
+  if (shouldThrow) throw new Error('Force throw error')
   return func(...args)
 })
 
 jest.setMock('@keg-hub/jsutils', {
   ...jsutils,
-  checkCall: mockCheckCall
+  checkCall: mockCheckCall,
 })
 
 describe('globalScope', () => {
@@ -25,7 +25,7 @@ describe('globalScope', () => {
       expect(globalObj).toBe(global.window)
       global.window = orgWin
     })
-  
+
     it('should return an empty object when an error is thrown', () => {
       shouldThrow = true
       const orgWin = global.window
@@ -42,7 +42,17 @@ describe('globalScope', () => {
     it('should return global.module when called', () => {
       const { resolveModule } = require('../globalScope')
       const mod = resolveModule()
-      const moduleKeys = ['children', 'exports', 'filename', 'id', 'loaded', 'path', 'parent', 'paths', 'main']
+      const moduleKeys = [
+        'children',
+        'exports',
+        'filename',
+        'id',
+        'loaded',
+        'path',
+        'parent',
+        'paths',
+        'main',
+      ]
       Object.keys(mod).map(key => {
         expect(moduleKeys.includes(key)).toBe(true)
       })

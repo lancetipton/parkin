@@ -136,7 +136,8 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
   // including: params (e.g. {float}), optionals (e.g. test(s))
   // and alternate text (e.g. required/optional)
   const parts = getRegexParts(stepMatcher)
-  const expectedParamLength = parts.filter(part => part.type === 'parameter').length
+  const expectedParamLength = parts.filter(part => part.type === 'parameter')
+    .length
 
   // extract the params from the text, using the parts array
   const result = parts.reduce(
@@ -193,8 +194,7 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
 export const matchExpression = (definition, text, $world) => {
   // If it's an exact match, then no variables can exist
   // So we can short circuit and return the definition
-  if(definition.match === text)
-    return { definition, match: [] }
+  if (definition.match === text) return { definition, match: [] }
 
   const escaped = escapeStr(definition.match)
   const { regex: regexAlts } = checkAlternative(escaped)
