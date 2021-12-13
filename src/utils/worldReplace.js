@@ -8,7 +8,7 @@ const { WORLD_AT_RUNTIME } = constants
  * Finds all matching $world strings in the passed in text
  * Then replaces them with content from the world object
  * If the world value does not exist, the text is left as is
- * If there is text matching `$::world`, the `::` replaced as `$world`
+ * If there is text matching `$:world`, the `:` replaced as `$world`
  * This allows variables in step definitions to be replaced at run time
  *
  * @param {string} text - String to have `$world` text replaced

@@ -201,7 +201,7 @@ PK.registerSteps({
 ### Feature Parsing
 * Features that contain the a text matching `$world.*` will be mapped to a corresponding world value
   * The `*` part of `$world.*`, should be a path on the world object
-  * The RegEx looks like this => `/(\$::world|\$world)+\.[^"'\s]*/gm`
+  * The RegEx looks like this => `/(\$:world|\$world)+\.[^"'\s]*/gm`
   * Example
     ```js
       // Parking world object
@@ -253,12 +253,12 @@ PK.registerSteps({
             # Step definition set the world.app.url value to "https://my.app.url"
             Given I set the app url to be "https://my.app.url"
             # Step definition methods first argument becomes "https://my.app.url"
-            And I open the site "$::world.app.url"
+            And I open the site "$:world.app.url"
       `)
     ```
-  * When the above feature is parsed, The `$::world.app.url` will be found and replaced to `$world.app.url`
-    * Due to the `::`, It will **NOT** try to find the world value.
-    * Instead it removes the `::`, and the match text of the **Scenario Step** becomes
+  * When the above feature is parsed, The `$:world.app.url` will be found and replaced to `$world.app.url`
+    * Due to the `:`, It will **NOT** try to find the world value.
+    * Instead it removes the `:`, and the match text of the **Scenario Step** becomes
       * `And I open the site "$world.app.url"`
     * The matching **Step Definition** text would be
       * `And I open the site {string}`
@@ -266,7 +266,7 @@ PK.registerSteps({
     * All variables are parsed from the scenario step and passed to the **Step Definition** method
     * If the variable value matches `$world.*`, it will be replaced by the corresponding `$world` value
       * The `*` part of `$world.*`, should be a path on the world object
-      * This happens for non-existing `$world` values and variables defined with `$::world` when the feature is parsed 
+      * This happens for non-existing `$world` values and variables defined with `$:world` when the feature is parsed 
     * **IMPORTANT** - If the value does not exist on the `$world`, then the **Step Definition** method throws an error
   * Because this happens at the time of parsing the **Scenario Step** variables
     * The value from the `$world` object at the time the step is parsed is used
@@ -283,12 +283,12 @@ PK.registerSteps({
               # Step definition set the world.app.url value to "https://my.app.url"
               Given I set the app url to be "https://my.app.url"
               # Step definition methods first argument becomes "https://my.app.url"
-              And I open the site "$::world.app.url"
+              And I open the site "$:world.app.url"
             Scenario: Go to google
               # Step definition set the world.app.url value to "https://google.com"
               Given I set the app url to be "https://google.com"
               # Step definition methods first argument becomes "https://google.com"
-              And I open the site "$::world.app.url"
+              And I open the site "$:world.app.url"
         `)
 
         // After the First Scenario finished running

@@ -9,7 +9,7 @@ Feature: World Replace steps
     Given that the app url is "$world.app.url"
     And the element "$world.alias.element" exists
     When we set the worlds feature status to "passing"
-    Then this features status should be "$::world.feature.status"
+    Then this features status should be "$:world.feature.status"
     And this path $world.does.not.exist should not be replaced
 
   Scenario: Second Scenario Text
