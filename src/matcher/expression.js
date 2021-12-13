@@ -20,6 +20,7 @@ import { getParamTypes, convertTypes } from './paramTypes'
 
 /**
  * Escapes a string so it can be converted into a regular expression
+ * Ensures special chars are escaped, a string with "." in it will be replaced with "\."
  * @function
  * @private
  * @param {string} str - Step match text to be escaped
@@ -27,13 +28,9 @@ import { getParamTypes, convertTypes } from './paramTypes'
  * @return {string} Escaped string to allow converting into a regular expression
  */
 const escapeStr = str => {
-  // TODO: Not RegEx special chars are being escaped in a Node.js env
-  // Example: A definition.match with "." in it will not escape them to "\."
-  // So they are treated as special chars, which should not happen
-  // Investigate running replace for both web and node
   return hasWindow
     ? str.replace(/[|\\[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d')
-    : str
+    : str.replace(/[|\\[\]^$+*?.]/g, '\\$&')
 }
 
 /**
@@ -121,12 +118,8 @@ const checkAlternative = match => {
  */
 const checkAnchors = str => {
   let final = str
-  if (!str.startsWith('^')) {
-    final = '^' + final
-  }
-  if (!str.endsWith('$')) {
-    final += '$'
-  }
+  if (!str.startsWith('^')) final = '^' + final
+  if (!str.endsWith('$')) final += '$'
 
   return { regex: final }
 }
@@ -143,9 +136,7 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
   // including: params (e.g. {float}), optionals (e.g. test(s))
   // and alternate text (e.g. required/optional)
   const parts = getRegexParts(stepMatcher)
-
-  const expectedParamLength = parts.filter(part => part.type === 'parameter')
-    .length
+  const expectedParamLength = parts.filter(part => part.type === 'parameter').length
 
   // extract the params from the text, using the parts array
   const result = parts.reduce(
@@ -200,14 +191,15 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
  *  - form: { definition, match: Array of Arguments to pass to definitions function }
  */
 export const matchExpression = (definition, text, $world) => {
+  // If it's an exact match, then no variables can exist
+  // So we can short circuit and return the definition
+  if(definition.match === text)
+    return { definition, match: [] }
+
   const escaped = escapeStr(definition.match)
   const { regex: regexAlts } = checkAlternative(escaped)
   const { regex: convertedRegex, transformers } = convertToRegex(regexAlts)
   const { regex: match } = checkAnchors(convertedRegex)
-
-  // If it's an exact match, then no variables should exist
-  if(definition.match === text)
-    return { definition, match: [] }
 
   // Then call the regex matcher to get the content
   const found = matchRegex({ ...definition, match }, text)

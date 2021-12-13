@@ -46,7 +46,7 @@ const checkWorldValue = (func, type) => {
 
     // If has a wold value, then return world value else thrown an error
     return exists(worldVal)
-      ? worldVal
+      ? matchType(worldVal, type)
       : throwMissingWorldValue(arg, $world)
   }
 }

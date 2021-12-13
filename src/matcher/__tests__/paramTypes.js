@@ -51,12 +51,19 @@ const convertTypeTests = {
 
 const convertWorldTests = {
   input: [
-    [ '$world.value', '$world.first.value', '$world.first.second.0', '"$world.first.second.1.third"'],
     [
-      initialParamTypes.int,
-      initialParamTypes.float,
-      initialParamTypes.word,
+      '$world.value',
+      '$world.first.value',
+      '$world.first.second.0',
+      '"$world.first.second.1.third"',
+      '$world.first.second.2.forth'
+    ],
+    [
       initialParamTypes.string,
+      initialParamTypes.string,
+      initialParamTypes.word,
+      initialParamTypes.int,
+      initialParamTypes.int,
     ],
     {
       value: 'root-value',
@@ -64,12 +71,13 @@ const convertWorldTests = {
         value: 'first-value',
         second: [
           'second-value',
-          { third: 'third-value' },
+          { third: 'third-value-NOT-RETURNED-NOT-INTEGER' },
+          { forth: 4 }
         ]
       }
     }
   ],
-  output: [ 'root-value', 'first-value', 'second-value', 'third-value' ]
+  output: [ 'root-value', 'first-value', 'second-value', 4 ]
 }
 
 const convertWorldMissingTests = {
