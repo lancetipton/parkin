@@ -53,10 +53,10 @@ Feature: Add to world
   In order to show my math skills
   I want to add a number to the world
   
-  Scenario: Add a number to the $world.number
-    Given I have 1 as $world.number
-    When I add 1 to $world.number
-    Then I expect $world.number to be 2
+  Scenario: Add a number to the world.number property
+    Given I have 1 as $::world.number
+    When I add 1 to $::world.number
+    Then I expect $::world.number to be 2
 </textarea>
 
                 </div>

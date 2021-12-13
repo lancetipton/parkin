@@ -20,8 +20,8 @@ const addContent = (assembled, content, index) => {
   !exists(index)
     ? assembled.push(content)
     : exists(assembled[index])
-      ? assembled.splice(index, 0, content)
-      : (assembled[index] = content)
+    ? assembled.splice(index, 0, content)
+    : (assembled[index] = content)
 }
 
 /**
@@ -51,26 +51,26 @@ const addTags = (assembled, tags, spacer = '') => {
 const addMeta = (assembled, feature) => {
   FEATURE_META.map(key => {
     switch (key) {
-    case 'feature':
-      addContent(assembled, `Feature: ${feature[key]}`, feature.index)
-      break
-    case 'comments':
-      isArr(feature[key]) &&
+      case 'feature':
+        addContent(assembled, `Feature: ${feature[key]}`, feature.index)
+        break
+      case 'comments':
+        isArr(feature[key]) &&
           feature[key].map(item =>
             addContent(assembled, item.content, item.index)
           )
-      break
-    case 'reason':
-      isArr(feature[key]) &&
+        break
+      case 'reason':
+        isArr(feature[key]) &&
           feature[key].map(item =>
             addContent(assembled, `  ${item.content}`, item.index)
           )
-      break
-    case 'desire':
-    case 'perspective':
-      feature[key] &&
+        break
+      case 'desire':
+      case 'perspective':
+        feature[key] &&
           addContent(assembled, `  ${feature[key].content}`, feature[key].index)
-      break
+        break
     }
   })
 }
@@ -167,8 +167,8 @@ const formatAssembled = assembled => {
     return !exists(line)
       ? '\n'
       : line.startsWith('#')
-        ? formatComment(assembled, line, index)
-        : `${line}\n`
+      ? formatComment(assembled, line, index)
+      : `${line}\n`
   })
     .join('')
     .trim()

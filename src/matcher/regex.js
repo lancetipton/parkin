@@ -34,7 +34,7 @@ export const matchRegex = (definition, text) => {
 export const toAlternateRegex = optional => {
   const split = optional.split(/(\(|\))/)
 
-  const [ start, , middle, , end ] = split
+  const [start, , middle, , end] = split
 
   // no words outside of optional boundary
   if (start === '' && end === '') return optional + '?'
@@ -93,17 +93,17 @@ export const getAlternateRegex = value => {
  * @returns {Object|null} - RegEx object if the type matches
  */
 const getMatchRegex = (type, match) => {
-  const [ val, paramType ] = match
+  const [val, paramType] = match
 
   switch (type) {
-  case 'parameter':
-    return new RegExp(getParamRegex(paramType))
-  case 'optional':
-    return new RegExp(getOptionalRegex(match))
-  case 'alternate':
-    return new RegExp(getAlternateRegex(val))
-  default:
-    return null
+    case 'parameter':
+      return new RegExp(getParamRegex(paramType))
+    case 'optional':
+      return new RegExp(getOptionalRegex(match))
+    case 'alternate':
+      return new RegExp(getAlternateRegex(val))
+    default:
+      return null
   }
 }
 
@@ -149,16 +149,16 @@ export const getRegexParts = defMatcher => {
     ...defMatcher.matchAll(new RegExp(RX_PARAMETER, 'gi')),
   ].map(match => parseMatch(match, 'parameter'))
 
-  const optionals = [
-    ...defMatcher.matchAll(new RegExp(RX_OPTIONAL, 'gi')),
-  ].map(match => parseMatch(match, 'optional'))
+  const optionals = [...defMatcher.matchAll(new RegExp(RX_OPTIONAL, 'gi'))].map(
+    match => parseMatch(match, 'optional')
+  )
 
   const alts = [...defMatcher.matchAll(new RegExp(RX_ALT, 'gi'))].map(match =>
     parseMatch(match, 'alternate')
   )
 
   // sort matched expressions by their index in the text
-  const sortedExpressions = [ ...parameters, ...optionals, ...alts ].sort(
+  const sortedExpressions = [...parameters, ...optionals, ...alts].sort(
     (matchA, matchB) => matchA.index - matchB.index
   )
 

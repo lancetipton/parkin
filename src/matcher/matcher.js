@@ -21,7 +21,7 @@ export const matcher = (definitions, text, $world) => {
     return found.match || !definition.match
       ? found
       : definition.variant !== REGEX_VARIANT
-        ? matchExpression(definition, text, $world)
-        : matchRegex(definition, text, $world)
+      ? matchExpression(definition, text, $world)
+      : matchRegex(definition, text, $world)
   }, noOpObj)
 }

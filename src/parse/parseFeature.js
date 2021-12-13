@@ -121,11 +121,11 @@ const featureMeta = (feature, line, index) => {
 
     return hasTag
       ? regTag.key === 'reason'
-          ? addReason(feature, getRXMatch(line, regTag.regex, 0), index)
-          : (feature[regTag.key] = {
-              content: getRXMatch(line, regTag.regex, 0),
-              index,
-            })
+        ? addReason(feature, getRXMatch(line, regTag.regex, 0), index)
+        : (feature[regTag.key] = {
+            content: getRXMatch(line, regTag.regex, 0),
+            index,
+          })
       : hasTag
   }, false)
 
@@ -304,10 +304,10 @@ const setActiveParent = (activeParent, feature, scenario, background, line) => {
   return RX_SCENARIO.test(line) || RX_EXAMPLE.test(line)
     ? scenario
     : RX_FEATURE.test(line)
-      ? feature
-      : RX_BACKGROUND.test(line)
-        ? background
-        : activeParent
+    ? feature
+    : RX_BACKGROUND.test(line)
+    ? background
+    : activeParent
 }
 
 /**

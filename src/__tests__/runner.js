@@ -42,7 +42,7 @@ describe('Runner', () => {
   })
 
   it('should handle features as an array of strings', async () => {
-    const resp = await PK.run([ feature, feature ])
+    const resp = await PK.run([feature, feature])
     expect(resp).toBe(true)
   })
 
@@ -52,12 +52,12 @@ describe('Runner', () => {
   })
 
   it('should handle features as an array of parsed feature objects', async () => {
-    const resp = await PK.run([ parsedFeature, parsedFeature ])
+    const resp = await PK.run([parsedFeature, parsedFeature])
     expect(resp).toBe(true)
   })
 
   it('should handle a mixed array of parsed feature objects and feature strings', async () => {
-    const resp = await PK.run([ feature, parsedFeature ])
+    const resp = await PK.run([feature, parsedFeature])
     expect(resp).toBe(true)
   })
 

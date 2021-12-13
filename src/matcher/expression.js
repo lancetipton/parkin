@@ -52,7 +52,7 @@ const runRegexCheck = (matcher, testRx, replaceWith) => {
   // Replace any expressions with regex, and convert the param types
   matcher.replace(testRx, (...args) => {
     const match = args[0].trim()
-    const [ start, ...end ] = regexStr.split(match)
+    const [start, ...end] = regexStr.split(match)
     const replace = isFunc(replaceWith) ? replaceWith(...args) : replaceWith
     regexStr = `${start}${replace}${end.join(match)}`
   })
@@ -84,8 +84,8 @@ const convertToRegex = match => {
     return isParameter
       ? getParamRegex(type)
       : isOptional
-        ? toAlternateRegex(val)
-        : val
+      ? toAlternateRegex(val)
+      : val
   })
 
   return { regex, transformers }
@@ -136,8 +136,9 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
   // including: params (e.g. {float}), optionals (e.g. test(s))
   // and alternate text (e.g. required/optional)
   const parts = getRegexParts(stepMatcher)
-  const expectedParamLength = parts.filter(part => part.type === 'parameter')
-    .length
+  const expectedParamLength = parts.filter(
+    part => part.type === 'parameter'
+  ).length
 
   // extract the params from the text, using the parts array
   const result = parts.reduce(

@@ -94,8 +94,7 @@ const checkDocString = (step, lines, line, index) => {
   // from the start of each line relative to the doc-string identifier
   // See here for more info => https://cucumber.io/docs/gherkin/reference/
   const whiteSpace = line.split(docMatch)[0]
-  const spacer = new Array(whiteSpace.length).fill('\\s')
-    .join('')
+  const spacer = new Array(whiteSpace.length).fill('\\s').join('')
   const spacerRegex = new RegExp(`^${spacer}`)
 
   step.doc = {

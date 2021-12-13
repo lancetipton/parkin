@@ -31,19 +31,19 @@ describe('Feature Steps', () => {
       expect(parsedFeature.scenarios[1].steps[0].table).toEqual({
         index: 12,
         content: [
-          [ 'name', 'email', 'tag' ],
-          [ 'Jon', 'jon@parkin.io', '@jon' ],
-          [ 'Jacob', 'jacob@parkin.io', '@jacob' ],
-          [ 'Jingle', 'jingle@parkin.io', '@jingle' ],
+          ['name', 'email', 'tag'],
+          ['Jon', 'jon@parkin.io', '@jon'],
+          ['Jacob', 'jacob@parkin.io', '@jacob'],
+          ['Jingle', 'jingle@parkin.io', '@jingle'],
         ],
       })
       expect(parsedFeature.scenarios[3].steps[0].table).toEqual({
         index: 26,
         content: [
-          [ 'first', 'Tom' ],
-          [ 'last', 'Jerry' ],
-          [ 'phone', '123456789' ],
-          [ 'email', 'tomandjerry@cartoon.com' ],
+          ['first', 'Tom'],
+          ['last', 'Jerry'],
+          ['phone', '123456789'],
+          ['email', 'tomandjerry@cartoon.com'],
         ],
       })
     })
