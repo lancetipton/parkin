@@ -1,4 +1,7 @@
+import { removeQuotes } from '../utils/helpers'
 import {
+  get,
+  isObj,
   noOpObj,
   toStr,
   exists,
@@ -14,9 +17,42 @@ import {
   RX_INT,
   RX_DOUBLE_QUOTED,
   RX_SINGLE_QUOTED,
+  RX_WORLD,
 } from './patterns'
 
-import { throwParamTypeExists } from '../utils/errors'
+import { throwParamTypeExists, throwMissingWorldValue } from '../utils/errors'
+
+/**
+ * Checks if the arg is a path to a value on the world object
+ * If it is, it pulls the value from the world
+ * @type {function}
+ * @param {*} arg - Value to check if it's a world path
+ * @param {object} $world - Parkin global world object
+ *
+ * @returns {*} Found value on the world object or undefined
+ */
+const checkWorldValue = (func, type) => {
+  return (arg, $world) => {
+    const hasWorldVal = arg.match(RX_WORLD)
+
+    // If not world value, just return func response
+    if (!isObj($world) || !hasWorldVal) return matchType(func(arg), type)
+
+    // Try to pull from world object
+    const worldVal = get($world, removeQuotes(arg).replace('$world.', ''))
+
+    // If has a wold value, then return world value else thrown an error
+    return exists(worldVal)
+      ? matchType(worldVal, type)
+      : throwMissingWorldValue(arg, $world)
+  }
+}
+
+// Checks if the val matches the type
+// If matching, returns val, else return null
+const matchType = (val, type) => {
+  return typeof val === type ? val : null
+}
 
 /**
  * Default param type model used when registering param types
@@ -24,11 +60,11 @@ import { throwParamTypeExists } from '../utils/errors'
  */
 const typeModel = {
   name: '',
-  regexp: '',
+  regex: '',
   type: 'string',
   useForSnippets: true,
-  transformer: arg => arg,
   preferForRegexpMatch: false,
+  transformer: checkWorldValue(arg => arg, 'string'),
 }
 
 /**
@@ -47,40 +83,37 @@ const __paramTypes = {
     ...typeModel,
     name: 'word',
     regex: RX_ANY,
-    transformer: arg => (!isQuoted(arg) ? toStr(arg) : undefined),
+    transformer: checkWorldValue(arg => {
+      return !isQuoted(arg) ? toStr(arg) : undefined
+    }, typeModel.type),
   },
   float: {
     ...typeModel,
     name: 'float',
     type: 'number',
     regex: RX_FLOAT,
-    transformer: arg => {
+    transformer: checkWorldValue(arg => {
       const result = parseFloat(arg)
       return equalsNaN(result) ? undefined : result
-    },
+    }, 'number'),
   },
   int: {
     ...typeModel,
     name: 'int',
     type: 'number',
     regex: RX_INT,
-    transformer: arg => {
+    transformer: checkWorldValue(arg => {
       const result = parseInt(arg)
-      return arg.includes('.') || equalsNaN(result) ? undefined : result
-    },
+      return equalsNaN(result) || arg.includes('.') ? undefined : result
+    }, 'number'),
   },
   string: {
     ...typeModel,
     name: 'string',
     regex: joinRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED),
-    transformer: arg => {
-      return isQuoted(arg)
-        ? arg
-            .trim()
-            .replace(/^("|')/, '')
-            .replace(/("|')$/, '')
-        : undefined
-    },
+    transformer: checkWorldValue(arg => {
+      return isQuoted(arg) ? removeQuotes(arg) : undefined
+    }, typeModel.type),
   },
 }
 
@@ -97,6 +130,7 @@ export const getParamTypes = () => __paramTypes
 /**
  * Register custom types following the typeModel object
  * See https://cucumber.io/docs/cucumber/cucumber-expressions/ for more info
+ * Wraps the transformer method in the checkWorldValue HOF
  * @function
  * @public
  * @export
@@ -104,9 +138,18 @@ export const getParamTypes = () => __paramTypes
  * @return {Object} Registered param types
  */
 export const registerParamType = (model = noOpObj, key = model.name) => {
-  __paramTypes[key]
-    ? throwParamTypeExists(key)
-    : (__paramTypes[key] = { ...typeModel, ...model })
+  if (__paramTypes[key]) return throwParamTypeExists(key)
+
+  // Build the new type joining with the default
+  __paramTypes[key] = { ...typeModel, ...model }
+
+  // Wrap the transformer in the world value check helper
+  __paramTypes[key].transformer = checkWorldValue(
+    __paramTypes[key].transformer,
+    __paramTypes[key].type
+  )
+
+  return __paramTypes
 }
 
 /**
@@ -117,16 +160,15 @@ export const registerParamType = (model = noOpObj, key = model.name) => {
  * @export
  * @param {Array<string>} matches - All found dynamic arguments
  * @param {Array<function>} transformers - Matching paramTypes by index
+ * @param {Object} $world - Global parkin world object
  *
  * @returns {Array<*>} Matches converted into the correct type
  */
-export const convertTypes = (matches, transformers) => {
+export const convertTypes = (matches, transformers, $world) => {
   return matches
     .map((item, i) => {
-      const paramType = transformers[i]
-      if (!paramType) return item
-      const asType = checkCall(paramType.transformer, item)
-      return typeof asType === paramType.type ? asType : null
+      const paramType = transformers[i] || __paramTypes.any
+      return checkCall(paramType.transformer, item, $world)
     })
     .filter(exists)
 }

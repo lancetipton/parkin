@@ -137,10 +137,29 @@ describe('Match matchExpression', () => {
         variant: 'expression',
         content: 'I open the site/url/uri {string}',
       },
-      'I open the site "$world.app.url"'
+      'I open the site "$myUrl"'
     )
 
-    expect(match).toEqual(expect.arrayContaining(['$world.app.url']))
+    expect(match).toEqual(expect.arrayContaining(['$myUrl']))
+  })
+
+  it('should replace $wold values with world values', () => {
+    const { match } = matchExpression(
+      {
+        type: 'given',
+        match: 'I open the site/url/uri {string}',
+        variant: 'expression',
+        content: 'I open the site/url/uri {string}',
+      },
+      'I open the site "$world.app.url"',
+      {
+        app: {
+          url: 'http://google.com',
+        },
+      }
+    )
+
+    expect(match).toEqual(expect.arrayContaining(['http://google.com']))
   })
 
   it('should work with string types with single and double quotes', () => {

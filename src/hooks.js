@@ -1,5 +1,6 @@
-import { isFunc, noOp } from '@keg-hub/jsutils'
 import { constants } from './constants'
+import { isFunc, noOp } from '@keg-hub/jsutils'
+import { throwInvalidHookType } from './utils/errors'
 
 const { HOOK_TYPES } = constants
 
@@ -47,12 +48,8 @@ export class Hooks {
    * @return {Function} the function registered to the hook type, or a noOp function by default
    */
   getRegistered = type => {
-    if (!this.types.includes(type))
-      throw new Error(
-        `Expected client hook type to be one of ', ${HOOK_TYPES.join(', ')}.
-         Found: ${type}`
-      )
-
-    return this._registeredHooks[type] || noOp
+    return this.types.includes(type)
+      ? this._registeredHooks[type] || noOp
+      : throwInvalidHookType(HOOK_TYPES.join(', '), type)
   }
 }

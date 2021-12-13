@@ -17,6 +17,9 @@
     - [Parkin.Then](#parkinthen)
     - [Parkin.registerSteps](#parkinregistersteps)
     - [Parkin.run](#parkinrun)
+  - [Parkin.world](#parkinworld)
+    - [Feature Parsing](#feature-parsing)
+    - [Runtime Parsing](#runtime-parsing)
   - [Model Specs](#model-specs)
     - [Feature Model](#feature-model)
     - [Meta Model](#meta-model)
@@ -177,6 +180,123 @@ PK.registerSteps({
     * World object is always the last argument passed to a step definition method
 * `<Arguments>` - Accepts a single argument
   * **(REQUIRED)** `<String|Object|Array<String|Object>>` - Feature text content or parsed feature matching feature model
+
+
+## Parkin.world
+* `<Object>` - Global config object accessible when parsing features, and within step definitions
+* World properties and values can be defined before and during feature execution
+  * During feature parsing, any part of the feature text can be replaced
+    * If the `$world` value does not exist at this time, the text is treated as is
+    * See [Feature Parsing](#feature-parsing) for more information
+  * Step Expression variables can be replaced when a feature is parsed or during execution
+    * If the value exists when a feature is parsed, it will be replaced
+      * During execution, it will use the replaced value, and not the runtime value of the `$world` object
+      * See [Runtime Parsing](#runtime-parsing) for setting values during execution
+    * For Step Expression variables **only**
+      * If the value does not exist when a feature is parsed
+      * It **MUST** exist during execution or an **error will be thrown**
+      * If it's not a Step Expression variables, and does not exist when the feature is parsed it is ignored
+
+
+### Feature Parsing
+* Features that contain the a text matching `$world.*` will be mapped to a corresponding world value
+  * The `*` part of `$world.*`, should be a path on the world object
+  * The RegEx looks like this => `/(\$:world|\$world)+\.[^"'\s]*/gm`
+  * Example
+    ```js
+      // Parking world object
+      Parking.world = { app: { url: 'https://my.app.url' } }
+      Parking.parse.feature(`
+        Feature Open from World
+          # Any part of a features text content can be replaced during the initial parse
+          Scenario: Go to $world.app.url
+            Given I open the site "$world.app.url"
+
+          # If it does not exist, it will be ignored and displayed as is
+          Scenario: Render App Name: $world.app.name
+            Given the app name is "$world.app.name"
+      `)
+    ```
+  * When the above feature is parsed, both instances of `$world.app.url` will be replaced with `https://my.app.url`
+  * This runs before **Step Definitions** are matched to **Scenario Steps**
+    * Which means the match text of the **Scenario Step** would be
+      * `Given I open the site "https://my.app.url"`
+    * And a matching **Step Definition** text would be
+      * `Given I open the site {string}`
+  * **IMPORTANT** - This happens only once, when the feature is initially parsed by Parkin
+    * If the values don't exist on the world object, they will be ignored
+    * If the text is not a variable of a **Scenario Step**, it will be treated as normal text content
+    * Example
+      ```js
+        // Parking world object
+        Parking.world = { app: {} }
+        Parking.parse.feature(`
+          Feature Render App Name
+            Scenario: Render the App Name 
+              Given the app name is not set
+              # "$world.app.name" does not exist on the world, so it will be ignored
+              Then $world.app.name will not be replaced
+        `)
+      ```
+
+
+### Runtime Parsing
+* In some cases, a world value should be parsed during execution of a step, and not when the feature is parsed
+  * This can be useful in cases where one step sets a value to the world, and it used later in a futre step
+  * Example
+    ```js
+      // Parking instance world object
+      Parking.world = { app: {} }
+      Parking.parse.feature(`
+        Feature Set then Open
+          Scenario: Go to my app url
+            # Step definition set the world.app.url value to "https://my.app.url"
+            Given I set the app url to be "https://my.app.url"
+            # Step definition methods first argument becomes "https://my.app.url"
+            And I open the site "$:world.app.url"
+      `)
+    ```
+  * When the above feature is parsed, The `$:world.app.url` will be found and replaced to `$world.app.url`
+    * Due to the `:`, It will **NOT** try to find the world value.
+    * Instead it removes the `:`, and the match text of the **Scenario Step** becomes
+      * `And I open the site "$world.app.url"`
+    * The matching **Step Definition** text would be
+      * `And I open the site {string}`
+  * When a **Scenario Step** is matched to **Step Definition**
+    * All variables are parsed from the scenario step and passed to the **Step Definition** method
+    * If the variable value matches `$world.*`, it will be replaced by the corresponding `$world` value
+      * The `*` part of `$world.*`, should be a path on the world object
+      * This happens for non-existing `$world` values and variables defined with `$:world` when the feature is parsed 
+    * **IMPORTANT** - If the value does not exist on the `$world`, then the **Step Definition** method throws an error
+  * Because this happens at the time of parsing the **Scenario Step** variables
+    * The value from the `$world` object at the time the step is parsed is used
+    * If the same step that references a `$world` value is used multiple times
+    * And the `$world` value changes, the value passed to the **Step Definition** method will be the current value
+  * This allows dynamically setting values on the world object during the execution of a feature file 
+    * Example
+      ```js
+        // Parking instance world object
+        Parking.world = { app: {} }
+        Parking.parse.feature(`
+          Feature Set then Open
+            Scenario: Go to my app url
+              # Step definition set the world.app.url value to "https://my.app.url"
+              Given I set the app url to be "https://my.app.url"
+              # Step definition methods first argument becomes "https://my.app.url"
+              And I open the site "$:world.app.url"
+            Scenario: Go to google
+              # Step definition set the world.app.url value to "https://google.com"
+              Given I set the app url to be "https://google.com"
+              # Step definition methods first argument becomes "https://google.com"
+              And I open the site "$:world.app.url"
+        `)
+
+        // After the First Scenario finished running
+        Parking.world.app.url === "https://my.app.url"
+
+        // After the Second Scenario finished running
+        Parking.world.app.url === "https://google.com"
+      ```
 
 
 ## Model Specs

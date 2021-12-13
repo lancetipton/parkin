@@ -16,17 +16,19 @@ import {
  * @function
  * @public
  * @param {Object|Array<string|Object>|string} data - Feature content
+ * @param {Object} $world - Holds configuration for the running test environment
  *
  * @returns {Array} - passed in data converted into parsed Features
  */
-const resolveFeatures = data => {
+const resolveFeatures = (data, $world) => {
   return isStr(data)
-    ? parseFeature(data)
+    ? parseFeature(data, $world)
     : isObj(data)
       ? [data]
       : isArr(data)
         ? data.reduce(
-            (features, feature) => features.concat(resolveFeatures(feature)),
+            (features, feature) =>
+              features.concat(resolveFeatures(feature, $world)),
             []
           )
         : throwMissingFeatureText()
@@ -190,12 +192,13 @@ const filterFeatures = (features, filterOptions = {}) => {
  * @returns {Object} Instance of the Runner class
  */
 export class Runner {
-  constructor(steps, hooks) {
+  constructor(steps, hooks, world) {
     !steps && throwMissingSteps()
     !hooks && throwMissingHooks()
 
     this.steps = steps
     this.hooks = hooks
+    this._world = world
   }
 
   /**
@@ -206,7 +209,7 @@ export class Runner {
    * @param {string?} options.name - Name of feature
    */
   getFeatures = (data, options) => {
-    const features = resolveFeatures(data)
+    const features = resolveFeatures(data, this._world)
     return filterFeatures(features, options)
   }
 

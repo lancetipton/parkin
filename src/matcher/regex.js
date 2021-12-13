@@ -149,9 +149,9 @@ export const getRegexParts = defMatcher => {
     ...defMatcher.matchAll(new RegExp(RX_PARAMETER, 'gi')),
   ].map(match => parseMatch(match, 'parameter'))
 
-  const optionals = [
-    ...defMatcher.matchAll(new RegExp(RX_OPTIONAL, 'gi')),
-  ].map(match => parseMatch(match, 'optional'))
+  const optionals = [...defMatcher.matchAll(new RegExp(RX_OPTIONAL, 'gi'))].map(
+    match => parseMatch(match, 'optional')
+  )
 
   const alts = [...defMatcher.matchAll(new RegExp(RX_ALT, 'gi'))].map(match =>
     parseMatch(match, 'alternate')

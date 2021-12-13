@@ -16,12 +16,12 @@ const { REGEX_VARIANT } = constants
  *
  * @returns {Object} Found matching definition and matched arguments
  */
-export const matcher = (definitions, text) => {
+export const matcher = (definitions, text, $world) => {
   return definitions.reduce((found, definition) => {
     return found.match || !definition.match
       ? found
       : definition.variant !== REGEX_VARIANT
-        ? matchExpression(definition, text)
-        : matchRegex(definition, text)
+        ? matchExpression(definition, text, $world)
+        : matchRegex(definition, text, $world)
   }, noOpObj)
 }

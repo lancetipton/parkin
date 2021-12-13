@@ -25,7 +25,7 @@ export const hasJasmine = Boolean(
  * @returns {Object} Resolved jasmine object with the getEnv property
  */
 export const resolveJasmine = () =>
-  hasJasmine ? checkCall(() => global.jasmine) : { getEnv: () => ({}) }
+  hasJasmine ? checkCall(() => global.jasmine) : { getEnv: () => noOpObj }
 
 /**
  * Resolve the module object if it exists

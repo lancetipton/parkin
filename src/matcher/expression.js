@@ -20,6 +20,7 @@ import { getParamTypes, convertTypes } from './paramTypes'
 
 /**
  * Escapes a string so it can be converted into a regular expression
+ * Ensures special chars are escaped, a string with "." in it will be replaced with "\."
  * @function
  * @private
  * @param {string} str - Step match text to be escaped
@@ -29,7 +30,7 @@ import { getParamTypes, convertTypes } from './paramTypes'
 const escapeStr = str => {
   return hasWindow
     ? str.replace(/[|\\[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d')
-    : str
+    : str.replace(/[|\\[\]^$+*?.]/g, '\\$&')
 }
 
 /**
@@ -117,12 +118,8 @@ const checkAlternative = match => {
  */
 const checkAnchors = str => {
   let final = str
-  if (!str.startsWith('^')) {
-    final = '^' + final
-  }
-  if (!str.endsWith('$')) {
-    final += '$'
-  }
+  if (!str.startsWith('^')) final = '^' + final
+  if (!str.endsWith('$')) final += '$'
 
   return { regex: final }
 }
@@ -139,9 +136,9 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
   // including: params (e.g. {float}), optionals (e.g. test(s))
   // and alternate text (e.g. required/optional)
   const parts = getRegexParts(stepMatcher)
-
-  const expectedParamLength = parts.filter(part => part.type === 'parameter')
-    .length
+  const expectedParamLength = parts.filter(
+    part => part.type === 'parameter'
+  ).length
 
   // extract the params from the text, using the parts array
   const result = parts.reduce(
@@ -195,7 +192,11 @@ const extractParameters = (text, stepMatcher, wordMatches) => {
  * @returns {Object} Found matching definition and matched arguments
  *  - form: { definition, match: Array of Arguments to pass to definitions function }
  */
-export const matchExpression = (definition, text) => {
+export const matchExpression = (definition, text, $world) => {
+  // If it's an exact match, then no variables can exist
+  // So we can short circuit and return the definition
+  if (definition.match === text) return { definition, match: [] }
+
   const escaped = escapeStr(definition.match)
   const { regex: regexAlts } = checkAlternative(escaped)
   const { regex: convertedRegex, transformers } = convertToRegex(regexAlts)
@@ -212,7 +213,7 @@ export const matchExpression = (definition, text) => {
   if (!params) return noOpObj
 
   // Convert the found variables into their type based on the mapped transformers
-  const converted = convertTypes(params, transformers)
+  const converted = convertTypes(params, transformers, $world)
 
   // If the conversion fails, and no variable or not enough variables are returned,
   // Then assume the type does not match, so the step does not match.
