@@ -204,9 +204,9 @@ PK.registerSteps({
   * The RegEx looks like this => `/(\$:world|\$world)+\.[^"'\s]*/gm`
   * Example
     ```js
-      // Parking world object
-      Parking.world = { app: { url: 'https://my.app.url' } }
-      Parking.parse.feature(`
+      // Parkin world object
+      Parkin.world = { app: { url: 'https://my.app.url' } }
+      Parkin.parse.feature(`
         Feature Open from World
           # Any part of a features text content can be replaced during the initial parse
           Scenario: Go to $world.app.url
@@ -228,9 +228,9 @@ PK.registerSteps({
     * If the text is not a variable of a **Scenario Step**, it will be treated as normal text content
     * Example
       ```js
-        // Parking world object
-        Parking.world = { app: {} }
-        Parking.parse.feature(`
+        // Parkin world object
+        Parkin.world = { app: {} }
+        Parkin.parse.feature(`
           Feature Render App Name
             Scenario: Render the App Name 
               Given the app name is not set
@@ -245,9 +245,9 @@ PK.registerSteps({
   * This can be useful in cases where one step sets a value to the world, and it used later in a futre step
   * Example
     ```js
-      // Parking instance world object
-      Parking.world = { app: {} }
-      Parking.parse.feature(`
+      // Parkin instance world object
+      Parkin.world = { app: {} }
+      Parkin.parse.feature(`
         Feature Set then Open
           Scenario: Go to my app url
             # Step definition set the world.app.url value to "https://my.app.url"
@@ -270,33 +270,33 @@ PK.registerSteps({
     * **IMPORTANT** - If the value does not exist on the `$world`, then the **Step Definition** method throws an error
   * Because this happens at the time of parsing the **Scenario Step** variables
     * The value from the `$world` object at the time the step is parsed is used
-    * If the same step that references a `$world` value is used multiple times
-    * And the `$world` value changes, the value passed to the **Step Definition** method will be the current value
-  * This allows dynamically setting values on the world object during the execution of a feature file 
-    * Example
-      ```js
-        // Parking instance world object
-        Parking.world = { app: {} }
-        Parking.parse.feature(`
-          Feature Set then Open
-            Scenario: Go to my app url
-              # Step definition set the world.app.url value to "https://my.app.url"
-              Given I set the app url to be "https://my.app.url"
-              # Step definition methods first argument becomes "https://my.app.url"
-              And I open the site "$:world.app.url"
-            Scenario: Go to google
-              # Step definition set the world.app.url value to "https://google.com"
-              Given I set the app url to be "https://google.com"
-              # Step definition methods first argument becomes "https://google.com"
-              And I open the site "$:world.app.url"
-        `)
+    * If the same step that references a `$world` value is used multiple times and the `$world` value changes,
+      * The value passed to the **Step Definition** method will be the current value
+    * This allows dynamically setting values on the world object during the execution of a feature file 
+      * Example
+        ```js
+          // Parkin instance world object
+          Parkin.world = { app: {} }
+          Parkin.parse.feature(`
+            Feature Set then Open
+              Scenario: Go to my app url
+                # Step definition set the world.app.url value to "https://my.app.url"
+                Given I set the app url to be "https://my.app.url"
+                # Step definition methods first argument becomes "https://my.app.url"
+                And I open the site "$:world.app.url"
+              Scenario: Go to google
+                # Step definition set the world.app.url value to "https://google.com"
+                Given I set the app url to be "https://google.com"
+                # Step definition methods first argument becomes "https://google.com"
+                And I open the site "$:world.app.url"
+          `)
 
-        // After the First Scenario finished running
-        Parking.world.app.url === "https://my.app.url"
+          // After the First Scenario finished running
+          Parkin.world.app.url === "https://my.app.url"
 
-        // After the Second Scenario finished running
-        Parking.world.app.url === "https://google.com"
-      ```
+          // After the Second Scenario finished running
+          Parkin.world.app.url === "https://google.com"
+        ```
 
 
 ## Model Specs
