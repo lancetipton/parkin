@@ -34,10 +34,11 @@ export const worldReplace = (text, world) => {
       return isFunc(replaceWith)
         ? replaceWith(world, path)
         : exists(replaceWith)
-        ? replaceWith
-        : match
+          ? replaceWith
+          : match
     })
-  } catch (err) {
+  }
+  catch (err) {
     throwWorldReplace(err, currentMatch)
   }
 }

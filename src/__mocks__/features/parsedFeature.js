@@ -18,7 +18,7 @@ export const parsedFeature = {
     '    When I wait for the page to load\n' +
     '    Then the element #search contains the text KegHub/keg-hub',
   feature: 'Google Search',
-  tags: ['@search', '@google'],
+  tags: [ '@search', '@google' ],
   reason: [{ content: 'In order to find out more about Keg-Hub', index: 3 }],
   comments: [
     // Comments are stored globally, so we keep the full white space of it

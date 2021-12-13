@@ -72,7 +72,7 @@ describe('parseFeature', () => {
       const feature = parseFeature(backgroundFeature)[0]
       expect(Array.isArray(feature.background.steps)).toBe(true)
 
-      const [givenStep, thenStep] = feature.background.steps
+      const [ givenStep, thenStep ] = feature.background.steps
 
       expect(givenStep.type).toBe('given')
       expect(givenStep.step).toBe('that background exists')

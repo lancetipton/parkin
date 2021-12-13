@@ -62,9 +62,10 @@ export const resolveGlobalObj = () => {
     return hasWindow
       ? checkCall(() => window)
       : hasGlobal
-      ? checkCall(() => global)
-      : noOpObj
-  } catch (err) {
+        ? checkCall(() => global)
+        : noOpObj
+  }
+  catch (err) {
     return noOpObj
   }
 }

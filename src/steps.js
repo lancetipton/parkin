@@ -283,8 +283,8 @@ export class Steps {
     return found
       ? found.definition.method(...found.match)
       : throwNoMatchingStep(
-          `Matching definition could not be found for step: "${text}"`
-        )
+        `Matching definition could not be found for step: "${text}"`
+      )
   }
 
   /**

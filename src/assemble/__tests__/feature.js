@@ -17,7 +17,7 @@ describe('Assemble Feature', () => {
 
   it('should work with multiple features', () => {
     const content = parsedFeature.content
-    const [assembled1, assembled2] = assembleFeature([
+    const [ assembled1, assembled2 ] = assembleFeature([
       parsedFeature,
       parsedFeature,
     ])

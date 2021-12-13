@@ -177,7 +177,7 @@ describe('Match matchExpression', () => {
       stepText
     )
 
-    expect(match).toEqual(expect.arrayContaining([selector, textContent]))
+    expect(match).toEqual(expect.arrayContaining([ selector, textContent ]))
   })
 
   it('should work with optionals on the start of a word', () => {

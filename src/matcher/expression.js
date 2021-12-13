@@ -52,7 +52,7 @@ const runRegexCheck = (matcher, testRx, replaceWith) => {
   // Replace any expressions with regex, and convert the param types
   matcher.replace(testRx, (...args) => {
     const match = args[0].trim()
-    const [start, ...end] = regexStr.split(match)
+    const [ start, ...end ] = regexStr.split(match)
     const replace = isFunc(replaceWith) ? replaceWith(...args) : replaceWith
     regexStr = `${start}${replace}${end.join(match)}`
   })
@@ -84,8 +84,8 @@ const convertToRegex = match => {
     return isParameter
       ? getParamRegex(type)
       : isOptional
-      ? toAlternateRegex(val)
-      : val
+        ? toAlternateRegex(val)
+        : val
   })
 
   return { regex, transformers }

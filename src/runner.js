@@ -24,14 +24,14 @@ const resolveFeatures = (data, $world) => {
   return isStr(data)
     ? parseFeature(data, $world)
     : isObj(data)
-    ? [data]
-    : isArr(data)
-    ? data.reduce(
-        (features, feature) =>
-          features.concat(resolveFeatures(feature, $world)),
-        []
-      )
-    : throwMissingFeatureText()
+      ? [data]
+      : isArr(data)
+        ? data.reduce(
+            (features, feature) =>
+              features.concat(resolveFeatures(feature, $world)),
+            []
+          )
+        : throwMissingFeatureText()
 }
 
 /**
@@ -167,7 +167,7 @@ const filterFeatures = (features, filterOptions = {}) => {
     const matchingScenarios = feature.scenarios.filter(scenario =>
       itemMatch(
         scenario.scenario,
-        [...(scenario.tags || []), ...(feature.tags || [])],
+        [ ...(scenario.tags || []), ...(feature.tags || []) ],
         filterOptions
       )
     )
