@@ -6,4 +6,5 @@ export const constants = deepFreeze({
   STEP_TYPES: [ 'given', 'when', 'then', 'and', 'but' ],
   HOOK_TYPES: [ 'beforeAll', 'afterAll', 'beforeEach', 'afterEach' ],
   FEATURE_META: [ 'feature', 'perspective', 'desire', 'reason', 'comments' ],
+  WORLD_AT_RUNTIME: `$::`,
 })

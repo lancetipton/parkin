@@ -49,10 +49,10 @@ export class Parkin {
 
     // Set isInit, so we can't re-initialized
     this.#isInit = true
-
-    this.steps = new Steps(world)
-    this.hooks = new Hooks()
-    this.runner = new Runner(this.steps, this.hooks)
+    this.world = world
+    this.steps = new Steps(this.world)
+    this.hooks = new Hooks(this.world)
+    this.runner = new Runner(this.steps, this.hooks, this.world)
 
     /**
      * Runs the step definition methods matching the steps of a feature

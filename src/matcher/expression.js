@@ -27,6 +27,10 @@ import { getParamTypes, convertTypes } from './paramTypes'
  * @return {string} Escaped string to allow converting into a regular expression
  */
 const escapeStr = str => {
+  // TODO: Not RegEx special chars are being escaped in a Node.js env
+  // Example: A definition.match with "." in it will not escape them to "\."
+  // So they are treated as special chars, which should not happen
+  // Investigate running replace for both web and node
   return hasWindow
     ? str.replace(/[|\\[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d')
     : str
@@ -200,6 +204,10 @@ export const matchExpression = (definition, text, $world) => {
   const { regex: regexAlts } = checkAlternative(escaped)
   const { regex: convertedRegex, transformers } = convertToRegex(regexAlts)
   const { regex: match } = checkAnchors(convertedRegex)
+
+  // If it's an exact match, then no variables should exist
+  if(definition.match === text)
+    return { definition, match: [] }
 
   // Then call the regex matcher to get the content
   const found = matchRegex({ ...definition, match }, text)

@@ -70,3 +70,11 @@ export const validateDefinition = (definition, definitions) => {
     { ...definition }
   )
 }
+
+/**
+ * Remove single and double quotes from a string's starting and ending
+ * @param {string} arg - String containing single or double quotes at the start and end
+ * 
+ * @returns {string} - Passed in arg string with start and end quotes removed
+ */
+export const removeQuotes = arg => arg.trim().replace(/^("|')/, '').replace(/("|')$/, '')
