@@ -1,4 +1,5 @@
 import { constants } from '../constants'
+import { throwWorldReplace } from './errors'
 import { get, isFunc, exists } from '@keg-hub/jsutils'
 import { RX_WORLD_REPLACE } from '../matcher/patterns'
 const { WORLD_AT_RUNTIME } = constants
@@ -16,11 +17,14 @@ const { WORLD_AT_RUNTIME } = constants
  * @returns {string} - text, with the `$world` text replaced
  */
 export const worldReplace = (text, world) => {
-  // Wrapped in a try/catch because errors are swolled inside the text.replace function
+  // Track the current match, for extra information if the replace throws
+  let currentMatch
+  // Wrapped in a try/catch because
+  // Errors are swallowed inside the text.replace function for some reason
   try {
-    const replace = text.replace(RX_WORLD_REPLACE, match => {
+    return text.replace(RX_WORLD_REPLACE, match => {
+      currentMatch = match
       const cleaned = match.trim()
-  
       if(cleaned.indexOf(WORLD_AT_RUNTIME) === 0)
         return cleaned.replace(WORLD_AT_RUNTIME, `$`)
   
@@ -33,14 +37,9 @@ export const worldReplace = (text, world) => {
           ? replaceWith
           : match
     })
-
-    return replace
   }
   catch(err){
-    console.log(`Error running $world replace on text content`)
-    console.error(err.stack)
-
-    return text
+    throwWorldReplace(err, currentMatch)
   }
 }
 

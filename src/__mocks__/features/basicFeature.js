@@ -11,4 +11,4 @@ Feature: Google Search
     When I press enter
     # comment for testing in the scenario steps
     When I wait for the page to load
-    Then the element #search contains the text simpleviewinc/keg-hub`
+    Then the element #search contains the text KegHub/keg-hub`

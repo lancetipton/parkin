@@ -16,7 +16,7 @@ export const parsedFeature = {
     '    When I press enter\n' +
     '    # comment for testing in the scenario steps\n' +
     '    When I wait for the page to load\n' +
-    '    Then the element #search contains the text simpleviewinc/keg-hub',
+    '    Then the element #search contains the text KegHub/keg-hub',
   feature: 'Google Search',
   tags: [ '@search', '@google' ],
   reason: [{ content: 'In order to find out more about Keg-Hub', index: 3 }],
@@ -65,7 +65,7 @@ export const parsedFeature = {
           index: 12,
         },
         {
-          step: 'the element #search contains the text simpleviewinc/keg-hub',
+          step: 'the element #search contains the text KegHub/keg-hub',
           type: 'then',
           // uuid: '22f11b4f-2c45-4599-842f-58454dab6a12',
           index: 13,
