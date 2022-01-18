@@ -1,6 +1,26 @@
-import { noOp } from '@keg-hub/jsutils'
+import { constants } from '../constants'
 import { testMethodFill } from './errors'
-import { hasWindow, hasJasmine, resolveJasmine } from './globalScope'
+import { noOp, get } from '@keg-hub/jsutils'
+import { hasJasmine, resolveJasmine } from './globalScope'
+const { SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV } = constants
+
+/**
+ * Converts a log into a string, and logs it to stdout wrapped by SPEC_RESULT_LOG constant
+ * Which allows easy parsing the spec output json object
+ * @function
+ * @private
+ * @param {Object} result - Spec result object from jasmine reported
+ *
+ * @returns {Void}
+ */
+const logResultToTerminal = (result) => {
+  process.stdout.write([
+    SPEC_RESULT_LOG,
+    JSON.stringify(result),
+    SPEC_RESULT_LOG,
+  ].join(``))
+}
+
 
 /**
  * Resolves a test method from the global scope
@@ -20,7 +40,7 @@ export const getTestMethod = (type, testMode) => {
 }
 
 /**
- * Builds a custom jasmin reporter
+ * Builds a custom jasmine reporter
  * Checks failed specs and sets all all specs in a suite to disable when found
  * @function
  * @private
@@ -32,17 +52,26 @@ const buildReporter = (jasmineEnv, testMode) => {
   const suites = []
   const jasmineDescribe = jasmineEnv.describe
 
+  // Wrap the describe method, so we can capture each test suite
+  // This allows us to access them later check skip failed specs 
   jasmineEnv.describe = (...args) => {
     const suite = jasmineDescribe.apply(null, args)
     suites.push(suite)
 
     return suite
   }
-
+ 
   return {
     specDone: result => {
+      // Check if the env is set to log the spec result
+      get(process, `env.${LOG_JEST_SPEC_ENV}`) &&
+        logResultToTerminal(result)
+
+      // If the spec passed, just return
       if (result.status !== 'failed') return
 
+      // If the spec failed, loop through all other specs, and disable them
+      // This ensures if a spec fails, all follow specs will be skipped
       const suite = suites.find(suite =>
         suite.children.find(spec => spec.result === result)
       )
@@ -60,9 +89,10 @@ const buildReporter = (jasmineEnv, testMode) => {
  * @returns {Void}
  */
 export const skipTestsOnFail = testMode => {
-  if (hasWindow || !hasJasmine) return
+  if (!hasJasmine) return
 
   const jasmineEnv = resolveJasmine().getEnv()
+
   jasmineEnv &&
     jasmineEnv.describe &&
     jasmineEnv.addReporter(buildReporter(jasmineEnv, testMode))
