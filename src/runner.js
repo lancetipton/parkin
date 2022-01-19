@@ -21,8 +21,7 @@ import {
  * @returns {string} - Built title
  */
 const buildTitle = (text, type) => {
-  const capitalText = capitalize(type)
-  return capitalText === 'Feature' ? `${text} ${capitalText}` : `${capitalText} > ${text}`
+  return `${capitalize(type)} > ${text}`
 }
 
 /**
