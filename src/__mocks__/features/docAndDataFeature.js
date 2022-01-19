@@ -19,6 +19,7 @@ Feature: Parse Steps
     Given I have the following doc-string data in quotes
       """
       Test quote data to be parsed
+      That is two lines
       """
     Then the doc-string data should be "Test quote data to be parsed"
 

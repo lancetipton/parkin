@@ -1,4 +1,6 @@
 import { noOp } from '@keg-hub/jsutils'
+import { constants } from '../../constants'
+const { SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV } = constants
 
 jest.resetModules()
 jest.resetAllMocks()
@@ -112,5 +114,62 @@ describe('testMethods', () => {
       reporter.specDone({ status: 'passed' })
       expect(suite.children[0].disable).not.toHaveBeenCalled()
     })
+    
+
+    it(`should call stdout when LOG_JEST_SPEC_ENV env is set`, () => {
+      process.env[LOG_JEST_SPEC_ENV] = true
+      const orgStdOut = process.stdout.write
+      process.stdout.write = jest.fn((...data) => {
+        orgStdOut.call(process.stdout, ...data)
+      })
+
+      skipTestsOnFail()
+      const reporter = addReporterMock.mock.calls[0][0]
+      reporter.specStarted({ id: 'spec01' })
+      expect(process.stdout.write).toHaveBeenCalledWith(
+        `${SPEC_RESULT_LOG}{"id":"spec01","type":"step","action":"start"}${SPEC_RESULT_LOG}`
+      )
+      process.stdout.write = orgStdOut
+    })
+
+    it(`should call stdout with the correct type`, () => {
+      process.env[LOG_JEST_SPEC_ENV] = true
+      const orgStdOut = process.stdout.write
+      process.stdout.write = jest.fn((...data) => {
+        orgStdOut.call(process.stdout, ...data)
+      })
+
+      skipTestsOnFail()
+      const reporter = addReporterMock.mock.calls[0][0]
+
+      reporter.suiteStarted({ id: 'suite01', description: `Scenario test` })
+      expect(process.stdout.write).toHaveBeenCalledWith([
+        SPEC_RESULT_LOG,
+        `{"id":"suite01","description":"Scenario test","type":"scenario","action":"start"}`,
+        SPEC_RESULT_LOG
+      ].join(``))
+
+      reporter.suiteStarted({ id: 'suite01', description: `Background test` })
+      expect(process.stdout.write).toHaveBeenCalledWith([
+        SPEC_RESULT_LOG,
+        `{"id":"suite01","description":"Background test","type":"background","action":"start"}`,
+        SPEC_RESULT_LOG
+      ].join(``))
+
+      reporter.suiteStarted({ id: 'suite01', description: `Rule test`})
+      expect(process.stdout.write).toHaveBeenCalledWith([
+        SPEC_RESULT_LOG,
+        `{"id":"suite01","description":"Rule test","type":"rule","action":"start"}`,
+        SPEC_RESULT_LOG
+      ].join(``))
+
+      reporter.suiteStarted({ id: 'suite01'})
+      expect(process.stdout.write).toHaveBeenCalledWith(
+        `${SPEC_RESULT_LOG}{"id":"suite01","type":"feature","action":"start"}${SPEC_RESULT_LOG}`
+      )
+
+      process.stdout.write = orgStdOut
+    })
+
   })
 })

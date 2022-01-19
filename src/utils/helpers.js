@@ -8,8 +8,10 @@
  *
  * @returns {string} - Found keyword text from the line argument
  */
-export const getRXMatch = (line, regex, index) =>
-  line.match(regex)[index].trim()
+export const getRXMatch = (line, regex, index) => {
+  return line.match(regex)[index].trim()
+}
+
 
 /*
  * Sanitizes the passed in text and joins the texts length

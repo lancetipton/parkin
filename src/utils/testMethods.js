@@ -13,14 +13,35 @@ const { SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV } = constants
  *
  * @returns {Void}
  */
-const logResultToTerminal = (result) => {
-  process.stdout.write([
-    SPEC_RESULT_LOG,
-    JSON.stringify(result),
-    SPEC_RESULT_LOG,
-  ].join(``))
+const logResultToTerminal = (result) => {  
+  get(process, `env.${LOG_JEST_SPEC_ENV}`) &&
+    process.stdout.write([
+      SPEC_RESULT_LOG,
+      JSON.stringify(result),
+      SPEC_RESULT_LOG,
+    ].join(``))
 }
 
+/**
+ * Gets the suite type based on the description text
+ * The first word should be the type, if not, then it's a feature
+ * @function
+ * @private
+ * @param {Object} suite - Suite object from jasmine reported
+ *
+ * @returns {string} - The suite type
+ */
+const getSuiteType = (suite) => {
+  const description = get(suite, `description`, ``)
+
+  return description.startsWith(`Scenario`)
+    ? `scenario`
+    : description.startsWith(`Background`)
+      ? `background`
+      : description.startsWith(`Rule`)
+        ? `rule`
+        : `feature`
+}
 
 /**
  * Resolves a test method from the global scope
@@ -48,7 +69,7 @@ export const getTestMethod = (type, testMode) => {
  *
  * @returns {Object} - Custom jasmine reporter
  */
-const buildReporter = (jasmineEnv, testMode) => {
+const buildReporter = jasmineEnv => {
   const suites = []
   const jasmineDescribe = jasmineEnv.describe
 
@@ -62,10 +83,17 @@ const buildReporter = (jasmineEnv, testMode) => {
   }
  
   return {
+    suiteStarted: suite => {
+      const description = get(suite, `description`, ``)
+      const type = getSuiteType(suite)
+      logResultToTerminal({...suite, type, action: `start`})
+    },
+    specStarted: result => {
+      logResultToTerminal({...result, type: `step`, action: `start`})
+    },
     specDone: result => {
       // Check if the env is set to log the spec result
-      get(process, `env.${LOG_JEST_SPEC_ENV}`) &&
-        logResultToTerminal(result)
+      logResultToTerminal({...result, type: 'step', action: 'end'})
 
       // If the spec passed, just return
       if (result.status !== 'failed') return
@@ -76,6 +104,11 @@ const buildReporter = (jasmineEnv, testMode) => {
         suite.children.find(spec => spec.result === result)
       )
       suite && suite.children.map(spec => spec.disable())
+    },
+    suiteDone: suite => {
+      const description = get(suite, `description`, ``)
+      const type = getSuiteType(suite)
+      logResultToTerminal({...suite, type, action: `end`})
     },
   }
 }

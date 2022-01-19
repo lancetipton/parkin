@@ -11,6 +11,7 @@ const RX_NEWLINE = /\r?\n/g
 const RX_TAG = /^\s*@(.*)$/
 const RX_COMMENT = /^\s*#(.*)$/
 const RX_FEATURE = /^\s*Feature:(.*)$/
+const RX_RULE = /^\s*Rule:(.*)$/
 const RX_AS = /^\s*As (.*)$/
 const RX_I_WANT = /^\s*I want (.*)$/
 const RX_SO_THAT = /^\s*So that (.*)$/
@@ -36,7 +37,7 @@ const featureMetaTags = [
  * @function
  * @private
  * @param {string} feature - Text containing the feature keyword and text
- * @param {number} text - The entire text of a feature file
+ * @param {string} content - The entire text of a feature file
  *
  * @returns {Object} - Parsed feature object
  */
@@ -46,11 +47,31 @@ const featureFactory = (feature, content, index) => {
     content,
     feature,
     tags: [],
+    rules: [],
     reason: [],
     comments: [],
     scenarios: [],
     // The feature name should always be unique, so use that as a re-usable id
     ...(feature && { uuid: sanitizeForId(feature) }),
+  }
+}
+
+/*
+ * Helper factory function to build a rule object
+ * @function
+ * @private
+ * @param {string} rule - Text containing the rule keyword and text
+ *
+ * @returns {Object} - Parsed feature object
+ */
+const ruleFactory = (rule, index) => {
+  return {
+    index,
+    rule,
+    tags: [],
+    scenarios: [],
+    // The feature name should always be unique, so use that as a re-usable id
+    ...(rule && { uuid: sanitizeForId(rule) }),
   }
 }
 
@@ -214,7 +235,10 @@ const ensureFeature = (featuresGroup, feature, line, content, index) => {
   }
 
   // Otherwise create a new feature, with the feature text and content
-  return featureFactory(featureText, content, index)
+  const builtFeature = featureFactory(featureText, content, index)
+  featuresGroup.push(builtFeature)
+
+  return builtFeature
 }
 
 /**
@@ -228,12 +252,48 @@ const ensureFeature = (featuresGroup, feature, line, content, index) => {
  *
  * @return {Object} Current scenario being parsed
  */
-const ensureScenario = (feature, scenario, line, index) => {
+const ensureRule = (feature, rule, line, index) => {
+  // Check for "Rule:" keyword
+  if (!RX_RULE.test(line)) return rule
+
+  // Get text after the "Rule:" key word
+  let ruleText = getRXMatch(line, RX_RULE, 1)
+
+  // Check if the scenario text was already added, and add it if needed
+  // Otherwise create a new scenario with the scenario text
+  !rule.rule
+    ? (rule.rule = ruleText)
+    : (rule = ruleFactory(ruleText, index))
+
+  // Ensure the line index is added
+  !rule.index && (rule.index = index)
+  // Add the uuid from the rule text if it doesn't exist
+  !rule.uuid && (rule.uuid = sanitizeForId(rule.rule))
+
+  // Add the rule if needed to the current feature
+  !feature.rules.includes(rule) && feature.rules.push(rule)
+
+  return rule
+}
+
+/**
+ * Check for new feature scenario, and add scenario to feature object
+ * @function
+ * @private
+ * @param {Object} parent - Current parent (feature || rule) being parsed into an object
+ * @param {Object} scenario - Current scenario being parsed into an object
+ * @param {string} line - Current line being parsed
+ * @param {number} index - The current line number of the feature text content
+ *
+ * @return {Object} Current scenario being parsed
+ */
+const ensureScenario = (feature, rule, scenario, line, index) => {
   // Check for "Scenario:" or "Example:" keywords
-  if (!RX_SCENARIO.test(line) && !RX_EXAMPLE.test(line)) return scenario
+  const hasScenario = RX_SCENARIO.test(line)
+  if (!hasScenario && !RX_EXAMPLE.test(line)) return scenario
 
   // Check for "Scenario:", if not found then check for "Example:"
-  let scenarioText = getRXMatch(line, RX_SCENARIO, 1)
+  let scenarioText = hasScenario && getRXMatch(line, RX_SCENARIO, 1)
   scenarioText = scenarioText || getRXMatch(line, RX_EXAMPLE, 1)
 
   // Check if the scenario text was already added, and add it if needed
@@ -247,8 +307,9 @@ const ensureScenario = (feature, scenario, line, index) => {
   // Add the uuid from the scenario text if it doesn't exist
   !scenario.uuid && (scenario.uuid = sanitizeForId(scenario.scenario))
 
-  // Add the scenario if needed to the current feature
-  !feature.scenarios.includes(scenario) && feature.scenarios.push(scenario)
+  // Add the scenario if needed to the current parent
+  const parent = rule.uuid ? rule : feature
+  !parent.scenarios.includes(scenario) && parent.scenarios.push(scenario)
 
   return scenario
 }
@@ -258,18 +319,19 @@ const ensureScenario = (feature, scenario, line, index) => {
  * Should be added to each scenario, where a background exists in the feature
  * @function
  * @private
- * @param {Object} feature - Current feature being parsed into an object
+ * @param {Object} parent - Current parent (feature || rule) being parsed into an object
  * @param {Object} scenario - Current scenario being parsed into an object
  * @param {string} line - Current line being parsed
  *
  * @return {Object} Current background being parsed
  */
-const ensureBackground = (feature, background, line, index) => {
+const ensureBackground = (feature, rule, background, line, index) => {
   if (!RX_BACKGROUND.test(line)) return background
 
-  // Generate the background text from the feature uuid and background keyword
+  // Generate the background text from the parent uuid and background keyword
   // background's don't have a text title, so we have to generate one when parsing
-  const backgroundText = `${feature.uuid}-background`
+  const parent = rule.uuid ? rule : feature
+  const backgroundText = `${parent.uuid}-background`
 
   // Check if the background text was already added, and add it if needed
   // Otherwise create a new background with the background text
@@ -282,7 +344,7 @@ const ensureBackground = (feature, background, line, index) => {
   // Add the uuid from the background text if it doesn't exist
   !background.uuid && (background.uuid = sanitizeForId(background.background))
 
-  feature.background = background
+  parent.background = background
 
   return background
 }
@@ -300,14 +362,16 @@ const ensureBackground = (feature, background, line, index) => {
  *
  * @returns {Object} - Found active parent based on the line
  */
-const setActiveParent = (activeParent, feature, scenario, background, line) => {
+const setActiveParent = (activeParent, feature, rule, scenario, background, line) => {
   return RX_SCENARIO.test(line) || RX_EXAMPLE.test(line)
     ? scenario
     : RX_FEATURE.test(line)
       ? feature
-      : RX_BACKGROUND.test(line)
-        ? background
-        : activeParent
+      : RX_RULE.test(line)
+        ? rule
+        : RX_BACKGROUND.test(line)
+          ? background
+          : activeParent
 }
 
 /**
@@ -326,6 +390,7 @@ export const parseFeature = function (text, world) {
   const replaceText = worldReplace((text || '').toString(), world)
   const lines = replaceText.split(RX_NEWLINE)
 
+  let rule = ruleFactory(false)
   let scenario = scenarioFactory(false)
   let background = backgroundFactory(false)
   let feature = featureFactory(false, text)
@@ -350,14 +415,19 @@ export const parseFeature = function (text, world) {
       return featuresGroup
 
     /*
-     * Check for new feature scenario, and add scenario to feature object
+     * Check for new feature rule, and add rule to feature object
      */
-    scenario = ensureScenario(feature, scenario, line, index)
+    rule = ensureRule(feature, rule, line, index)
 
     /*
      * Check for new feature scenario, and add scenario to feature object
      */
-    background = ensureBackground(feature, background, line, index)
+    scenario = ensureScenario(feature, rule, scenario, line, index)
+
+    /*
+     * Check for new feature scenario, and add scenario to feature object
+     */
+    background = ensureBackground(feature, rule, background, line, index)
 
     // Check for stepTags before check for the next active parent
     // This way We don't add a step to the wrong parent
@@ -370,6 +440,7 @@ export const parseFeature = function (text, world) {
     activeParent = setActiveParent(
       activeParent,
       feature,
+      rule,
       scenario,
       background,
       line

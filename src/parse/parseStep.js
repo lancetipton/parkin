@@ -110,9 +110,10 @@ const checkDocString = (step, lines, line, index) => {
       .split(docMatch)
       .slice(1)
       .shift()
+      .trim()
       .split('\n')
       .reduce((cleaned, ln) => {
-        cleaned.push(ln.replace(spacerRegex, ''))
+        cleaned.push(ln.replace(spacerRegex, '').trim())
         return cleaned
       }, [])
       .join('\n'),
