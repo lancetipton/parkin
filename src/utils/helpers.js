@@ -12,7 +12,6 @@ export const getRXMatch = (line, regex, index) => {
   return line.match(regex)[index].trim()
 }
 
-
 /*
  * Sanitizes the passed in text and joins the texts length
  * @function

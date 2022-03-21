@@ -10,7 +10,6 @@ import {
   eitherArr,
 } from '@keg-hub/jsutils'
 
-
 /**
  * Builds the title for the current suite and spec being run
  * @function
@@ -105,7 +104,6 @@ const loopSteps = (parent, title, stepsInstance, testMode) => {
  * @returns {Void}
  */
 const runScenario = (stepsInstance, scenario, background, testMode) => {
-
   // If there's a background, run the background steps first
   background &&
     loopSteps(
@@ -140,7 +138,7 @@ const runRule = (stepsInstance, rule, background, testMode) => {
   // Store the returned promise in the responses array
   let responses = []
   describe(`Rule > ${rule.rule}`, () => {
-    responses = rule.scenarios.map((scenario) =>
+    responses = rule.scenarios.map(scenario =>
       runScenario(
         stepsInstance,
         scenario,
@@ -304,28 +302,18 @@ export class Runner {
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
       describe(buildTitle(feature.feature, `Feature`), () => {
-          responses = feature.rules.map((rule) =>
-            runRule(
-              this.steps,
-              rule,
-              feature.background,
-              testMode
-            )
-          )
+        responses = feature.rules.map(rule =>
+          runRule(this.steps, rule, feature.background, testMode)
+        )
 
-          responses.concat(
-            feature.scenarios.map((scenario) =>
-              runScenario(
-                this.steps,
-                scenario,
-                feature.background,
-                testMode
-              )
-            )
+        responses.concat(
+          feature.scenarios.map(scenario =>
+            runScenario(this.steps, scenario, feature.background, testMode)
           )
+        )
 
-          // Ensure we resolve all promises inside the describe block
-          Promise.all(responses)
+        // Ensure we resolve all promises inside the describe block
+        Promise.all(responses)
       })
 
       return responses

@@ -1,4 +1,4 @@
-import { backgroundFeature, rulesFeature, docAndDataFeature} from '../../__mocks__'
+import { rulesFeature, backgroundFeature } from '../../__mocks__'
 
 jest.resetModules()
 jest.resetAllMocks()
@@ -7,7 +7,6 @@ jest.clearAllMocks()
 const { parseFeature } = require('../parseFeature')
 
 describe('parseFeature', () => {
-
   describe('Feature Tags', () => {
     it('should parse a Features tags', () => {
       const { tags } = parseFeature(backgroundFeature)[0]
@@ -38,7 +37,7 @@ describe('parseFeature', () => {
     it('should add the parsed steps to the correct rule scenarios', () => {
       const { rules } = parseFeature(rulesFeature)[0]
       const { scenarios } = rules[0]
-      const { scenarios:scenarios2 } = rules[1]
+      const { scenarios: scenarios2 } = rules[1]
 
       expect(scenarios[0].steps.length).toBe(2)
       expect(scenarios[0].steps[0].type).toBe('given')
@@ -68,7 +67,9 @@ describe('parseFeature', () => {
       )
       expect(scenarios2[1].steps.length).toBe(2)
       expect(scenarios2[1].steps[0].type).toBe('given')
-      expect(scenarios2[1].steps[0].step).toBe('that a second scenario exists in the second rule')
+      expect(scenarios2[1].steps[0].step).toBe(
+        'that a second scenario exists in the second rule'
+      )
       expect(scenarios2[1].steps[1].type).toBe('then')
       expect(scenarios2[1].steps[1].step).toBe(
         "the second scenario's steps should be run after a second rules scenario steps"

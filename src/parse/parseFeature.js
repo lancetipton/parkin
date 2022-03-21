@@ -261,9 +261,7 @@ const ensureRule = (feature, rule, line, index) => {
 
   // Check if the scenario text was already added, and add it if needed
   // Otherwise create a new scenario with the scenario text
-  !rule.rule
-    ? (rule.rule = ruleText)
-    : (rule = ruleFactory(ruleText, index))
+  !rule.rule ? (rule.rule = ruleText) : (rule = ruleFactory(ruleText, index))
 
   // Ensure the line index is added
   !rule.index && (rule.index = index)
@@ -362,7 +360,14 @@ const ensureBackground = (feature, rule, background, line, index) => {
  *
  * @returns {Object} - Found active parent based on the line
  */
-const setActiveParent = (activeParent, feature, rule, scenario, background, line) => {
+const setActiveParent = (
+  activeParent,
+  feature,
+  rule,
+  scenario,
+  background,
+  line
+) => {
   return RX_SCENARIO.test(line) || RX_EXAMPLE.test(line)
     ? scenario
     : RX_FEATURE.test(line)

@@ -91,7 +91,6 @@ describe('testMethods', () => {
   })
 
   describe('custom reporter', () => {
-
     afterAll(() => {
       Date.prototype.getTime = orgGetTime
     })
@@ -123,7 +122,6 @@ describe('testMethods', () => {
       reporter.specDone({ status: 'passed' })
       expect(suite.children[0].disable).not.toHaveBeenCalled()
     })
-    
 
     it(`should call stdout when LOG_JEST_SPEC_ENV env is set`, () => {
       process.env[LOG_JEST_SPEC_ENV] = true
@@ -152,30 +150,36 @@ describe('testMethods', () => {
       const reporter = addReporterMock.mock.calls[0][0]
 
       reporter.suiteStarted({ id: 'suite01', description: `Scenario >` })
-      expect(process.stdout.write).toHaveBeenCalledWith([
-        SPEC_RESULT_LOG,
-        `{"id":"suite01","description":"Scenario:","type":"scenario","action":"start","timestamp":"fake-time"}`,
-        SPEC_RESULT_LOG
-      ].join(``))
+      expect(process.stdout.write).toHaveBeenCalledWith(
+        [
+          SPEC_RESULT_LOG,
+          `{"id":"suite01","description":"Scenario:","type":"scenario","action":"start","timestamp":"fake-time"}`,
+          SPEC_RESULT_LOG,
+        ].join(``)
+      )
       process.stdout.write.mockClear()
 
       reporter.suiteStarted({ id: 'suite01', description: `Background >` })
-      expect(process.stdout.write).toHaveBeenCalledWith([
-        SPEC_RESULT_LOG,
-        `{"id":"suite01","description":"Background:","type":"background","action":"start","timestamp":"fake-time"}`,
-        SPEC_RESULT_LOG
-      ].join(``))
+      expect(process.stdout.write).toHaveBeenCalledWith(
+        [
+          SPEC_RESULT_LOG,
+          `{"id":"suite01","description":"Background:","type":"background","action":"start","timestamp":"fake-time"}`,
+          SPEC_RESULT_LOG,
+        ].join(``)
+      )
       process.stdout.write.mockClear()
 
-      reporter.suiteStarted({ id: 'suite01', description: `Rule >`})
-      expect(process.stdout.write).toHaveBeenCalledWith([
-        SPEC_RESULT_LOG,
-        `{"id":"suite01","description":"Rule:","type":"rule","action":"start","timestamp":"fake-time"}`,
-        SPEC_RESULT_LOG
-      ].join(``))
+      reporter.suiteStarted({ id: 'suite01', description: `Rule >` })
+      expect(process.stdout.write).toHaveBeenCalledWith(
+        [
+          SPEC_RESULT_LOG,
+          `{"id":"suite01","description":"Rule:","type":"rule","action":"start","timestamp":"fake-time"}`,
+          SPEC_RESULT_LOG,
+        ].join(``)
+      )
       process.stdout.write.mockClear()
 
-      reporter.suiteStarted({ id: 'suite01'})
+      reporter.suiteStarted({ id: 'suite01' })
       expect(process.stdout.write).toHaveBeenCalledWith(
         `${SPEC_RESULT_LOG}{"id":"suite01","type":"feature","action":"start","timestamp":"fake-time"}${SPEC_RESULT_LOG}`
       )
@@ -183,6 +187,5 @@ describe('testMethods', () => {
 
       process.stdout.write = orgStdOut
     })
-
   })
 })

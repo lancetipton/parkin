@@ -1,6 +1,6 @@
 import { constants } from '../constants'
 import { testMethodFill } from './errors'
-import { noOp, noOpObj, get } from '@keg-hub/jsutils'
+import { noOp, get } from '@keg-hub/jsutils'
 import { hasJasmine, resolveJasmine } from './globalScope'
 const { SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV } = constants
 
@@ -13,14 +13,16 @@ const { SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV } = constants
  *
  * @returns {Void}
  */
-const logResultToTerminal = (result) => {
+const logResultToTerminal = result => {
   const timestamp = new Date().getTime()
   get(process, `env.${LOG_JEST_SPEC_ENV}`) &&
-    process.stdout.write([
-      SPEC_RESULT_LOG,
-      JSON.stringify({...result, timestamp}),
-      SPEC_RESULT_LOG,
-    ].join(``))
+    process.stdout.write(
+      [
+        SPEC_RESULT_LOG,
+        JSON.stringify({ ...result, timestamp }),
+        SPEC_RESULT_LOG,
+      ].join(``)
+    )
 }
 
 /**
@@ -32,7 +34,7 @@ const logResultToTerminal = (result) => {
  *
  * @returns {string} - The suite type
  */
-const getSuiteData = (suite) => {
+const getSuiteData = suite => {
   const description = get(suite, `description`)
 
   const type = !description
@@ -48,7 +50,9 @@ const getSuiteData = (suite) => {
   return {
     type: type.toLowerCase(),
     // Format the description to match the actual Gherkin syntax
-    ...(type !== `Feature` && {description: description.replace(`${type} >`, `${type}:`)})
+    ...(type !== `Feature` && {
+      description: description.replace(`${type} >`, `${type}:`),
+    }),
   }
 }
 
@@ -83,27 +87,27 @@ const buildReporter = jasmineEnv => {
   const jasmineDescribe = jasmineEnv.describe
 
   // Wrap the describe method, so we can capture each test suite
-  // This allows us to access them later check skip failed specs 
+  // This allows us to access them later check skip failed specs
   jasmineEnv.describe = (...args) => {
     const suite = jasmineDescribe.apply(null, args)
     suites.push(suite)
 
     return suite
   }
- 
+
   return {
     suiteStarted: suite => {
       logResultToTerminal({
         ...suite,
         ...getSuiteData(suite),
-        action: `start`
+        action: `start`,
       })
     },
     specStarted: result => {
       logResultToTerminal({
         ...result,
         type: `step`,
-        action: `start`
+        action: `start`,
       })
     },
     specDone: result => {
@@ -111,7 +115,7 @@ const buildReporter = jasmineEnv => {
       logResultToTerminal({
         ...result,
         type: 'step',
-        action: 'end'
+        action: 'end',
       })
 
       // If the spec passed, just return
@@ -128,7 +132,7 @@ const buildReporter = jasmineEnv => {
       logResultToTerminal({
         ...suite,
         ...getSuiteData(suite),
-        action: `end`
+        action: `end`,
       })
     },
   }
