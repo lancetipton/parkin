@@ -34,20 +34,21 @@ const logResultToTerminal = (result) => {
  */
 const getSuiteData = (suite) => {
   const description = get(suite, `description`)
-  if(!description) return noOpObj
 
-  const type = description.startsWith(`Scenario >`)
-    ? `Scenario`
-    : description.startsWith(`Background >`)
-      ? `Background`
-      : description.startsWith(`Rule >`)
-        ? `Rule`
-        : `Feature`
+  const type = !description
+    ? `Feature`
+    : description.startsWith(`Scenario >`)
+      ? `Scenario`
+      : description.startsWith(`Background >`)
+        ? `Background`
+        : description.startsWith(`Rule >`)
+          ? `Rule`
+          : `Feature`
 
   return {
     type: type.toLowerCase(),
     // Format the description to match the actual Gherkin syntax
-    description: description.replace(`${type} >`, `${type}:`)
+    ...(type !== `Feature` && {description: description.replace(`${type} >`, `${type}:`)})
   }
 }
 
