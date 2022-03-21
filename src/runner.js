@@ -10,6 +10,20 @@ import {
   eitherArr,
 } from '@keg-hub/jsutils'
 
+
+/**
+ * Builds the title for the current suite and spec being run
+ * @function
+ * @private
+ * @param {string} text - Text content of the suite or spec
+ * @param {string} type - Type of spec of suite being run
+ *
+ * @returns {string} - Built title
+ */
+const buildTitle = (text, type) => {
+  return `${capitalize(type)} > ${text}`
+}
+
 /**
  * Resolves and parses features based on the data type passed in
  * Ensures an array of parsed features is returned
@@ -90,12 +104,13 @@ const loopSteps = (parent, title, stepsInstance, testMode) => {
  *
  * @returns {Void}
  */
-const runScenario = (stepsInstance, scenario, background, index, testMode) => {
+const runScenario = (stepsInstance, scenario, background, testMode) => {
+
   // If there's a background, run the background steps first
   background &&
     loopSteps(
       background,
-      `Background > ${scenario.scenario}`,
+      buildTitle(scenario.scenario, `Background`),
       stepsInstance,
       testMode
     )
@@ -103,10 +118,41 @@ const runScenario = (stepsInstance, scenario, background, index, testMode) => {
   // Next run the scenario steps once the background completes
   return loopSteps(
     scenario,
-    `Scenario > ${scenario.scenario}`,
+    buildTitle(scenario.scenario, `Scenario`),
     stepsInstance,
     testMode
   )
+}
+
+/**
+ * Loops through the passed in rules steps and calls runStep for each
+ * @function
+ * @private
+ * @param {Object} stepsInstance - Instance of the Steps class
+ * @param {Object} rule - Parsed feature rule object containing the steps to run
+ * @param {Object} background - Parsed background object containing the steps to run before the rule
+ * @param {boolean} testMode - Allows testing the runner methods, without running the tests
+ *
+ * @returns {Void}
+ */
+const runRule = (stepsInstance, rule, background, testMode) => {
+  // Map over the rule scenarios and call their steps
+  // Store the returned promise in the responses array
+  let responses = []
+  describe(`Rule > ${rule.rule}`, () => {
+    responses = rule.scenarios.map((scenario) =>
+      runScenario(
+        stepsInstance,
+        scenario,
+        background || rule.background,
+        testMode
+      )
+    )
+    // Ensure we resolve all promises inside the describe block
+    Promise.all(responses)
+  })
+
+  return responses
 }
 
 /**
@@ -257,19 +303,29 @@ export class Runner {
 
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
-      describe(`${feature.feature} Feature`, () => {
-        responses = feature.scenarios.map((scenario, index) =>
-          runScenario(
-            this.steps,
-            scenario,
-            feature.background,
-            index + 1,
-            testMode
+      describe(buildTitle(feature.feature, `Feature`), () => {
+          responses = feature.rules.map((rule) =>
+            runRule(
+              this.steps,
+              rule,
+              feature.background,
+              testMode
+            )
           )
-        )
 
-        // Ensure we resolve all promises inside the describe block
-        Promise.all(responses)
+          responses.concat(
+            feature.scenarios.map((scenario) =>
+              runScenario(
+                this.steps,
+                scenario,
+                feature.background,
+                testMode
+              )
+            )
+          )
+
+          // Ensure we resolve all promises inside the describe block
+          Promise.all(responses)
       })
 
       return responses

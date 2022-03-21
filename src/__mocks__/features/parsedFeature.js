@@ -33,6 +33,7 @@ export const parsedFeature = {
     content: 'I want to be able to search for information about the Keg-Hub',
     index: 5,
   },
+  rules: [],
   scenarios: [
     {
       index: 7,

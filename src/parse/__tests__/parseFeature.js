@@ -1,4 +1,4 @@
-import { backgroundFeature } from '../../__mocks__'
+import { backgroundFeature, rulesFeature, docAndDataFeature} from '../../__mocks__'
 
 jest.resetModules()
 jest.resetAllMocks()
@@ -7,6 +7,7 @@ jest.clearAllMocks()
 const { parseFeature } = require('../parseFeature')
 
 describe('parseFeature', () => {
+
   describe('Feature Tags', () => {
     it('should parse a Features tags', () => {
       const { tags } = parseFeature(backgroundFeature)[0]
@@ -23,6 +24,55 @@ describe('parseFeature', () => {
         content: '  # This is a test comment',
         index: 2,
       })
+    })
+  })
+
+  describe('Feature Rule', () => {
+    it('should parse the rules of a feature', () => {
+      const { rules } = parseFeature(rulesFeature)[0]
+      expect(rules.length).toBe(2)
+      expect(rules[0].rule).toBe('This is Rule 1')
+      expect(rules[1].rule).toBe('This is Rule 2')
+    })
+
+    it('should add the parsed steps to the correct rule scenarios', () => {
+      const { rules } = parseFeature(rulesFeature)[0]
+      const { scenarios } = rules[0]
+      const { scenarios:scenarios2 } = rules[1]
+
+      expect(scenarios[0].steps.length).toBe(2)
+      expect(scenarios[0].steps[0].type).toBe('given')
+      expect(scenarios[0].steps[0].step).toBe(
+        'that this Feature has a background'
+      )
+      expect(scenarios[0].steps[1].type).toBe('then')
+      expect(scenarios[0].steps[1].step).toBe(
+        "this rules scenario's steps should be run after the background's steps"
+      )
+      expect(scenarios[1].steps.length).toBe(2)
+      expect(scenarios[1].steps[0].type).toBe('given')
+      expect(scenarios[1].steps[0].step).toBe('that a second scenario exists')
+      expect(scenarios[1].steps[1].type).toBe('then')
+      expect(scenarios[1].steps[1].step).toBe(
+        "the rules second scenario's steps should be run after a second background's steps"
+      )
+
+      expect(scenarios2[0].steps.length).toBe(2)
+      expect(scenarios2[0].steps[0].type).toBe('given')
+      expect(scenarios2[0].steps[0].step).toBe(
+        'that this Feature has two rules'
+      )
+      expect(scenarios2[0].steps[1].type).toBe('then')
+      expect(scenarios2[0].steps[1].step).toBe(
+        "this scenario's steps should be run after the the first rules steps"
+      )
+      expect(scenarios2[1].steps.length).toBe(2)
+      expect(scenarios2[1].steps[0].type).toBe('given')
+      expect(scenarios2[1].steps[0].step).toBe('that a second scenario exists in the second rule')
+      expect(scenarios2[1].steps[1].type).toBe('then')
+      expect(scenarios2[1].steps[1].step).toBe(
+        "the second scenario's steps should be run after a second rules scenario steps"
+      )
     })
   })
 
