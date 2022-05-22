@@ -52,7 +52,7 @@ const featureFactory = (feature, content, index) => {
     comments: [],
     scenarios: [],
     // The feature name should always be unique, so use that as a re-usable id
-    ...(feature && { uuid: sanitizeForId(feature) }),
+    ...(feature && { uuid: sanitizeForId(feature, index) }),
   }
 }
 
@@ -71,7 +71,7 @@ const ruleFactory = (rule, index) => {
     tags: [],
     scenarios: [],
     // The feature name should always be unique, so use that as a re-usable id
-    ...(rule && { uuid: sanitizeForId(rule) }),
+    ...(rule && { uuid: sanitizeForId(rule, index) }),
   }
 }
 
@@ -89,7 +89,7 @@ const scenarioFactory = (scenario, index) => {
     scenario,
     tags: [],
     steps: [],
-    ...(scenario && { uuid: sanitizeForId(scenario) }),
+    ...(scenario && { uuid: sanitizeForId(scenario, index) }),
   }
 }
 
@@ -106,7 +106,7 @@ const backgroundFactory = (background, index) => {
     index,
     steps: [],
     background,
-    ...(background && { uuid: sanitizeForId(background) }),
+    ...(background && { uuid: sanitizeForId(background, index) }),
   }
 }
 
@@ -227,7 +227,7 @@ const ensureFeature = (featuresGroup, feature, line, content, index) => {
 
     // Ensure the index is added if needed
     if (!feature.index) feature.index = index
-    if (!feature.uuid) feature.uuid = sanitizeForId(feature.feature)
+    if (!feature.uuid) feature.uuid = sanitizeForId(feature.feature, index)
 
     !featuresGroup.includes(feature) && featuresGroup.push(feature)
 
@@ -266,7 +266,7 @@ const ensureRule = (feature, rule, line, index) => {
   // Ensure the line index is added
   !rule.index && (rule.index = index)
   // Add the uuid from the rule text if it doesn't exist
-  !rule.uuid && (rule.uuid = sanitizeForId(rule.rule))
+  !rule.uuid && (rule.uuid = sanitizeForId(rule.rule, index))
 
   // Add the rule if needed to the current feature
   !feature.rules.includes(rule) && feature.rules.push(rule)
@@ -303,7 +303,7 @@ const ensureScenario = (feature, rule, scenario, line, index) => {
   // Ensure the line index is added
   !scenario.index && (scenario.index = index)
   // Add the uuid from the scenario text if it doesn't exist
-  !scenario.uuid && (scenario.uuid = sanitizeForId(scenario.scenario))
+  !scenario.uuid && (scenario.uuid = sanitizeForId(scenario.scenario, index))
 
   // Add the scenario if needed to the current parent
   const parent = rule.uuid ? rule : feature
@@ -340,7 +340,8 @@ const ensureBackground = (feature, rule, background, line, index) => {
   // Ensure the line index is added
   !background.index && (background.index = index)
   // Add the uuid from the background text if it doesn't exist
-  !background.uuid && (background.uuid = sanitizeForId(background.background))
+  !background.uuid &&
+    (background.uuid = sanitizeForId(background.background, index))
 
   parent.background = background
 

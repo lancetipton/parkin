@@ -84,6 +84,7 @@ module.exports = {
     'jest/no-focused-tests': 'error',
     'jest/no-identical-title': 'error',
     'jest/prefer-to-have-length': 'warn',
+    'jest/no-conditional-expect': 'off',
     'jest/valid-expect': 'error',
     'jest/no-mocks-import': 0,
     'jest/no-export': 0,

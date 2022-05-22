@@ -9,7 +9,8 @@
  * @returns {string} - Found keyword text from the line argument
  */
 export const getRXMatch = (line, regex, index) => {
-  return line.match(regex)[index].trim()
+  const matching = line.match(regex)[index]
+  return matching ? matching.trim() : ` `
 }
 
 /*
@@ -18,15 +19,20 @@ export const getRXMatch = (line, regex, index) => {
  * @export
  * @public
  * @param {string} text - Text to be sanitized
+ * @param {number} index - Index of the line being sanitized
  *
  * @returns {string} - Sanitized text
  */
-export const sanitizeForId = text => {
-  const cleaned = text
-    .trim()
-    .toLowerCase()
-    .replace(/[\s\/\\\(\)\+=_&%\$#@!\*~`\|\?:;"'<>,.{}]/g, '-')
-  return `${cleaned}-${text.length}`
+export const sanitizeForId = (text, index) => {
+  const cleaned =
+    text &&
+    text.trim() &&
+    text
+      .trim()
+      .toLowerCase()
+      .replace(/[\s\/\\\(\)\+=_&%\$#@!\*~`\|\?:;"'<>,.{}]/g, '-')
+
+  return cleaned ? `${cleaned}-${text.length}` : `${index}-${index.length}`
 }
 
 /**
