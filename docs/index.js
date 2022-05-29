@@ -11,12 +11,18 @@ const logDebug = (...data) => {
  * Gets the current value of the feature text from the textarea dom node
  * Then parses and runs the feature steps with the Parkin instance
  */
-const testFeature = () => {
+const testFeature = async () => {
   const featureText = $(`#feature-text`).value
   const parsedFeature = PK.parse.feature(featureText)
   logDebug(`Parsed feature:\n`, parsedFeature)
 
-  PK.run(parsedFeature)
+  await PK.run(parsedFeature)
+  const responses = await ParkinTest.run()
+  scenario = responses[0].describes[0]
+
+  logDebug(`Feature Result:\n`, responses[0])
+  logDebug(`Scenario Result:\n`, scenario)
+  logDebug(`Test Result:\n`, scenario.tests)
 }
 
 /*
@@ -50,4 +56,16 @@ const runFeature = () => {
  * This is ensure the Parkin library has been loaded 
  * We use an iif to ensure it's run when the browser is ready
  */
-(() => PK = new Parkin({}))()
+// (() => PK = new Parkin({}))()
+
+;(() => {
+
+System.import('/parkin/global.js')
+  .then(() => System.import('/parkin/index.js'))
+  .then(({ Parkin }) => {
+    PK = new Parkin({})
+    window.Parkin = PK
+  })
+
+})()
+

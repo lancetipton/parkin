@@ -40,24 +40,27 @@ const runResult = (
  * @returns {Object} - Built run result object if a hook fails
  */
 const loopHooks = async args => {
-  const { type, test, specId, suiteId, describe } = args
+  const { type, test, specId, suiteId, describe, root } = args
 
   let hookIdx
-  const fullName = test
-    ? `${describe?.description} > ${test?.description} > ${type}`
-    : `${describe?.description} > ${type}`
+  const activeItem = root || describe
+  const fullName = root
+    ? root.description
+    : test
+      ? `${describe?.description} > ${test?.description} > ${type}`
+      : `${describe?.description} > ${type}`
 
   try {
-    describe[type].length &&
+    activeItem[type].length &&
       (await Promise.all(
-        describe[type].map((fn, idx) => {
+        activeItem[type].map((fn, idx) => {
           hookIdx = idx
           return fn()
         })
       ))
   }
   catch (error) {
-    return runResult(describe, {
+    return runResult(activeItem, {
       fullName,
       action: type,
       status: 'failed',
@@ -168,6 +171,54 @@ const loopTests = async args => {
 }
 
 /**
+ * Helper to call the before hooks from the root and current describe
+ * @param {Object} args - Arguments needed to call the before hooks
+ *
+ * @returns {Object} - Built results if a hook throws an error
+ */
+const callBeforeHooks = async ({ root, suiteId, describe }) => {
+  const beforeEachResult = await loopHooks({
+    root,
+    suiteId: Types.root,
+    type: Types.beforeEach,
+  })
+
+  const beforeAllResult =
+    !beforeEachResult &&
+    (await loopHooks({
+      suiteId,
+      describe,
+      type: Types.beforeAll,
+    }))
+
+  return beforeEachResult || beforeAllResult
+}
+
+/**
+ * Helper to call the after hooks from the root and current describe
+ * @param {Object} args - Arguments needed to call the after hooks
+ *
+ * @returns {Object} - Built results if a hook throws an error
+ */
+const callAfterHooks = async ({ root, suiteId, describe }) => {
+  const afterEachResult = await loopHooks({
+    root,
+    suiteId: Types.root,
+    type: Types.afterEach,
+  })
+
+  const afterAllResult =
+    !afterEachResult &&
+    (await loopHooks({
+      suiteId,
+      describe,
+      type: Types.afterAll,
+    }))
+
+  return afterEachResult || afterAllResult
+}
+
+/**
  * Helper to loop over describe methods and call child tests
  * @param {Object} args - Config to overwrite the initial test config object
  *
@@ -215,14 +266,14 @@ const loopDescribes = async args => {
     }
     else suiteStarted(describeResult)
 
-    const beforeAllResult = await loopHooks({
+    const beforeResult = await callBeforeHooks({
+      root,
       suiteId,
       describe,
-      type: Types.beforeAll,
     })
-    if (beforeAllResult) {
+    if (beforeResult) {
       describeFailed = true
-      describeResult = { ...describeResult, ...beforeAllResult }
+      describeResult = { ...describeResult, ...beforeResult }
       suiteDone(describeResult)
       results.push(describeResult)
       continue
@@ -256,15 +307,16 @@ const loopDescribes = async args => {
       describeFailed = true
       describeResult.failed = true
     }
+    else describeResult.passed = true
 
-    const afterAllResult = await loopHooks({
+    const afterResult = await callAfterHooks({
+      root,
       suiteId,
       describe,
-      type: Types.afterAll,
     })
-    if (afterAllResult) {
+    if (afterResult) {
       describeFailed = true
-      describeResult = { ...describeResult, ...afterAllResult }
+      describeResult = { ...describeResult, ...afterResult }
       suiteDone(describeResult)
       results.push(describeResult)
       continue
@@ -285,6 +337,24 @@ const loopDescribes = async args => {
  */
 export const run = async args => {
   validateRootRun(args.root)
+
+  const beforeAllResult = await loopHooks({
+    root: args.root,
+    suiteId: Types.root,
+    type: Types.beforeAll,
+  })
+
+  // If a before all throws an error, we don't want to run the rest of the tests, so just return
+  if (beforeAllResult) return [beforeAllResult]
+
   const { describes } = await loopDescribes(args)
+
+  const afterAllResult = await loopHooks({
+    root: args.root,
+    suiteId: Types.root,
+    type: Types.afterAll,
+  })
+  afterAllResult && describes.push(afterAllResult)
+
   return describes
 }

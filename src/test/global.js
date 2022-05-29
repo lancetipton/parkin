@@ -11,6 +11,7 @@ const setParkinTestGlobals = force => {
   const globalObj = resolveGlobalObj()
   const forceGlobal = force || process.env.PARKIN_TEST_GLOBALS_OVERRIDE
 
+  globalObj.ParkinTest = PTE
   Object.values(globalTypes).map(
     name =>
       (!globalObj[name] || forceGlobal) &&

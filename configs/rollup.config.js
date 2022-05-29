@@ -24,20 +24,25 @@ const config = {
       format: 'cjs',
       sourcemap: !isProd
     },
+    {
+      dir: `./build/system`,
+      format: 'system',
+      sourcemap: !isProd,
+    },
   ],
   plugins: [
-    buildHook(),
     resolve(),
     commonjs(),
     babel({ babelHelpers: 'bundled' }),
     cleanup(),
-    isProd &&
-      terser({
-        mangle: true,
-        toplevel: false,
-        keep_fnames: true,
-        keep_classnames: true,
-      }),
+    // isProd &&
+    //   terser({
+    //     mangle: true,
+    //     toplevel: false,
+    //     keep_fnames: true,
+    //     keep_classnames: true,
+    //   }),
+    buildHook()
   ],
 }
 

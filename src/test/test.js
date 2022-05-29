@@ -15,13 +15,15 @@ export class ParkinTest {
   #specStarted = noOp
   #suiteStarted = noOp
 
-  #root = createItem(Types.root, { describes: [] }, false)
   #activeParent = undefined
   #testOnly = false
   #describeOnly = false
+  #root = createItem(Types.root, { describes: [] }, false)
 
   constructor(config = noOpObj) {
-    if (config.description) this.#root.description = config.description
+    this.#root.description = config.description || `root`
+
+    Object.values(helperTypes).map(type => (this.#root[type] = []))
 
     this.#addOnly()
     this.#addSkip()
@@ -32,6 +34,7 @@ export class ParkinTest {
     this.#addFrameworkHooks(config)
 
     this.run = (config = noOpObj) => {
+      this.#root.description = config.description || this.#root.description
       this.#addFrameworkHooks(config)
       return run({
         root: this.#root,

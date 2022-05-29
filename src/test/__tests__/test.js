@@ -340,11 +340,11 @@ describe(`ParkinTest`, () => {
       expect(describeObj.describes[1].beforeAll[0]).toBe(beforeAll2)
     })
 
-    it(`Should throw when called outside a describe method`, () => {
+    it(`Should not throw when called outside a describe method`, () => {
       expect(() => {
         const PTE = new ParkinTest()
         PTE.beforeAll(() => {})
-      }).toThrow()
+      }).not.toThrow()
     })
 
     it(`Should throw when not passed a function`, () => {
@@ -378,11 +378,11 @@ describe(`ParkinTest`, () => {
       expect(describeObj.describes[1].afterAll[0]).toBe(afterAll2)
     })
 
-    it(`Should throw when called outside a describe method`, () => {
+    it(`Should not throw when called outside a describe method`, () => {
       expect(() => {
         const PTE = new ParkinTest()
         PTE.afterAll(() => {})
-      }).toThrow()
+      }).not.toThrow()
     })
 
     it(`Should throw when not passed a function`, () => {
@@ -416,11 +416,11 @@ describe(`ParkinTest`, () => {
       expect(describeObj.describes[1].beforeEach[0]).toBe(beforeEach2)
     })
 
-    it(`Should throw when called outside a describe method`, () => {
+    it(`Should not throw when called outside a describe method`, () => {
       expect(() => {
         const PTE = new ParkinTest()
         PTE.beforeEach(() => {})
-      }).toThrow()
+      }).not.toThrow()
     })
 
     it(`Should throw when not passed a function`, () => {
@@ -454,11 +454,11 @@ describe(`ParkinTest`, () => {
       expect(describeObj.describes[1].afterEach[0]).toBe(afterEach2)
     })
 
-    it(`Should throw when called outside a describe method`, () => {
+    it(`Should not throw when called outside a describe method`, () => {
       expect(() => {
         const PTE = new ParkinTest()
         PTE.afterEach(() => {})
-      }).toThrow()
+      }).not.toThrow()
     })
 
     it(`Should throw when not passed a function`, () => {
