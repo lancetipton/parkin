@@ -17,7 +17,7 @@ const testFeature = async () => {
   logDebug(`Parsed feature:\n`, parsedFeature)
 
   await PK.run(parsedFeature)
-  const responses = await ParkinTest.run()
+  const responses = await PTE.run()
   scenario = responses[0].describes[0]
 
   logDebug(`Feature Result:\n`, responses[0])
@@ -56,16 +56,4 @@ const runFeature = () => {
  * This is ensure the Parkin library has been loaded 
  * We use an iif to ensure it's run when the browser is ready
  */
-// (() => PK = new Parkin({}))()
-
-;(() => {
-
-System.import('/parkin/global.js')
-  .then(() => System.import('/parkin/index.js'))
-  .then(({ Parkin }) => {
-    PK = new Parkin({})
-    window.Parkin = PK
-  })
-
-})()
-
+window.addEventListener('load', (event) => PK = new Parkin({}))

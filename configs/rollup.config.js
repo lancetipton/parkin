@@ -10,8 +10,9 @@ const isProd = process.env.NODE_ENV === 'production'
 const config = {
   input: {
     index: 'src/index.js',
+    parkinGlobal: 'src/global.js',
     test: 'src/test/index.js',
-    global: 'src/test/global.js',
+    testGlobal: 'src/test/global.js',
   },
   output: [
     {
