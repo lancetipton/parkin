@@ -1,15 +1,13 @@
 const runMock = jest.fn()
-jest.setMock(`../run`, {run: runMock})
+jest.setMock(`../run`, { run: runMock })
 
 const { ParkinTest } = require('../test')
 
 describe(`ParkinTest`, () => {
-  
   describe(`ParkinTest.constructor`, () => {
-
     it(`Should create a new instance of the ParkinTest class`, () => {
       const PTE = new ParkinTest()
-      ;([
+      ;[
         `it`,
         `xit`,
         `run`,
@@ -21,7 +19,7 @@ describe(`ParkinTest`, () => {
         `beforeAll`,
         `afterEach`,
         `beforeEach`,
-      ]).map(prop => expect(typeof PTE[prop]).not.toBe('undefined'))
+      ].map(prop => expect(typeof PTE[prop]).not.toBe('undefined'))
     })
 
     it(`Should allow passing a config object to set option`, () => {
@@ -32,16 +30,14 @@ describe(`ParkinTest`, () => {
           suiteDone: jest.fn(),
           specStarted: jest.fn(),
           suiteStarted: jest.fn(),
-          description: `Test Description`
+          description: `Test Description`,
         })
         expect(PTE.timeout).toBe(8543)
       }).not.toThrow()
     })
-
   })
 
   describe(`Test.getActiveParent`, () => {
-
     it(`Should return the root object when calling Test.getActiveParent`, () => {
       const PTE = new ParkinTest()
       const parent = PTE.getActiveParent()
@@ -49,15 +45,13 @@ describe(`ParkinTest`, () => {
     })
 
     it(`should set the root.description from the config.description`, () => {
-      const PTE = new ParkinTest({description: `Root description`})
+      const PTE = new ParkinTest({ description: `Root description` })
       const parent = PTE.getActiveParent()
       expect(parent.description).toBe(`Root description`)
     })
-
   })
 
   describe(`Test.describe`, () => {
-
     it(`Should register a new describe method when describe is called`, () => {
       const PTE = new ParkinTest()
       PTE.describe(`Test describe`, () => {})
@@ -76,8 +70,7 @@ describe(`ParkinTest`, () => {
       const PTE = new ParkinTest()
       PTE.describe(`Top describe`, () => {
         PTE.describe(`Primary describe`, () => {
-          PTE.describe(`Secondary describe`, () => {
-          })
+          PTE.describe(`Secondary describe`, () => {})
         })
       })
       const parent = PTE.getActiveParent()
@@ -92,10 +85,8 @@ describe(`ParkinTest`, () => {
 
     it(`Should allow registering multiple top-level describe methods`, () => {
       const PTE = new ParkinTest()
-      PTE.describe(`Top describe 1`, () => {
-      })
-      PTE.describe(`Top describe 2`, () => {
-      })
+      PTE.describe(`Top describe 1`, () => {})
+      PTE.describe(`Top describe 2`, () => {})
       const parent = PTE.getActiveParent()
       expect(parent.describes.length === 2).toBe(true)
       const describeTop1 = parent.describes[0]
@@ -120,17 +111,15 @@ describe(`ParkinTest`, () => {
         beforeEach: `array`,
         disabled: `function`,
         description: `string`,
-      }).map(([prop, type]) => {
+      }).map(([ prop, type ]) => {
         type === 'array'
           ? expect(Array.isArray(describeObj[prop])).toBe(true)
           : expect(typeof describeObj[prop]).toBe(type)
       })
     })
-
   })
 
   describe(`Test.describe.only`, () => {
-
     beforeEach(() => {
       runMock.mockClear()
     })
@@ -157,12 +146,9 @@ describe(`ParkinTest`, () => {
       const runProps = runMock.mock.calls[0][0]
       expect(runProps.describeOnly).toBe(true)
     })
-
   })
 
-
   describe(`Test.describe.skip`, () => {
-
     it(`Should register a new describe method when describe is called`, () => {
       const PTE = new ParkinTest()
       PTE.describe.skip(`Test describe`, () => {})
@@ -177,16 +163,13 @@ describe(`ParkinTest`, () => {
       const item = parent.describes[0]
       expect(item.skip).toBe(true)
     })
-
   })
 
   describe(`Test.test`, () => {
-
     it(`Should register a new test method when test is called`, () => {
       const PTE = new ParkinTest()
       PTE.describe(`describe method`, () => {
-        PTE.test(`test method`, () => {
-        })
+        PTE.test(`test method`, () => {})
       })
       const parent = PTE.getActiveParent()
       const describeObj = parent.describes[0]
@@ -196,8 +179,7 @@ describe(`ParkinTest`, () => {
     it(`Should add the correct properties to the register test method`, () => {
       const PTE = new ParkinTest()
       PTE.describe(`describe method`, () => {
-        PTE.test(`test method`, () => {
-        })
+        PTE.test(`test method`, () => {})
       })
       const parent = PTE.getActiveParent()
       const describeObj = parent.describes[0]
@@ -208,7 +190,7 @@ describe(`ParkinTest`, () => {
         timeout: `undefined`,
         disabled: `function`,
         description: `string`,
-      }).map(([prop, type]) => {
+      }).map(([ prop, type ]) => {
         type === 'array'
           ? expect(Array.isArray(testObj[prop])).toBe(true)
           : expect(typeof testObj[prop]).toBe(type)
@@ -235,12 +217,9 @@ describe(`ParkinTest`, () => {
         PTE.xtest(`No function`)
       }).toThrow()
     })
-
   })
 
-
   describe(`Test.test.only`, () => {
-
     beforeEach(() => {
       runMock.mockClear()
     })
@@ -275,12 +254,9 @@ describe(`ParkinTest`, () => {
       const runProps = runMock.mock.calls[0][0]
       expect(runProps.testOnly).toBe(true)
     })
-
   })
 
-
   describe(`Test.test.skip`, () => {
-
     it(`Should register a new test method when test.skip is called`, () => {
       const PTE = new ParkinTest()
       PTE.describe(`describe method`, () => {
@@ -303,12 +279,9 @@ describe(`ParkinTest`, () => {
       const item = describeObj.tests[0]
       expect(item.skip).toBe(true)
     })
-
   })
 
-
   describe(`Test.xtest`, () => {
-
     it(`Should NOT throw an error when a function to it not passed to the Test.xtest method`, () => {
       expect(() => {
         const PTE = new ParkinTest()
@@ -321,8 +294,7 @@ describe(`ParkinTest`, () => {
     it(`Should not add an action to the Test.xtest method even when passed`, () => {
       const PTE = new ParkinTest()
       PTE.describe(`describe method`, () => {
-        PTE.xtest(`test method`, () => {
-        })
+        PTE.xtest(`test method`, () => {})
       })
       const parent = PTE.getActiveParent()
       const describeObj = parent.describes[0]
@@ -345,11 +317,9 @@ describe(`ParkinTest`, () => {
         })
       }).toThrow()
     })
-
   })
 
   describe(`Test.beforeAll`, () => {
-
     it(`Should register with the closest describe method`, () => {
       const PTE = new ParkinTest()
       const beforeAll1 = jest.fn()
@@ -363,7 +333,7 @@ describe(`ParkinTest`, () => {
         })
       })
       PTE.describe(`describe-3 method`, () => {})
-      
+
       const parent = PTE.getActiveParent()
       const describeObj = parent.describes[1]
       expect(describeObj.beforeAll[0]).toBe(beforeAll1)
@@ -385,11 +355,9 @@ describe(`ParkinTest`, () => {
         })
       }).toThrow()
     })
-
   })
 
   describe(`Test.afterAll`, () => {
-
     it(`Should register with the closest describe method`, () => {
       const PTE = new ParkinTest()
       const afterAll1 = jest.fn()
@@ -403,7 +371,7 @@ describe(`ParkinTest`, () => {
         })
       })
       PTE.describe(`describe-3 method`, () => {})
-      
+
       const parent = PTE.getActiveParent()
       const describeObj = parent.describes[1]
       expect(describeObj.afterAll[0]).toBe(afterAll1)
@@ -425,11 +393,9 @@ describe(`ParkinTest`, () => {
         })
       }).toThrow()
     })
-
   })
 
   describe(`Test.beforeEach`, () => {
-
     it(`Should register with the closest describe method`, () => {
       const PTE = new ParkinTest()
       const beforeEach1 = jest.fn()
@@ -443,7 +409,7 @@ describe(`ParkinTest`, () => {
         })
       })
       PTE.describe(`describe-3 method`, () => {})
-      
+
       const parent = PTE.getActiveParent()
       const describeObj = parent.describes[1]
       expect(describeObj.beforeEach[0]).toBe(beforeEach1)
@@ -465,11 +431,9 @@ describe(`ParkinTest`, () => {
         })
       }).toThrow()
     })
-
   })
 
   describe(`Test.afterEach`, () => {
-
     it(`Should register with the closest describe method`, () => {
       const PTE = new ParkinTest()
       const afterEach1 = jest.fn()
@@ -483,7 +447,7 @@ describe(`ParkinTest`, () => {
         })
       })
       PTE.describe(`describe-3 method`, () => {})
-      
+
       const parent = PTE.getActiveParent()
       const describeObj = parent.describes[1]
       expect(describeObj.afterEach[0]).toBe(afterEach1)
@@ -505,7 +469,5 @@ describe(`ParkinTest`, () => {
         })
       }).toThrow()
     })
-
   })
-
 })

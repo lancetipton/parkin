@@ -15,13 +15,13 @@ export class ParkinTest {
   #specStarted = noOp
   #suiteStarted = noOp
 
-  #root = createItem(Types.root, {describes: []}, false)
+  #root = createItem(Types.root, { describes: [] }, false)
   #activeParent = undefined
   #testOnly = false
   #describeOnly = false
 
-  constructor(config=noOpObj){
-    if(config.description) this.#root.description = config.description
+  constructor(config = noOpObj) {
+    if (config.description) this.#root.description = config.description
 
     this.#addOnly()
     this.#addSkip()
@@ -31,7 +31,7 @@ export class ParkinTest {
     this.#activeParent = this.#root
     this.#addFrameworkHooks(config)
 
-    this.run = (config=noOpObj) => {
+    this.run = (config = noOpObj) => {
       this.#addFrameworkHooks(config)
       return run({
         root: this.#root,
@@ -43,19 +43,24 @@ export class ParkinTest {
         suiteStarted: this.#suiteStarted,
       })
     }
-
   }
 
   getActiveParent = () => {
     return this.#activeParent
   }
 
-  #addFrameworkHooks = ({ timeout, specDone, suiteDone, specStarted, suiteStarted }) => {
-    if(timeout) this.timeout = timeout
-    if(specDone) this.#specDone = specDone
-    if(suiteDone) this.#suiteDone = suiteDone
-    if(specStarted) this.#specStarted = specStarted
-    if(suiteStarted) this.#suiteStarted = suiteStarted
+  #addFrameworkHooks = ({
+    timeout,
+    specDone,
+    suiteDone,
+    specStarted,
+    suiteStarted,
+  }) => {
+    if (timeout) this.timeout = timeout
+    if (specDone) this.#specDone = specDone
+    if (suiteDone) this.#suiteDone = suiteDone
+    if (specStarted) this.#specStarted = specStarted
+    if (suiteStarted) this.#suiteStarted = suiteStarted
   }
 
   /**
@@ -66,7 +71,8 @@ export class ParkinTest {
     this.describe.only = (...args) => {
       this.describe(...args)
       // Get the last item just added to the this.#activeParent
-      const item = this.#activeParent.describes[this.#activeParent.describes.length - 1]
+      const item =
+        this.#activeParent.describes[this.#activeParent.describes.length - 1]
       item.only = true
       this.#describeOnly = true
       // Call the parent hasOnlyChild method to ensure it gets passed on the chain
@@ -92,7 +98,8 @@ export class ParkinTest {
     this.describe.skip = (...args) => {
       this.describe(...args)
       // Get the last item just added to the this.#activeParent
-      const item = this.#activeParent.describes[this.#activeParent.describes.length - 1]
+      const item =
+        this.#activeParent.describes[this.#activeParent.describes.length - 1]
       item.skip = true
     }
 
@@ -108,9 +115,7 @@ export class ParkinTest {
    * TODO: @lance-Tipton
    * Add each methods to describe and test
    */
-  #addEach = () => {
-    
-  }
+  #addEach = () => {}
 
   /**
    * Adds the helper methods to the class instance
@@ -118,7 +123,7 @@ export class ParkinTest {
    */
   #addHelpers = () => {
     Object.values(helperTypes).map(type => {
-      this[type] = (action) => {
+      this[type] = action => {
         validateHelper(type, action, this.#activeParent)
         this.#activeParent[type].push(action)
       }
@@ -134,7 +139,6 @@ export class ParkinTest {
    * @returns {void}
    */
   describe = (description, action) => {
-
     // Build the describe item and add defaults
     const item = createItem(Types.describe, {
       action,
@@ -142,7 +146,7 @@ export class ParkinTest {
       description,
       describes: [],
     })
-    item.disabled = () => item.skip = true
+    item.disabled = () => (item.skip = true)
 
     Object.values(helperTypes).map(type => (item[type] = []))
     this.#activeParent.describes.push(item)
@@ -175,10 +179,12 @@ export class ParkinTest {
    * @returns {void}
    */
   test = (description, action, timeout) => {
-    if(!this.#activeParent || this.#activeParent.type === Types.root)
-      throwError(`All ${Types.test} method calls must be called within a ${Types.describe} method`)
+    if (!this.#activeParent || this.#activeParent.type === Types.root)
+      throwError(
+        `All ${Types.test} method calls must be called within a ${Types.describe} method`
+      )
 
-    const item = createItem(Types.test, {action, timeout, description})
+    const item = createItem(Types.test, { action, timeout, description })
     item.disabled = () => (item.skip = true)
 
     this.#activeParent.tests.push(item)
@@ -191,15 +197,19 @@ export class ParkinTest {
    *
    * @returns {void}
    */
-  xtest = (description) => {
-    if(!this.#activeParent || this.#activeParent.type === Types.root)
-      throwError(`All ${Types.test} method calls must be called within a ${Types.describe} method`)
+  xtest = description => {
+    if (!this.#activeParent || this.#activeParent.type === Types.root)
+      throwError(
+        `All ${Types.test} method calls must be called within a ${Types.describe} method`
+      )
 
-    !isStr(description) && throwError(`The ${Types.test} method requires a "string" as the first argument`)
-    const item = createItem(Types.test, {description, skip: true}, false)
+    !isStr(description) &&
+      throwError(
+        `The ${Types.test} method requires a "string" as the first argument`
+      )
+    const item = createItem(Types.test, { description, skip: true }, false)
     item.disabled = () => (item.skip = true)
 
     this.#activeParent.tests.push(item)
   }
-
 }

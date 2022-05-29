@@ -8,7 +8,11 @@ import { terser } from 'rollup-plugin-terser'
 const isProd = process.env.NODE_ENV === 'production'
 
 const config = {
-  input: 'src/index.js',
+  input: {
+    index: 'src/index.js',
+    test: 'src/test/index.js',
+    global: 'src/test/global.js',
+  },
   output: [
     {
       dir: 'build/esm',

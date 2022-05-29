@@ -1,7 +1,6 @@
 import { ParkinTest } from '../test'
 
 describe(`ParkinTest.run`, () => {
-
   it(`should run the passed in hook and test methods in correct order`, async () => {
     const callorder = []
     const beforeEach1 = jest.fn(() => callorder.push(`beforeEach1`))
@@ -59,8 +58,7 @@ describe(`ParkinTest.run`, () => {
     expect(testMethod21).toHaveBeenCalled()
     expect(testMethod22).toHaveBeenCalled()
     expect(testMethod23).toHaveBeenCalled()
-
-    ;([
+    ;[
       `beforeEach1`,
       `testMethod1`,
       `afterEach1`,
@@ -74,12 +72,10 @@ describe(`ParkinTest.run`, () => {
       `testMethod23`,
       `afterAll2`,
       `afterAll1`,
-    ]).map((name, index) => expect(callorder[index]).toBe(name))
-
+    ].map((name, index) => expect(callorder[index]).toBe(name))
   })
 
-
-  it(`should return the results from the run method`, async () => {    
+  it(`should return the results from the run method`, async () => {
     const PTE = new ParkinTest()
 
     PTE.describe(`describe-1 method`, () => {
@@ -94,7 +90,7 @@ describe(`ParkinTest.run`, () => {
     })
 
     const results = await PTE.run()
-   
+
     const result = results[0]
     const test = result.tests[0]
     expect(test.passed).toBe(true)
@@ -115,8 +111,8 @@ describe(`ParkinTest.run`, () => {
       specDone: jest.fn(),
       suiteDone: jest.fn(),
       specStarted: jest.fn(),
-      suiteStarted: jest.fn()
-    } 
+      suiteStarted: jest.fn(),
+    }
     const PTE = new ParkinTest(config)
 
     PTE.describe(`describe-1 method`, () => {
@@ -135,9 +131,7 @@ describe(`ParkinTest.run`, () => {
     expect(config.suiteDone).toHaveBeenCalledTimes(2)
     expect(config.specStarted).toHaveBeenCalledTimes(3)
     expect(config.specDone).toHaveBeenCalledTimes(3)
-
   })
-
 
   it(`should only run tests in a describe.only block when set`, async () => {
     const PTE = new ParkinTest()
@@ -147,7 +141,7 @@ describe(`ParkinTest.run`, () => {
     const testNoOnly2 = jest.fn()
     const testOnly1 = jest.fn()
     const testOnly2 = jest.fn()
-  
+
     PTE.describe(`describe-no-only method`, () => {
       PTE.beforeAll(beforeAllNoOnly1)
       PTE.test(`test-no-only-1 method`, testNoOnly1)
@@ -184,7 +178,7 @@ describe(`ParkinTest.run`, () => {
     const testNoOnly2 = jest.fn()
     const testOnly1 = jest.fn()
     const testOnly2 = jest.fn()
-  
+
     PTE.describe(`describe-no-only method`, () => {
       PTE.afterAll(afterAllNoOnly1)
       PTE.test(`test-no-only-1 method`, testNoOnly1)
@@ -213,7 +207,6 @@ describe(`ParkinTest.run`, () => {
     expect(testOnly1).toHaveBeenCalled()
   })
 
-
   it(`should not run tests in a describe.skip block when set`, async () => {
     const PTE = new ParkinTest()
     const beforeAllNoSkip1 = jest.fn()
@@ -222,7 +215,7 @@ describe(`ParkinTest.run`, () => {
     const testNoSkip2 = jest.fn()
     const testSkip1 = jest.fn()
     const testSkip2 = jest.fn()
-  
+
     PTE.describe.skip(`describe-no-only method`, () => {
       PTE.beforeAll(beforeAllSkip1)
       PTE.test(`test-no-only-1 method`, testSkip1)
@@ -259,7 +252,7 @@ describe(`ParkinTest.run`, () => {
     const testNoSkip2 = jest.fn()
     const testSkip1 = jest.fn()
     const testSkip2 = jest.fn()
-  
+
     PTE.describe(`describe-no-only method`, () => {
       PTE.beforeAll(beforeAllSkip1)
       PTE.test.skip(`test-no-only-1 method`, testSkip1)
@@ -284,8 +277,6 @@ describe(`ParkinTest.run`, () => {
     expect(testNoSkip1).toHaveBeenCalled()
     expect(testNoSkip2).toHaveBeenCalled()
   })
-
-
 
   it(`should stop test execution in a describe block when a beforeAll or beforeEach throws`, async () => {
     const PTE = new ParkinTest()
@@ -312,7 +303,7 @@ describe(`ParkinTest.run`, () => {
         PTE.test(`test-3-1 method`, testNotCalled2)
         PTE.test(`test-3-2 method`, testNotCalled3)
       })
-      
+
       PTE.describe(`describe-4 method`, () => {
         PTE.beforeEach(() => {})
         PTE.test(`test-4-1 method`, testCalled2)
@@ -326,9 +317,7 @@ describe(`ParkinTest.run`, () => {
     expect(testNotCalled1).not.toHaveBeenCalled()
     expect(testNotCalled2).not.toHaveBeenCalled()
     expect(testNotCalled3).not.toHaveBeenCalled()
-
   })
-
 
   it(`should stop test execution in a describe block when a afterAll or afterEach throws`, async () => {
     const PTE = new ParkinTest()
@@ -363,5 +352,4 @@ describe(`ParkinTest.run`, () => {
     expect(testCalled3).toHaveBeenCalled()
     expect(testNotCalled1).not.toHaveBeenCalled()
   })
-
 })

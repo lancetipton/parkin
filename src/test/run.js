@@ -8,7 +8,10 @@ import { Types, validateRootRun } from './utils'
  *
  * @returns {Object} - Built run result object
  */
-const runResult = (item, { id, fullName, action, failed, passed, testPath }) => {
+const runResult = (
+  item,
+  { id, fullName, action, failed, passed, testPath }
+) => {
   const result = {
     id,
     action,
@@ -25,7 +28,7 @@ const runResult = (item, { id, fullName, action, failed, passed, testPath }) => 
 
   isObj(failed) && result.failedExpectations.push(failed)
   isObj(passed) && result.passedExpectations.push(passed)
-  if(passed || failed) result.status = passed ? `passed` : `failed`
+  if (passed || failed) result.status = passed ? `passed` : `failed`
 
   return result
 }
@@ -36,14 +39,8 @@ const runResult = (item, { id, fullName, action, failed, passed, testPath }) => 
  *
  * @returns {Object} - Built run result object if a hook fails
  */
-const loopHooks = async (args) => {
-  const {
-    type,
-    test,
-    specId,
-    suiteId,
-    describe,
-  } = args
+const loopHooks = async args => {
+  const { type, test, specId, suiteId, describe } = args
 
   let hookIdx
   const fullName = test
@@ -52,10 +49,12 @@ const loopHooks = async (args) => {
 
   try {
     describe[type].length &&
-      await Promise.all(describe[type].map((fn, idx) => {
-        hookIdx = idx
-        return fn()
-      }))
+      (await Promise.all(
+        describe[type].map((fn, idx) => {
+          hookIdx = idx
+          return fn()
+        })
+      ))
   }
   catch (error) {
     return runResult(describe, {
@@ -63,12 +62,13 @@ const loopHooks = async (args) => {
       action: type,
       status: 'failed',
       id: test ? specId : suiteId,
-      failed: {name: error.name, message: error.message},
-      testPath: test ? `/${suiteId}/${specId}/${type}${hookIdx}` : `/${suiteId}/${type}${hookIdx}`,
+      failed: { name: error.name, message: error.message },
+      testPath: test
+        ? `/${suiteId}/${specId}/${type}${hookIdx}`
+        : `/${suiteId}/${type}${hookIdx}`,
     })
   }
 }
-
 
 /**
  * Helper to loop over tests and call their test method
@@ -76,22 +76,15 @@ const loopHooks = async (args) => {
  *
  * @returns {Object} - Built run result object of the test results
  */
-const loopTests = async (args) => {
-  const {
-    suiteId,
-    describe,
-    testOnly,
-    specDone,
-    specStarted,
-  } = args
-  
+const loopTests = async args => {
+  const { suiteId, describe, testOnly, specDone, specStarted } = args
+
   let describeFailed = false
   const results = []
-  
-  // ------ describe - loop tests ------ //
-  for (let testIdx= 0; testIdx < describe.tests.length; testIdx++) {
 
-    const test =  describe.tests[testIdx]
+  // ------ describe - loop tests ------ //
+  for (let testIdx = 0; testIdx < describe.tests.length; testIdx++) {
+    const test = describe.tests[testIdx]
     const specId = `spec${testIdx}`
     const testPath = `/${suiteId}/${specId}`
     const fullName = `${describe.description} > ${test.description}`
@@ -103,8 +96,13 @@ const loopTests = async (args) => {
       action: 'start',
     })
 
-    if((testOnly && !test.only) || test.skip){
-      specStarted({...testResult, skipped: true, action: 'skipped', status: 'skipped'})
+    if ((testOnly && !test.only) || test.skip) {
+      specStarted({
+        ...testResult,
+        skipped: true,
+        action: 'skipped',
+        status: 'skipped',
+      })
       continue
     }
     else specStarted(testResult)
@@ -116,7 +114,7 @@ const loopTests = async (args) => {
       describe,
       type: Types.beforeEach,
     })
-    if(beforeEachResult){
+    if (beforeEachResult) {
       describeFailed = true
       results.push(beforeEachResult)
       specDone(beforeEachResult)
@@ -140,7 +138,7 @@ const loopTests = async (args) => {
         id: specId,
         action: Types.test,
         testPath: testPath,
-        failed: {name: error.name, message: error.message},
+        failed: { name: error.name, message: error.message },
       })
       describeFailed = true
     }
@@ -152,7 +150,7 @@ const loopTests = async (args) => {
       describe,
       type: Types.afterEach,
     })
-    if(afterEachResult){
+    if (afterEachResult) {
       describeFailed = true
       results.push(afterEachResult)
       specDone(afterEachResult)
@@ -160,7 +158,7 @@ const loopTests = async (args) => {
     }
 
     results.push(testResult)
-    specDone({ ...testResult, action: 'end'})
+    specDone({ ...testResult, action: 'end' })
   }
 
   return {
@@ -175,14 +173,14 @@ const loopTests = async (args) => {
  *
  * @returns {Object} - Built run results of the test results
  */
-const loopDescribes = async (args) => {
+const loopDescribes = async args => {
   const {
     root,
     testOnly,
     specDone,
     suiteDone,
     specStarted,
-    parentIdx=``,
+    parentIdx = ``,
     suiteStarted,
     describeOnly,
   } = args
@@ -191,7 +189,7 @@ const loopDescribes = async (args) => {
   const results = []
 
   // ------ loop describes ------ //
-  for (let idx= 0; idx < root.describes.length; idx++) {
+  for (let idx = 0; idx < root.describes.length; idx++) {
     const describe = root.describes[idx]
     const suiteId = `suite-${parentIdx}${idx}`
     let describeResult = runResult(describe, {
@@ -201,12 +199,18 @@ const loopDescribes = async (args) => {
       fullName: describe.description,
     })
 
-    const shouldSkip = describe.skip ||
-      (describeOnly && (!describe.only && !describe.onlyChild)) ||
+    const shouldSkip =
+      describe.skip ||
+      (describeOnly && !describe.only && !describe.onlyChild) ||
       (testOnly && !describe.onlyChild)
 
-    if(shouldSkip){
-      suiteStarted({...describeResult, skipped: true, action: 'skipped', status: 'skipped'})
+    if (shouldSkip) {
+      suiteStarted({
+        ...describeResult,
+        skipped: true,
+        action: 'skipped',
+        status: 'skipped',
+      })
       continue
     }
     else suiteStarted(describeResult)
@@ -216,9 +220,9 @@ const loopDescribes = async (args) => {
       describe,
       type: Types.beforeAll,
     })
-    if(beforeAllResult){
+    if (beforeAllResult) {
       describeFailed = true
-      describeResult = {...describeResult, ...beforeAllResult}
+      describeResult = { ...describeResult, ...beforeAllResult }
       suiteDone(describeResult)
       results.push(describeResult)
       continue
@@ -232,13 +236,14 @@ const loopDescribes = async (args) => {
       specStarted,
     })
 
-    const describesResults = describe.describes &&
+    const describesResults =
+      describe.describes &&
       describe.describes.length &&
-      await loopDescribes({
+      (await loopDescribes({
         ...args,
         root: describe,
         parentIdx: `${idx}-`,
-      })
+      }))
 
     describeResult = {
       ...describeResult,
@@ -247,7 +252,7 @@ const loopDescribes = async (args) => {
       tests: testResults.tests,
     }
 
-    if(testResults.failed || describesResults.failed){
+    if (testResults.failed || describesResults.failed) {
       describeFailed = true
       describeResult.failed = true
     }
@@ -257,9 +262,9 @@ const loopDescribes = async (args) => {
       describe,
       type: Types.afterAll,
     })
-    if(afterAllResult){
+    if (afterAllResult) {
       describeFailed = true
-      describeResult = {...describeResult, ...afterAllResult}
+      describeResult = { ...describeResult, ...afterAllResult }
       suiteDone(describeResult)
       results.push(describeResult)
       continue
@@ -269,7 +274,7 @@ const loopDescribes = async (args) => {
     results.push(describeResult)
   }
 
-  return {describes: results, failed: describeFailed}
+  return { describes: results, failed: describeFailed }
 }
 
 /**
@@ -278,7 +283,7 @@ const loopDescribes = async (args) => {
  *
  * @returns {Object} - Results of the test run
  */
-export const run = async (args) => {
+export const run = async args => {
   validateRootRun(args.root)
   const { describes } = await loopDescribes(args)
   return describes
