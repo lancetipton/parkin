@@ -1,1 +1,1114 @@
-"use strict";function _defineProperty(e,t,r){return t in e?Object.defineProperty(e,t,{value:r,enumerable:!0,configurable:!0,writable:!0}):e[t]=r,e}function _classPrivateFieldGet(e,t){return _classApplyDescriptorGet(e,_classExtractFieldDescriptor(e,t,"get"))}function _classPrivateFieldSet(e,t,r){return _classApplyDescriptorSet(e,_classExtractFieldDescriptor(e,t,"set"),r),r}function _classExtractFieldDescriptor(e,t,r){if(!t.has(e))throw new TypeError("attempted to "+r+" private field on non-instance");return t.get(e)}function _classApplyDescriptorGet(e,t){return t.get?t.get.call(e):t.value}function _classApplyDescriptorSet(e,t,r){if(t.set)t.set.call(e,r);else{if(!t.writable)throw new TypeError("attempted to set read only private field");t.value=r}}function _checkPrivateRedeclaration(e,t){if(t.has(e))throw new TypeError("Cannot initialize the same private elements twice on an object")}function _classPrivateFieldInitSpec(e,t,r){_checkPrivateRedeclaration(e,t),t.set(e,r)}Object.defineProperty(exports,"__esModule",{value:!0});const isArr=e=>Array.isArray(e),isObj=e=>"object"==typeof e&&!Array.isArray(e)&&null!==e,isFunc=e=>"function"==typeof e,isStr=e=>"string"==typeof e,equalsNaN=e=>"number"==typeof e&&e!=e,deepFreeze=e=>(Object.freeze(e),Object.getOwnPropertyNames(e).map((t=>{e.hasOwnProperty(t)&&null!==e[t]&&("object"==typeof e[t]||isFunc(e[t]))&&!Object.isFrozen(e[t])&&deepFreeze(e[t])})),e),noOp=()=>{},noOpObj=Object.freeze({});deepFreeze({content:{}}),deepFreeze([]);const exists=e=>e==e&&null!=e,eitherArr=(e,t)=>isArr(e)?e:t,toStr=e=>null==e?"":isStr(e)?e:JSON.stringify(e),isColl=e=>"object"==typeof e&&null!==e,updateColl=(e,t,r,s)=>{const n=e;if(!isColl(e)||!e||!t)return"set"!==r&&s||void 0;const a=isArr(t)?Array.from(t):t.split("."),o=a.pop();let i,c;for(;i=a.shift();){const t=e[i];if(isColl(t)||isFunc(t)?e=t:("set"===r?e[i]={}:c=!0,e=e[i]),c)return s}return"get"===r?o in e?e[o]:s:"unset"===r?delete e[o]:(e[o]=s)&&n||n},get=(e,t,r)=>updateColl(e,t,"get",r),checkCall=(e,...t)=>isFunc(e)?e(...t):void 0;Array.from(["caller","callee","arguments","apply","bind","call","toString","__proto__","__defineGetter__","__defineSetter__","hasOwnProperty","__lookupGetter__","__lookupSetter__","isPrototypeOf","propertyIsEnumerable","valueOf","toLocaleString"]).concat(Object.getOwnPropertyNames(Object.prototype)).reduce(((e,t)=>(e[t]=!0,e)),{});const isRegex=e=>Boolean(e&&e instanceof RegExp),getRegexSource=e=>{return t=e,Boolean(t&&t instanceof RegExp)?e.source:isStr(e)?e:null;var n},parseArgs=e=>{if(isArr(e[0]))return[e[0],e[1]];const t=e[e.length-1],r=isStr(t)?t:void 0;return[r?e.splice(0,e.length-1):e,r]},joinRegex=(...e)=>{const[t,r]=parseArgs(e),s=t.reduce(((e,t)=>{const r=(n=s=t,Boolean(n&&n instanceof RegExp)?s.source:isStr(s)?s:null);var s,n;return r?""===e?r:`${e}|${r}`:e}),"");return new RegExp(`(${s})`,r)},capitalize=(e,t=!0)=>{if(!isStr(e)||!e[0])return e;const r=t?e.slice(1).toLowerCase():e.slice(1);return`${e[0].toUpperCase()}${r}`},quoteSymbols=['"',"'"],isQuoted=(e,t=quoteSymbols)=>isStr(e)&&t.some((t=>e.startsWith(t)&&e.endsWith(t))),reverseStr=e=>{if(!isStr(e))return;let t="";for(let r of e)t=r+t;return t},getNearestDelimiterIndex=(e,t,r)=>r.map((r=>e.indexOf(r,t))).sort().find((e=>e>=0)),getWordStartingAt=(e,t,r=[" "])=>{const s=getNearestDelimiterIndex(e,t,r);return e.substring(t,-1===s?e.length:s)},getWordEndingAt=(e,t,r=[" "])=>{const s=reverseStr(e),n=e.length-t;return reverseStr(getWordStartingAt(s,n,r))},getRXMatch=(e,t,r)=>e.match(t)[r].trim(),sanitizeForId=e=>`${e.trim().toLowerCase().replace(/[\s\/\\\(\)\+=_&%\$#@!\*~`\|\?:;"'<>,.{}]/g,"-")}-${e.length}`,sanitize=e=>{let t=e.match.toString();return"/"===t[0]&&(t=t.substr(1)),"^"===t[0]&&(t=t.substr(1)),"/"===t.charAt(t.length-1)&&(t=t.slice(0,-1)),"$"===t.charAt(t.length-1)&&(t=t.slice(0,-1)),t.replace(/\(\?:([^\|]+)+\|+([^\)]+)?\)/,"$1")},validateDefinition=(e,t)=>t.reduce(((e,t)=>!(!e||t.content===e.content)&&(t.uuid===e.uuid&&(e.uuid=`${e.uuid}-${e.content.length}`),e)),{...e}),removeQuotes=e=>e.trim().replace(/^("|')/,"").replace(/("|')$/,""),RX_OPTIONAL=/\w*\([^)]*?\)/,RX_ALT=/\s*\S*\/\S*\s*/,RX_PARAMETER=/\s*{(.*?)}\s*/,RX_EXPRESSION=joinRegex(RX_PARAMETER,RX_OPTIONAL,"g"),RX_ANY=/(.*)/,RX_MATCH_REPLACE=/{|}/g,RX_DOUBLE_QUOTED=/"[^"]+"/,RX_SINGLE_QUOTED=/'[^']+'/,RX_FLOAT=/-?[0-9]+[.][0-9]+/,RX_INT=/-?[0-9]+/,RX_WORLD=/^["]?\$world\.\S+["]?/,RX_WORLD_REPLACE=/(\$:world|\$world)+\.[^"'\s]*/gm,testMethodFill=e=>()=>{throw new Error(`Test method ${e} does not exist on the global scope.\nPlease ensure ${e} exists before calling the run method!\n`)},throwMissingSteps=()=>{throw new Error("Runner class constructor requires an instance of the Steps class")},throwMissingFeatureText=()=>{throw new Error("Runner class requires feature text when calling the run method")},throwNoMatchingStep=e=>{throw new ReferenceError(e)},throwParamTypeExists=()=>{throw new Error(`Cannot register param type "${name}". It already exists!`)},throwFeatureNotAnObj=e=>{throw new Error("Assemble feature requires an object matching the feature model spec!",e)},throwMissingWorldValue=(e,t)=>{throw new Error(`Can not replace ${e} with value from $world, it does not exist on the world object`,t,e)},throwInvalidHookType=(e,t)=>{throw new Error([`Expected client hook type to be one of ', ${e}.`,`Found: ${t}`].join("\n"))},throwWorldReplace=(e,t)=>{throw console.log(`Error in $world replace of text content. Current match was ${t}`),e},checkWorldValue=(e,t)=>(r,s)=>{const n=r.match(RX_WORLD);if(!isObj(s)||!n)return matchType(e(r),t);const a=get(s,removeQuotes(r).replace("$world.",""));return exists(a)?matchType(a,t):throwMissingWorldValue(r,s)},matchType=(e,t)=>typeof e===t?e:null,typeModel={name:"",regex:"",type:"string",useForSnippets:!0,preferForRegexpMatch:!1,transformer:checkWorldValue((e=>e),"string")},__paramTypes={any:{...typeModel,name:"any",regex:RX_ANY},word:{...typeModel,name:"word",regex:RX_ANY,transformer:checkWorldValue((e=>{return isQuoted(e)?void 0:null==(t=e)?"":isStr(t)?t:JSON.stringify(t);var t}),typeModel.type)},float:{...typeModel,name:"float",type:"number",regex:RX_FLOAT,transformer:checkWorldValue((e=>{const t=parseFloat(e);return equalsNaN(t)?void 0:t}),"number")},int:{...typeModel,name:"int",type:"number",regex:RX_INT,transformer:checkWorldValue((e=>{const t=parseInt(e);return equalsNaN(t)||e.includes(".")?void 0:t}),"number")},string:{...typeModel,name:"string",regex:joinRegex(RX_DOUBLE_QUOTED,RX_SINGLE_QUOTED),transformer:checkWorldValue((e=>isQuoted(e)?removeQuotes(e):void 0),typeModel.type)}},getParamTypes=()=>__paramTypes,registerParamType=(e=noOpObj,t=e.name)=>__paramTypes[t]?throwParamTypeExists():(__paramTypes[t]={...typeModel,...e},__paramTypes[t].transformer=checkWorldValue(__paramTypes[t].transformer,__paramTypes[t].type),__paramTypes),convertTypes=(e,t,r)=>e.map(((e,s)=>{const n=t[s]||__paramTypes.any;return checkCall(n.transformer,e,r)})).filter(exists),matchRegex=(e,t)=>{const r=t.match(new RegExp(e.match));return r?{definition:e,match:r.slice(1,r.length).filter(Boolean)}:noOpObj},toAlternateRegex=e=>{const t=e.split(/(\(|\))/),[r,,s,,n]=t;return""===r&&""===n?e+"?":""===r?`(${s}|${s}${n})`:""===n?`(${r}|${r}${s})`:`(${r}${n}|${r}${s}${n})`},getFullOptionalText=e=>{const t=e.input;return getWordEndingAt(t,e.index)+e[0]},getOptionalRegex=e=>{const t=getFullOptionalText(e);return toAlternateRegex(t)},getParamRegex=e=>{const t=getParamTypes();return(t[e]||t.any).regex.source},getAlternateRegex=e=>`(${e.trim().replace(/\//g,"|")})`,getMatchRegex=(e,t)=>{const[r,s]=t;switch(e){case"parameter":return new RegExp(getParamRegex(s));case"optional":return new RegExp(getOptionalRegex(t));case"alternate":return new RegExp(getAlternateRegex(r));default:return null}},parseMatch=(e,t="other")=>{const r=e[0];return{text:r.trim(),index:e.index,input:e.input,regex:getMatchRegex(t,e),type:t,..."parameter"===t&&{paramType:r.trim().replace(RX_MATCH_REPLACE,"")}}},getRegexParts=e=>[...[...e.matchAll(new RegExp(RX_PARAMETER,"gi"))].map((e=>parseMatch(e,"parameter"))),...[...e.matchAll(new RegExp(RX_OPTIONAL,"gi"))].map((e=>parseMatch(e,"optional"))),...[...e.matchAll(new RegExp(RX_ALT,"gi"))].map((e=>parseMatch(e,"alternate")))].sort(((e,t)=>e.index-t.index)),constants=deepFreeze({REGEX_VARIANT:"regex",EXPRESSION_VARIANT:"expression",STEP_TYPES:["given","when","then","and","but"],HOOK_TYPES:["beforeAll","afterAll","beforeEach","afterEach"],FEATURE_META:["feature","perspective","desire","reason","comments"],WORLD_AT_RUNTIME:"$:"}),hasWindow=Boolean("undefined"!=typeof window),hasGlobal=Boolean("undefined"!=typeof global),hasModule=Boolean("object"==typeof module),hasRequire=Boolean("function"==typeof require),hasJasmine=Boolean(hasGlobal&&void 0!==global.jasmine),resolveJasmine=()=>hasJasmine?checkCall((()=>global.jasmine)):{getEnv:()=>noOpObj},resolveModule=()=>hasModule?checkCall((()=>module)):{exports:{}},resolveRequire=()=>hasRequire?checkCall((()=>require)):noOp,resolveGlobalObj=()=>{try{return hasWindow?checkCall((()=>window)):hasGlobal?checkCall((()=>global)):noOpObj}catch(e){return noOpObj}},escapeStr=e=>hasWindow?e.replace(/[|\\[\]^$+*?.]/g,"\\$&").replace(/-/g,"\\x2d"):e.replace(/[|\\[\]^$+*?.]/g,"\\$&"),runRegexCheck=(e,t,r)=>{if(!t.test(e))return e;let s=e;return e.replace(t,((...e)=>{const t=e[0].trim(),[n,...a]=s.split(t),o=isFunc(r)?r(...e):r;s=`${n}${o}${a.join(t)}`})),s},convertToRegex=e=>{const t=getParamTypes(),r=[];return{regex:runRegexCheck(e,RX_EXPRESSION,((e,...s)=>{const n=e.trim().replace(RX_MATCH_REPLACE,""),a=e.match(RX_PARAMETER),o=e.match(RX_OPTIONAL);return a&&r.push(t[n]||t.any),a?getParamRegex(n):o?toAlternateRegex(e):e})),transformers:r}},checkAlternative=e=>({regex:runRegexCheck(e,new RegExp(RX_ALT,"g"),getAlternateRegex),altIndexes:[]}),checkAnchors=e=>{let t=e;return e.startsWith("^")||(t="^"+t),e.endsWith("$")||(t+="$"),{regex:t}},extractParameters=(e,t,r)=>{const s=[...[...(n=t).matchAll(new RegExp(RX_PARAMETER,"gi"))].map((e=>parseMatch(e,"parameter"))),...[...n.matchAll(new RegExp(RX_OPTIONAL,"gi"))].map((e=>parseMatch(e,"optional"))),...[...n.matchAll(new RegExp(RX_ALT,"gi"))].map((e=>parseMatch(e,"alternate")))].sort(((e,t)=>e.index-t.index));var n;const a=s.filter((e=>"parameter"===e.type)).length,o=s.reduce(((t,s)=>{const{params:n,textIndex:a,wordMatchIndex:o}=t,i=e.substring(a),c="word"===s.paramType,l=i.match(s.regex),p={0:r[o],index:i.indexOf(r[o])},u=c?p:l;return u?("parameter"===s.type&&u&&n.push(u[0]),{params:n,textIndex:a+(u&&u.index+u[0].length),wordMatchIndex:o+(c&&1)}):t}),{params:[],textIndex:0,wordMatchIndex:0});return a===o.params.length?o.params:null},matchExpression=(e,t,r)=>{if(e.match===t)return{definition:e,match:[]};const s=(n=e.match,hasWindow?n.replace(/[|\\[\]^$+*?.]/g,"\\$&").replace(/-/g,"\\x2d"):n.replace(/[|\\[\]^$+*?.]/g,"\\$&"));var n;const{regex:a}=checkAlternative(s),{regex:o,transformers:i}=convertToRegex(a),{regex:c}=checkAnchors(o),l=matchRegex({...e,match:c},t);if(!l||!l.definition||!l.match)return noOpObj;const p=extractParameters(t,e.match,l.match);if(!p)return noOpObj;const u=convertTypes(p,i,r);return u.length!==p.length?noOpObj:{definition:e,match:u}},{REGEX_VARIANT:REGEX_VARIANT$1}=constants,matcher=(e,t,r)=>e.reduce(((e,s)=>e.match||!s.match?e:s.variant!==REGEX_VARIANT$1?matchExpression(s,t,r):matchRegex(s,t)),noOpObj),{REGEX_VARIANT:REGEX_VARIANT,EXPRESSION_VARIANT:EXPRESSION_VARIANT,STEP_TYPES:STEP_TYPES}=constants,getContent=e=>{const t=e.variant===REGEX_VARIANT?e.match.toString():`"${e.match}"`;return`${capitalize(e.type)}(${t}, ${e.method.toString()})`},registerFromCall=function(e,t,r,s,n=noOpObj){const a={type:t,meta:n,match:r,method:s,tokens:[],variant:0===r.toString().indexOf("/")?REGEX_VARIANT:EXPRESSION_VARIANT};a.name=sanitize(a),a.uuid=sanitizeForId(`${t}-${a.name}`),a.content=getContent(a);const o=this.list(),i=validateDefinition(a,o);return i&&this[e].push(i),i},tempRegister=(e,t,r)=>(...s)=>{const n=e[t](...s);return r[t].push(n),n},registerFromParse=function(e){const t=this.types.map((e=>capitalize(e))),r=t.reduce(((e,t)=>(e[t]=[],e)),{});return eitherArr(e,[e]).map((e=>{Function(`return (global, require, module, ${t.join(",")}) => {\n          return (function(global) { ${e} }).call(global, global)\n        }`)()(resolveGlobalObj(),hasRequire?checkCall((()=>require)):noOp,hasModule?checkCall((()=>module)):{exports:{}},...t.map((e=>tempRegister(this,e,r))))})),r},joinAllSteps=e=>e.types.reduce(((t,r)=>t.concat(e[`_${r}`])),[]);class Steps{constructor(e){_defineProperty(this,"types",STEP_TYPES),_defineProperty(this,"list",(()=>{return(e=this).types.reduce(((t,r)=>t.concat(e[`_${r}`])),[]);var e})),_defineProperty(this,"typeList",(()=>this.types.reduce(((e,t)=>{const r=`_${t}`;return e[r]=[...this[r]],e}),{}))),_defineProperty(this,"match",(e=>{const t=this.list(),r=matcher(t,e,this._world);return!(!r.match||!r.definition)&&(r.match.push(this._world),r)})),_defineProperty(this,"resolve",(e=>{const t=this.match(e);return t?t.definition.method(...t.match):throwNoMatchingStep(`Matching definition could not be found for step: "${e}"`)})),_defineProperty(this,"register",((...e)=>isStr(e[0])?registerFromCall.apply(this,e):registerFromParse.apply(this,e))),_defineProperty(this,"clear",(()=>{this.types.map((e=>this[`_${e}`]=[]))})),this._world=e||{};const t=this;this.types.map((e=>{const r=`_${e}`;this[r]=[],this[capitalize(e)]=(s,n,a)=>t.register(r,e,s,n,a)}))}}const{HOOK_TYPES:HOOK_TYPES}=constants;class Hooks{constructor(){_defineProperty(this,"types",HOOK_TYPES),_defineProperty(this,"getRegistered",(e=>this.types.includes(e)?this._registeredHooks[e]||noOp:throwInvalidHookType(HOOK_TYPES.join(", "),e))),this._registeredHooks={},this.types.map((e=>{this[e]=t=>{isFunc(t)&&(this._registeredHooks[e]=t)}}))}}const RX_GIVEN=/^\s*Given (.*)$/,RX_WHEN=/^\s*When(.*)$/,RX_THEN=/^\s*Then (.*)$/,RX_AND=/^\s*And (.*)$/,RX_BUT=/^\s*But (.*)$/,RX_ASTERISK=/^\s*\* (.*)$/,RX_DOC_QUOTES=/^\s*?"""\s*?/,RX_DOC_TICKS=/^\s*?```\s*?/,RX_DATA_TABLE=/^\s*?\|/,RegStepTags=[{regex:RX_GIVEN,type:"given"},{regex:RX_WHEN,type:"when"},{regex:RX_THEN,type:"then"},{regex:RX_AND,type:"and"},{regex:RX_BUT,type:"but"},{regex:RX_ASTERISK,type:"and"}],checkDataTable=(e,t,r,s)=>{if(!RX_DATA_TABLE.test(r))return e;let n;return e.table={index:s,content:t.reduce(((e,t)=>(n=n||!RX_DATA_TABLE.test(t),!n&&e.push(t.split("|").reduce(((e,t)=>{const r=t.trim();return r&&e.push(r),e}),[])),e)),[])},e},checkDocString=(e,t,r,s)=>{let n=RX_DOC_QUOTES.test(r)&&'"""';if(n=n||RX_DOC_TICKS.test(r)&&"```",!n)return e;const a=r.split(n)[0],o=new Array(a.length).fill("\\s").join(""),i=new RegExp(`^${o}`);return e.doc={index:s,whiteSpace:a,type:'"""'===n?"quote":"tick",content:t.split(n).slice(1).shift().split("\n").reduce(((e,t)=>(e.push(t.replace(i,"")),e)),[]).join("\n")},e},stepFactory=(e,t,r,s)=>{let n={type:e,index:s,step:t,uuid:sanitizeForId(`${e}-${t}`)};const a=s+1,o=r[a],i=r.slice(a);return n=checkDataTable(n,i,o,a),n=checkDocString(n,i.join("\n"),o,a),n},parseStep=(e,t,r,s)=>RegStepTags.reduce(((n,a)=>{if(n)return n;const o=a.regex.test(r);return o&&e.steps.push(stepFactory(a.type,getRXMatch(r,a.regex,1),t,s)),o}),!1),{WORLD_AT_RUNTIME:WORLD_AT_RUNTIME}=constants,worldReplace=(e,t)=>{let r;try{return e.replace(RX_WORLD_REPLACE,(e=>{r=e;const s=e.trim();if(0===s.indexOf(WORLD_AT_RUNTIME))return s.replace(WORLD_AT_RUNTIME,"$");const n=s.replace(/^\$world\./,""),a=get(t,n);return isFunc(a)?a(t,path):exists(a)?a:e}))}catch(e){throwWorldReplace(e,r)}},RX_NEWLINE=/\r?\n/g,RX_TAG=/^\s*@(.*)$/,RX_COMMENT=/^\s*#(.*)$/,RX_FEATURE=/^\s*Feature:(.*)$/,RX_AS=/^\s*As (.*)$/,RX_I_WANT=/^\s*I want (.*)$/,RX_SO_THAT=/^\s*So that (.*)$/,RX_IN_ORDER=/^\s*In order (.*)$/,RX_SCENARIO=/^\s*Scenario:(.*)$/,RX_EXAMPLE=/^\s*Example:(.*)$/,RX_BACKGROUND=/^\s*Background:(.*)$/,featureMetaTags=[{regex:RX_AS,key:"perspective"},{regex:RX_I_WANT,key:"desire"},{regex:RX_SO_THAT,key:"reason"},{regex:RX_IN_ORDER,key:"reason"}],featureFactory=(e,t,r)=>({index:r,content:t,feature:e,tags:[],reason:[],comments:[],scenarios:[],...e&&{uuid:sanitizeForId(e)}}),scenarioFactory=(e,t)=>({index:t,scenario:e,tags:[],steps:[],...e&&{uuid:sanitizeForId(e)}}),backgroundFactory=(e,t)=>({index:t,steps:[],background:e,...e&&{uuid:sanitizeForId(e)}}),addReason=(e,t,r)=>{t&&e.reason.push({content:t,index:r})},featureMeta=(e,t,r)=>{let s=!1;return featureMetaTags.reduce(((n,a)=>{if(n)return n;const o=a.regex.test(t);return!s&&o&&(s=!0),o?"reason"===a.key?addReason(e,getRXMatch(t,a.regex,0),r):e[a.key]={content:getRXMatch(t,a.regex,0),index:r}:o}),!1),s},checkTag=(e,t,r,s)=>{if(!RX_TAG.test(r))return!1;const n=e.background?t:e,a=getRXMatch(r,RX_TAG,0);return n.tags=(n.tags||[]).concat(a.split(" ")),!0},featureComment=(e,t,r)=>{if(!RX_COMMENT.test(t))return!1;const s=t.match(RX_COMMENT)[0];return e.comments.push({content:s,index:r}),!0},ensureFeature=(e,t,r,s,n)=>{if(!RX_FEATURE.test(r))return t;const a=getRXMatch(r,RX_FEATURE,1);return t.feature?featureFactory(a,s,n):(t.feature=a,t.index||(t.index=n),t.uuid||(t.uuid=sanitizeForId(t.feature)),!e.includes(t)&&e.push(t),t)},ensureScenario=(e,t,r,s)=>{if(!RX_SCENARIO.test(r)&&!RX_EXAMPLE.test(r))return t;let n=getRXMatch(r,RX_SCENARIO,1);return n=n||getRXMatch(r,RX_EXAMPLE,1),t.scenario?t=scenarioFactory(n,s):t.scenario=n,!t.index&&(t.index=s),!t.uuid&&(t.uuid=sanitizeForId(t.scenario)),!e.scenarios.includes(t)&&e.scenarios.push(t),t},ensureBackground=(e,t,r,s)=>{if(!RX_BACKGROUND.test(r))return t;const n=`${e.uuid}-background`;return t.background?t=backgroundFactory(n,s):t.background=n||"",!t.index&&(t.index=s),!t.uuid&&(t.uuid=sanitizeForId(t.background)),e.background=t,t},setActiveParent=(e,t,r,s,n)=>RX_SCENARIO.test(n)||RX_EXAMPLE.test(n)?r:RX_FEATURE.test(n)?t:RX_BACKGROUND.test(n)?s:e,parseFeature=function(e,t){t=t||this&&this.world||noOpObj;const r=worldReplace((e||"").toString(),t).split(RX_NEWLINE);let s=scenarioFactory(!1),n=backgroundFactory(!1),a=featureFactory(!1,e),o=a;return r.reduce(((t,i,c)=>(a=ensureFeature(t,a,i,e,c),featureComment(a,i,c)||featureMeta(a,i,c)?t:(s=ensureScenario(a,s,i,c),n=ensureBackground(a,n,i,c),parseStep(o,r,i,c)||(o=setActiveParent(o,a,s,n,i),checkTag(o,a,i)),t))),[])},parseDefinition=function(e){return this.steps.register([e])},getTestMethod=(e,t)=>t?noOp:global[e]||testMethodFill(e),buildReporter=(e,t)=>{const r=[],s=e.describe;return e.describe=(...e)=>{const t=s.apply(null,e);return r.push(t),t},{specDone:e=>{if("failed"!==e.status)return;const t=r.find((t=>t.children.find((t=>t.result===e))));t&&t.children.map((e=>e.disable()))}}},skipTestsOnFail=e=>{if(hasWindow||!hasJasmine)return;const t=(hasJasmine?checkCall((()=>global.jasmine)):{getEnv:()=>noOpObj}).getEnv();t&&t.describe&&t.addReporter(buildReporter(t))},resolveFeatures=(e,t)=>isStr(e)?parseFeature(e,t):isObj(e)?[e]:isArr(e)?e.reduce(((e,r)=>e.concat(resolveFeatures(r,t))),[]):throwMissingFeatureText(),runStep=async(e,t,r)=>{getTestMethod("test",r)(`${capitalize(t.type)} ${t.step}`,(async()=>await e.resolve(t.step)))},loopSteps=(e,t,r,s)=>(getTestMethod("describe",s)(t,(()=>{const t=e.steps.map((e=>runStep(r,e,s)));Promise.all(t)})),[]),runScenario=(e,t,r,s,n)=>(r&&loopSteps(r,`Background > ${t.scenario}`,e,n),loopSteps(t,`Scenario > ${t.scenario}`,e,n)),parseFeatureTags=e=>isStr(e)&&e.match(/[@]\w*/g),itemMatch=(e="",t=[],r={})=>{const{name:s,tags:n}=r,a=isStr(n)?parseFeatureTags(n):eitherArr(n,[]),o=!s||e.includes(s),i=!a.length||a.every((e=>t.includes(e)));return o&&i},filterFeatures=(e,t={})=>e.reduce(((e,r)=>{if(itemMatch(r.feature,r.tags,t))return e.push(r),e;const s=r.scenarios.filter((e=>itemMatch(e.scenario,[...e.tags||[],...r.tags||[]],t)));return s.length&&e.push({...r,scenarios:s}),e}),[]);class Runner{constructor(e,t,r){_defineProperty(this,"getFeatures",((e,t)=>{const r=resolveFeatures(e,this._world);return filterFeatures(r,t)})),_defineProperty(this,"run",(async(e,t=noOpObj)=>{const r=this.run.PARKIN_TEST_MODE;skipTestsOnFail();const s=getTestMethod("describe",r),n=getTestMethod("beforeAll",r),a=getTestMethod("afterAll",r),o=getTestMethod("beforeEach",r),i=getTestMethod("afterEach",r),c=this.getFeatures(e,t);if(!c.length)return!1;const l=await c.map((async e=>{let t=[];return n(this.hooks.getRegistered("beforeAll")),a(this.hooks.getRegistered("afterAll")),o(this.hooks.getRegistered("beforeEach")),i(this.hooks.getRegistered("afterEach")),s(`${e.feature} Feature`,(()=>{t=e.scenarios.map(((t,s)=>runScenario(this.steps,t,e.background,0,r))),Promise.all(t)})),t}));return await Promise.all(l),!0})),!e&&throwMissingSteps(),!t&&throwMissingHooks(),this.steps=e,this.hooks=t,this._world=r}}const{FEATURE_META:FEATURE_META}=constants,addContent=(e,t,r)=>{exists(r)?exists(e[r])?e.splice(r,0,t):e[r]=t:e.push(t)},addTags=(e,t,r="")=>{isArr(t)&&t.length&&addContent(e,`${r}${t.join(" ")}`)},addMeta=(e,t)=>{FEATURE_META.map((r=>{switch(r){case"feature":addContent(e,`Feature: ${t[r]}`,t.index);break;case"comments":isArr(t[r])&&t[r].map((t=>addContent(e,t.content,t.index)));break;case"reason":isArr(t[r])&&t[r].map((t=>addContent(e,`  ${t.content}`,t.index)));break;case"desire":case"perspective":t[r]&&addContent(e,`  ${t[r].content}`,t[r].index)}}))},addSteps=(e,t)=>{isArr(t.steps)&&t.steps.length&&t.steps.map((t=>addContent(e,`    ${capitalize(t.type)} ${t.step}`,t.index)))},addScenarios=(e,t)=>{t.scenarios&&t.scenarios.map((t=>{addTags(e,t.tags,"  "),addContent(e,`  Scenario: ${t.scenario}`,t.index),addSteps(e,t)}))},formatComment=(e,t,r)=>{const s=e[r+1],n=e[r-1];let a=exists(s)?s:n;if(!a)return`${t}\n`;const o=t.split("#").pop();return`${Array(a.length-a.trimStart().length).join(" ")} # ${o}\n`},formatAssembled=e=>Array.from(e,((t,r)=>exists(t)?t.startsWith("#")?formatComment(e,t,r):`${t}\n`:"\n")).join("").trim(),assembleFeature=e=>eitherArr(e,[e]).map((e=>{let t=[];return!isObj(e)&&throwFeatureNotAnObj(e),addTags(t,e.tags),addMeta(t,e),addScenarios(t,e),formatAssembled(t)})),assemble={feature:assembleFeature};var _isInit=new WeakMap;class Parkin{constructor(e,t){_classPrivateFieldInitSpec(this,_isInit,{writable:!0,value:!1}),_defineProperty(this,"init",((e=noOpObj,t)=>{if(_classPrivateFieldGet(this,_isInit))return console.warn("This instance of parkin has already been initialized!");_classPrivateFieldSet(this,_isInit,!0),this.world=e,this.steps=new Steps(this.world),this.hooks=new Hooks(this.world),this.runner=new Runner(this.steps,this.hooks,this.world),this.run=this.runner.run,this.parse={feature:parseFeature.bind(this),definition:parseDefinition.bind(this)},this.assemble=assemble,this.paramTypes={register:registerParamType},isObj(t)&&this.registerSteps(t),this.steps.types.map((e=>{this[capitalize(e)]=(t,r,s)=>this.steps.register(`_${e}`,e,t,r,s)}))})),_defineProperty(this,"registerSteps",(e=>{Object.entries(e).map(((e,t)=>Object.entries(t).map(((t,r)=>this.steps[capitalize(e)](t,...eitherArr(r,[r]))))))})),isObj(e)&&this.init(e,t)}}const PKInstance=new Parkin;exports.PKInstance=PKInstance,exports.Parkin=Parkin;
+System.register(['./wait-26c5e7c6-2112d3c7.js', './globalScope-fc1eb958.js'], (function (exports) {
+  'use strict';
+  var isArr, isStr, isFunc, isObj, noOpObj, checkCall, deepFreeze, _defineProperty, noOp, _classPrivateFieldInitSpec, _classPrivateFieldGet, _classPrivateFieldSet, hasWindow, resolveGlobalObj, resolveRequire, resolveModule, hasJasmine, resolveJasmine;
+  return {
+    setters: [function (module) {
+      isArr = module.i;
+      isStr = module.a;
+      isFunc = module.b;
+      isObj = module.c;
+      noOpObj = module.n;
+      checkCall = module.d;
+      deepFreeze = module.e;
+      _defineProperty = module._;
+      noOp = module.f;
+      _classPrivateFieldInitSpec = module.g;
+      _classPrivateFieldGet = module.h;
+      _classPrivateFieldSet = module.j;
+    }, function (module) {
+      hasWindow = module.h;
+      resolveGlobalObj = module.r;
+      resolveRequire = module.a;
+      resolveModule = module.b;
+      hasJasmine = module.c;
+      resolveJasmine = module.d;
+    }],
+    execute: (function () {
+
+      const equalsNaN = val => typeof val === 'number' && val != val;
+
+      const exists = value => value === value && value !== undefined && value !== null;
+
+      const eitherArr = (a, b) => isArr(a) ? a : b;
+
+      const toStr = val => val === null || val === undefined ? '' : isStr(val) ? val : JSON.stringify(val);
+
+      const isColl = val => typeof val === 'object' && val !== null;
+
+      const updateColl = (obj, path, type, val) => {
+        const org = obj;
+        if (!isColl(obj) || !obj || !path) return type !== 'set' && val || undefined;
+        const parts = isArr(path) ? Array.from(path) : path.split('.');
+        const key = parts.pop();
+        let prop;
+        let breakPath;
+        while (prop = parts.shift()) {
+          const next = obj[prop];
+          isColl(next) || isFunc(next) ? obj = next : (() => {
+            if (type === 'set') obj[prop] = {};else breakPath = true;
+            obj = obj[prop];
+          })();
+          if (breakPath) return val;
+        }
+        return type === 'get' ? key in obj ? obj[key] : val : type === 'unset' ? delete obj[key] : (obj[key] = val) && org || org;
+      };
+      const get = (obj, path, fallback) => updateColl(obj, path, 'get', fallback);
+
+      const isRegex = val => Boolean(val && val instanceof RegExp);
+      const getRegexSource = maybeRx => isRegex(maybeRx) ? maybeRx.source : isStr(maybeRx) ? maybeRx : null;
+      const parseArgs = args => {
+        if (isArr(args[0])) return [args[0], args[1]];
+        const last = args[args.length - 1];
+        const options = isStr(last) ? last : undefined;
+        const expressions = options ? args.splice(0, args.length - 1) : args;
+        return [expressions, options];
+      };
+      const joinRegex = (...args) => {
+        const [expressions, options] = parseArgs(args);
+        const source = expressions.reduce((joined, next) => {
+          const nextSource = getRegexSource(next);
+          return !nextSource ? joined : joined === '' ? nextSource : `${joined}|${nextSource}`;
+        }, '');
+        return new RegExp(`(${source})`, options);
+      };
+
+      const capitalize = (str, lowercaseTail = true) => {
+        if (!isStr(str) || !str[0]) return str;
+        const tail = lowercaseTail ? str.slice(1).toLowerCase() : str.slice(1);
+        return `${str[0].toUpperCase()}${tail}`;
+      };
+      const quoteSymbols = ['\"', '\''];
+      const isQuoted = (str, quotes = quoteSymbols) => {
+        return isStr(str) && quotes.some(quote => str.startsWith(quote) && str.endsWith(quote));
+      };
+      const reverseStr = str => {
+        if (!isStr(str)) return undefined;
+        let reversed = '';
+        for (let char of str) {
+          reversed = char + reversed;
+        }
+        return reversed;
+      };
+      const getNearestDelimiterIndex = (text, index, delimiters) => {
+        const indices = delimiters.map(str => text.indexOf(str, index)).sort();
+        return indices.find(idx => idx >= 0);
+      };
+      const getWordStartingAt = (text, index, delimiters = [' ']) => {
+        const endingSpaceIdx = getNearestDelimiterIndex(text, index, delimiters);
+        return text.substring(index, endingSpaceIdx === -1 ? text.length : endingSpaceIdx);
+      };
+      const getWordEndingAt = (text, index, delimiters = [' ']) => {
+        const reversed = reverseStr(text);
+        const reversedIndex = text.length - index;
+        return reverseStr(getWordStartingAt(reversed, reversedIndex, delimiters));
+      };
+
+      const getRXMatch = (line, regex, index) => {
+        const matching = line.match(regex)[index];
+        return matching ? matching.trim() : ` `;
+      };
+      const sanitizeForId = (text, index) => {
+        const cleaned = text && text.trim() && text.trim().toLowerCase().replace(/[\s\/\\\(\)\+=_&%\$#@!\*~`\|\?:;"'<>,.{}]/g, '-');
+        return cleaned ? `${cleaned}-${text.length}` : `${index}-${index.length}`;
+      };
+      const sanitize = step => {
+        let name = step.match.toString();
+        name[0] === '/' && (name = name.substr(1));
+        name[0] === '^' && (name = name.substr(1));
+        name.charAt(name.length - 1) === '/' && (name = name.slice(0, -1));
+        name.charAt(name.length - 1) === '$' && (name = name.slice(0, -1));
+        return name.replace(/\(\?:([^\|]+)+\|+([^\)]+)?\)/, '$1');
+      };
+      const validateDefinition = (definition, definitions) => {
+        return definitions.reduce((validated, def) => {
+          if (!validated || def.content === validated.content) return false;
+          def.uuid === validated.uuid && (validated.uuid = `${validated.uuid}-${validated.content.length}`);
+          return validated;
+        }, { ...definition
+        });
+      };
+      const removeQuotes = arg => arg.trim().replace(/^("|')/, '').replace(/("|')$/, '');
+
+      const RX_OPTIONAL = /\w*\([^)]*?\)/;
+      const RX_ALT = /\s*\S*\/\S*\s*/;
+      const RX_PARAMETER = /\s*{(.*?)}\s*/;
+      const RX_EXPRESSION = joinRegex(RX_PARAMETER, RX_OPTIONAL, 'g');
+      const RX_ANY = /(.*)/;
+      const RX_MATCH_REPLACE = /{|}/g;
+      const RX_DOUBLE_QUOTED = /"[^"]+"/;
+      const RX_SINGLE_QUOTED = /'[^']+'/;
+      const RX_FLOAT = /-?[0-9]+[.][0-9]+/;
+      const RX_INT = /-?[0-9]+/;
+      const RX_WORLD = /^["]?\$world\.\S+["]?/;
+      const RX_WORLD_REPLACE = /(\$:world|\$world)+\.[^"'\s]*/gm;
+
+      const testMethodFill = type => {
+        return () => {
+          throw new Error(`` + `Test method ${type} does not exist on the global scope.\n` + `Please ensure ${type} exists before calling the run method!\n`);
+        };
+      };
+      const throwMissingSteps = () => {
+        throw new Error(`Runner class constructor requires an instance of the Steps class`);
+      };
+      const throwMissingFeatureText = () => {
+        throw new Error(`Runner class requires feature text when calling the run method`);
+      };
+      const throwNoMatchingStep = text => {
+        throw new ReferenceError(text);
+      };
+      const throwParamTypeExists = () => {
+        throw new Error(`Cannot register param type "${name}". It already exists!`);
+      };
+      const throwFeatureNotAnObj = feature => {
+        throw new Error(`Assemble feature requires an object matching the feature model spec!`, feature);
+      };
+      const throwMissingWorldValue = (arg, world) => {
+        throw new Error(`Can not replace ${arg} with value from $world, it does not exist on the world object`, world, arg);
+      };
+      const throwInvalidHookType = (hookTypes, type) => {
+        throw new Error([`Expected client hook type to be one of ', ${hookTypes}.`, `Found: ${type}`].join('\n'));
+      };
+      const throwWorldReplace = (err, currentMatch) => {
+        console.log(`Error in $world replace of text content. Current match was ${currentMatch}`);
+        throw err;
+      };
+
+      const checkWorldValue = (func, type) => {
+        return (arg, $world) => {
+          const hasWorldVal = arg.match(RX_WORLD);
+          if (!isObj($world) || !hasWorldVal) return matchType(func(arg), type);
+          const worldVal = get($world, removeQuotes(arg).replace('$world.', ''));
+          return exists(worldVal) ? matchType(worldVal, type) : throwMissingWorldValue(arg, $world);
+        };
+      };
+      const matchType = (val, type) => {
+        return typeof val === type ? val : null;
+      };
+      const typeModel = {
+        name: '',
+        regex: '',
+        type: 'string',
+        useForSnippets: true,
+        preferForRegexpMatch: false,
+        transformer: checkWorldValue(arg => arg, 'string')
+      };
+      const __paramTypes = {
+        any: { ...typeModel,
+          name: 'any',
+          regex: RX_ANY
+        },
+        word: { ...typeModel,
+          name: 'word',
+          regex: RX_ANY,
+          transformer: checkWorldValue(arg => {
+            return !isQuoted(arg) ? toStr(arg) : undefined;
+          }, typeModel.type)
+        },
+        float: { ...typeModel,
+          name: 'float',
+          type: 'number',
+          regex: RX_FLOAT,
+          transformer: checkWorldValue(arg => {
+            const result = parseFloat(arg);
+            return equalsNaN(result) ? undefined : result;
+          }, 'number')
+        },
+        int: { ...typeModel,
+          name: 'int',
+          type: 'number',
+          regex: RX_INT,
+          transformer: checkWorldValue(arg => {
+            const result = parseInt(arg);
+            return equalsNaN(result) || arg.includes('.') ? undefined : result;
+          }, 'number')
+        },
+        string: { ...typeModel,
+          name: 'string',
+          regex: joinRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED),
+          transformer: checkWorldValue(arg => {
+            return isQuoted(arg) ? removeQuotes(arg) : undefined;
+          }, typeModel.type)
+        }
+      };
+      const getParamTypes = () => __paramTypes;
+      const registerParamType = (model = noOpObj, key = model.name) => {
+        if (__paramTypes[key]) return throwParamTypeExists();
+        __paramTypes[key] = { ...typeModel,
+          ...model
+        };
+        __paramTypes[key].transformer = checkWorldValue(__paramTypes[key].transformer, __paramTypes[key].type);
+        return __paramTypes;
+      };
+      const convertTypes = (matches, transformers, $world) => {
+        return matches.map((item, i) => {
+          const paramType = transformers[i] || __paramTypes.any;
+          return checkCall(paramType.transformer, item, $world);
+        }).filter(exists);
+      };
+
+      const matchRegex = (definition, text) => {
+        const match = text.match(new RegExp(definition.match));
+        return match ? {
+          definition,
+          match: match.slice(1, match.length).filter(Boolean)
+        } : noOpObj;
+      };
+      const toAlternateRegex = optional => {
+        const split = optional.split(/(\(|\))/);
+        const [start,, middle,, end] = split;
+        if (start === '' && end === '') return optional + '?';else if (start === '') return `(${middle}|${middle}${end})`;else if (end === '') return `(${start}|${start}${middle})`;else return `(${start}${end}|${start}${middle}${end})`;
+      };
+      const getFullOptionalText = match => {
+        const text = match.input;
+        const precedingWord = getWordEndingAt(text, match.index);
+        return precedingWord + match[0];
+      };
+      const getOptionalRegex = match => {
+        const optionalText = getFullOptionalText(match);
+        return toAlternateRegex(optionalText);
+      };
+      const getParamRegex = type => {
+        const params = getParamTypes();
+        const spec = params[type] || params.any;
+        return spec.regex.source;
+      };
+      const getAlternateRegex = value => {
+        return `(${value.trim().replace(/\//g, '|')})`;
+      };
+      const getMatchRegex = (type, match) => {
+        const [val, paramType] = match;
+        switch (type) {
+          case 'parameter':
+            return new RegExp(getParamRegex(paramType));
+          case 'optional':
+            return new RegExp(getOptionalRegex(match));
+          case 'alternate':
+            return new RegExp(getAlternateRegex(val));
+          default:
+            return null;
+        }
+      };
+      const parseMatch = (matchArr, type = 'other') => {
+        const val = matchArr[0];
+        return {
+          text: val.trim(),
+          index: matchArr.index,
+          input: matchArr.input,
+          regex: getMatchRegex(type, matchArr),
+          type,
+          ...(type === 'parameter' && {
+            paramType: val.trim().replace(RX_MATCH_REPLACE, '')
+          })
+        };
+      };
+      const getRegexParts = defMatcher => {
+        const parameters = [...defMatcher.matchAll(new RegExp(RX_PARAMETER, 'gi'))].map(match => parseMatch(match, 'parameter'));
+        const optionals = [...defMatcher.matchAll(new RegExp(RX_OPTIONAL, 'gi'))].map(match => parseMatch(match, 'optional'));
+        const alts = [...defMatcher.matchAll(new RegExp(RX_ALT, 'gi'))].map(match => parseMatch(match, 'alternate'));
+        const sortedExpressions = [...parameters, ...optionals, ...alts].sort((matchA, matchB) => matchA.index - matchB.index);
+        return sortedExpressions;
+      };
+
+      const constants = deepFreeze({
+        REGEX_VARIANT: 'regex',
+        WORLD_AT_RUNTIME: `$:`,
+        EXPRESSION_VARIANT: 'expression',
+        STEP_TYPES: ['given', 'when', 'then', 'and', 'but'],
+        HOOK_TYPES: ['beforeAll', 'afterAll', 'beforeEach', 'afterEach'],
+        FEATURE_META: ['feature', 'perspective', 'desire', 'reason', 'comments'],
+        LOG_JEST_SPEC_ENV: `PARKIN_LOG_JEST_SPEC`,
+        SPEC_RESULT_LOG: `------- PARKIN SPEC RESULT LOG -------`
+      });
+
+      const escapeStr = str => {
+        return hasWindow ? str.replace(/[|\\[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d') : str.replace(/[|\\[\]^$+*?.]/g, '\\$&');
+      };
+      const runRegexCheck = (matcher, testRx, replaceWith) => {
+        if (!testRx.test(matcher)) return matcher;
+        let regexStr = matcher;
+        matcher.replace(testRx, (...args) => {
+          const match = args[0].trim();
+          const [start, ...end] = regexStr.split(match);
+          const replace = isFunc(replaceWith) ? replaceWith(...args) : replaceWith;
+          regexStr = `${start}${replace}${end.join(match)}`;
+        });
+        return regexStr;
+      };
+      const convertToRegex = match => {
+        const paramTypes = getParamTypes();
+        const transformers = [];
+        const regex = runRegexCheck(match, RX_EXPRESSION, (val, ...args) => {
+          const type = val.trim().replace(RX_MATCH_REPLACE, '');
+          const isParameter = val.match(RX_PARAMETER);
+          const isOptional = val.match(RX_OPTIONAL);
+          isParameter && transformers.push(paramTypes[type] || paramTypes.any);
+          return isParameter ? getParamRegex(type) : isOptional ? toAlternateRegex(val) : val;
+        });
+        return {
+          regex,
+          transformers
+        };
+      };
+      const checkAlternative = match => {
+        const altIndexes = [];
+        const regex = runRegexCheck(match, new RegExp(RX_ALT, 'g'),
+        getAlternateRegex);
+        return {
+          regex,
+          altIndexes
+        };
+      };
+      const checkAnchors = str => {
+        let final = str;
+        if (!str.startsWith('^')) final = '^' + final;
+        if (!str.endsWith('$')) final += '$';
+        return {
+          regex: final
+        };
+      };
+      const extractParameters = (text, stepMatcher, wordMatches) => {
+        const parts = getRegexParts(stepMatcher);
+        const expectedParamLength = parts.filter(part => part.type === 'parameter').length;
+        const result = parts.reduce((state, part) => {
+          const {
+            params,
+            textIndex,
+            wordMatchIndex
+          } = state;
+          const substring = text.substring(textIndex);
+          const isWord = part.paramType === 'word';
+          const partMatch = substring.match(part.regex);
+          const wordMatch = {
+            0: wordMatches[wordMatchIndex],
+            index: substring.indexOf(wordMatches[wordMatchIndex])
+          };
+          const match = isWord ? wordMatch : partMatch;
+          if (!match) return state;
+          part.type === 'parameter' && match && params.push(match[0]);
+          return {
+            params,
+            textIndex: textIndex + (match && match.index + match[0].length),
+            wordMatchIndex: wordMatchIndex + (isWord && 1)
+          };
+        }, {
+          params: [],
+          textIndex: 0,
+          wordMatchIndex: 0
+        });
+        return expectedParamLength === result.params.length ? result.params : null;
+      };
+      const matchExpression = (definition, text, $world) => {
+        if (definition.match === text) return {
+          definition,
+          match: []
+        };
+        const escaped = escapeStr(definition.match);
+        const {
+          regex: regexAlts
+        } = checkAlternative(escaped);
+        const {
+          regex: convertedRegex,
+          transformers
+        } = convertToRegex(regexAlts);
+        const {
+          regex: match
+        } = checkAnchors(convertedRegex);
+        const found = matchRegex({ ...definition,
+          match
+        }, text);
+        if (!found || !found.definition || !found.match) return noOpObj;
+        const params = extractParameters(text, definition.match, found.match);
+        if (!params) return noOpObj;
+        const converted = convertTypes(params, transformers, $world);
+        return converted.length !== params.length ? noOpObj : {
+          definition,
+          match: converted
+        };
+      };
+
+      const {
+        REGEX_VARIANT: REGEX_VARIANT$1
+      } = constants;
+      const matcher = (definitions, text, $world) => {
+        return definitions.reduce((found, definition) => {
+          return found.match || !definition.match ? found : definition.variant !== REGEX_VARIANT$1 ? matchExpression(definition, text, $world) : matchRegex(definition, text);
+        }, noOpObj);
+      };
+
+      const {
+        REGEX_VARIANT,
+        EXPRESSION_VARIANT,
+        STEP_TYPES
+      } = constants;
+      const getContent = step => {
+        const match = step.variant === REGEX_VARIANT ? step.match.toString() : `"${step.match}"`;
+        return `${capitalize(step.type)}(${match}, ${step.method.toString()})`;
+      };
+      const registerFromCall = function (internalType, type, match, method, meta = noOpObj) {
+        const definition = {
+          type,
+          meta,
+          match,
+          method,
+          tokens: [],
+          variant: match.toString().indexOf('/') === 0 ? REGEX_VARIANT : EXPRESSION_VARIANT
+        };
+        definition.name = sanitize(definition);
+        definition.uuid = sanitizeForId(`${type}-${definition.name}`);
+        definition.content = getContent(definition);
+        const definitions = this.list();
+        const newDefinition = validateDefinition(definition, definitions);
+        newDefinition && this[internalType].push(newDefinition);
+        return newDefinition;
+      };
+      const tempRegister = (parent, type, container) => {
+        return (...args) => {
+          const definition = parent[type](...args);
+          container[type].push(definition);
+          return definition;
+        };
+      };
+      const registerFromParse = function (definitions) {
+        const DEF_TYPES = this.types.map(type => capitalize(type));
+        const container = DEF_TYPES.reduce((built, type) => {
+          built[type] = [];
+          return built;
+        }, {});
+        eitherArr(definitions, [definitions]).map(definition => {
+          Function(`return (global, require, module, ${DEF_TYPES.join(',')}) => {
+          return (function(global) { ${definition} }).call(global, global)
+        }`)()(
+          resolveGlobalObj(), resolveRequire(), resolveModule(),
+          ...DEF_TYPES.map(type => tempRegister(this, type, container)));
+        });
+        return container;
+      };
+      const joinAllSteps = instance => {
+        return instance.types.reduce((stepDefs, type) => stepDefs.concat(instance[`_${type}`]), []);
+      };
+      class Steps {
+        constructor(world) {
+          _defineProperty(this, "types", STEP_TYPES);
+          _defineProperty(this, "list", () => {
+            return joinAllSteps(this);
+          });
+          _defineProperty(this, "typeList", () => {
+            return this.types.reduce((stepDefs, type) => {
+              const internalType = `_${type}`;
+              stepDefs[internalType] = [...this[internalType]];
+              return stepDefs;
+            }, {});
+          });
+          _defineProperty(this, "match", text => {
+            const list = this.list();
+            const found = matcher(list, text, this._world);
+            if (!found.match || !found.definition) return false;
+            found.match.push(this._world);
+            return found;
+          });
+          _defineProperty(this, "resolve", text => {
+            const found = this.match(text);
+            return found ? found.definition.method(...found.match) : throwNoMatchingStep(`Matching definition could not be found for step: "${text}"`);
+          });
+          _defineProperty(this, "register", (...args) => {
+            return isStr(args[0]) ? registerFromCall.apply(this, args) : registerFromParse.apply(this, args);
+          });
+          _defineProperty(this, "clear", () => {
+            this.types.map(type => this[`_${type}`] = []);
+          });
+          this._world = world || {};
+          const self = this;
+          this.types.map(type => {
+            const internalType = `_${type}`;
+            this[internalType] = [];
+            this[capitalize(type)] = (match, method, meta) => {
+              return self.register(internalType, type, match, method, meta);
+            };
+          });
+        }
+      }
+
+      const {
+        HOOK_TYPES
+      } = constants;
+      class Hooks {
+        constructor() {
+          _defineProperty(this, "types", HOOK_TYPES);
+          _defineProperty(this, "getRegistered", type => {
+            return this.types.includes(type) ? this._registeredHooks[type] || noOp : throwInvalidHookType(HOOK_TYPES.join(', '), type);
+          });
+          this._registeredHooks = {};
+          this.types.map(type => {
+            this[type] = clientHookFn => {
+              if (!isFunc(clientHookFn)) return;
+              this._registeredHooks[type] = clientHookFn;
+            };
+          });
+        }
+      }
+
+      const RX_GIVEN = /^\s*Given (.*)$/;
+      const RX_WHEN = /^\s*When(.*)$/;
+      const RX_THEN = /^\s*Then (.*)$/;
+      const RX_AND = /^\s*And (.*)$/;
+      const RX_BUT = /^\s*But (.*)$/;
+      const RX_ASTERISK = /^\s*\* (.*)$/;
+      const RX_DOC_QUOTES = /^\s*?"""\s*?/;
+      const RX_DOC_TICKS = /^\s*?```\s*?/;
+      const RX_DATA_TABLE = /^\s*?\|/;
+      const RegStepTags = [{
+        regex: RX_GIVEN,
+        type: 'given'
+      }, {
+        regex: RX_WHEN,
+        type: 'when'
+      }, {
+        regex: RX_THEN,
+        type: 'then'
+      }, {
+        regex: RX_AND,
+        type: 'and'
+      }, {
+        regex: RX_BUT,
+        type: 'but'
+      }, {
+        regex: RX_ASTERISK,
+        type: 'and'
+      }];
+      const checkDataTable = (step, lines, line, index) => {
+        if (!RX_DATA_TABLE.test(line)) return step;
+        let tableEnd;
+        step.table = {
+          index,
+          content: lines.reduce((table, ln) => {
+            tableEnd = tableEnd || !RX_DATA_TABLE.test(ln);
+            !tableEnd && table.push(ln.split('|').reduce((row, item) => {
+              const column = item.trim();
+              column && row.push(column);
+              return row;
+            }, []));
+            return table;
+          }, [])
+        };
+        return step;
+      };
+      const checkDocString = (step, lines, line, index) => {
+        let docMatch = RX_DOC_QUOTES.test(line) && '"""';
+        docMatch = docMatch || RX_DOC_TICKS.test(line) && '```';
+        if (!docMatch) return step;
+        const whiteSpace = line.split(docMatch)[0];
+        const spacer = new Array(whiteSpace.length).fill('\\s').join('');
+        const spacerRegex = new RegExp(`^${spacer}`);
+        step.doc = {
+          index,
+          whiteSpace,
+          type: docMatch === `"""` ? 'quote' : 'tick',
+          content: lines.split(docMatch).slice(1).shift().trim().split('\n').reduce((cleaned, ln) => {
+            cleaned.push(ln.replace(spacerRegex, '').trim());
+            return cleaned;
+          }, []).join('\n')
+        };
+        return step;
+      };
+      const stepFactory = (type, stepText, lines, index) => {
+        let step = {
+          type,
+          index,
+          step: stepText,
+          uuid: sanitizeForId(`${type}-${stepText}`)
+        };
+        const nextIndex = index + 1;
+        const nextLine = lines[nextIndex];
+        const afterLines = lines.slice(nextIndex);
+        step = checkDataTable(step, afterLines, nextLine, nextIndex);
+        step = checkDocString(step, afterLines.join('\n'), nextLine, nextIndex);
+        return step;
+      };
+      const parseStep = (scenario, lines, line, index) => {
+        return RegStepTags.reduce((added, regTag) => {
+          if (added) return added;
+          const hasTag = regTag.regex.test(line);
+          hasTag && scenario.steps.push(stepFactory(regTag.type, getRXMatch(line, regTag.regex, 1), lines, index));
+          return hasTag;
+        }, false);
+      };
+
+      const {
+        WORLD_AT_RUNTIME
+      } = constants;
+      const worldReplace = (text, world) => {
+        let currentMatch;
+        try {
+          return text.replace(RX_WORLD_REPLACE, match => {
+            currentMatch = match;
+            const cleaned = match.trim();
+            if (cleaned.indexOf(WORLD_AT_RUNTIME) === 0) return cleaned.replace(WORLD_AT_RUNTIME, `$`);
+            const location = cleaned.replace(/^\$world\./, '');
+            const replaceWith = get(world, location);
+            return isFunc(replaceWith) ? replaceWith(world, path) : exists(replaceWith) ? replaceWith : match;
+          });
+        } catch (err) {
+          throwWorldReplace(err, currentMatch);
+        }
+      };
+
+      const RX_NEWLINE = /\r?\n/g;
+      const RX_TAG = /^\s*@(.*)$/;
+      const RX_COMMENT = /^\s*#(.*)$/;
+      const RX_FEATURE = /^\s*Feature:(.*)$/;
+      const RX_RULE = /^\s*Rule:(.*)$/;
+      const RX_AS = /^\s*As (.*)$/;
+      const RX_I_WANT = /^\s*I want (.*)$/;
+      const RX_SO_THAT = /^\s*So that (.*)$/;
+      const RX_IN_ORDER = /^\s*In order (.*)$/;
+      const RX_SCENARIO = /^\s*Scenario:(.*)$/;
+      const RX_EXAMPLE = /^\s*Example:(.*)$/;
+      const RX_BACKGROUND = /^\s*Background:(.*)$/;
+      const featureMetaTags = [{
+        regex: RX_AS,
+        key: 'perspective'
+      }, {
+        regex: RX_I_WANT,
+        key: 'desire'
+      }, {
+        regex: RX_SO_THAT,
+        key: 'reason'
+      }, {
+        regex: RX_IN_ORDER,
+        key: 'reason'
+      }];
+      const featureFactory = (feature, content, index) => {
+        return {
+          index,
+          content,
+          feature,
+          tags: [],
+          rules: [],
+          reason: [],
+          comments: [],
+          scenarios: [],
+          ...(feature && {
+            uuid: sanitizeForId(feature, index)
+          })
+        };
+      };
+      const ruleFactory = (rule, index) => {
+        return {
+          index,
+          rule,
+          tags: [],
+          scenarios: [],
+          ...(rule && {
+            uuid: sanitizeForId(rule, index)
+          })
+        };
+      };
+      const scenarioFactory = (scenario, index) => {
+        return {
+          index,
+          scenario,
+          tags: [],
+          steps: [],
+          ...(scenario && {
+            uuid: sanitizeForId(scenario, index)
+          })
+        };
+      };
+      const backgroundFactory = (background, index) => {
+        return {
+          index,
+          steps: [],
+          background,
+          ...(background && {
+            uuid: sanitizeForId(background, index)
+          })
+        };
+      };
+      const addReason = (feature, reason, index) => {
+        reason && feature.reason.push({
+          content: reason,
+          index
+        });
+      };
+      const featureMeta = (feature, line, index) => {
+        let metaAdded = false;
+        featureMetaTags.reduce((added, regTag) => {
+          if (added) return added;
+          const hasTag = regTag.regex.test(line);
+          if (!metaAdded && hasTag) metaAdded = true;
+          return hasTag ? regTag.key === 'reason' ? addReason(feature, getRXMatch(line, regTag.regex, 0), index) : feature[regTag.key] = {
+            content: getRXMatch(line, regTag.regex, 0),
+            index
+          } : hasTag;
+        }, false);
+        return metaAdded;
+      };
+      const checkTag = (parent, feature, line, index) => {
+        if (!RX_TAG.test(line)) return false;
+        const tagParent = parent.background ? feature : parent;
+        const tags = getRXMatch(line, RX_TAG, 0);
+        tagParent.tags = (tagParent.tags || []).concat(tags.split(' '));
+        return true;
+      };
+      const featureComment = (feature, line, index) => {
+        if (!RX_COMMENT.test(line)) return false;
+        const comment = line.match(RX_COMMENT)[0];
+        feature.comments.push({
+          content: comment,
+          index
+        });
+        return true;
+      };
+      const ensureFeature = (featuresGroup, feature, line, content, index) => {
+        if (!RX_FEATURE.test(line)) return feature;
+        const featureText = getRXMatch(line, RX_FEATURE, 1);
+        if (!feature.feature) {
+          feature.feature = featureText;
+          if (!feature.index) feature.index = index;
+          if (!feature.uuid) feature.uuid = sanitizeForId(feature.feature, index);
+          !featuresGroup.includes(feature) && featuresGroup.push(feature);
+          return feature;
+        }
+        const builtFeature = featureFactory(featureText, content, index);
+        featuresGroup.push(builtFeature);
+        return builtFeature;
+      };
+      const ensureRule = (feature, rule, line, index) => {
+        if (!RX_RULE.test(line)) return rule;
+        let ruleText = getRXMatch(line, RX_RULE, 1);
+        !rule.rule ? rule.rule = ruleText : rule = ruleFactory(ruleText, index);
+        !rule.index && (rule.index = index);
+        !rule.uuid && (rule.uuid = sanitizeForId(rule.rule, index));
+        !feature.rules.includes(rule) && feature.rules.push(rule);
+        return rule;
+      };
+      const ensureScenario = (feature, rule, scenario, line, index) => {
+        const hasScenario = RX_SCENARIO.test(line);
+        if (!hasScenario && !RX_EXAMPLE.test(line)) return scenario;
+        let scenarioText = hasScenario && getRXMatch(line, RX_SCENARIO, 1);
+        scenarioText = scenarioText || getRXMatch(line, RX_EXAMPLE, 1);
+        !scenario.scenario ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText, index);
+        !scenario.index && (scenario.index = index);
+        !scenario.uuid && (scenario.uuid = sanitizeForId(scenario.scenario, index));
+        const parent = rule.uuid ? rule : feature;
+        !parent.scenarios.includes(scenario) && parent.scenarios.push(scenario);
+        return scenario;
+      };
+      const ensureBackground = (feature, rule, background, line, index) => {
+        if (!RX_BACKGROUND.test(line)) return background;
+        const parent = rule.uuid ? rule : feature;
+        const backgroundText = `${parent.uuid}-background`;
+        !background.background ? background.background = backgroundText || '' : background = backgroundFactory(backgroundText, index);
+        !background.index && (background.index = index);
+        !background.uuid && (background.uuid = sanitizeForId(background.background, index));
+        parent.background = background;
+        return background;
+      };
+      const setActiveParent = (activeParent, feature, rule, scenario, background, line) => {
+        return RX_SCENARIO.test(line) || RX_EXAMPLE.test(line) ? scenario : RX_FEATURE.test(line) ? feature : RX_RULE.test(line) ? rule : RX_BACKGROUND.test(line) ? background : activeParent;
+      };
+      const parseFeature = function (text, world) {
+        world = world || this && this.world || noOpObj;
+        const features = [];
+        const replaceText = worldReplace((text || '').toString(), world);
+        const lines = replaceText.split(RX_NEWLINE);
+        let rule = ruleFactory(false);
+        let scenario = scenarioFactory(false);
+        let background = backgroundFactory(false);
+        let feature = featureFactory(false, text);
+        let activeParent = feature;
+        return lines.reduce((featuresGroup, line, index) => {
+          feature = ensureFeature(featuresGroup, feature, line, text, index);
+          if (featureComment(feature, line, index) || featureMeta(feature, line, index)) return featuresGroup;
+          rule = ensureRule(feature, rule, line, index);
+          scenario = ensureScenario(feature, rule, scenario, line, index);
+          background = ensureBackground(feature, rule, background, line, index);
+          if (parseStep(activeParent, lines, line, index)) return featuresGroup;
+          activeParent = setActiveParent(activeParent, feature, rule, scenario, background, line);
+          checkTag(activeParent, feature, line);
+          return featuresGroup;
+        }, features);
+      };
+
+      const parseDefinition = function (text) {
+        const registered = this.steps.register([text]);
+        return registered;
+      };
+
+      const {
+        SPEC_RESULT_LOG,
+        LOG_JEST_SPEC_ENV
+      } = constants;
+      const logResultToTerminal = result => {
+        const timestamp = new Date().getTime();
+        get(process, `env.${LOG_JEST_SPEC_ENV}`) && process.stdout.write([SPEC_RESULT_LOG, JSON.stringify({ ...result,
+          timestamp
+        }), SPEC_RESULT_LOG].join(``));
+      };
+      const getSuiteData = suite => {
+        const description = get(suite, `description`);
+        const type = !description ? `Feature` : description.startsWith(`Scenario >`) ? `Scenario` : description.startsWith(`Background >`) ? `Background` : description.startsWith(`Rule >`) ? `Rule` : `Feature`;
+        return {
+          type: type.toLowerCase(),
+          ...(type !== `Feature` && {
+            description: description.replace(`${type} >`, `${type}:`)
+          })
+        };
+      };
+      const getTestMethod = (type, testMode) => {
+        return testMode ? noOp : global[type] || testMethodFill(type);
+      };
+      const buildReporter = jasmineEnv => {
+        const suites = [];
+        const jasmineDescribe = jasmineEnv.describe;
+        jasmineEnv.describe = (...args) => {
+          const suite = jasmineDescribe.apply(null, args);
+          suites.push(suite);
+          return suite;
+        };
+        return {
+          suiteStarted: suite => {
+            logResultToTerminal({ ...suite,
+              ...getSuiteData(suite),
+              action: `start`
+            });
+          },
+          specStarted: result => {
+            logResultToTerminal({ ...result,
+              type: `step`,
+              action: `start`
+            });
+          },
+          specDone: result => {
+            logResultToTerminal({ ...result,
+              type: 'step',
+              action: 'end'
+            });
+            if (result.status !== 'failed') return;
+            const suite = suites.find(suite => suite.children.find(spec => spec.result === result));
+            suite && suite.children.map(spec => spec.disable());
+          },
+          suiteDone: suite => {
+            logResultToTerminal({ ...suite,
+              ...getSuiteData(suite),
+              action: `end`
+            });
+          }
+        };
+      };
+      const skipTestsOnFail = testMode => {
+        if (!hasJasmine) return;
+        const jasmineEnv = resolveJasmine().getEnv();
+        jasmineEnv && jasmineEnv.describe && jasmineEnv.addReporter(buildReporter(jasmineEnv));
+      };
+
+      const buildTitle = (text, type) => {
+        return `${capitalize(type)} > ${text}`;
+      };
+      const resolveFeatures = (data, $world) => {
+        return isStr(data) ? parseFeature(data, $world) : isObj(data) ? [data] : isArr(data) ? data.reduce((features, feature) => features.concat(resolveFeatures(feature, $world)), []) : throwMissingFeatureText();
+      };
+      const runStep = async (stepsInstance, step, testMode) => {
+        const test = getTestMethod('test', testMode);
+        test(`${capitalize(step.type)} ${step.step}`, async () => {
+          return await stepsInstance.resolve(step.step);
+        });
+      };
+      const loopSteps = (parent, title, stepsInstance, testMode) => {
+        const describe = getTestMethod('describe', testMode);
+        let responses = [];
+        describe(title, () => {
+          const responses = parent.steps.map(step => runStep(stepsInstance, step, testMode));
+          Promise.all(responses);
+        });
+        return responses;
+      };
+      const runScenario = (stepsInstance, scenario, background, testMode) => {
+        background && loopSteps(background, buildTitle(scenario.scenario, `Background`), stepsInstance, testMode);
+        return loopSteps(scenario, buildTitle(scenario.scenario, `Scenario`), stepsInstance, testMode);
+      };
+      const runRule = (stepsInstance, rule, background, testMode) => {
+        let responses = [];
+        describe(`Rule > ${rule.rule}`, () => {
+          responses = rule.scenarios.map(scenario => runScenario(stepsInstance, scenario, background || rule.background, testMode));
+          Promise.all(responses);
+        });
+        return responses;
+      };
+      const parseFeatureTags = tags => {
+        return isStr(tags) && tags.match(/[@]\w*/g);
+      };
+      const itemMatch = (name = '', tags = [], filterOptions = {}) => {
+        const {
+          name: filterName,
+          tags: filterTags
+        } = filterOptions;
+        const parsedTags = isStr(filterTags) ? parseFeatureTags(filterTags) : eitherArr(filterTags, []);
+        const nameMatch = !filterName || name.includes(filterName);
+        const tagMatch = !parsedTags.length || parsedTags.every(clientTag => tags.includes(clientTag));
+        return nameMatch && tagMatch;
+      };
+      const filterFeatures = (features, filterOptions = {}) => {
+        return features.reduce((filtered, feature) => {
+          const isMatchingFeature = itemMatch(feature.feature, feature.tags, filterOptions);
+          if (isMatchingFeature) {
+            filtered.push(feature);
+            return filtered;
+          }
+          const matchingScenarios = feature.scenarios.filter(scenario => itemMatch(scenario.scenario, [...(scenario.tags || []), ...(feature.tags || [])], filterOptions));
+          if (matchingScenarios.length) {
+            filtered.push({ ...feature,
+              scenarios: matchingScenarios
+            });
+          }
+          return filtered;
+        }, []);
+      };
+      class Runner {
+        constructor(steps, hooks, world) {
+          _defineProperty(this, "getFeatures", (data, options) => {
+            const features = resolveFeatures(data, this._world);
+            return filterFeatures(features, options);
+          });
+          _defineProperty(this, "run", async (data, options = noOpObj) => {
+            const testMode = this.run.PARKIN_TEST_MODE;
+            skipTestsOnFail();
+            const describe = getTestMethod('describe', testMode);
+            const beforeAll = getTestMethod('beforeAll', testMode);
+            const afterAll = getTestMethod('afterAll', testMode);
+            const beforeEach = getTestMethod('beforeEach', testMode);
+            const afterEach = getTestMethod('afterEach', testMode);
+            const features = this.getFeatures(data, options);
+            if (!features.length) return false;
+            const promises = await features.map(async feature => {
+              let responses = [];
+              beforeAll(this.hooks.getRegistered('beforeAll'));
+              afterAll(this.hooks.getRegistered('afterAll'));
+              beforeEach(this.hooks.getRegistered('beforeEach'));
+              afterEach(this.hooks.getRegistered('afterEach'));
+              describe(buildTitle(feature.feature, `Feature`), () => {
+                responses = feature.rules.map(rule => runRule(this.steps, rule, feature.background, testMode));
+                responses.concat(feature.scenarios.map(scenario => runScenario(this.steps, scenario, feature.background, testMode)));
+                Promise.all(responses);
+              });
+              return responses;
+            });
+            await Promise.all(promises);
+            return true;
+          });
+          !steps && throwMissingSteps();
+          !hooks && throwMissingHooks();
+          this.steps = steps;
+          this.hooks = hooks;
+          this._world = world;
+        }
+      }
+
+      const {
+        FEATURE_META
+      } = constants;
+      const addContent = (assembled, content, index) => {
+        !exists(index) ? assembled.push(content) : exists(assembled[index]) ? assembled.splice(index, 0, content) : assembled[index] = content;
+      };
+      const addTags = (assembled, tags, spacer = '') => {
+        isArr(tags) && tags.length && addContent(assembled, `${spacer}${tags.join(' ')}`);
+      };
+      const addMeta = (assembled, feature) => {
+        FEATURE_META.map(key => {
+          switch (key) {
+            case 'feature':
+              addContent(assembled, `Feature: ${feature[key]}`, feature.index);
+              break;
+            case 'comments':
+              isArr(feature[key]) && feature[key].map(item => addContent(assembled, item.content, item.index));
+              break;
+            case 'reason':
+              isArr(feature[key]) && feature[key].map(item => addContent(assembled, `  ${item.content}`, item.index));
+              break;
+            case 'desire':
+            case 'perspective':
+              feature[key] && addContent(assembled, `  ${feature[key].content}`, feature[key].index);
+              break;
+          }
+        });
+      };
+      const addSteps = (assembled, scenario) => {
+        isArr(scenario.steps) && scenario.steps.length && scenario.steps.map(step => addContent(assembled, `    ${capitalize(step.type)} ${step.step}`, step.index));
+      };
+      const addScenarios = (assembled, feature) => {
+        feature.scenarios && feature.scenarios.map(scenario => {
+          addTags(assembled, scenario.tags, `  `);
+          addContent(assembled, `  Scenario: ${scenario.scenario}`, scenario.index);
+          addSteps(assembled, scenario);
+        });
+      };
+      const formatComment = (assembled, line, index) => {
+        const next = assembled[index + 1];
+        const prev = assembled[index - 1];
+        let compareLine = exists(next) ? next : prev;
+        if (!compareLine) return `${line}\n`;
+        const comment = line.split('#').pop();
+        const whiteSpace = Array(compareLine.length - compareLine.trimStart().length).join(' ');
+        return `${whiteSpace} # ${comment}\n`;
+      };
+      const formatAssembled = assembled => {
+        return Array.from(assembled, (line, index) => {
+          return !exists(line) ? '\n' : line.startsWith('#') ? formatComment(assembled, line, index) : `${line}\n`;
+        }).join('').trim();
+      };
+      const assembleFeature = toAssemble => {
+        return eitherArr(toAssemble, [toAssemble]).map(feature => {
+          let assembled = [];
+          !isObj(feature) && throwFeatureNotAnObj(feature);
+          addTags(assembled, feature.tags);
+          addMeta(assembled, feature);
+          addScenarios(assembled, feature);
+          return formatAssembled(assembled);
+        });
+      };
+
+      const assemble = {
+        feature: assembleFeature
+      };
+
+      var _isInit = new WeakMap();
+      class Parkin {
+        constructor(_world, _steps) {
+          _classPrivateFieldInitSpec(this, _isInit, {
+            writable: true,
+            value: false
+          });
+          _defineProperty(this, "init", (world = noOpObj, steps) => {
+            if (_classPrivateFieldGet(this, _isInit)) return console.warn(`This instance of parkin has already been initialized!`);
+            _classPrivateFieldSet(this, _isInit, true);
+            this.world = world;
+            this.steps = new Steps(this.world);
+            this.hooks = new Hooks(this.world);
+            this.runner = new Runner(this.steps, this.hooks, this.world);
+            this.run = this.runner.run;
+            this.parse = {
+              feature: parseFeature.bind(this),
+              definition: parseDefinition.bind(this)
+            };
+            this.assemble = assemble;
+            this.paramTypes = {
+              register: registerParamType
+            };
+            isObj(steps) && this.registerSteps(steps);
+            this.steps.types.map(type => {
+              this[capitalize(type)] = (matcher, method, meta) => this.steps.register(`_${type}`, type, matcher, method, meta);
+            });
+          });
+          _defineProperty(this, "registerSteps", steps => {
+            Object.entries(steps).map((type, typedSteps) =>
+            Object.entries(typedSteps).map((matcher, content) =>
+            this.steps[capitalize(type)](matcher, ...eitherArr(content, [content]))));
+          });
+          isObj(_world) && this.init(_world, _steps);
+        }
+      } exports('Parkin', Parkin);
+      const PKInstance = exports('PKInstance', new Parkin());
+
+    })
+  };
+}));

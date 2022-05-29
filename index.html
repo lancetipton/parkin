@@ -11,9 +11,9 @@
         <!-- Hack to allow importing parkin cjs build -->
         <script>
           window.global = window.global || window
-          window.exports = {}
+          window.process = window.process || { env: {} }
         </script>
-        <script src="jest.js"></script>
+        <script src="parkin/system.min.js"></script>
         <script src="modernizr.min.js"></script>
     </head>
     <body>
@@ -98,7 +98,6 @@ Then("I expect $world.number to be {int}", (num, world) => {
 
 
     </div>
-    <script src="parkin/index.js"></script>
     <script src="index.js"></script>
   </body>
 </html>
