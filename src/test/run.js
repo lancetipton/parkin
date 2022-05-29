@@ -11,16 +11,16 @@ import { Types, validateRootRun } from './utils'
 const runResult = (item, { id, fullName, action, failed, passed, testPath }) => {
   const result = {
     id,
+    action,
     testPath,
+    fullName,
     type: item.type,
     failedExpectations: [],
     passedExpectations: [],
     failed: Boolean(failed),
     passed: Boolean(passed),
-    action: action || item.type,
     description: item.description,
     timestamp: new Date().getTime(),
-    fullName: fullName || item.description,
   }
 
   isObj(failed) && result.failedExpectations.push(failed)
@@ -61,9 +61,10 @@ const loopHooks = async (args) => {
     return runResult(describe, {
       fullName,
       action: type,
+      status: 'failed',
       id: test ? specId : suiteId,
       failed: {name: error.name, message: error.message},
-      testPath: test ? `/${suiteId}/${specId}/${type}${helperIdx}` : `/${suiteId}/${type}${helperIdx}`,
+      testPath: test ? `/${suiteId}/${specId}/${type}${hookIdx}` : `/${suiteId}/${type}${hookIdx}`,
     })
   }
 }
@@ -118,6 +119,7 @@ const loopTests = async (args) => {
     if(beforeEachResult){
       describeFailed = true
       results.push(beforeEachResult)
+      specDone(beforeEachResult)
       break
     }
 
@@ -153,6 +155,7 @@ const loopTests = async (args) => {
     if(afterEachResult){
       describeFailed = true
       results.push(afterEachResult)
+      specDone(afterEachResult)
       break
     }
 
@@ -198,7 +201,11 @@ const loopDescribes = async (args) => {
       fullName: describe.description,
     })
 
-    if((describeOnly && !describe.only) || describe.skip){
+    const shouldSkip = describe.skip ||
+      (describeOnly && (!describe.only && !describe.onlyChild)) ||
+      (testOnly && !describe.onlyChild)
+
+    if(shouldSkip){
       suiteStarted({...describeResult, skipped: true, action: 'skipped', status: 'skipped'})
       continue
     }
@@ -211,8 +218,10 @@ const loopDescribes = async (args) => {
     })
     if(beforeAllResult){
       describeFailed = true
-      results.push(beforeAllResult)
-      break
+      describeResult = {...describeResult, ...beforeAllResult}
+      suiteDone(describeResult)
+      results.push(describeResult)
+      continue
     }
 
     const testResults = await loopTests({
@@ -251,9 +260,9 @@ const loopDescribes = async (args) => {
     if(afterAllResult){
       describeFailed = true
       describeResult = {...describeResult, ...afterAllResult}
-      results.push(failedHook)
-      suiteDone(failedHook)
-      break
+      suiteDone(describeResult)
+      results.push(describeResult)
+      continue
     }
 
     suiteDone(describeResult)
@@ -264,7 +273,7 @@ const loopDescribes = async (args) => {
 }
 
 /**
- * Executes all methods registered to the Test instance
+ * Executes all methods registered to the ParkinTest instance
  * @param {Object} args - Config to overwrite the initial test config object
  *
  * @returns {Object} - Results of the test run

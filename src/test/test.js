@@ -1,5 +1,5 @@
 import { run } from './run'
-import { noOp, noOpObj, isStr } from '@keg-hub/jsutils'
+import { noOp, noOpObj, isStr, checkCall } from '@keg-hub/jsutils'
 import {
   Types,
   createItem,
@@ -8,8 +8,7 @@ import {
   validateHelper,
 } from './utils'
 
-
-export class Test {
+export class ParkinTest {
   timeout = 6000
   #specDone = noOp
   #suiteDone = noOp
@@ -25,6 +24,7 @@ export class Test {
     if(config.description) this.#root.description = config.description
 
     this.#addOnly()
+    this.#addSkip()
     this.#addHelpers()
     this.it = this.test
     this.xit = this.xtest
@@ -64,11 +64,13 @@ export class Test {
    */
   #addOnly = () => {
     this.describe.only = (...args) => {
-      this.describes(...args)
+      this.describe(...args)
       // Get the last item just added to the this.#activeParent
       const item = this.#activeParent.describes[this.#activeParent.describes.length - 1]
       item.only = true
       this.#describeOnly = true
+      // Call the parent hasOnlyChild method to ensure it gets passed on the chain
+      checkCall(this.#activeParent.hasOnlyChild)
     }
 
     this.test.only = (...args) => {
@@ -77,6 +79,28 @@ export class Test {
       const item = this.#activeParent.tests[this.#activeParent.tests.length - 1]
       item.only = true
       this.#testOnly = true
+      // Call the parent hasOnlyChild method to ensure it gets passed on the chain
+      checkCall(this.#activeParent.hasOnlyChild)
+    }
+  }
+
+  /**
+   * Adds the skip method to describe and test methods
+   * Ensures they are skipped run method is called
+   */
+  #addSkip = () => {
+    this.describe.skip = (...args) => {
+      this.describe(...args)
+      // Get the last item just added to the this.#activeParent
+      const item = this.#activeParent.describes[this.#activeParent.describes.length - 1]
+      item.skip = true
+    }
+
+    this.test.skip = (...args) => {
+      this.test(...args)
+      // Get the last item just added to the this.#activeParent
+      const item = this.#activeParent.tests[this.#activeParent.tests.length - 1]
+      item.skip = true
     }
   }
 
@@ -125,6 +149,11 @@ export class Test {
 
     // Cache the lastParent, so we can reset it
     const lastParent = this.#activeParent
+
+    item.hasOnlyChild = () => {
+      item.onlyChild = true
+      checkCall(lastParent.hasOnlyChild)
+    }
 
     // Set the current activeParent to the item
     this.#activeParent = item
