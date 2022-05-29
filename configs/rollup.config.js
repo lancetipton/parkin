@@ -8,7 +8,11 @@ import { terser } from 'rollup-plugin-terser'
 const isProd = process.env.NODE_ENV === 'production'
 
 const config = {
-  input: 'src/index.js',
+  input: {
+    index: 'src/index.js',
+    test: 'src/test/index.js',
+    global: 'src/test/global.js',
+  },
   output: [
     {
       dir: 'build/esm',
@@ -20,9 +24,13 @@ const config = {
       format: 'cjs',
       sourcemap: !isProd
     },
+    {
+      dir: `./build/system`,
+      format: 'system',
+      sourcemap: !isProd,
+    },
   ],
   plugins: [
-    buildHook(),
     resolve(),
     commonjs(),
     babel({ babelHelpers: 'bundled' }),
@@ -34,6 +42,7 @@ const config = {
         keep_fnames: true,
         keep_classnames: true,
       }),
+    buildHook()
   ],
 }
 

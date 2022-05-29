@@ -5,7 +5,7 @@ import { uuid } from '@keg-hub/jsutils'
 
 const cmdExec = promisify(exec)
 const { NODE_ENV, DOC_APP_PATH } = process.env
-const buildDir = path.join(__dirname, '../build/cjs')
+const buildDir = path.join(__dirname, '../build/system')
 const docsDir = path.join(__dirname, '../docs/parkin')
 
 let buildId
@@ -33,7 +33,8 @@ export default function build(){
         console.error(err.stack)
       }
     },
-    writeBundle: async (...args) => {
+    writeBundle: async (meta, ...args) => {
+      if(meta.dir !== './build/system') return
 
       // If in a docker container don't update the docs folder
       if(DOC_APP_PATH || buildId) return (buildId = false)
@@ -42,7 +43,7 @@ export default function build(){
       buildId = uuid()
 
       try {
-        console.log(`Copying build/cjs into docs/parkin folder...`)
+        console.log(`Copying build/system into docs/parkin folder...`)
         // Copy over the new build directory
         await cmdExec(`cp -R ${buildDir} ${docsDir}`)
       }
