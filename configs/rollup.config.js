@@ -35,13 +35,13 @@ const config = {
     commonjs(),
     babel({ babelHelpers: 'bundled' }),
     cleanup(),
-    // isProd &&
-    //   terser({
-    //     mangle: true,
-    //     toplevel: false,
-    //     keep_fnames: true,
-    //     keep_classnames: true,
-    //   }),
+    isProd &&
+      terser({
+        mangle: true,
+        toplevel: false,
+        keep_fnames: true,
+        keep_classnames: true,
+      }),
     buildHook()
   ],
 }
