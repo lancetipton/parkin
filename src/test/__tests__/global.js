@@ -18,11 +18,11 @@ describe(`global`, () => {
 
   it(`Should return a method to allow overriding the globals from the import`, () => {
     globalObj = {}
-    const { setGlobals } = require('../global')
+    const { setParkinTestGlobals } = require('../global')
     Object.values(globalTypes).map(name =>
       expect(Object.keys(globalObj).includes(name)).not.toBe(true)
     )
-    setGlobals()
+    setParkinTestGlobals()
     Object.values(globalTypes).map(name =>
       expect(Object.keys(globalObj).includes(name)).toBe(true)
     )

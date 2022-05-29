@@ -6,12 +6,14 @@ import { resolveGlobalObj } from '../utils/globalScope'
  * Creates a new instance of the Test class, and adds it's methods to the global scope
  * This allows accessing the methods directly, similar to how they're handled in other test frameworks
  */
-const setParkinTestGlobals = force => {
+const setGlobals = force => {
   const PTE = new ParkinTest()
   const globalObj = resolveGlobalObj()
   const forceGlobal = force || process.env.PARKIN_TEST_GLOBALS_OVERRIDE
 
-  globalObj.ParkinTest = PTE
+  if (!globalObj.ParkinTest || forceGlobal) globalObj.ParkinTest = ParkinTest
+  if (!globalObj.PTE || forceGlobal) globalObj.PTE = PTE
+
   Object.values(globalTypes).map(
     name =>
       (!globalObj[name] || forceGlobal) &&
@@ -22,10 +24,10 @@ const setParkinTestGlobals = force => {
 /**
  * Call the method immediately on import
  */
-setParkinTestGlobals()
+setGlobals()
 
 /**
  * Allow force overwriting the global methods from code
  *
  */
-export const setGlobals = (force = true) => setParkinTestGlobals(force)
+export const setParkinTestGlobals = (force = true) => setGlobals(force)

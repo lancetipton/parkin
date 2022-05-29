@@ -37,8 +37,8 @@ describe(`Test the thing`, () => {
   * If needed the global methods can be overridden in one of the following ways
     *  Setting `PARKIN_TEST_GLOBALS_OVERRIDE=true` before importing them
       * Example: `process.env.PARKIN_TEST_GLOBALS_OVERRIDE = true; import '@ltipton/parkin/global'`
-    *  Calling the returned `setGlobals` method from the Parkin Global import
-       * Example: `require('@ltipton/parkin/global').setGlobals()`
+    *  Calling the returned `setParkinTestGlobals` method from the Parkin Global import
+       * Example: `require('@ltipton/parkin/global').setParkinTestGlobals()`
 
 
 ## Execution order
