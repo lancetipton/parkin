@@ -470,15 +470,15 @@ describe(`ParkinTest`, () => {
       }).toThrow()
     })
   })
-  
+
   describe(`Test.clean`, () => {
     beforeEach(() => {
       runMock.mockClear()
     })
-    
+
     it(`should clear out the current root`, () => {
       const PTE = new ParkinTest()
-      
+
       PTE.beforeEach(() => {})
       PTE.describe(`describe-1 method`, () => {
         PTE.beforeEach(() => {})
@@ -496,7 +496,7 @@ describe(`ParkinTest`, () => {
       PTE.describe(`describe-3 method`, () => {})
 
       const root = PTE.getActiveParent()
-      
+
       expect(root.describes.length).toBe(3)
       expect(root.beforeEach.length).toBe(1)
       expect(root.afterAll.length).toBe(1)
@@ -509,7 +509,7 @@ describe(`ParkinTest`, () => {
       expect(cleanRoot.beforeEach.length).toBe(0)
       expect(cleanRoot.afterAll.length).toBe(0)
     })
-    
+
     it(`should reset #testOnly, #describeOnly and timeout`, () => {
       const PTE = new ParkinTest()
 

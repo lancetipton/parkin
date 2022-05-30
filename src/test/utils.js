@@ -108,7 +108,6 @@ export const createItem = (type, metadata = noOpObj, validate = true) => {
   return { ...metadata, type }
 }
 
-
 /**
  * Creates a describe object for the passed in description and action
  * @param {string} description - Metadata about the item
@@ -138,11 +137,10 @@ export const createRoot = () => {
     Types.root,
     {
       describes: [],
-      ...Object.values(helperTypes)
-        .reduce((acc, type) => {
-          acc[type] = []
-          return acc
-        }, {})
+      ...Object.values(helperTypes).reduce((acc, type) => {
+        acc[type] = []
+        return acc
+      }, {}),
     },
     false
   )

@@ -35,7 +35,7 @@ export class ParkinTest {
   }
 
   run = (config = noOpObj) => {
-    if(config.description) this.#root.description = config.description
+    if (config.description) this.#root.description = config.description
 
     this.#setConfig(config)
     const result = run({
@@ -81,11 +81,11 @@ export class ParkinTest {
    */
   #setConfig = ({
     timeout,
+    autoClean,
     specDone,
     suiteDone,
     specStarted,
     suiteStarted,
-    autoClean
   }) => {
     if (timeout) this.timeout = timeout
     if (specDone) this.#specDone = specDone
