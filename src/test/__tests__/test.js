@@ -470,4 +470,68 @@ describe(`ParkinTest`, () => {
       }).toThrow()
     })
   })
+
+  describe(`Test.clean`, () => {
+    beforeEach(() => {
+      runMock.mockClear()
+    })
+
+    it(`should clear out the current root`, () => {
+      const PTE = new ParkinTest()
+
+      PTE.beforeEach(() => {})
+      PTE.describe(`describe-1 method`, () => {
+        PTE.beforeEach(() => {})
+        PTE.test('test method', () => {})
+      })
+      PTE.describe(`describe-2 method`, () => {
+        PTE.describe(`describe-2-1 method`, () => {})
+        PTE.afterAll(() => {})
+        PTE.describe(`describe-2-2 child method`, () => {
+          PTE.test('test method', () => {})
+          PTE.afterAll(() => {})
+        })
+      })
+      PTE.afterAll(() => {})
+      PTE.describe(`describe-3 method`, () => {})
+
+      const root = PTE.getActiveParent()
+
+      expect(root.describes.length).toBe(3)
+      expect(root.beforeEach.length).toBe(1)
+      expect(root.afterAll.length).toBe(1)
+
+      PTE.clean()
+      const cleanRoot = PTE.getActiveParent()
+      expect(cleanRoot).not.toEqual(root)
+
+      expect(cleanRoot.describes.length).toBe(0)
+      expect(cleanRoot.beforeEach.length).toBe(0)
+      expect(cleanRoot.afterAll.length).toBe(0)
+    })
+
+    it(`should reset #testOnly, #describeOnly and timeout`, () => {
+      const PTE = new ParkinTest()
+
+      PTE.describe.only(`Test describe`, () => {
+        PTE.test(`test method`, () => {})
+      })
+      PTE.describe(`describe method`, () => {
+        PTE.test.skip(`test method`, () => {})
+      })
+      PTE.describe(`Test describe`, () => {
+        PTE.test.only(`test method`, () => {})
+      })
+      PTE.run()
+      const runProps = runMock.mock.calls[0][0]
+      expect(runProps.testOnly).toBe(true)
+      expect(runProps.describeOnly).toBe(true)
+
+      PTE.clean()
+      PTE.run()
+      const cleanRunProps = runMock.mock.calls[1][0]
+      expect(cleanRunProps.testOnly).toBe(false)
+      expect(cleanRunProps.describeOnly).toBe(false)
+    })
+  })
 })

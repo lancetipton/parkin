@@ -2,7 +2,9 @@ import { run } from './run'
 import { noOp, noOpObj, isStr, checkCall } from '@keg-hub/jsutils'
 import {
   Types,
+  createRoot,
   createItem,
+  createDescribe,
   throwError,
   helperTypes,
   validateHelper,
@@ -14,16 +16,14 @@ export class ParkinTest {
   #suiteDone = noOp
   #specStarted = noOp
   #suiteStarted = noOp
-
   #activeParent = undefined
   #testOnly = false
   #describeOnly = false
-  #root = createItem(Types.root, { describes: [] }, false)
+  #autoClean = true
+  #root = createRoot()
 
   constructor(config = noOpObj) {
     this.#root.description = config.description || `root`
-
-    Object.values(helperTypes).map(type => (this.#root[type] = []))
 
     this.#addOnly()
     this.#addSkip()
@@ -31,29 +31,57 @@ export class ParkinTest {
     this.it = this.test
     this.xit = this.xtest
     this.#activeParent = this.#root
-    this.#addFrameworkHooks(config)
-
-    this.run = (config = noOpObj) => {
-      this.#root.description = config.description || this.#root.description
-      this.#addFrameworkHooks(config)
-      return run({
-        root: this.#root,
-        testOnly: this.#testOnly,
-        specDone: this.#specDone,
-        suiteDone: this.#suiteDone,
-        specStarted: this.#specStarted,
-        describeOnly: this.#describeOnly,
-        suiteStarted: this.#suiteStarted,
-      })
-    }
+    this.#setConfig(config)
   }
 
+  run = (config = noOpObj) => {
+    if (config.description) this.#root.description = config.description
+
+    this.#setConfig(config)
+    const result = run({
+      root: this.#root,
+      testOnly: this.#testOnly,
+      specDone: this.#specDone,
+      suiteDone: this.#suiteDone,
+      specStarted: this.#specStarted,
+      describeOnly: this.#describeOnly,
+      suiteStarted: this.#suiteStarted,
+    })
+
+    this.#autoClean && this.clean()
+
+    return result
+  }
+
+  /**
+   * Resets the instance to it's initial state
+   * Clears all previously loaded tests and describes
+   */
+  clean = () => {
+    this.timeout = 6000
+    this.#autoClean = true
+    this.#testOnly = false
+    this.#describeOnly = false
+
+    this.#activeParent = undefined
+    this.#root = undefined
+    this.#root = createRoot()
+    this.#activeParent = this.#root
+  }
+
+  /**
+   * Gets the current activeParent, which should almost always be this.#root
+   */
   getActiveParent = () => {
     return this.#activeParent
   }
 
-  #addFrameworkHooks = ({
+  /**
+   * Adds passed in framework hooks to the class instance
+   */
+  #setConfig = ({
     timeout,
+    autoClean,
     specDone,
     suiteDone,
     specStarted,
@@ -64,6 +92,7 @@ export class ParkinTest {
     if (suiteDone) this.#suiteDone = suiteDone
     if (specStarted) this.#specStarted = specStarted
     if (suiteStarted) this.#suiteStarted = suiteStarted
+    if (autoClean === false) this.#autoClean = autoClean
   }
 
   /**
@@ -143,15 +172,7 @@ export class ParkinTest {
    */
   describe = (description, action) => {
     // Build the describe item and add defaults
-    const item = createItem(Types.describe, {
-      action,
-      tests: [],
-      description,
-      describes: [],
-    })
-    item.disabled = () => (item.skip = true)
-
-    Object.values(helperTypes).map(type => (item[type] = []))
+    const item = createDescribe(description, action)
     this.#activeParent.describes.push(item)
 
     // Cache the lastParent, so we can reset it
