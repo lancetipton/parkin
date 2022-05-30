@@ -107,3 +107,43 @@ export const createItem = (type, metadata = noOpObj, validate = true) => {
   validate && validateItem(type, description, action)
   return { ...metadata, type }
 }
+
+
+/**
+ * Creates a describe object for the passed in description and action
+ * @param {string} description - Metadata about the item
+ * @param {function} action - Function to call for the item
+ *
+ * @returns {Object} - Describe Item object
+ */
+export const createDescribe = (description, action) => {
+  const item = createItem(Types.describe, {
+    ...createRoot(),
+    action,
+    tests: [],
+    description,
+  })
+  item.disabled = () => (item.skip = true)
+
+  return item
+}
+
+/**
+ * Creates a root object
+ *
+ * @returns {Object} - Root Item object
+ */
+export const createRoot = () => {
+  return createItem(
+    Types.root,
+    {
+      describes: [],
+      ...Object.values(helperTypes)
+        .reduce((acc, type) => {
+          acc[type] = []
+          return acc
+        }, {})
+    },
+    false
+  )
+}
