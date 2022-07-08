@@ -154,8 +154,23 @@ export const throwInvalidHookType = (hookTypes, type) => {
  * @param {string} currentMatch - Current $world text that was matched
  */
 export const throwWorldReplace = (err, currentMatch) => {
-  console.log(
-    `Error in $world replace of text content. Current match was ${currentMatch}`
+  console.error(
+    `Error replacing $world value in feature text. Current match was ${currentMatch}`
+  )
+  throw err
+}
+
+/**
+ * Throws an error when running world.alias replace on feature text content
+ * @function
+ * @public
+ * @throws
+ * @param {Object} err - Error that was thrown
+ * @param {string} currentMatch - Current $world.$alias text that was matched
+ */
+export const throwAliasReplace = (err, currentMatch) => {
+  console.error(
+    `Error replacing $$alias ( $world.$alias ) in feature text. Current match was ${currentMatch}`
   )
   throw err
 }

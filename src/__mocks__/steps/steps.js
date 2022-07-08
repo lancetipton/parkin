@@ -4,6 +4,7 @@ import { registerBasicSteps } from './basicSteps'
 import { registerPromiseSteps } from './promiseSteps'
 import { registerBackgroundSteps } from './backgroundSteps'
 import { registerWorldSteps } from './worldSteps'
+import { registerAliasSteps } from './aliasSteps'
 
 export const registerMockSteps = PK => {
   // The tests depend on the register order of the definitions
@@ -14,4 +15,5 @@ export const registerMockSteps = PK => {
   registerBackgroundSteps(PK)
   registerDocSteps(PK)
   registerWorldSteps(PK)
+  registerAliasSteps(PK)
 }

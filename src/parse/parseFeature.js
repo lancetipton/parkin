@@ -1,6 +1,6 @@
 import { parseStep } from './parseStep'
 import { noOpObj } from '@keg-hub/jsutils'
-import { worldReplace } from '../utils/worldReplace'
+import { replaceWorld } from '../utils/worldReplace'
 import { sanitizeForId, getRXMatch } from '../utils/helpers'
 
 /**
@@ -393,7 +393,7 @@ export const parseFeature = function (text, world) {
   world = world || (this && this.world) || noOpObj
   const features = []
 
-  const replaceText = worldReplace((text || '').toString(), world)
+  const replaceText = replaceWorld((text || '').toString(), world)
   const lines = replaceText.split(RX_NEWLINE)
 
   let rule = ruleFactory(false)
@@ -437,7 +437,8 @@ export const parseFeature = function (text, world) {
 
     // Check for stepTags before check for the next active parent
     // This way We don't add a step to the wrong parent
-    if (parseStep(activeParent, lines, line, index)) return featuresGroup
+    if (!activeParent.feature && parseStep(activeParent, lines, line, index))
+      return featuresGroup
 
     /*
      * Get the currently active parent based on the next line to be parsed

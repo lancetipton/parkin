@@ -143,7 +143,7 @@ describe('Match matchExpression', () => {
     expect(match).toEqual(expect.arrayContaining(['$myUrl']))
   })
 
-  it('should replace $wold values with world values', () => {
+  it('should replace $world values with world values', () => {
     const { match } = matchExpression(
       {
         type: 'given',
@@ -154,6 +154,25 @@ describe('Match matchExpression', () => {
       'I open the site "$world.app.url"',
       {
         app: {
+          url: 'http://google.com',
+        },
+      }
+    )
+
+    expect(match).toEqual(expect.arrayContaining(['http://google.com']))
+  })
+
+  it('should replace $$alias values with world.$alias values', () => {
+    const { match } = matchExpression(
+      {
+        type: 'given',
+        match: 'I open the site/url/uri {string}',
+        variant: 'expression',
+        content: 'I open the site/url/uri {string}',
+      },
+      'I open the site "$$url"',
+      {
+        $alias: {
           url: 'http://google.com',
         },
       }

@@ -1,5 +1,5 @@
 import { constants } from './constants'
-import { isFunc, noOp } from '@keg-hub/jsutils'
+import { isFunc, noPropArr, noOp } from '@keg-hub/jsutils'
 import { throwInvalidHookType } from './utils/errors'
 
 const { HOOK_TYPES } = constants
@@ -20,8 +20,17 @@ export class Hooks {
    */
   types = HOOK_TYPES
 
-  constructor() {
+  /**
+   * Parkin instance the hooks are tied to
+   * @memberof Hooks
+   * @type {Object}
+   * @private
+   */
+  instance = undefined
+
+  constructor(world, instance) {
     this._registeredHooks = {}
+    this.instance = instance
 
     /**
      * Creates helpers for registering hooks
@@ -38,18 +47,29 @@ export class Hooks {
     this.types.map(type => {
       this[type] = clientHookFn => {
         if (!isFunc(clientHookFn)) return
-        this._registeredHooks[type] = clientHookFn
+        this._registeredHooks[type] = this._registeredHooks[type] || []
+        this._registeredHooks[type].push(clientHookFn)
       }
     })
   }
 
   /**
    * @param {string} type
-   * @return {Function} the function registered to the hook type, or a noOp function by default
+   *
+   * @return {Function} A wrapper function that calls all the registered hooks in series
    */
   getRegistered = type => {
-    return this.types.includes(type)
-      ? this._registeredHooks[type] || noOp
+    const foundHooks = this.types.includes(type)
+      ? this._registeredHooks[type] || noPropArr
       : throwInvalidHookType(HOOK_TYPES.join(', '), type)
+
+    return foundHooks.length
+      ? async () => {
+        return foundHooks.reduce(async (toResolve, hook) => {
+          await toResolve
+          return await hook(this.instance)
+        }, Promise.resolve())
+      }
+      : noOp
   }
 }

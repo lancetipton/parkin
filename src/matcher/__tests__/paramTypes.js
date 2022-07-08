@@ -88,6 +88,28 @@ const convertWorldMissingTests = {
   output: [],
 }
 
+const convertAliasTests = {
+  input: [
+    [ '$$value', '$$first', '$$second', '"$$third"', '$$forth' ],
+    [
+      initialParamTypes.string,
+      initialParamTypes.string,
+      initialParamTypes.word,
+      initialParamTypes.int,
+      initialParamTypes.int,
+    ],
+    {
+      $alias: {
+        value: 'root-value',
+        first: 'first-value',
+        second: 'second-value',
+        forth: 4,
+      },
+    },
+  ],
+  output: [ 'root-value', 'first-value', 'second-value', 4 ],
+}
+
 describe('paramTypes', () => {
   describe('getParamTypes', () => {
     afterEach(() => {
@@ -125,6 +147,12 @@ describe('paramTypes', () => {
     it('should convert types to world values', () => {
       expect(convertTypes(...convertWorldTests.input)).toEqual(
         convertWorldTests.output
+      )
+    })
+
+    it('should convert types to $alias values', () => {
+      expect(convertTypes(...convertAliasTests.input)).toEqual(
+        convertAliasTests.output
       )
     })
 

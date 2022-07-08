@@ -1,3 +1,4 @@
+import { constants } from '../constants'
 import { removeQuotes } from '../utils/helpers'
 import {
   get,
@@ -17,10 +18,13 @@ import {
   RX_INT,
   RX_DOUBLE_QUOTED,
   RX_SINGLE_QUOTED,
+  RX_ALIAS,
   RX_WORLD,
 } from './patterns'
 
 import { throwParamTypeExists, throwMissingWorldValue } from '../utils/errors'
+
+const { WORLD_KEY, ALIAS_WORLD_KEY, ALIAS_REF } = constants
 
 /**
  * Checks if the arg is a path to a value on the world object
@@ -34,17 +38,26 @@ import { throwParamTypeExists, throwMissingWorldValue } from '../utils/errors'
 const checkWorldValue = (func, type) => {
   return (arg, $world) => {
     const hasWorldVal = arg.match(RX_WORLD)
+    const hasAliasVal = arg.match(RX_ALIAS)
 
     // If not world value, just return func response
-    if (!isObj($world) || !hasWorldVal) return matchType(func(arg), type)
+    if (!isObj($world) || (!hasWorldVal && !hasAliasVal))
+      return matchType(func(arg), type)
 
     // Try to pull from world object
-    const worldVal = get($world, removeQuotes(arg).replace('$world.', ''))
+    const worldVal = hasWorldVal
+      ? get($world, removeQuotes(arg).replace(`${WORLD_KEY}.`, ''))
+      : get(
+        $world,
+        removeQuotes(arg).replace(`${ALIAS_REF}`, `${ALIAS_WORLD_KEY}.`)
+      )
 
     // If has a wold value, then return world value else thrown an error
     return exists(worldVal)
       ? matchType(worldVal, type)
-      : throwMissingWorldValue(arg, $world)
+      : hasWorldVal
+        ? throwMissingWorldValue(arg, $world)
+        : matchType(func(arg), type)
   }
 }
 

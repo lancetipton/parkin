@@ -1,3 +1,4 @@
+export * from './aliasFeature'
 export * from './backgroundFeature'
 export * from './basicFeature'
 export * from './commentsFeature'

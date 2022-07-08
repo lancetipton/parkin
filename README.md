@@ -20,6 +20,7 @@
   - [Parkin.world](#parkinworld)
     - [Feature Parsing](#feature-parsing)
     - [Runtime Parsing](#runtime-parsing)
+    - [Alias Parsing](#alias-parsing)
   - [Model Specs](#model-specs)
     - [Feature Model](#feature-model)
     - [Meta Model](#meta-model)
@@ -242,7 +243,7 @@ PK.registerSteps({
 
 ### Runtime Parsing
 * In some cases, a world value should be parsed during execution of a step, and not when the feature is parsed
-  * This can be useful in cases where one step sets a value to the world, and it used later in a futre step
+  * This can be useful in cases where one step sets a value to the world, and it used later in a future step
   * Example
     ```js
       // Parkin instance world object
@@ -278,7 +279,7 @@ PK.registerSteps({
           // Parkin instance world object
           Parkin.world = { app: {} }
           Parkin.parse.feature(`
-            Feature Set then Open
+            Feature: Set then Open
               Scenario: Go to my app url
                 # Step definition set the world.app.url value to "https://my.app.url"
                 Given I set the app url to be "https://my.app.url"
@@ -297,6 +298,24 @@ PK.registerSteps({
           // After the Second Scenario finished running
           Parkin.world.app.url === "https://google.com"
         ```
+
+
+### Alias Parsing
+* Similar to the `$world` object, Parkin has a shortcut for parsing `aliases`
+* This is simply a helper to aid in the readability of feature files
+* All aliases must be defined in the `$world.$alias` object path
+* An alias can then be referenced in a feature file using the `name` of the alias prefixed by `$$`
+  * Example
+    ```js
+      Parkin.world = { $alias: { foo: `bar` } }
+      Parkin.parse.feature(`
+        Feature: Use Alias Value
+          Scenario: Reference an alias value in a step
+            # When parsed, "$$foo" will be replaced with the value "bar"
+            Given I use the "$$foo" alias from the world.alias object
+      `)
+    ```
+* It the alias key does not exist in the `$world.$alias` object, it will be ignored
 
 
 ## Model Specs

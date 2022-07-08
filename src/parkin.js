@@ -47,6 +47,9 @@ export class Parkin {
         `This instance of parkin has already been initialized!`
       )
 
+    // Ensure the world.$alias object exists
+    if (!isObj(world.$alias)) world.$alias = {}
+
     // Set isInit, so we can't re-initialized
     this.#isInit = true
     this.world = world
