@@ -118,10 +118,16 @@ const getMatchRegex = (type, match) => {
 const parseMatch = (matchArr, type = 'other') => {
   const val = matchArr[0]
 
+  // Get the real start index by removing the start white space
+  const trimmed = val.trimStart()
+
+  // Then calculate the difference and add it to the match index
+  const diff = val.length - trimmed.length
+
   return {
     text: val.trim(),
-    index: matchArr.index,
     input: matchArr.input,
+    index: matchArr.index + diff,
     regex: getMatchRegex(type, matchArr),
     type,
     ...(type === 'parameter' && {
