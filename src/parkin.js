@@ -5,6 +5,7 @@ import { assemble } from './assemble'
 import { Matcher, registerParamType } from './matcher'
 import { parseFeature, parseDefinition } from './parse'
 import { isObj, capitalize, noOpObj, eitherArr } from '@keg-hub/jsutils'
+import { matchExpression, matchRegex, registerParamType } from './matcher'
 
 /**
  * @typedef
@@ -113,6 +114,7 @@ export class Parkin {
      * @returns {Object} - paramTypes object container `register` param types method
      */
     this.paramTypes = { register: registerParamType }
+    this.matcher = { regex: matchRegex, expression: matchExpression}
 
     /**
      * Access to step definition matcher functions
