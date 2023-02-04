@@ -1,9 +1,24 @@
-import { matchRegex } from './regex'
 import { constants } from '../constants'
 import { noOpObj } from '@keg-hub/jsutils'
-import { matchExpression } from './expression'
+import { matchRegex, getRegexParts } from './regex'
+import { getParamTypes, registerParamType } from './paramTypes'
+import { extractParameters, matchExpression } from './expression'
 
 const { REGEX_VARIANT } = constants
+
+/**
+ * Class for accessing matcher methods and param types
+ * <br/>Gives access to underlying matcher methods to be called directly
+ */
+export class Matcher {
+  find = matcher
+  regex = matchRegex
+  parts = getRegexParts
+  types = getParamTypes
+  extract = extractParameters
+  expression = matchExpression
+  register = registerParamType
+}
 
 /**
  * Finds a matching registered definition from the passed in definitions and text

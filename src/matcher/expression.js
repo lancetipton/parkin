@@ -125,13 +125,13 @@ const checkAnchors = str => {
 }
 
 /**
- * Extracts the dynamic cucumber-expression parameters from the text,
+ * Extracts the dynamic gherkin-expression parameters from the text,
  * given the step matcher template and the fullMatchResults
  * @param {string} text
  * @param {RegExp} stepMatcher
  * @param {Array} wordMatches - matches for the {word} params
  */
-const extractParameters = (text, stepMatcher, wordMatches) => {
+export const extractParameters = (text, stepMatcher, wordMatches) => {
   // Gets an array of each dynamic element of the step match text,
   // including: params (e.g. {float}), optionals (e.g. test(s))
   // and alternate text (e.g. required/optional)
