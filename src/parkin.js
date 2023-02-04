@@ -2,9 +2,9 @@ import { Steps } from './steps'
 import { Hooks } from './hooks'
 import { Runner } from './runner'
 import { assemble } from './assemble'
+import { Matcher, registerParamType } from './matcher'
 import { parseFeature, parseDefinition } from './parse'
 import { isObj, capitalize, noOpObj, eitherArr } from '@keg-hub/jsutils'
-import { matchExpression, matchRegex, registerParamType } from './matcher'
 
 /**
  * @typedef
@@ -20,6 +20,7 @@ import { matchExpression, matchRegex, registerParamType } from './matcher'
  * Parkin#parse#feature - Parse feature file text into a feature object
  * Parkin#parse#definition - Parse definition file text into a step definition objects
  * Parkin#registerSteps - Register step definitions to be accessible when running features
+ * Parkin#matcher - Instance of the matcher class to give direct access to matcher methods
  * Parkin#paramTypes - Object containing param type helper methods
  * Parkin#paramTypes#register - Register custom paramTypes for step definitions
  */
@@ -112,7 +113,25 @@ export class Parkin {
      * @returns {Object} - paramTypes object container `register` param types method
      */
     this.paramTypes = { register: registerParamType }
-    this.matcher = { regex: matchRegex, expression: matchExpression}
+
+    /**
+     * Access to step definition matcher functions
+     * <br>Allows calling the matchers directly to check if a definition matches a step
+     * @memberof Parkin
+     * @alias instance&period;paramTypes
+     * @function
+     * @public
+     * @example
+     * const PK = new Parkin()
+     * PK.matcher.find(definitions, step, world)
+     * @example
+     * const PK = new Parkin()
+     * PK.matcher.expression(definition, step, world)
+     * @example
+     * const PK = new Parkin()
+     * PK.matcher.regex(definition, step, world)
+     */
+    this.matcher = new Matcher()
 
     // Register in steps passed in on initialization
     isObj(steps) && this.registerSteps(steps)

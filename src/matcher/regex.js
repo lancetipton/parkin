@@ -131,7 +131,7 @@ const parseMatch = (matchArr, type = 'other') => {
 }
 
 /**
- * Extracts all the dynamic parts to a  definition's match text
+ * Extracts all the dynamic parts to a definition's match text
  * @param {string} defMatcher - Registered definition match text
  * @return {Array<Object>} array of matches. See `parseMatch` for the structure.
  * @example
