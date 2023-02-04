@@ -1,7 +1,7 @@
 import { constants } from '../constants'
 import { noOpObj } from '@keg-hub/jsutils'
 import { matchRegex, getRegexParts } from './regex'
-import { getParamTypes, registerParamType }from './paramTypes'
+import { getParamTypes, registerParamType } from './paramTypes'
 import { extractParameters, matchExpression } from './expression'
 
 const { REGEX_VARIANT } = constants
@@ -11,13 +11,13 @@ const { REGEX_VARIANT } = constants
  * <br/>Gives access to underlying matcher methods to be called directly
  */
 export class Matcher {
-  find=matcher
-  regex=matchRegex
-  parts=getRegexParts
-  types=getParamTypes
-  extract=extractParameters
-  expression=matchExpression
-  register=registerParamType
+  find = matcher
+  regex = matchRegex
+  parts = getRegexParts
+  types = getParamTypes
+  extract = extractParameters
+  expression = matchExpression
+  register = registerParamType
 }
 
 /**
