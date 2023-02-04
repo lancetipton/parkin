@@ -2,9 +2,9 @@ import { Steps } from './steps'
 import { Hooks } from './hooks'
 import { Runner } from './runner'
 import { assemble } from './assemble'
-import { registerParamType } from './matcher'
 import { parseFeature, parseDefinition } from './parse'
 import { isObj, capitalize, noOpObj, eitherArr } from '@keg-hub/jsutils'
+import { matchExpression, matchRegex, registerParamType } from './matcher'
 
 /**
  * @typedef
@@ -112,6 +112,7 @@ export class Parkin {
      * @returns {Object} - paramTypes object container `register` param types method
      */
     this.paramTypes = { register: registerParamType }
+    this.matcher = { regex: matchRegex, expression: matchExpression}
 
     // Register in steps passed in on initialization
     isObj(steps) && this.registerSteps(steps)
