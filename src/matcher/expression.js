@@ -180,6 +180,36 @@ export const extractParameters = (text, stepMatcher, wordMatches) => {
 }
 
 /**
+ * Converts the passed in definition.match string into regex
+ * Then matches the passed in text string with the converted regex string
+ * @function
+ * @public
+ * @export
+ * @param {Object} definition - Registered definition
+ * @param {string} text - Feature step text to compare with definition text
+ *
+ * @returns {Object} Found matching definition and regex variations
+ */
+export const findAsRegex = (definition, text) => {
+  const escaped = escapeStr(definition.match)
+  const { regex: regexAlts } = checkAlternative(escaped)
+  const { transformers, regex: regexConverted } = convertToRegex(regexAlts)
+  const { regex: regexAnchors } = checkAnchors(regexConverted)
+
+  // Then call the regex matcher to get the content
+  const found = matchRegex({ ...definition, match: regexAnchors }, text)
+
+  return {
+    found,
+    escaped,
+    regexAlts,
+    transformers,
+    regexAnchors,
+    regexConverted,
+  }
+}
+
+/**
  * Finds a matching definition from the passed in expression text
  * Then extracts the variables from the text to pass to the definitions method
  * Converts expression strings into regex then calls the matchRegex method
@@ -197,13 +227,7 @@ export const matchExpression = (definition, text, $world) => {
   // So we can short circuit and return the definition
   if (definition.match === text) return { definition, match: [] }
 
-  const escaped = escapeStr(definition.match)
-  const { regex: regexAlts } = checkAlternative(escaped)
-  const { regex: convertedRegex, transformers } = convertToRegex(regexAlts)
-  const { regex: match } = checkAnchors(convertedRegex)
-
-  // Then call the regex matcher to get the content
-  const found = matchRegex({ ...definition, match }, text)
+  const { found, transformers } = findAsRegex(definition, text)
 
   // If no found definition or match, return an empty object
   if (!found || !found.definition || !found.match) return noOpObj

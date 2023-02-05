@@ -1,8 +1,11 @@
+import type { TMatchResp, TStepDefsArr, TWorldConfig } from '../types'
+
 import { constants } from '../constants'
+import { tokenizeStep } from './tokens'
 import { noOpObj } from '@keg-hub/jsutils'
 import { matchRegex, getRegexParts } from './regex'
 import { getParamTypes, registerParamType } from './paramTypes'
-import { extractParameters, matchExpression } from './expression'
+import { findAsRegex, extractParameters, matchExpression } from './expression'
 
 const { REGEX_VARIANT } = constants
 
@@ -15,8 +18,10 @@ export class Matcher {
   regex = matchRegex
   parts = getRegexParts
   types = getParamTypes
+  stepTokens = tokenizeStep
   extract = extractParameters
   expression = matchExpression
+  expressionFind = findAsRegex
   register = registerParamType
 }
 
@@ -25,18 +30,17 @@ export class Matcher {
  * Treats all non-regex step variants as expressions
  * @function
  * @public
- * @export
- * @param {Array<Object>} definitions - All Registered definitions
- * @param {string} text - Feature step text to compare with definition text
- *
- * @returns {Object} Found matching definition and matched arguments
  */
-export const matcher = (definitions, text, $world) => {
+export const matcher = (
+  definitions:TStepDefsArr,
+  text:string,
+  $world:TWorldConfig
+) => {
   return definitions.reduce((found, definition) => {
     return found.match || !definition.match
-      ? found
+      ? found as TMatchResp
       : definition.variant !== REGEX_VARIANT
-        ? matchExpression(definition, text, $world)
-        : matchRegex(definition, text, $world)
-  }, noOpObj)
+        ? matchExpression(definition, text, $world) as TMatchResp
+        : matchRegex(definition, text) as TMatchResp
+  }, noOpObj as TMatchResp)
 }

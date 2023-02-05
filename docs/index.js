@@ -56,4 +56,8 @@ const runFeature = () => {
  * This is ensure the Parkin library has been loaded 
  * We use an iif to ensure it's run when the browser is ready
  */
-window.addEventListener('load', (event) => PK = new Parkin({}))
+window.addEventListener('load', async (event) => {
+  await import('/parkin/global.js')
+  await import('/parkin/test/global.js')
+  PK = new Parkin({})
+})
