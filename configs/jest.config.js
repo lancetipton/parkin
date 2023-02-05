@@ -3,11 +3,8 @@ const ROOT_DIR = path.join(__dirname, '../')
 
 module.exports = {
   maxWorkers: 1,
+  preset: "es-jest",
   rootDir: ROOT_DIR,
-  preset: 'rollup-jest',
-  transform: {
-    '^.+\\.js$': 'babel-jest',
-  },
   testMatch: [
     `<rootDir>/src/**/__tests__/**/*.js?(x)`
   ],
@@ -19,7 +16,7 @@ module.exports = {
   collectCoverageFrom: [
     "src/**/*.{js,jsx,ts,tsx}"
   ],
-  moduleFileExtensions: [ 'js', 'json', 'jsx', 'es6' ],
+  moduleFileExtensions: [ 'js', 'json', 'jsx', 'es6', `ts`, `tsx`, `cjs`, `ejs` ],
   globals: {
     __DEV__: true,
   },
