@@ -102,10 +102,18 @@ export type TExpFindResp = {
   transformers:TParamType[]
 }
 
+export type TMatchTokens = {
+  type:string
+  match:string
+  index:number
+  defIndex:number
+}
+
 export interface IMatcher {
   types: () => TParamTypeMap
   parts:(match:string) => TPartsMatch[]
   register:(paramType:TParamType) => Record<string, TParamType>
+  stepTokens:(step:string, definition:TStepDef) => TMatchTokens[]
   find: (definitions:TStepDefs, step:string, world:TWorldConfig) => TMatchResp
   regex: (definition:TStepDef, step:string, world:TWorldConfig) => TMatchResp
   expression: (definition:TStepDef, step:string, world:TWorldConfig) => TMatchResp
