@@ -6,7 +6,7 @@ module.exports = {
   preset: "es-jest",
   rootDir: ROOT_DIR,
   testMatch: [
-    `<rootDir>/src/**/__tests__/**/*.js?(x)`
+    '<rootDir>/src/**/__tests__/*.{js,jsx,ts,tsx}',
   ],
   coverageDirectory: "reports/coverage",
   coveragePathIgnorePatterns: [
@@ -16,7 +16,7 @@ module.exports = {
   collectCoverageFrom: [
     "src/**/*.{js,jsx,ts,tsx}"
   ],
-  moduleFileExtensions: [ 'js', 'json', 'jsx', 'es6', `ts`, `tsx`, `cjs`, `ejs` ],
+  moduleFileExtensions: ['js', 'json', 'jsx', 'es6', `ts`, `tsx`, `cjs`, `ejs` ],
   globals: {
     __DEV__: true,
   },
