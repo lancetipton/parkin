@@ -10,9 +10,14 @@ const rootDir = path.join(dirname, `..`)
 const srcDir = path.join(rootDir, `src`)
 const outdir = path.join(rootDir, `build`)
 const esmOut = path.join(outdir, `esm`)
-const cjsOut = path.join(outdir, `cjs/index.js`)
-const entryFile = path.join(rootDir, `src/index.js`)
+const cjsOut = path.join(outdir, `cjs`)
+const parkinEntry = path.join(rootDir, `src/index.js`)
+const globalParkin = path.join(rootDir, `src/global.js`)
+const testEntry = path.join(rootDir, `src/test/index.js`)
+const globalTest = path.join(rootDir, `src/test/global.js`)
 
+
+const minify = true
 const skipFiles = [
   `__mocks__`,
   `__tests__`,
@@ -29,10 +34,15 @@ const getFiles = async () => {
 const cjsBuild = async () => {
   // Build the files with esbuild
   await esbuild.build({
-    entryPoints: [entryFile],
-    outfile: cjsOut,
+    entryPoints: [
+      parkinEntry,
+      testEntry,
+      globalParkin,
+      globalTest
+    ],
+    outdir: cjsOut,
     bundle: true,
-    minify: true,
+    minify: minify,
     sourcemap: true,
     platform: "node",
     target: ["node16"],
@@ -42,14 +52,19 @@ const cjsBuild = async () => {
 const esmBuild = async () => {
   // Build the files with esbuild
   await esbuild.build({
+    entryPoints: [
+      parkinEntry,
+      testEntry,
+      globalParkin,
+      globalTest
+    ],
     format: "esm",
     outdir: esmOut,
     bundle: true,
-    minify: true,
+    minify: minify,
     sourcemap: true,
     splitting: true,
     target: ["esnext"],
-    entryPoints: [entryFile],
     define: { global: "window" },
     plugins: [
       dTSPathAliasPlugin({

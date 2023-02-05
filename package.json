@@ -30,9 +30,10 @@
   "files": [
     "build",
     "test.js",
-    "global.js",
     "index.js",
     "index.cjs",
+    "global.js",
+    "testGlobal.js",
     "README.md"
   ],
   "engines": {
