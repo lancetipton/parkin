@@ -104,7 +104,7 @@ export type TBackgroundAst = {
   uuid: string
   tags: string[]
   background: string
-  scenarios: TScenarioAst[]
+  steps: TStepAst[]
 }
 
 export type TRuleAst = {
@@ -143,7 +143,7 @@ export type TFeatureAst = {
   uuid?: string
   feature: string
   content: string
-  reason?: TAstBlock
+  reason?: TAstBlock|TAstBlock[]
   desire?: TAstBlock
   comments: TAstBlock[]
   perspective?: TAstBlock
@@ -154,6 +154,9 @@ export type TFeatureAst = {
 
 export type TAstType = TFeatureAst | TRuleAst | TBackgroundAst | TScenarioAst | TStepAst
 
-
+export type TStepParentAst = TBackgroundAst | TScenarioAst
+export type TScenarioParentAst = TRuleAst | TFeatureAst
+export type TTagsParentAst = TScenarioParentAst | TStepParentAst
+export type TBackgroundParentAst = TFeatureAst | TRuleAst
 
 

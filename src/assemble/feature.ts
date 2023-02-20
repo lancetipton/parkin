@@ -1,3 +1,5 @@
+import type { TFeatureAst } from '../types'
+
 import { addMeta } from './addMeta'
 import { addTags } from './addTags'
 import { addRules } from './addRules'
@@ -16,9 +18,9 @@ import { throwFeatureNotAnObj } from '../utils/errors'
  *
  */
 export const assembleFeature = (
-  toAssemble:Record<any, any>|Record<any, any>[]
+  toAssemble:TFeatureAst|TFeatureAst[]
 ):string[] => {
-  return eitherArr(toAssemble, [toAssemble]).map((feature:Record<any, any>) => {
+  return eitherArr<TFeatureAst[]>(toAssemble, [toAssemble]).map((feature) => {
     let assembled = []
     !isObj(feature) && throwFeatureNotAnObj(feature)
 

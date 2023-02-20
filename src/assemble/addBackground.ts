@@ -1,3 +1,5 @@
+import type { TFeatureAst } from '../types'
+
 import { addTags } from './addTags'
 import { addSteps } from './addSteps'
 import { addContent } from './addContent'
@@ -11,11 +13,11 @@ import { addContent } from './addContent'
  */
 export const addBackground = (
   assembled:string[],
-  feature:Record<any, any>
+  feature:TFeatureAst
 ) => {
-  if(!feature.background) return
+  const { background } = feature
+  if(!background) return
 
-  const background = feature.background
   addTags(assembled, background.tags, `  `)
   addContent(assembled, `  Background: ${background.background}`, background.index)
   addSteps(assembled, background)

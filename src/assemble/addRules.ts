@@ -1,3 +1,5 @@
+import type { TFeatureAst, TRuleAst } from '../types'
+
 import { addTags } from './addTags'
 import { addContent } from './addContent'
 import { addScenarios } from './addScenarios'
@@ -10,10 +12,10 @@ import { addScenarios } from './addScenarios'
  */
 export const addRules = (
   assembled:string[],
-  feature:Record<any, any>
+  feature:TFeatureAst
 ) => {
   feature.rules &&
-    feature.rules.map((rule:Record<any, any>) => {
+    feature.rules.map((rule:TRuleAst) => {
       addTags(assembled, rule.tags, `  `)
       addContent(assembled, `  Rule: ${rule.rule}`, rule.index)
       addScenarios(assembled, rule)

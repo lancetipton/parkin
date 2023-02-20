@@ -1,17 +1,19 @@
-import { eitherArr, isObj, isArr, capitalize, exists } from '@keg-hub/jsutils'
+import type { TFeatureAst } from '../types'
+
+import { exists } from '@keg-hub/jsutils'
 
 /**
  * Checks the whitespace of adjacent lines to determine the whitespace of the comment
  * Uses the next line first, then the previous line if the next line does not exist
  * @function
  * @private
- * @param {Array<String>} assembled - Array of strings converted from a feature model
- * @param {string} line - Comment line to be formatted
- * @param {number} index - Position of the line within the assembled array
  *
- * @return {string} - Formatted comment line relative to it's adjacent lines
  */
-const formatComment = (assembled, line, index) => {
+const formatComment = (
+  assembled:string[],
+  line:string,
+  index:number
+) => {
   const next = assembled[index + 1]
   const prev = assembled[index - 1]
   let compareLine = exists(next) ? next : prev

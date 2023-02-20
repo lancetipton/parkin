@@ -1,6 +1,8 @@
+import type { TFeatureAst, TAstBlock } from '../types'
+
 import { constants } from '../constants'
 import { addContent } from './addContent'
-import { isArr } from '@keg-hub/jsutils'
+import { eitherArr, isArr } from '@keg-hub/jsutils'
 
 const { FEATURE_META } = constants
 
@@ -13,7 +15,7 @@ const { FEATURE_META } = constants
  */
 export const addMeta = (
   assembled:string[],
-  feature:Record<any, any>
+  feature:TFeatureAst
 ) => {
   FEATURE_META.map((key:string) => {
     switch (key) {
@@ -21,21 +23,18 @@ export const addMeta = (
       addContent(assembled, `Feature: ${feature[key]}`, feature.index)
       break
     case 'comments':
-      isArr(feature[key]) &&
-          feature[key].map(item =>
-            addContent(assembled, item.content, item.index)
-          )
+      const comments = feature[key]
+      comments
+        && eitherArr<TAstBlock[]>(comments, [comments])
+            .map(item => addContent(assembled, item.content, item.index))
       break
     case 'reason':
-      isArr(feature[key]) &&
-          feature[key].map(item =>
-            addContent(assembled, `  ${item.content}`, item.index)
-          )
-      break
     case 'desire':
     case 'perspective':
-      feature[key] &&
-          addContent(assembled, `  ${feature[key].content}`, feature[key].index)
+      const other = feature[key]
+      other
+        && eitherArr<TAstBlock[]>(other, [other])
+            .map(item => addContent(assembled, `  ${item.content}`, item.index))
       break
     }
   })
