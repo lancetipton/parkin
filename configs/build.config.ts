@@ -23,14 +23,6 @@ const skipFiles = [
   `__tests__`,
 ]
 
-const getFiles = async () => {
-  // Get all paths to be generated
-  const files = await getAllFiles(srcDir)
-    .toArray()
-
-  return files.filter(loc => !skipFiles.find(skip => loc.includes(skip)))
-}
-
 const cjsBuild = async () => {
   // Build the files with esbuild
   await esbuild.build({
@@ -47,6 +39,7 @@ const cjsBuild = async () => {
     platform: "node",
     target: ["node16"],
   })
+  .catch(() => process.exit(1))
 }
 
 const esmBuild = async () => {

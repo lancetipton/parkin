@@ -31,7 +31,7 @@ import { isObj, capitalize, noOpObj, eitherArr } from '@keg-hub/jsutils'
  * @class
  * @public
  * @param {Object} world - Holds configuration for the running test environment
- * @param {Object} steps - Object with step type keys containing step definitions
+ * @param {Object} [steps] - Object with step type keys containing step definitions
  *
  * @returns {Object} Instance of the Parkin class
  */
