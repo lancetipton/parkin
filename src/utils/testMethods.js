@@ -153,5 +153,5 @@ export const skipTestsOnFail = testMode => {
 
   jasmineEnv &&
     jasmineEnv.describe &&
-    jasmineEnv.addReporter(buildReporter(jasmineEnv, testMode))
+    jasmineEnv?.addReporter?.(buildReporter(jasmineEnv, testMode))
 }

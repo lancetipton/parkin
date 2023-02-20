@@ -1,3 +1,5 @@
+import type { TRequire, TModule, TJasmine } from '../types'
+
 import { checkCall, noOpObj, noOp } from '@keg-hub/jsutils'
 
 /**
@@ -22,10 +24,9 @@ export const hasJasmine = Boolean(
  * @export
  * @public
  *
- * @returns {Object} Resolved jasmine object with the getEnv property
  */
-export const resolveJasmine = () =>
-  hasJasmine ? checkCall(() => global.jasmine) : { getEnv: () => noOpObj }
+export const resolveJasmine = ():TJasmine =>
+  hasJasmine ? checkCall(() => global.jasmine as unknown as TJasmine) : { getEnv: () => noOpObj }
 
 /**
  * Resolve the module object if it exists
@@ -33,9 +34,8 @@ export const resolveJasmine = () =>
  * @export
  * @public
  *
- * @returns {Object} Resolved module object with the exports property
  */
-export const resolveModule = () =>
+export const resolveModule = ():TModule =>
   hasModule ? checkCall(() => module) : { exports: {} }
 
 /**
@@ -44,9 +44,8 @@ export const resolveModule = () =>
  * @export
  * @public
  *
- * @returns {Object} Resolved module object with the exports property
  */
-export const resolveRequire = () =>
+export const resolveRequire = ():TRequire =>
   hasRequire ? checkCall(() => require) : noOp
 
 /**
@@ -55,9 +54,8 @@ export const resolveRequire = () =>
  * @export
  * @public
  *
- * @returns {Object} Resolved global object (window||global|noOpObj)
  */
-export const resolveGlobalObj = () => {
+export const resolveGlobalObj = ():Record<any, any> => {
   try {
     return hasWindow
       ? checkCall(() => window)
