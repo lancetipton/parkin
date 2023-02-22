@@ -57,17 +57,24 @@ describe('Parkin', () => {
     const { scenarios: parsedScenarios, ...featureWOScenarios } = parsedFeature
 
     expect(parsed).toEqual(featureWOScenarios)
+    let scenarioWs
+    let stepsWS = []
 
     // Remove the uuid from the scenarios so we can validate them
     const noUuidScenarios = scenarios.map(scenario => {
-      const { uuid, ...noUuidScenario } = scenario
+      const { uuid, whitespace, ...noUuidScenario } = scenario
+      scenarioWs = whitespace
       noUuidScenario.steps = scenario.steps.map(step => {
-        const { uuid, ...noUuidStep } = step
+        const { uuid, whitespace, ...noUuidStep } = step
+        stepsWS.push(whitespace)
         return noUuidStep
       })
       return noUuidScenario
     })
+    
 
+    expect(scenarioWs).toEqual(`  `)
+    expect(stepsWS).toEqual(['    ', '    ', '    ', '    ', '    '])
     expect(noUuidScenarios).toEqual(parsedScenarios)
   })
 

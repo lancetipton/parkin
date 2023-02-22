@@ -1,5 +1,5 @@
 import type { TFeatureAst, TRuleAst, TBackgroundAst } from '../types'
-import { sanitizeForId } from '../utils/helpers'
+import { sanitizeForId, getStartWhiteSpace } from '../utils/helpers'
 
 /**
  * Regular expressions for matching feature file keywords
@@ -55,6 +55,9 @@ export const ensureBackground = (
   // Add the uuid from the background text if it doesn't exist
   !background.uuid &&
     (background.uuid = sanitizeForId(background.background, index))
+
+  // Get the start whitespace, used when assembling the feature
+  background.whitespace = getStartWhiteSpace(line)
 
   parent.background = background
 

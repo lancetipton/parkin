@@ -1,6 +1,6 @@
 import type { TFeatureAst, TScenarioAst, TRuleAst } from '../types'
 
-import { sanitizeForId, getRXMatch } from '../utils/helpers'
+import { sanitizeForId, getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 /**
  * Regular expressions for matching feature file keywords
@@ -59,6 +59,8 @@ export const ensureScenario = (
   // Add the uuid from the scenario text if it doesn't exist
   !scenario.uuid && (scenario.uuid = sanitizeForId(scenario.scenario, index))
 
+  // Get the start whitespace, used when assembling the feature
+  scenario.whitespace = getStartWhiteSpace(line)
 
   // Add the scenario if needed to the current parent
   const parent = rule.uuid ? rule : feature

@@ -85,3 +85,14 @@ export const removeQuotes = (arg:string) => {
     .replace(/^("|')/, '')
     .replace(/("|')$/, '')
 }
+
+/**
+ * Gets the starting white space of a string
+ *
+ */
+export const getStartWhiteSpace = (line:string) => {
+  const noStartSpace = line.replace(/^\s+/g, '')
+  const startLength = line.length - noStartSpace.length
+
+  return new Array(startLength).fill(` `).join('')
+}

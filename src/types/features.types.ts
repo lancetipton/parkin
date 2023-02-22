@@ -93,6 +93,7 @@ export type TBackgroundAst = {
   index: number
   uuid: string
   tags: string[]
+  whitespace: string
   background: string
   steps: TStepAst[]
 }
@@ -102,6 +103,7 @@ export type TRuleAst = {
   uuid?: string
   tags: string[]
   rule: string
+  whitespace: string
   background?: TBackgroundAst
   scenarios: TScenarioAst[]
 }
@@ -123,6 +125,7 @@ export type TStepAst = {
   index: number
   step: string
   type: EStepType
+  whitespace: string
   definition?:keyof TStepDefs
   table?: TStepTable
   doc?: any
@@ -134,6 +137,7 @@ export type TScenarioAst = {
   tags: string[]
   scenario: string
   steps: TStepAst[]
+  whitespace: string
 }
 
 export type TAstBlock = {

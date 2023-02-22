@@ -1,6 +1,6 @@
 import type { TFeatureAst, TRuleAst } from '../types'
 
-import { sanitizeForId, getRXMatch } from '../utils/helpers'
+import { sanitizeForId, getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 
 /**
@@ -51,6 +51,9 @@ export const ensureRule = (
   !rule.index && (rule.index = index)
   // Add the uuid from the rule text if it doesn't exist
   !rule.uuid && (rule.uuid = sanitizeForId(rule.rule, index))
+
+  // Get the start whitespace, used when assembling the feature
+  rule.whitespace = getStartWhiteSpace(line)
 
   // Add the rule if needed to the current feature
   !feature.rules.includes(rule)

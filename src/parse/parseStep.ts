@@ -1,7 +1,7 @@
 import type { TStepAst, TStepParentAst, TParseParentAst } from '../types'
 
 import { EStepType } from '../types'
-import { sanitizeForId, getRXMatch } from '../utils/helpers'
+import { sanitizeForId, getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 const RX_GIVEN = /^\s*Given (.*)$/
 const RX_WHEN = /^\s*When(.*)$/
@@ -135,12 +135,14 @@ const stepFactory = (
   type:EStepType,
   stepText:string,
   lines:string[],
+  line:string,
   index:number
 ) => {
   let step = {
     type,
     index,
     step: stepText,
+    whitespace: getStartWhiteSpace(line),
     uuid: sanitizeForId(`${type}-${stepText}`),
   } as TStepAst
 
@@ -184,6 +186,7 @@ export const parseStep = (
           regTag.type,
           getRXMatch(line, regTag.regex, 1),
           lines,
+          line,
           index
         )
       )
