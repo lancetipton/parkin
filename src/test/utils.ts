@@ -1,10 +1,15 @@
 import { keyMap, isFunc, isStr, noOpObj } from '@keg-hub/jsutils'
 
+// TODO: fix these types
+type TestObj = Record<any, any>
+type TestMethod = (...args:any[]) => any
+
+
 /**
  * @type {Object}
  * Key value pair of all helper method names for the ParkinTest Class
  */
-export const helperTypes = keyMap([
+export const helperTypes:Record<string, string> = keyMap([
   `beforeAll`,
   `beforeEach`,
   `afterAll`,
@@ -15,7 +20,7 @@ export const helperTypes = keyMap([
  * @type {Object}
  * Key value pair of all methods added to the global scope
  */
-export const globalTypes = {
+export const globalTypes:Record<string, string> = {
   ...keyMap([ `test`, `it`, `xtest`, `xit`, `describe` ]),
   ...helperTypes,
 }
@@ -24,7 +29,7 @@ export const globalTypes = {
  * @type {Object}
  * Key value pair of allowed Types for the ParkinTest Class
  */
-export const Types = {
+export const Types:Record<string, string> = {
   ...globalTypes,
   ...keyMap([`root`]),
 }
@@ -35,7 +40,7 @@ export const Types = {
  *
  * @returns void
  */
-export const addToGlobal = instance => {}
+export const addToGlobal = (instance:TestObj) => {}
 
 /**
  * Throws an Error from the passed in error
@@ -43,30 +48,26 @@ export const addToGlobal = instance => {}
  *
  * @throws
  */
-export const throwError = error => {
+export const throwError = (error:string) => {
   throw new Error(error)
 }
 
 /**
  * Validates the required arguments were passed in of a helper method
- * @param {string} type - Type of item to validate
- * @param {function} action - Function to call for the item
- * @param {Object} parent - Current active parent of the ParkinTest Instance
  * @throws
  *
- * @returns {void}
  */
-export const validateHelper = (type, action, parent) => {
+export const validateHelper = (
+  type:string,
+  action:TestMethod,
+) => {
   !isFunc(action) &&
     throwError(
       `The ${type} method requires a "function" as the first argument`
-    )(!parent || parent.type === Types.root) &&
-    throwError(
-      `The ${type} method must be called within a ${Types.describe} method`
     )
 }
 
-export const validateRootRun = root => {
+export const validateRootRun = (root:TestObj) => {
   root.type !== Types.root &&
     throwError(`Invalid root type "${root.type}" set for root object`)
   !root.describes ||
@@ -76,14 +77,14 @@ export const validateRootRun = root => {
 
 /**
  * Validates the required arguments were passed in
- * @param {string} type - Type of item to validate
- * @param {string} description - Metadata about the item
- * @param {function} action - Function to call for the item
  * @throws
  *
- * @returns {void}
  */
-export const validateItem = (type, description, action) => {
+export const validateItem = (
+  type:string,
+  description:string,
+  action:TestMethod
+) => {
   !isStr(type) && throwError(`Test item type is required as a string`)
   !isFunc(action) &&
     throwError(
@@ -95,14 +96,13 @@ export const validateItem = (type, description, action) => {
 
 /**
  * Creates an object with meta data of an item of the ParkinTest instance
- * @param {string} type - Type of item to validate
- * @param {string} description - Metadata about the item
- * @param {function} action - Function to call for the item
- * @param {boolean} validate - Should the item be validated
  *
- * @returns {Object} - Item object
  */
-export const createItem = (type, metadata = noOpObj, validate = true) => {
+export const createItem = (
+  type:string,
+  metadata:TestObj = noOpObj as TestObj,
+  validate = true
+) => {
   const { description, action } = metadata
   validate && validateItem(type, description, action)
   return { ...metadata, type }
@@ -110,18 +110,19 @@ export const createItem = (type, metadata = noOpObj, validate = true) => {
 
 /**
  * Creates a describe object for the passed in description and action
- * @param {string} description - Metadata about the item
- * @param {function} action - Function to call for the item
  *
- * @returns {Object} - Describe Item object
  */
-export const createDescribe = (description, action) => {
+export const createDescribe = (
+  description:string,
+  action:TestMethod
+) => {
   const item = createItem(Types.describe, {
     ...createRoot(),
     action,
     tests: [],
     description,
-  })
+  }) as TestObj
+
   item.disabled = () => (item.skip = true)
 
   return item
@@ -130,7 +131,6 @@ export const createDescribe = (description, action) => {
 /**
  * Creates a root object
  *
- * @returns {Object} - Root Item object
  */
 export const createRoot = () => {
   return createItem(
@@ -143,5 +143,5 @@ export const createRoot = () => {
       }, {}),
     },
     false
-  )
+  ) as TestObj
 }

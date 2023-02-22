@@ -156,7 +156,7 @@ export class ParkinTest {
   #addHelpers = () => {
     Object.values(helperTypes).map(type => {
       this[type] = action => {
-        validateHelper(type, action, this.#activeParent)
+        validateHelper(type, action)
         this.#activeParent[type].push(action)
       }
     })
