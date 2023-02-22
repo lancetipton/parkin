@@ -1,20 +1,19 @@
+import { EHookType } from '../types'
+
 /*
  * Helper method to use the a test method can not be found on the global scope
  * @function
  * @public
  * @throws
- * @param {string} type - Name of test method to get from the global scope
  *
- * @returns {function} - Test method
  */
-export const testMethodFill = type => {
+export const testMethodFill = (type:string) => {
   /*
    * Internal method that throws an error when a test method does not exist on the global scope
    * @function
    * @private
    * @inner
    *
-   * @returns {void}
    */
   return () => {
     throw new Error(
@@ -31,7 +30,6 @@ export const testMethodFill = type => {
  * @public
  * @throws
  *
- * @returns {void}
  */
 export const throwMissingSteps = () => {
   throw new Error(
@@ -45,9 +43,8 @@ export const throwMissingSteps = () => {
  * @public
  * @throws
  *
- * @returns {void}
  */
-export const throwMissingHooks = found => {
+export const throwMissingHooks = (found:string) => {
   throw new Error(
     `Runner class constructor requires an instance of the Hooks class. Found: ${found}`
   )
@@ -59,7 +56,6 @@ export const throwMissingHooks = found => {
  * @public
  * @throws
  *
- * @returns {void}
  */
 export const throwMissingFeatureText = () => {
   throw new Error(
@@ -72,11 +68,9 @@ export const throwMissingFeatureText = () => {
  * @function
  * @public
  * @throws
- * @param {string} text - Text that does not match a registered step definition
  *
- * @returns {void}
  */
-export const throwNoMatchingStep = text => {
+export const throwNoMatchingStep = (text:string) => {
   throw new ReferenceError(text)
 }
 
@@ -85,11 +79,9 @@ export const throwNoMatchingStep = text => {
  * @function
  * @public
  * @throws
- * @param {string} name - Name of the param type that is being registered
  *
- * @returns {void}
  */
-export const throwParamTypeExists = () => {
+export const throwParamTypeExists = (name:string) => {
   throw new Error(`Cannot register param type "${name}". It already exists!`)
 }
 
@@ -98,15 +90,10 @@ export const throwParamTypeExists = () => {
  * @function
  * @public
  * @throws
- * @param {*} feature - Argument that was passed instead of the parsed feature object
- *
- * @returns {void}
+ * 
  */
-export const throwFeatureNotAnObj = feature => {
-  throw new Error(
-    `Assemble feature requires an object matching the feature model spec!`,
-    feature
-  )
+export const throwFeatureNotAnObj = (feature:any) => {
+  throw new Error(`Assemble feature requires an object matching the feature model spec!`)
 }
 
 /**
@@ -114,15 +101,11 @@ export const throwFeatureNotAnObj = feature => {
  * @function
  * @public
  * @throws
- * @param {string} name - Name of the param type that is being registered
  *
- * @returns {void}
  */
-export const throwMissingWorldValue = (arg, world) => {
+export const throwMissingWorldValue = (arg:string) => {
   throw new Error(
     `Can not replace ${arg} with value from $world, it does not exist on the world object`,
-    world,
-    arg
   )
 }
 
@@ -131,12 +114,9 @@ export const throwMissingWorldValue = (arg, world) => {
  * @function
  * @public
  * @throws
- * @param {string} hookTypes - List of allowed hook types
- * @param {string} type - Invalid hook type being registered
  *
- * @returns {void}
  */
-export const throwInvalidHookType = (hookTypes, type) => {
+export const throwInvalidHookType = (hookTypes:EHookType, type:string) => {
   throw new Error(
     [
       `Expected client hook type to be one of ', ${hookTypes}.`,
@@ -150,10 +130,9 @@ export const throwInvalidHookType = (hookTypes, type) => {
  * @function
  * @public
  * @throws
- * @param {Object} err - Error that was thrown
- * @param {string} currentMatch - Current $world text that was matched
+ *
  */
-export const throwWorldReplace = (err, currentMatch) => {
+export const throwWorldReplace = (err:Error, currentMatch:string) => {
   console.error(
     `Error replacing $world value in feature text. Current match was ${currentMatch}`
   )
@@ -165,10 +144,9 @@ export const throwWorldReplace = (err, currentMatch) => {
  * @function
  * @public
  * @throws
- * @param {Object} err - Error that was thrown
- * @param {string} currentMatch - Current $world.$alias text that was matched
+ *
  */
-export const throwAliasReplace = (err, currentMatch) => {
+export const throwAliasReplace = (err:Error, currentMatch:string) => {
   console.error(
     `Error replacing $$alias ( $world.$alias ) in feature text. Current match was ${currentMatch}`
   )

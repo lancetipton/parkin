@@ -1,54 +1,66 @@
+import type {
+  TStepDef,
+  TStepMeta,
+  TWorldConfig,
+  TStepDefMethod,
+} from './types'
+
 import { matcher } from './matcher'
 import { constants } from './constants'
 import { throwNoMatchingStep } from './utils/errors'
+import { EStepMethodType, EStepType } from './types'
 import { capitalize, eitherArr, isStr, noOpObj } from '@keg-hub/jsutils'
+import { sanitizeForId, sanitize, validateDefinition } from './utils/helpers'
 import {
-  resolveGlobalObj,
   resolveModule,
   resolveRequire,
+  resolveGlobalObj,
 } from './utils/globalScope'
-import { sanitizeForId, sanitize, validateDefinition } from './utils/helpers'
 
 const { REGEX_VARIANT, EXPRESSION_VARIANT, STEP_TYPES } = constants
+
+type TRegisterArgs = [
+  string|TStepDef[]|TStepDef,
+  string,
+  string,
+  TStepDefMethod,
+  TStepMeta|undefined
+]
+type TTempRegisterArgs = [
+  match:string,
+  method:TStepDefMethod,
+  meta:TStepMeta
+]
+
+type TTempContainer = Record<EStepMethodType, TStepDef[]>
 
 /**
  * Builds the text content of a step definition call
  * @function
  * @private
- * @param {Object} step - Parsed step definition object
- * @param {string} step.type - Type of step definition this step belongs to
- * @param {string} step.match - Text used to match with a features step
- * @param {function} step.method - Called when a features step matches match property
- * @param {string} step.variant - Syntax used in the match property
  *
- * @returns {string} - Built text content of the step definition
  */
-const getContent = step => {
+const getContent = (def:TStepDef) => {
   const match =
-    step.variant === REGEX_VARIANT ? step.match.toString() : `"${step.match}"`
+    def.variant === REGEX_VARIANT ? def.match.toString() : `"${def.match}"`
 
-  return `${capitalize(step.type)}(${match}, ${step.method.toString()})`
+  return `${capitalize(def.type)}(${match}, ${def.method.toString()})`
 }
 
 /**
  * Registers a step definition by type
  * @function
  * @private
- * @param {string} internalType - Internal references to the step definition type
- * @param {string} type - Type of step definition to search when matching
- * @param {string} match - Text used to match with a features step
- * @param {function} method - Called when a features step matches match property
  *
- * @returns {void}
  */
 const registerFromCall = function (
-  internalType,
-  type,
-  match,
-  method,
-  meta = noOpObj
+  internalType:EStepType,
+  type:EStepType,
+  match:string,
+  method:TStepDefMethod,
+  meta:TStepMeta = noOpObj
 ) {
-  const definition = {
+  const definition:Partial<TStepDef> = {
     type,
     meta,
     match,
@@ -59,13 +71,13 @@ const registerFromCall = function (
       match.toString().indexOf('/') === 0 ? REGEX_VARIANT : EXPRESSION_VARIANT,
   }
 
-  definition.name = sanitize(definition)
+  definition.name = sanitize(definition as TStepDef)
   // The name should always be unique, so we can use that as a consistent uuid
   definition.uuid = sanitizeForId(`${type}-${definition.name}`)
-  definition.content = getContent(definition)
+  definition.content = getContent(definition as TStepDef)
 
   const definitions = this.list()
-  const newDefinition = validateDefinition(definition, definitions)
+  const newDefinition = validateDefinition(definition as TStepDef, definitions)
 
   newDefinition && this[internalType].push(newDefinition)
 
@@ -78,24 +90,20 @@ const registerFromCall = function (
  * Contains only newly registered definitions, NOT all definitions
  * @function
  * @private
- * @param {Object} parent - Parent class to register the definitions to (Step class instance)
- * @param {string} type - Type of step definition to register
- * @param {Object} container - Holds the newly registered definitions
  *
- * @returns {function} - Method to register step definitions by type
  */
-const tempRegister = (parent, type, container) => {
+const tempRegister = (
+  parent:Steps,
+  type:EStepMethodType,
+  container:TTempContainer
+) => {
   /**
    * Captures a registered step definition and adds it the the container object
    * @function
    * @internal
-   * @param {string} match - Text used to matched with a features step
-   * @param {function} method - Called when a features step matches the text param
-   * @param {Object} meta - Object describing the functionality of the step definition
    *
-   * @returns {Object} newly registered definition model
    */
-  return (...args) => {
+  return (...args:TTempRegisterArgs) => {
     const definition = parent[type](...args)
     container[type].push(definition)
 
@@ -112,20 +120,21 @@ const tempRegister = (parent, type, container) => {
  *
  * @returns {void}
  */
-const registerFromParse = function (definitions) {
+const registerFromParse = function (definitions:string|string[]) {
+  // TRegisterArgs
   // Ensures a consistent index due to being an array
-  const DEF_TYPES = this.types.map(type => capitalize(type))
+  const DEF_TYPES:EStepMethodType[] = this.types.map((type:EStepType) => capitalize(type))
 
   // Build a container for holding the newly added definitions
   // Looks like the object below
   // { Given: [], When: [], Then: [], But: [], And: [] }
-  const container = DEF_TYPES.reduce((built, type) => {
+  const container = DEF_TYPES.reduce((built:TTempContainer, type) => {
     built[type] = []
     return built
-  }, {})
+  }, {} as TTempContainer)
 
   // Loop over the passed in definitions
-  eitherArr(definitions, [definitions]).map(definition => {
+  eitherArr<string[]>(definitions, [definitions]).map(definition => {
     // Create a dynamic function calling the definition
     // The definition should be a call to a global Given, When, Then methods
     // Which is comes from the tempRegister method for each type
@@ -152,13 +161,11 @@ const registerFromParse = function (definitions) {
  * Join all step types together into a single array
  * @function
  * @private
- * @param {Object} instance - Steps calls instance
  *
- * @returns {Array} - Joined steps
  */
-const joinAllSteps = instance => {
+const joinAllSteps = (instance:Steps):TStepDef[] => {
   return instance.types.reduce(
-    (stepDefs, type) => stepDefs.concat(instance[`_${type}`]),
+    (stepDefs, type:EStepType) => stepDefs.concat(instance[`_${type}`]),
     []
   )
 }
@@ -168,39 +175,39 @@ const joinAllSteps = instance => {
  * Which are used to map to steps of a parsed feature file
  * @class
  * @public
- * @param {Object} world - Holds configuration for the running test environment
  *
- * @returns {Object} Instance of the Steps class
  */
 export class Steps {
+
+  private _world:TWorldConfig
+
   /**
    * Allowed step definition types
    * @memberof Steps
    * @type {Array}
    * @private
    */
-  types = STEP_TYPES
+  types:EStepType[] = STEP_TYPES
 
-  constructor(world) {
-    this._world = world || {}
+
+  constructor(world:TWorldConfig={ $alias: {} }) {
+    this._world = world
+
     const self = this
     /**
      * Creates helpers for registering step definitions by type
      * @memberof Steps
      * @function
      * @public
-     * @param {string} match - Text used to matched with a features step
-     * @param {function} method - Function called when a features step text matches the text param
      * @example
      * const steps = new Steps({})
      * steps.Given(`text`, ()=> {})
      *
-     * @returns {void}
      */
-    this.types.map(type => {
+    this.types.map((type:EStepType) => {
       const internalType = `_${type}`
       this[internalType] = []
-      this[capitalize(type)] = (match, method, meta) => {
+      this[capitalize(type)] = (match:string, method:TStepDefMethod, meta:TStepMeta) => {
         return self.register(internalType, type, match, method, meta)
       }
     })
@@ -212,7 +219,6 @@ export class Steps {
    * @function
    * @public
    *
-   * @returns {Array} - List of all registered step definitions
    */
   list = () => {
     return joinAllSteps(this)
@@ -224,14 +230,13 @@ export class Steps {
    * @function
    * @public
    *
-   * @returns {Array} - List of all registered step definitions
    */
-  typeList = () => {
+  typeList = ():Record<EStepType, TStepDef> => {
     return this.types.reduce((stepDefs, type) => {
       const internalType = `_${type}`
       stepDefs[internalType] = [...this[internalType]]
       return stepDefs
-    }, {})
+    }, {} as Record<EStepType, TStepDef>)
   }
 
   /**
@@ -240,12 +245,9 @@ export class Steps {
    * @memberof Steps
    * @function
    * @public
-   * @param {string} text - Feature step text to compare with definition match text
    *
-   * @returns {Object} - Contains a match property as an array of arguments
-   *                     And the definition property as the found registered definition
    */
-  match = text => {
+  match = (text:string) => {
     // Join all step types together when finding a match
     // Cucumber treats all step definition types as the same when matching to step text
     const list = this.list()
@@ -269,12 +271,9 @@ export class Steps {
    * @memberof Steps
    * @function
    * @public
-   * @param {Array<Object>} list - Group of registered step definition
-   * @param {string} text - Feature step text to compare with step definition text
    *
-   * @returns {*} - Response from the step definition function
    */
-  resolve = text => {
+  resolve = (text:string) => {
     // Try to find a step definition match to the passed in text
     const found = this.match(text)
 
@@ -292,16 +291,9 @@ export class Steps {
    * @memberof Steps
    * @function
    * @public
-   * @param {Array} args - All arguments passed to the method
-   * @param {string|Array|Object} args.0 - Type of step definition to search when matching
-   *                                        Or an array of parsed definition objects
-   *                                        Or a single parsed definition object
-   * @param {string} args.1 - Text used to matched with a features step
-   * @param {function} args.2 - Function called when a features step text matches the text param
    *
-   * @returns {void}
    */
-  register = (...args) => {
+  register = (...args:TRegisterArgs) => {
     return isStr(args[0])
       ? registerFromCall.apply(this, args)
       : registerFromParse.apply(this, args)
@@ -313,7 +305,6 @@ export class Steps {
    * @function
    * @public
    *
-   * @returns {void}
    */
   clear = () => {
     this.types.map(type => (this[`_${type}`] = []))

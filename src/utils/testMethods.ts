@@ -1,19 +1,28 @@
+import type { TSuite, TSpec, TSpecResult, TJasmineEnv } from '../types'
+
 import { constants } from '../constants'
 import { testMethodFill } from './errors'
 import { noOp, get } from '@keg-hub/jsutils'
 import { hasJasmine, resolveJasmine } from './globalScope'
 const { SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV } = constants
 
+enum ETestType {
+  it = `it`,
+  itx = `itx`,
+  test = `test`,
+  testx = `testx`,
+  describe = `describe`,
+  describex = `describex`,
+}
+
 /**
  * Converts a log into a string, and logs it to stdout wrapped by SPEC_RESULT_LOG constant
  * Which allows easy parsing the spec output json object
  * @function
  * @private
- * @param {Object} result - Spec result object from jasmine reported
  *
- * @returns {Void}
  */
-const logResultToTerminal = result => {
+const logResultToTerminal = (result:TSpecResult) => {
   const timestamp = new Date().getTime()
   get(process, `env.${LOG_JEST_SPEC_ENV}`) &&
     process.stdout.write(
@@ -30,12 +39,10 @@ const logResultToTerminal = result => {
  * The first word should be the type, if not, then it's a feature
  * @function
  * @private
- * @param {Object} suite - Suite object from jasmine reported
  *
- * @returns {string} - The suite type
  */
-const getSuiteData = suite => {
-  const description = get(suite, `description`)
+const getSuiteData = (suite:TSuite) => {
+  const description:string|undefined = get(suite, `description`)
 
   const type = !description
     ? `Feature`
@@ -62,12 +69,10 @@ const getSuiteData = suite => {
  * This allows testing the runner methods, without running the tests
  * @function
  * @private
- * @param {string} type - Name of test method to get from the global scope
- * @param {boolean} testMode - Allows testing the runner methods, without running the tests
  *
  * @returns {function} - Test method
  */
-export const getTestMethod = (type, testMode) => {
+export const getTestMethod = (type:ETestType, testMode?:boolean) => {
   // To write tests for the runner, we have to override the default test methods
   // This allows testing the runner methods, without running the tests
   return testMode ? noOp : global[type] || testMethodFill(type)
@@ -78,11 +83,9 @@ export const getTestMethod = (type, testMode) => {
  * Checks failed specs and sets all all specs in a suite to disable when found
  * @function
  * @private
- * @param {Object} jasmineEnv - The current jasmine environment
  *
- * @returns {Object} - Custom jasmine reporter
  */
-const buildReporter = jasmineEnv => {
+const buildReporter = (jasmineEnv:TJasmineEnv) => {
   const suites = []
   const jasmineDescribe = jasmineEnv.describe
 
@@ -96,39 +99,39 @@ const buildReporter = jasmineEnv => {
   }
 
   return {
-    suiteStarted: suite => {
+    suiteStarted: (suite:TSuite) => {
       logResultToTerminal({
         ...suite,
         ...getSuiteData(suite),
         action: `start`,
       })
     },
-    specStarted: result => {
+    specStarted: (result:TSpecResult) => {
       logResultToTerminal({
         ...result,
         type: `step`,
         action: `start`,
       })
     },
-    specDone: result => {
+    specDone: (result:TSpecResult) => {
       // Check if the env is set to log the spec result
       logResultToTerminal({
         ...result,
-        type: 'step',
-        action: 'end',
+        type: `step`,
+        action: `end`,
       })
 
       // If the spec passed, just return
-      if (result.status !== 'failed') return
+      if (result.status !== `failed`) return
 
       // If the spec failed, loop through all other specs, and disable them
       // This ensures if a spec fails, all follow specs will be skipped
-      const suite = suites.find(suite =>
-        suite.children.find(spec => spec.result === result)
+      const suite:TSuite = suites.find(suite =>
+        suite.children.find((spec:TSpec) => spec.result === result)
       )
-      suite && suite.children.map(spec => spec.disable())
+      suite && suite.children.map((spec:TSpec) => spec.disable())
     },
-    suiteDone: suite => {
+    suiteDone: (suite:TSuite) => {
       logResultToTerminal({
         ...suite,
         ...getSuiteData(suite),
@@ -144,14 +147,13 @@ const buildReporter = jasmineEnv => {
  * @function
  * @export
  *
- * @returns {Void}
  */
-export const skipTestsOnFail = testMode => {
+export const skipTestsOnFail = (testMode?:boolean) => {
   if (!hasJasmine) return
 
   const jasmineEnv = resolveJasmine().getEnv()
 
   jasmineEnv &&
     jasmineEnv.describe &&
-    jasmineEnv?.addReporter?.(buildReporter(jasmineEnv, testMode))
+    jasmineEnv?.addReporter?.(buildReporter(jasmineEnv))
 }

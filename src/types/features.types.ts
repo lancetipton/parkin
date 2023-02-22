@@ -58,6 +58,8 @@ export type TStepParent = {
   location: string
 }
 
+export type TStepDefMethod = (...args:any) => any
+
 export type TStepDef = {
   type: string
   name: string
@@ -69,6 +71,7 @@ export type TStepDef = {
   match: string | RegExp
   parent?: TStepParent
   tokens: TStepToken[]
+  method: TStepDefMethod
 }
 
 export type TStepDefsArr = TStepDef[]

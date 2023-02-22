@@ -73,7 +73,7 @@ export type TParamTypes = {
 }
 
 export type TMatchResp = {
-  match?: string[]
+  match?: [string|TWorldConfig]
   definition?:TStepDef
 }
 

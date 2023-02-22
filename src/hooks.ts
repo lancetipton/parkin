@@ -1,15 +1,22 @@
+import type { Parkin } from './parkin'
+import type { TWorldConfig } from './types'
+
+import { EHookType } from './types'
 import { constants } from './constants'
 import { isFunc, noPropArr, noOp } from '@keg-hub/jsutils'
 import { throwInvalidHookType } from './utils/errors'
 
 const { HOOK_TYPES } = constants
 
+type THookMethod = (parkin:Parkin) => void|Promise<void>
+type TRegisteredHooks = Record<EHookType, THookMethod[]>
+
 /**
  * Allows registering hook functions, which are then called when
  * the runner runs a feature
  * @class
  * @public
- * @returns {Object} Instance of the Hooks class
+ *
  */
 export class Hooks {
   /**
@@ -18,7 +25,7 @@ export class Hooks {
    * @type {Array}
    * @private
    */
-  types = HOOK_TYPES
+  private types:EHookType[] = HOOK_TYPES
 
   /**
    * Parkin instance the hooks are tied to
@@ -26,10 +33,11 @@ export class Hooks {
    * @type {Object}
    * @private
    */
-  instance = undefined
+  instance:Parkin = undefined
 
-  constructor(world, instance) {
-    this._registeredHooks = {}
+  private  _registeredHooks:TRegisteredHooks = {} as TRegisteredHooks
+
+  constructor(world:TWorldConfig, instance:Parkin) {
     this.instance = instance
 
     /**
@@ -37,15 +45,13 @@ export class Hooks {
      * @memberof Hooks
      * @function
      * @public
-     * @param {function} method - Function to be registered to the hook. They will be called when the runner runs a feature
      * @example
      * const hooks = new Hooks()
      * hooks.beforeAll(() => setupEnvironment())
      *
-     * @returns {void}
      */
-    this.types.map(type => {
-      this[type] = clientHookFn => {
+    this.types.map((type:EHookType) => {
+      this[type] = (clientHookFn:THookMethod) => {
         if (!isFunc(clientHookFn)) return
         this._registeredHooks[type] = this._registeredHooks[type] || []
         this._registeredHooks[type].push(clientHookFn)
@@ -54,14 +60,14 @@ export class Hooks {
   }
 
   /**
-   * @param {string} type
-   *
-   * @return {Function} A wrapper function that calls all the registered hooks in series
+   * Gets the registered hook callback method based on the passed in type
    */
-  getRegistered = type => {
+  getRegistered = (type:EHookType) => {
     const foundHooks = this.types.includes(type)
-      ? this._registeredHooks[type] || noPropArr
+      ? this._registeredHooks[type] || noPropArr as THookMethod[]
       : throwInvalidHookType(HOOK_TYPES.join(', '), type)
+
+    if(!foundHooks) return
 
     return foundHooks.length
       ? async () => {

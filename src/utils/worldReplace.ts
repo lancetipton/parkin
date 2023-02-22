@@ -1,3 +1,5 @@
+import type { TWorldConfig } from '../types'
+
 import { constants } from '../constants'
 import { get, isFunc, exists } from '@keg-hub/jsutils'
 import { throwWorldReplace, throwAliasReplace } from './errors'
@@ -21,13 +23,12 @@ const {
  * Otherwise the existing value ise used
  * If nothing exists at the location, the original match is returned
  *
- * @param {string} match - The found text that matches the $$alias format
- * @param {Object} world - Parking global config object
- * @param {string} location - Location on the world object that contains the replace value
- *
- * @returns {string} - text, with the `$$alias` text replaced
  */
-const attemptReplace = (match, world, location) => {
+const attemptReplace = (
+  match:string,
+  world:TWorldConfig,
+  location:string
+) => {
   const replaceWith = get(world, location)
   return isFunc(replaceWith)
     ? replaceWith(world, location)
@@ -43,14 +44,10 @@ const attemptReplace = (match, world, location) => {
  * If there is text matching `$$:alias`, the `:` is removed
  * This allows variables in step definitions to be replaced at run time
  *
- * @param {string} text - String to have `$$alias` text replaced
- * @param {Object} world - Parking global config object
- *
- * @returns {string} - text, with the `$world` text replaced
  */
-export const aliasReplace = (text, world) => {
+export const aliasReplace = (text:string, world:TWorldConfig) => {
   // Track the current match, for extra information if the replace throws
-  let currentMatch
+  let currentMatch:string
   try {
     return text.replace(RX_ALIAS_MATCH, match => {
       currentMatch = match
@@ -83,12 +80,8 @@ export const aliasReplace = (text, world) => {
  * If there is text matching `$:world`, the `:` replaced as `$world`
  * This allows variables in step definitions to be replaced at run time
  *
- * @param {string} text - String to have `$world` text replaced
- * @param {Object} world - Parking global config object
- *
- * @returns {string} - text, with the `$world` text replaced
  */
-export const worldReplace = (text, world) => {
+export const worldReplace = (text:string, world:TWorldConfig) => {
   // Track the current match, for extra information if the replace throws
   let currentMatch
   // Wrapped in a try/catch because
@@ -111,11 +104,7 @@ export const worldReplace = (text, world) => {
 /**
  * Helper to call aliasReplace, and worldReplace in a single call
  *
- * @param {string} text - String to have `$world` text replaced
- * @param {Object} world - Parking global config object
- *
- * @returns {string} - text, with the `$world` text replaced
  */
-export const replaceWorld = (text, world) => {
+export const replaceWorld = (text:string, world:TWorldConfig) => {
   return worldReplace(aliasReplace(text, world), world)
 }
