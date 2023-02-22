@@ -1,4 +1,4 @@
-
+import { EStepType } from './helpers.types'
 
 export enum EStepVariant {
   regex = 'regex',
@@ -89,19 +89,6 @@ export enum EAstObjects {
   step = `step`
 }
 
-export enum EStepKey {
-  given=`given`,
-  when=`when`,
-  then=`then`,
-  and=`and`,
-  but=`but`,
-  Given=`given`,
-  When=`when`,
-  Then=`then`,
-  And=`and`,
-  But=`but`,
-} 
-
 export type TBackgroundAst = {
   index: number
   uuid: string
@@ -119,12 +106,26 @@ export type TRuleAst = {
   scenarios: TScenarioAst[]
 }
 
+export type TStepTable = {
+  index: number
+  content: string[][]
+}
+
+export type TStepDoc = {
+  index:number
+  whiteSpace:string
+  type:`quote`|`tick`
+  content: string[]
+}
+
 export type TStepAst = {
   uuid: string
   index: number
   step: string
-  type: EStepKey
+  type: EStepType
   definition?:keyof TStepDefs
+  table?: TStepTable
+  doc?: any
 }
 
 export type TScenarioAst = {
@@ -155,11 +156,11 @@ export type TFeatureAst = {
   scenarios: TScenarioAst[]
 }
 
-export type TAstType = TFeatureAst | TRuleAst | TBackgroundAst | TScenarioAst | TStepAst
+export type TParseParentAst = TFeatureAst | TRuleAst | TBackgroundAst | TScenarioAst
+export type TAstType = TParseParentAst | TStepAst
 
 export type TStepParentAst = TBackgroundAst | TScenarioAst
 export type TScenarioParentAst = TRuleAst | TFeatureAst
 export type TTagsParentAst = TScenarioParentAst | TStepParentAst
 export type TBackgroundParentAst = TFeatureAst | TRuleAst
-
 

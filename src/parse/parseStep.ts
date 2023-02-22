@@ -1,3 +1,6 @@
+import type { TStepAst, TStepParentAst, TParseParentAst } from '../types'
+
+import { EStepType } from '../types'
 import { sanitizeForId, getRXMatch } from '../utils/helpers'
 
 const RX_GIVEN = /^\s*Given (.*)$/
@@ -19,12 +22,12 @@ const RX_DATA_TABLE_FULL = /^\s*?\|([^\S\r\n]*?|.*)\|/gm
  * @private
  */
 const RegStepTags = [
-  { regex: RX_GIVEN, type: 'given' },
-  { regex: RX_WHEN, type: 'when' },
-  { regex: RX_THEN, type: 'then' },
-  { regex: RX_AND, type: 'and' },
-  { regex: RX_BUT, type: 'but' },
-  { regex: RX_ASTERISK, type: 'and' },
+  { regex: RX_GIVEN, type: EStepType.given },
+  { regex: RX_WHEN, type: EStepType.when },
+  { regex: RX_THEN, type: EStepType.then },
+  { regex: RX_AND, type: EStepType.and },
+  { regex: RX_BUT, type: EStepType.but },
+  { regex: RX_ASTERISK, type: EStepType.and },
 ]
 
 /**
@@ -33,16 +36,16 @@ const RegStepTags = [
  * Each line of the data stable should be split in to arguments separated by |
  * @function
  * @private
- * @param {Object} step - Current step being parsed into an object
- * @param {Array} lines - All lines after the step line
- * @param {string} line - Next line after the step line
- * @param {string} index - Index of line relative to the full text content
  *
  * @todo Implement data table parsing
  *
- * @return {Object} Current step being parsed with the doc string added
  */
-const checkDataTable = (step, lines, line, index) => {
+const checkDataTable = (
+  step:TStepAst,
+  lines:string[],
+  line:string,
+  index:number
+) => {
   if (!RX_DATA_TABLE.test(line)) return step
 
   let tableEnd
@@ -74,16 +77,16 @@ const checkDataTable = (step, lines, line, index) => {
  * Space inside the doc string should be left as is
  * @function
  * @private
- * @param {Object} step - Current step being parsed into an object
- * @param {string} lines - All lines after the step line
- * @param {string} line - Next line after the step line
- * @param {string} index - Index of line relative to the full text content
  *
  * @todo Implement doc string parsing
  *
- * @return {Object} Current step being parsed with the doc string added
  */
-const checkDocString = (step, lines, line, index) => {
+const checkDocString = (
+  step:TStepAst,
+  lines:string,
+  line:string,
+  index:number
+) => {
   let docMatch = RX_DOC_QUOTES.test(line) && '"""'
   docMatch = docMatch || (RX_DOC_TICKS.test(line) && '```')
 
@@ -126,18 +129,20 @@ const checkDocString = (step, lines, line, index) => {
  * Helper factory function to build a step object
  * @function
  * @private
- * @param {string} type - The type of step definition
- * @param {string} step - Text containing the step text
  *
- * @returns {Object} - Parsed step object
  */
-const stepFactory = (type, stepText, lines, index) => {
+const stepFactory = (
+  type:EStepType,
+  stepText:string,
+  lines:string[],
+  index:number
+) => {
   let step = {
     type,
     index,
     step: stepText,
     uuid: sanitizeForId(`${type}-${stepText}`),
-  }
+  } as TStepAst
 
   // TODO: Need to add check if next line is empty of a comment
   // If it is, then need to go to line after that
@@ -156,14 +161,16 @@ const stepFactory = (type, stepText, lines, index) => {
 /**
  * Checks each step tag type, and adds it to current scenario when it exists
  * @function
- * @private
- * @param {Object} scenario - Parsed scenario object of the current scenario
- * @param {string} line - Current line being parsed
- * @param {number} index - Current index of the line relative to the full text
  *
- * @return {boolean} - True if a line was added to the current scenario object
  */
-export const parseStep = (scenario, lines, line, index) => {
+export const parseStep = (
+  parent:TParseParentAst,
+  lines:string[],
+  line:string,
+  index:number
+) => {
+  const stepParent = parent as TStepParentAst
+
   return RegStepTags.reduce((added, regTag) => {
     // If the line was already added, just return
     if (added) return added
@@ -172,7 +179,7 @@ export const parseStep = (scenario, lines, line, index) => {
     const hasTag = regTag.regex.test(line)
     // If if is, add the extracted line to the steps of the current scenario
     hasTag &&
-      scenario.steps.push(
+      stepParent.steps.push(
         stepFactory(
           regTag.type,
           getRXMatch(line, regTag.regex, 1),

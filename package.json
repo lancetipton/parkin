@@ -56,6 +56,7 @@
     "format": "yarn format:prettier && yarn format:eslint",
     "prepack": "dot-json package.json devDependencies -d",
     "postpublish": "git checkout ./package.json",
+    "parkin": "node -r esbuild-register src/bin/parkin.ts",
     "test": "NODE_ENV=test jest --detectOpenHandles --no-cache --verbose --config=./configs/jest.config.js --maxWorkers=50%",
     "test:cov": "yarn test:reports",
     "test:reports": "yarn test --coverage && yarn view:reports",
@@ -63,9 +64,9 @@
   },
   "devDependencies": {
     "@keg-hub/jsutils": "8.8.0",
-    "@typescript-eslint/parser": "5.50.0",
     "@types/jest": "29.4.0",
     "@types/node": "18.11.18",
+    "@typescript-eslint/parser": "5.50.0",
     "dot-json": "^1.2.2",
     "es-jest": "2.1.0",
     "esbuild": "0.17.5",
