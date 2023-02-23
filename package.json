@@ -6,6 +6,9 @@
   "module": "index.js",
   "types": "build/esm/index.d.ts",
   "private": false,
+  "bin": {
+    "parkin": ".bin/parkin.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/lancetipton/parkin.git"
@@ -41,9 +44,10 @@
   },
   "scripts": {
     "prebuild": "yarn format && yarn test",
-    "build": "yarn build:es && yarn build:copy",
+    "build": "yarn build:es && yarn build:copy && yarn build:cli",
     "build:es": "node --enable-source-maps -r esbuild-register configs/build.config.ts",
     "build:copy": "rimraf docs/parkin && cp -R build/cjs docs/parkin",
+    "build:cli": "node --enable-source-maps -r esbuild-register configs/cli.build.config.ts",
     "clean:full": "yarn clean && yarn install",
     "clean": "yarn clean:lock && yarn cache clean && rimraf node_modules && npm cache clean --force",
     "clean:cache": "yarn cache clean",

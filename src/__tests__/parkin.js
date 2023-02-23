@@ -71,10 +71,9 @@ describe('Parkin', () => {
       })
       return noUuidScenario
     })
-    
 
     expect(scenarioWs).toEqual(`  `)
-    expect(stepsWS).toEqual(['    ', '    ', '    ', '    ', '    '])
+    expect(stepsWS).toEqual([ '    ', '    ', '    ', '    ', '    ' ])
     expect(noUuidScenarios).toEqual(parsedScenarios)
   })
 
