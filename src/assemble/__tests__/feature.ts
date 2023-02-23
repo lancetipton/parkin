@@ -1,4 +1,4 @@
-import { parsedFeature, feature } from '../../__mocks__'
+import { featureRulesScenarios, parsedFeature, feature } from '../../__mocks__'
 
 jest.resetModules()
 jest.resetAllMocks()
@@ -33,9 +33,15 @@ describe('Assemble Feature', () => {
 
   it('should create output that is equal to the input', () => {
     const PK = new Parkin(worldObj)
+
     const parsed = PK.parse.feature(feature)[0]
     const assembled = assembleFeature(parsed)[0]
-
     expect(assembled).toEqual(feature)
+
+    const parsedAdvanced = PK.parse.feature(featureRulesScenarios)[0]
+    const assembledAdvanced = assembleFeature(parsedAdvanced)[0]
+    expect(assembledAdvanced).toEqual(featureRulesScenarios)
+
   })
+
 })

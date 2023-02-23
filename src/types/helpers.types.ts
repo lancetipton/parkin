@@ -20,3 +20,25 @@ export enum EStepMethodType {
   And=`And`,
   But=`But`
 }
+
+
+export enum EFeatureTypes {
+  feature = `Feature`,
+  Feature = `Feature`,
+  FEATURE = `Feature`,
+  rule = `Rule`,
+  Rule = `Rule`,
+  background = `Background`,
+  Background = `Background`,
+  BACKGROUND = `Background`,
+  scenario = `Scenario`,
+  Scenario = `Scenario`,
+  SCENARIO = `Scenario`,
+  example = `Example`,
+  Example = `Example`,
+  EXAMPLE = `Example`,
+  step = `Step`,
+  Step = `Step`,
+  RULE = `Rule`,
+  STEP = `Step`
+}

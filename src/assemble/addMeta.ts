@@ -1,9 +1,9 @@
 import type { TFeatureAst, TAstBlock } from '../types'
 
 import { constants } from '../constants'
+import { EFeatureTypes } from '../types'
 import { addContent } from './addContent'
-import { eitherArr, isArr } from '@keg-hub/jsutils'
-
+import { eitherArr } from '@keg-hub/jsutils'
 const { FEATURE_META } = constants
 
 
@@ -20,7 +20,7 @@ export const addMeta = (
   FEATURE_META.map((key:string) => {
     switch (key) {
     case 'feature':
-      addContent(assembled, `Feature: ${feature[key]}`, feature.index)
+      addContent(assembled, `${EFeatureTypes.Feature}: ${feature[key]}`, feature.index)
       break
     case 'comments':
       const comments = feature[key]

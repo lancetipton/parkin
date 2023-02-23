@@ -5,11 +5,15 @@
  */
 
 import { Parkin } from '../parkin'
-import { featureFull } from '../__mocks__'
+import { featureRulesScenarios } from '../__mocks__'
 
 ;(() => {
 
   const PK = new Parkin({})
-  const parsed = PK.parse.feature(featureFull)[0]
+  const parsed = PK.parse.feature(featureRulesScenarios)[0]
+
+  const assembled = PK.assemble.feature(parsed)
+
+  console.log(featureRulesScenarios === assembled[0])
 
 })()

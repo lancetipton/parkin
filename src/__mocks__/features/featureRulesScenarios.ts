@@ -23,49 +23,21 @@ Feature: Full set of functionality in feature files
     Then it should not be part of any rules
 
   Rule: This is Rule 2
+    Background:
+      Given that Rule 2 has a background
+      Then the background steps should be in the second parsed rule
+
     Example: Run second rule first example
       Given that this Feature second rule
       Then this rules scenario's steps should be part of the second rules scenario
 
   Scenario: Scenario after rules
     Given that a scenario exists after the rules
-    Then it should not be part any rules
-`
+    Then it should not be part any rules`
 
 export const parsedFeatureRulesScenarios = {
   index: 1,
-  content: '@rules @scenarios\n' +
-    'Feature: Full set of functionality in feature files\n' +
-    '  # This is a test comment\n' +
-    '  Background:\n' +
-    '    Given that background exists\n' +
-    '    Then the background steps should be called before each rules scenario\n' +
-    '\n' +
-    '  Scenario: Scenario before rules\n' +
-    '    Given that a scenario exists before the rule\n' +
-    '    Then it should not be part of any rules\n' +
-    '\n' +
-    '  Rule: This is Rule 1\n' +
-    '    Example: Run first rule - first scenario\n' +
-    '      Given that this Feature has a background\n' +
-    "      Then this rules scenario's steps should be run after the background's steps\n" +
-    '\n' +
-    '    Scenario: Run first rule - second scenario\n' +
-    '      Given that a second scenario exists\n' +
-    "      Then the rules second scenario's steps should be run after a second background's steps\n" +
-    '\n' +
-    '  Scenario: Scenario in-between rules\n' +
-    '    Given that a scenario exists in-between the rules\n' +
-    '    Then it should not be part of any rules\n' +
-    '\n' +
-    '  Rule: This is Rule 2\n' +
-    '    Example: Run second rule first example\n' +
-    '      Given that this Feature second rule\n' +
-    "      Then this rules scenario's steps should be part of the second rules scenario\n" +
-    '\n' +
-    '  Scenario: Scenario after rules\n' +
-    '    Given that a scenario exists after the rules\n' +
-    '    Then it should not be part any rules\n',
+  content: '...',
   feature: 'Full set of functionality in feature files',
   tags: [ '@rules', '@scenarios' ],
   rules: [
@@ -77,6 +49,7 @@ export const parsedFeatureRulesScenarios = {
         {
           index: 12,
           scenario: "Run first rule - first scenario",
+          alias: "Example",
           tags: [],
           steps: [
             {
@@ -128,9 +101,32 @@ export const parsedFeatureRulesScenarios = {
       index: 24,
       rule: 'This is Rule 2',
       tags: [],
+      background: {
+        index: 25,
+        steps: [
+          {
+            type: 'given',
+            index: 26,
+            step: 'that Rule 2 has a background',
+            whitespace: '      ',
+            uuid: 'given-that-rule-2-has-a-background-34'
+          },
+          {
+            type: 'then',
+            index: 27,
+            step: 'the background steps should be in the second parsed rule',
+            whitespace: '      ',
+            uuid: 'then-the-background-steps-should-be-in-the-second-parsed-rule-61'
+          }
+        ],
+        background: 'this-is-rule-2-14-background',
+        uuid: 'this-is-rule-2-14-background-28',
+        whitespace: '    '
+      },
       scenarios: [
         {
           index: 25,
+          alias: "Example",
           scenario: "Run second rule first example",
           tags: [],
           steps: [

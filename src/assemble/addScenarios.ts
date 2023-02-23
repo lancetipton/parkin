@@ -2,6 +2,7 @@ import type { TScenarioParentAst, TScenarioAst } from '../types'
 
 import { addTags } from './addTags'
 import { addSteps } from './addSteps'
+import { EFeatureTypes } from '../types'
 import { addContent } from './addContent'
 
 
@@ -15,10 +16,14 @@ export const addScenarios = (
   assembled:string[],
   parent:TScenarioParentAst
 ) => {
+  
   parent.scenarios &&
     parent.scenarios.map((scenario:TScenarioAst) => {
-      addTags(assembled, scenario.tags, `  `)
-      addContent(assembled, `  Scenario: ${scenario.scenario}`, scenario.index)
+      const whitespace = scenario.whitespace || `  `
+      const type = scenario.alias || EFeatureTypes.Scenario
+
+      addTags(assembled, scenario.tags, whitespace)
+      addContent(assembled, `${whitespace}${type}: ${scenario.scenario}`, scenario.index)
       addSteps(assembled, scenario)
     })
 }

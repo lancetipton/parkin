@@ -1,5 +1,6 @@
-import type { TFeatureAst, TParseParentAst, TScenarioAst, TRuleAst } from '../types'
+import type { TFeatureAst, TScenarioAst, TRuleAst } from '../types'
 
+import { EFeatureTypes } from '../types'
 import { sanitizeForId, getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 /**
@@ -62,6 +63,9 @@ export const ensureScenario = (
 
   // Get the start whitespace, used when assembling the feature
   scenario.whitespace = getStartWhiteSpace(line)
+
+  // If Example keyword is used, set the alias
+  if(!hasScenario) scenario.alias = EFeatureTypes.Example
 
   // Check if rule has a uuid
   // And if the scenario whitespace is more then the rule

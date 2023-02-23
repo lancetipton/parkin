@@ -1,25 +1,28 @@
-import type { TFeatureAst } from '../types'
+import type { TBackgroundParentAst } from '../types'
 
 import { addTags } from './addTags'
 import { addSteps } from './addSteps'
+import { EFeatureTypes } from '../types'
 import { addContent } from './addContent'
 
 
 /**
- * Converts a features background into strings and adds them to the assembled array
+ * Converts a parents background into strings and adds them to the assembled array
  * @function
  * @private
  *
  */
 export const addBackground = (
   assembled:string[],
-  feature:TFeatureAst
+  parent:TBackgroundParentAst
 ) => {
-  const { background } = feature
+  const { background } = parent
   if(!background) return
 
-  addTags(assembled, background.tags, `  `)
-  addContent(assembled, `  Background: ${background.background}`, background.index)
+  const whitespace = background.whitespace || `  `
+
+  addTags(assembled, background.tags, whitespace)
+  addContent(assembled, `${whitespace}${EFeatureTypes.Background}:`, background.index)
   addSteps(assembled, background)
 
 }

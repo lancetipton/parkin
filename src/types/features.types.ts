@@ -135,6 +135,7 @@ export type TScenarioAst = {
   index: number
   uuid: string
   tags: string[]
+  alias?:`Example`
   scenario: string
   steps: TStepAst[]
   whitespace: string
