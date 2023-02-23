@@ -1,4 +1,4 @@
-import type { TFeatureAst, TScenarioAst, TRuleAst } from '../types'
+import type { TFeatureAst, TParseParentAst, TScenarioAst, TRuleAst } from '../types'
 
 import { sanitizeForId, getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
@@ -40,6 +40,7 @@ export const ensureScenario = (
   line:string,
   index:number
 ) => {
+
   // Check for "Scenario:" or "Example:" keywords
   const hasScenario = RX_SCENARIO.test(line)
   if (!hasScenario && !RX_EXAMPLE.test(line)) return scenario
@@ -62,8 +63,14 @@ export const ensureScenario = (
   // Get the start whitespace, used when assembling the feature
   scenario.whitespace = getStartWhiteSpace(line)
 
-  // Add the scenario if needed to the current parent
-  const parent = rule.uuid ? rule : feature
+  // Check if rule has a uuid
+  // And if the scenario whitespace is more then the rule
+  // In that case add it to the rule
+  // Otherwise add it to the feature 
+  const parent = rule.uuid && scenario.whitespace > rule.whitespace
+    ? rule
+    : feature
+
   !parent.scenarios.includes(scenario)
     && parent.scenarios.push(scenario)
 
