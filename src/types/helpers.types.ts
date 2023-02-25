@@ -21,6 +21,13 @@ export enum EStepMethodType {
   But=`But`
 }
 
+export enum EAstObject {
+  feature = `feature`,
+  rule = `rule`,
+  background = `background`,
+  scenario = `scenario`,
+  step = `step`
+}
 
 export enum EFeatureTypes {
   feature = `Feature`,

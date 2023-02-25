@@ -4,6 +4,7 @@ import {
   parsedFeature,
   parsedDefinition,
   registerMockSteps,
+  brokenFeatureScenario,
 } from '../__mocks__'
 
 import { constants } from '../constants'
@@ -75,6 +76,25 @@ describe('Parkin', () => {
     expect(scenarioWs).toEqual(`  `)
     expect(stepsWS).toEqual([ '    ', '    ', '    ', '    ', '    ' ])
     expect(noUuidScenarios).toEqual(parsedScenarios)
+  })
+
+  it(`should set the error array for malformed feature content`, () => {
+    const PK = new Parkin(worldObj)
+
+    const parsed = PK.parse.feature(brokenFeatureScenario)[0]
+    
+    expect(parsed.index).toBeUndefined()
+    expect(parsed.feature).toBe(false)
+    expect(Array.isArray(parsed.errors)).toBe(true)
+    expect(parsed.errors.length).toBe(1)
+    
+    const [ err ] = parsed.errors
+    expect(err).toEqual({
+      index: 0,
+      type: 'feature',
+      content: 'Could not find Feature text in file'
+    })
+
   })
 
   it('should parse step definition text when a definition parse method is passed', () => {

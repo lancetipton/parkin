@@ -44,11 +44,13 @@ export const ensureScenario = (
 
   // Check for "Scenario:" or "Example:" keywords
   const hasScenario = RX_SCENARIO.test(line)
-  if (!hasScenario && !RX_EXAMPLE.test(line)) return scenario
+  const hasExample = RX_EXAMPLE.test(line)
+  if (!hasScenario && !hasExample) return scenario
 
   // Check for "Scenario:", if not found then check for "Example:"
-  let scenarioText = hasScenario && getRXMatch(line, RX_SCENARIO, 1)
-  scenarioText = scenarioText || getRXMatch(line, RX_EXAMPLE, 1)
+  const scenarioText = hasScenario
+    ? getRXMatch(line, RX_SCENARIO, 1)
+    : getRXMatch(line, RX_EXAMPLE, 1)
 
   // Check if the scenario text was already added, and add it if needed
   // Otherwise create a new scenario with the scenario text

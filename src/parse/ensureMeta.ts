@@ -126,3 +126,20 @@ export const featureComment = (
 
   return true
 }
+
+/*
+ * Checks for empty lines in a feature file
+ * @function
+ *
+ */
+export const featureEmptyLine = (
+  feature:TFeatureAst,
+  line:string,
+  index:number
+) => {
+  if(line.trim().length) return false
+
+  feature.empty.push({ content: line, index })
+
+  return true
+}

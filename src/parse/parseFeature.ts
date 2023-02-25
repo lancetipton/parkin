@@ -8,8 +8,8 @@ import { setActiveParent } from './parseHelpers'
 import { ruleFactory, ensureRule } from './ensureRule'
 import { featureFactory, ensureFeature } from './ensureFeature'
 import { scenarioFactory, ensureScenario } from './ensureScenario'
-import { featureComment, checkTag, featureMeta } from './ensureMeta'
 import { backgroundFactory, ensureBackground } from './ensureBackground'
+import { featureEmptyLine, featureComment, checkTag, featureMeta } from './ensureMeta'
 
 /**
  * Regular expressions for matching feature file keywords
@@ -35,6 +35,7 @@ export const parseFeature = function (
   const replaceText = replaceWorld((text || '').toString(), world)
   const lines = replaceText.split(RX_NEWLINE)
 
+  let parseError = false
   let rule = ruleFactory(false)
   let scenario = scenarioFactory(false)
   let background = backgroundFactory(false)
@@ -45,19 +46,30 @@ export const parseFeature = function (
    * Loop over each line of text, and compose the line with corresponding regex to find a match
    */
   return lines.reduce((featuresGroup, line, index) => {
+    if(parseError) return featuresGroup
+
     /*
      * Check for new feature, or parse the current features text
      */
     feature = ensureFeature(featuresGroup, feature, line, text, index)
 
+    /**
+     * If there's an error parsing the feature, set it so we don't continue parsing
+     */
+    if(feature?.errors?.length) parseError = true
+
     /*
      * Check for child content of the feature or activeParent and parse the line when matched
+     * Or if there is a parseError
      */
     if (
+      parseError ||
+      featureEmptyLine(feature, line, index) ||
       featureComment(feature, line, index) ||
       featureMeta(feature, line, index)
-    )
+    ){
       return featuresGroup
+    }
 
     /*
      * Check for new feature rule, and add rule to feature object

@@ -1,5 +1,7 @@
 import type { TFeatureAst } from '../types'
 
+import { EAstObject } from '../types'
+import { parseError } from './parseError'
 import { sanitizeForId, getRXMatch } from '../utils/helpers'
 
 /**
@@ -7,6 +9,7 @@ import { sanitizeForId, getRXMatch } from '../utils/helpers'
  * @type {object}
  */
 const RX_FEATURE = /^\s*Feature:(.*)$/
+const RX_HAS_FEATURE = /\s*Feature:(.*)/
 
 /*
  * Helper factory function to build a feature object
@@ -24,6 +27,7 @@ export const featureFactory = (
     feature,
     tags: [],
     rules: [],
+    empty: [],
     reason: [],
     comments: [],
     scenarios: [],
@@ -45,6 +49,22 @@ export const ensureFeature = (
   content:string,
   index:number
 ) => {
+
+  // Ensure feature text exists
+  const hasFeature = Boolean(feature.feature || RX_HAS_FEATURE.test(content))
+
+  // If no feature text is found, or the feature already has errors
+  // Then don't continue to parse the feature
+  if(!hasFeature || feature?.errors?.length){
+    !feature?.errors?.length
+      && parseError(feature, EAstObject.feature, index, `Could not find Feature text in file`)
+
+    !featuresGroup.includes(feature)
+      && featuresGroup.push(feature)
+
+    return feature
+  }
+
   // Check for Feature: keyword text
   if (!RX_FEATURE.test(line)) return feature
 

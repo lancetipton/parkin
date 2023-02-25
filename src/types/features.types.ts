@@ -1,4 +1,4 @@
-import { EStepType } from './helpers.types'
+import { EAstObject, EStepType } from './helpers.types'
 
 export enum EStepVariant {
   regex = 'regex',
@@ -80,15 +80,6 @@ export type TStepDefs = {
   [key:string]: TStepDef
 }
 
-
-export enum EAstObjects {
-  feature = `feature`,
-  rule = `rule`,
-  background = `background`,
-  scenario = `scenario`,
-  step = `step`
-}
-
 export type TBackgroundAst = {
   index: number
   uuid: string
@@ -146,12 +137,19 @@ export type TAstBlock = {
   index: number
 }
 
+export type TAstParseError = {
+  type:EAstObject
+  content:string
+  index:number
+}
+
 export type TFeatureAst = {
   index?: number
   tags: string[]
   uuid?: string
   feature: string
   content: string
+  empty?: TAstBlock[]
   reason?: TAstBlock|TAstBlock[]
   desire?: TAstBlock
   comments: TAstBlock[]
@@ -159,6 +157,7 @@ export type TFeatureAst = {
   background?: TBackgroundAst
   rules?: TRuleAst[]
   scenarios: TScenarioAst[]
+  errors?: TAstParseError[]
 }
 
 export type TParseParentAst = TFeatureAst | TRuleAst | TBackgroundAst | TScenarioAst

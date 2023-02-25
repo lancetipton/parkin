@@ -2,6 +2,7 @@ import type { TFeatureAst } from '../types'
 
 import { addMeta } from './addMeta'
 import { addTags } from './addTags'
+import { addEmpty } from './addEmpty'
 import { addRules } from './addRules'
 import { formatAssembled } from './format'
 import { addScenarios } from './addScenarios'
@@ -26,6 +27,7 @@ export const assembleFeature = (
 
     addTags(assembled, feature.tags)
     addMeta(assembled, feature)
+    addEmpty(assembled, feature)
     addBackground(assembled, feature)
     addRules(assembled, feature)
     addScenarios(assembled, feature)
