@@ -60,11 +60,18 @@
     "format": "yarn format:prettier && yarn format:eslint",
     "prepack": "dot-json package.json devDependencies -d",
     "postpublish": "git checkout ./package.json",
-    "parkin": "node -r esbuild-register src/bin/parkin.ts",
+    "parkin": "node --no-warnings --loader esbuild-register/loader -r esbuild-register src/bin/parkin.ts --features ./features --defs ./defs --world ./world.ts --root ./parkin",
     "test": "NODE_ENV=test jest --detectOpenHandles --no-cache --verbose --config=./configs/jest.config.js --maxWorkers=50%",
     "test:cov": "yarn test:reports",
     "test:reports": "yarn test --coverage && yarn view:reports",
     "view:reports": "open reports/coverage/lcov-report/index.html"
+  },
+  "dependencies": {
+    "@keg-hub/args-parse": "9.0.0",
+    "@keg-hub/cli-utils": "0.7.0",
+    "expect": "29.3.1",
+    "esbuild": "0.17.5",
+    "esbuild-register": "3.4.2"
   },
   "devDependencies": {
     "@keg-hub/jsutils": "8.8.0",
@@ -73,10 +80,8 @@
     "@typescript-eslint/parser": "5.50.0",
     "dot-json": "^1.2.2",
     "es-jest": "2.1.0",
-    "esbuild": "0.17.5",
-    "esbuild-plugin-d-ts-path-alias": "2.0.0",
     "esbuild-plugin-path-alias": "1.0.7",
-    "esbuild-register": "3.4.2",
+    "esbuild-plugin-d-ts-path-alias": "2.0.0",
     "eslint": "8.4.1",
     "eslint-plugin-jest": "25.3.0",
     "get-all-files": "4.1.0",

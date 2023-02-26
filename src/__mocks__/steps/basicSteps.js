@@ -1,3 +1,7 @@
+global.jest = global.jest || {}
+
+jest.fn = jest.fn || ((fn) => fn)
+
 export const registerBasicSteps = PK => {
   PK.Given(
     /I open the site (\S+)$/,

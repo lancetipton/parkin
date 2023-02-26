@@ -10,7 +10,6 @@ import { addBackground } from './addBackground'
 import { eitherArr, isObj } from '@keg-hub/jsutils'
 import { throwFeatureNotAnObj } from '../utils/errors'
 
-
 /**
  * Converts parsed feature models back into a formatted strings
  * @function

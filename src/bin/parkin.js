@@ -6,5 +6,10 @@
  */
 
 const { register } = require('esbuild-register/dist/node')
-register()
+
+register({
+  target: `esnext`,
+  platform: `node`,
+})
+
 require('./parkin.ts')

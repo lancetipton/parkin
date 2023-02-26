@@ -77,6 +77,11 @@ export class ParkinTest {
   }
 
   /**
+   * Sets the test config from the passed in object
+   */
+  setConfig = (config) => this.#setConfig(config || noOpObj)
+
+  /**
    * Adds passed in framework hooks to the class instance
    */
   #setConfig = ({

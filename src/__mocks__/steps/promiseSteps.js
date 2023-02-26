@@ -12,6 +12,6 @@ export const registerPromiseSteps = PK => {
 
   PK.Then(`the world test method should be called`, async world => {
     expect(world.iWaited).toBe(true)
-    expect(world.testMethod).toHaveBeenCalled()
+    expect(world.calledTestMethod).toBe(1)
   })
 }

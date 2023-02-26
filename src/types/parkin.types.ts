@@ -1,28 +1,7 @@
-import { TWorldConfig } from './world.types'
-import { EExpParmType, TStepDefs, TFeatureAst, TStepDef } from './features.types'
+import type { TWorldConfig } from './world.types'
+import type { EExpParmType, TStepDefs, TFeatureAst, TStepDef } from './features.types'
+import type { IParkinSteps, TRegisterStepMethod, TRegisterStepsList } from './steps.types'
 
-export type TStepDefTypeList = {
-  given:TStepDefs
-  when:TStepDefs
-  then:TStepDefs
-  and:TStepDefs
-  but:TStepDefs
-}
-
-export interface IParkinSteps {
-  world:TWorldConfig
-  clear: () => void
-  list:() => TStepDefs
-  But:TRegisterStepMethod
-  And:TRegisterStepMethod
-  When:TRegisterStepMethod
-  Then:TRegisterStepMethod
-  Given:TRegisterStepMethod
-  typeList: () => TStepDefTypeList
-  resolve:(match:string) => any
-  match: (match:string) => TMatchResp
-  register:(def:string|TStepDef[]|TStepDef, match:string, TStepAction) => void
-}
 
 export type TParkinHookName = `beforeAll`|`afterAll`|`beforeEach`|`afterEach`
 export type TParkinHookMethod = (method:(...args:any[]) => any) => void
@@ -44,9 +23,6 @@ export interface IParkinRunner {
     options:TParkinRunOpts
   ) => TFeatureAst[]
 }
-
-export type TStepAction = (...args:any[]) => any
-export type TRegisterStepMethod = (step:string, action:TStepAction) => any
 
 export type TAssemble = {
   feature: (feature:TFeatureAst) => string
@@ -132,7 +108,7 @@ export type TParkinRun = (
 ) => any
 
 export type TRegisterStepsMethod = (
-  steps: Record<`given`|`when`|`then`|`and`|`but`, Record<string, TRegisterStepMethod>>
+  steps: TRegisterStepsList
 ) => void
 
 export interface IParkin {

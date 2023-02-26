@@ -11,4 +11,7 @@ export type TWorldConfig = {
   data?: Record<string, any>
   $alias: Record<string, any>
   context?: Record<string, any>
+  [key:string]: any
 }
+
+export type TParkinWorld = TWorldConfig

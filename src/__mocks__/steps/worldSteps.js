@@ -10,7 +10,7 @@ export const registerWorldSteps = PK => {
   PK.Given('that there are different replace types', () => {})
 
   PK.And('the element {string} exists', (element, world) => {
-    expect(element).toBe(world.alias.element)
+    expect(element).toBe(world.$alias.element)
   })
 
   PK.When('we set the worlds feature status to {string}', (status, world) => {

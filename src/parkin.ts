@@ -1,3 +1,13 @@
+import type {
+  TParse,
+  IAssemble,
+  TParkinRun,
+  TParamTypes,
+  TWorldConfig,
+  TRegisterStepsList,
+  TRegisterStepMethod,
+} from './types'
+
 import { Steps } from './steps'
 import { Hooks } from './hooks'
 import { Runner } from './runner'
@@ -36,17 +46,38 @@ import { isObj, capitalize, noOpObj, eitherArr } from '@keg-hub/jsutils'
  * @returns {Object} Instance of the Parkin class
  */
 export class Parkin {
-  constructor(world, steps) {
+  #isInit = false
+  steps:Steps
+  hooks:Hooks
+  parse:TParse
+  runner:Runner
+  run:TParkinRun
+  matcher:Matcher
+  world:TWorldConfig
+  assemble:IAssemble
+  paramTypes:TParamTypes
+  Given:TRegisterStepMethod
+  When:TRegisterStepMethod
+  Then:TRegisterStepMethod
+  And:TRegisterStepMethod
+  But:TRegisterStepMethod
+
+  constructor(
+    world?:TWorldConfig,
+    steps?:TRegisterStepsList
+  ) {
     isObj(world) && this.init(world, steps)
   }
 
-  #isInit = false
-
-  init = (world = noOpObj, steps) => {
-    if (this.#isInit)
-      return console.warn(
-        `This instance of parkin has already been initialized!`
-      )
+  init = (
+    world:TWorldConfig = noOpObj as TWorldConfig,
+    steps:TRegisterStepsList,
+    warn=true
+  ) => {
+    if (this.#isInit){
+      return warn
+        && console.warn(`This instance of parkin has already been initialized!`)
+    }
 
     // Ensure the world.$alias object exists
     if (!isObj(world.$alias)) world.$alias = {}
@@ -55,7 +86,7 @@ export class Parkin {
     this.#isInit = true
     this.world = world
     this.steps = new Steps(this.world)
-    this.hooks = new Hooks(this.world)
+    this.hooks = new Hooks(this.world, this)
     this.runner = new Runner(this.steps, this.hooks, this.world)
 
     /**
@@ -142,9 +173,6 @@ export class Parkin {
      * @alias instance&period;When
      * @function
      * @public
-     * @param {string} match - Text used to matched with a features step
-     * @param {function} method - Called when a features step matches the text param
-     * @param {Object} meta - Object describing the functionality of the step definition
      * @example
      * const PK = new Parkin()
      * PK.Given(`Given step definition string || regex`, ()=> {}, {})
@@ -153,7 +181,6 @@ export class Parkin {
      * PK.And(`And step definition string || regex`, ()=> {}, {})
      * PK.But(`But step definition string || regex`, ()=> {}, {})
      *
-     * @returns {void}
      */
     this.steps.types.map(type => {
       this[capitalize(type)] = (matcher, method, meta) =>
@@ -167,7 +194,6 @@ export class Parkin {
    * @alias instance&period;registerSteps
    * @function
    * @public
-   * @param {Object} steps - Object with step type keys containing step definitions
    * @example
    *   // Example steps object passed in as the first argument
    *   const steps = {
@@ -181,13 +207,12 @@ export class Parkin {
    *     then: { ... }
    *   }
    *
-   * @returns {void}
    */
-  registerSteps = steps => {
+  registerSteps = (steps:TRegisterStepsList) => {
     // Loop the steps object
-    Object.entries(steps).map((type, typedSteps) =>
+    Object.entries(steps).map(([type, typedSteps]) =>
       // Loop each step type ( Given, When, Then, But, And )
-      Object.entries(typedSteps).map((matcher, content) =>
+      Object.entries(typedSteps).map(([matcher, content]) =>
         // Register the step based by type with the Step class instance
         this.steps[capitalize(type)](matcher, ...eitherArr(content, [content]))
       )

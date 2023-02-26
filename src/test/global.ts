@@ -1,3 +1,4 @@
+import expect from 'expect'
 import { ParkinTest } from './test'
 import { globalTypes } from './utils'
 import { resolveGlobalObj } from '../utils/globalScope'
@@ -11,8 +12,11 @@ const setGlobals = (force?:boolean) => {
   const globalObj = resolveGlobalObj()
   const forceGlobal = force || process.env.PARKIN_TEST_GLOBALS_OVERRIDE
 
-  if (!globalObj.ParkinTest || forceGlobal) globalObj.ParkinTest = ParkinTest
+  if(!globalObj.expect || forceGlobal) globalObj.expect = expect
+
   if (!globalObj.PTE || forceGlobal) globalObj.PTE = PTE
+  if (!globalObj.ParkinTest || forceGlobal) globalObj.ParkinTest = ParkinTest
+
 
   Object.values(globalTypes).map(
     name =>

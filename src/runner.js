@@ -104,19 +104,38 @@ const loopSteps = (parent, title, stepsInstance, testMode) => {
  * @returns {Void}
  */
 const runScenario = (stepsInstance, scenario, background, testMode) => {
+  const responses = []
+
   // If there's a background, run the background steps first
   background &&
+    responses.push(...runBackground(stepsInstance, scenario.scenario, background, testMode))
+
+  // Next run the scenario steps once the background completes
+  return responses.concat(
     loopSteps(
-      background,
-      buildTitle(scenario.scenario, `Background`),
+      scenario,
+      buildTitle(scenario.scenario, `Scenario`),
       stepsInstance,
       testMode
     )
+  )
+}
 
-  // Next run the scenario steps once the background completes
+/**
+ * Loops through the steps of the passed in background and calls runStep for each
+ * @function
+ * @private
+ * @param {Object} stepsInstance - Instance of the Steps class
+ * @param {Object} background - Parsed feature scenario object containing the steps to run
+ * @param {boolean} testMode - Allows testing the runner methods, without running the tests
+ *
+ * @returns {Void}
+ */
+const runBackground = (stepsInstance, title, background, testMode) => {
+  // If there's a background, run the background steps first
   return loopSteps(
-    scenario,
-    buildTitle(scenario.scenario, `Scenario`),
+    background,
+    buildTitle(title, `Background`),
     stepsInstance,
     testMode
   )
@@ -138,14 +157,25 @@ const runRule = (stepsInstance, rule, background, testMode) => {
   // Store the returned promise in the responses array
   let responses = []
   describe(`Rule > ${rule.rule}`, () => {
-    responses = rule.scenarios.map(scenario =>
-      runScenario(
+    background
+      && responses.push(...(
+        responses.concat(runBackground(
+          this.steps,
+          rule.rule,
+          background,
+          testMode
+        ))
+      ))
+
+    responses.push(...(
+      rule.scenarios.map(scenario => runScenario(
         stepsInstance,
         scenario,
-        background || rule.background,
+        rule.background,
         testMode
-      )
-    )
+      ))
+    ))
+
     // Ensure we resolve all promises inside the describe block
     Promise.all(responses)
   })
@@ -302,15 +332,14 @@ export class Runner {
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
       describe(buildTitle(feature.feature, `Feature`), () => {
-        responses = feature.rules.map(rule =>
-          runRule(this.steps, rule, feature.background, testMode)
-        )
 
-        responses.concat(
-          feature.scenarios.map(scenario =>
-            runScenario(this.steps, scenario, feature.background, testMode)
-          )
-        )
+        responses.push(...(
+          feature.rules.map(rule => runRule(this.steps, rule, feature.background, testMode))
+        ))
+
+        responses.push(...(
+          feature.scenarios.map(scenario => runScenario(this.steps, scenario, feature.background, testMode))
+        ))
 
         // Ensure we resolve all promises inside the describe block
         Promise.all(responses)

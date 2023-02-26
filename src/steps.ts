@@ -3,6 +3,7 @@ import type {
   TStepMeta,
   TWorldConfig,
   TStepDefMethod,
+  TStepDefs,
 } from './types'
 
 import { matcher } from './matcher'
@@ -231,12 +232,12 @@ export class Steps {
    * @public
    *
    */
-  typeList = ():Record<EStepType, TStepDef> => {
+  typeList = ():TStepDefs => {
     return this.types.reduce((stepDefs, type) => {
       const internalType = `_${type}`
-      stepDefs[internalType] = [...this[internalType]]
+      stepDefs[type] = [...this[internalType]]
       return stepDefs
-    }, {} as Record<EStepType, TStepDef>)
+    }, {} as TStepDefs)
   }
 
   /**

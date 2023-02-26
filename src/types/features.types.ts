@@ -77,7 +77,7 @@ export type TStepDef = {
 export type TStepDefsArr = TStepDef[]
 
 export type TStepDefs = {
-  [key:string]: TStepDef
+  [key in keyof EStepType]: TStepDefsArr
 }
 
 export type TBackgroundAst = {
