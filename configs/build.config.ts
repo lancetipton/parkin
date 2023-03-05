@@ -1,13 +1,11 @@
-import path from 'node:path'
+import path from 'path'
 import * as esbuild from 'esbuild'
 import { fileURLToPath } from 'url'
 import { promises as fs } from 'fs'
-import { getAllFiles } from 'get-all-files'
 import { dTSPathAliasPlugin } from 'esbuild-plugin-d-ts-path-alias'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const rootDir = path.join(dirname, `..`)
-const srcDir = path.join(rootDir, `src`)
 const outdir = path.join(rootDir, `build`)
 const esmOut = path.join(outdir, `esm`)
 const cjsOut = path.join(outdir, `cjs`)
@@ -18,10 +16,6 @@ const globalTest = path.join(rootDir, `src/test/global.js`)
 
 
 const minify = true
-const skipFiles = [
-  `__mocks__`,
-  `__tests__`,
-]
 
 const cjsBuild = async () => {
   // Build the files with esbuild

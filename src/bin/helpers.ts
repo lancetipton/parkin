@@ -1,10 +1,15 @@
 import type { TParkinOpts } from '../types/bin.types'
 
-import path from 'node:path'
+import path from 'path'
 import { eitherArr } from '@keg-hub/jsutils'
 import { getAllFiles } from 'get-all-files'
-import { homeDir, cwd, rootDir } from './paths'
+import { getRoot, homeDir, cwd } from './paths'
 
+/**
+ * Gets a list of paths based on the passed in options
+ * Can filter by extension, and include or exclude array
+ * If no extensions passed, returns an empty array
+ */
 export const locsByTypes = async (
   loc:string,
   opts:TParkinOpts
@@ -19,7 +24,7 @@ export const locsByTypes = async (
 
   const files = await getAllFiles(loc, { resolve: true }).toArray()
   return files.filter(file => {
-    if(exclude.find(ex => file.includes(ex))) return false
+    if(exclude?.length && exclude.find(ex => file.includes(ex))) return false
     if(include?.length && !include.find(inc => file.includes(inc))) return false
 
     const fileExt = path.extname(file)
@@ -28,8 +33,12 @@ export const locsByTypes = async (
 
 }
 
+/**
+ * Resolve the full path to a location similar to path.resolve
+ * But can use custom root path values
+ */
 export const fullLoc = (loc:string) => {
-  const root = rootDir || cwd
+  const root = getRoot() || cwd
 
   return loc.startsWith(`/`)
     ? loc
@@ -38,9 +47,13 @@ export const fullLoc = (loc:string) => {
       : path.join(root, loc)
 }
 
-
+/**
+ * Removes the extension from the passed in path location
+ */
 export const removeExt = (loc:string) => {
   const ext = path.extname(loc)
+  if(!ext) return loc
+  
   const split = loc.split(ext)
   split.pop()
 
