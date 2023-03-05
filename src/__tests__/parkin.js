@@ -165,7 +165,7 @@ describe('Parkin', () => {
     expect(PK.steps._given.length).toBe(0)
     expect(PK.steps._then.length).toBe(0)
 
-    PK.registerSteps([givenDef, thenDef])
+    PK.registerSteps([ givenDef, thenDef ])
     const addedGDef = PK.steps._given[0]
     const addedTDef = PK.steps._then[0]
 
@@ -175,7 +175,6 @@ describe('Parkin', () => {
     expect(addedTDef).not.toBe(thenDef)
     expect(addedTDef).toEqual(thenDef)
   })
-
 
   it('should add an existing parsed step definitions when passed to the register step method call as object', () => {
     const PK = new Parkin(worldObj)
@@ -189,7 +188,7 @@ describe('Parkin', () => {
 
     PK.registerSteps({
       [givenDef.uuid]: givenDef,
-      [thenDef.uuid]: thenDef
+      [thenDef.uuid]: thenDef,
     })
     const addedGDef = PK.steps._given[0]
     const addedTDef = PK.steps._then[0]
@@ -227,7 +226,7 @@ describe('Parkin', () => {
     expect(PK.steps._given.length).toBe(0)
     expect(PK.steps._then.length).toBe(0)
 
-    PK.steps.add([givenDef, thenDef])
+    PK.steps.add([ givenDef, thenDef ])
     const addedGDef = PK.steps._given[0]
     const addedTDef = PK.steps._then[0]
 
@@ -236,7 +235,6 @@ describe('Parkin', () => {
 
     expect(addedTDef).not.toBe(thenDef)
     expect(addedTDef).toEqual(thenDef)
-
   })
 
   it('should add an object of existing parsed step definition', () => {
@@ -252,7 +250,7 @@ describe('Parkin', () => {
 
     PK.steps.add({
       [givenDef.uuid]: givenDef,
-      [thenDef.uuid]: thenDef
+      [thenDef.uuid]: thenDef,
     })
 
     const addedGDef = PK.steps._given[0]
@@ -263,11 +261,9 @@ describe('Parkin', () => {
 
     expect(addedTDef).not.toBe(thenDef)
     expect(addedTDef).toEqual(thenDef)
-
   })
 
   it(`should return added steps in the list call`, () => {
-
     const PK = new Parkin(worldObj)
     PK.parse.definition(definition)
 
@@ -279,8 +275,5 @@ describe('Parkin', () => {
     const steps = PK.steps.list()
     expect(steps[0]).toEqual(givenDef)
     expect(steps[1]).toEqual(thenDef)
-
   })
-
-
 })
