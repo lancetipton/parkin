@@ -169,7 +169,7 @@ export class Parkin {
      * const PK = new Parkin()
      * PK.matcher.regex(definition, step, world)
      */
-    this.matcher = new Matcher()
+    this.matcher = new Matcher(this)
 
     // Register in steps passed in on initialization
     isObj(steps) && this.registerSteps(steps)

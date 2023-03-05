@@ -64,21 +64,12 @@ const esmBuild = async () => {
   .catch(() => process.exit(1))
 }
 
-const cleanBuild  = async () => {
-  await fs.rm(outdir, { recursive: true, force: true })
-}
 
-const entryFiles = async () => {
-  await fs.writeFile(path.join(rootDir, "index.js"), "export * from './build/esm/index.js'")
-  await fs.writeFile(path.join(rootDir, "index.cjs"), "module.exports = require('./build/cjs/index.js')")
-}
 
 
 ;(async () => {
-  await cleanBuild()
   await cjsBuild()
   await esmBuild()
-  await entryFiles()
 })()
 
 

@@ -1,7 +1,13 @@
 import type { TWorldConfig } from './world.types'
-import type { EExpParmType, TStepDefs, TFeatureAst, TStepDef } from './features.types'
-import type { IParkinSteps, TRegisterStepMethod, TRegisterStepsList } from './steps.types'
-
+import type { TFeatureAst } from './features.types'
+import type {
+  TStepDef,
+  TStepDefs,
+  IParkinSteps,
+  EExpParmType,
+  TRegisterStepMethod,
+  TRegisterStepsList
+} from './steps.types'
 
 export type TParkinHookName = `beforeAll`|`afterAll`|`beforeEach`|`afterEach`
 export type TParkinHookMethod = (method:(...args:any[]) => any) => void
