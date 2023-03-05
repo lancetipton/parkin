@@ -1,6 +1,7 @@
 import type {
   TStepDef,
   TStepMeta,
+  TAddStepDefs,
   TWorldConfig,
   TStepDefMethod,
   TStepDefs,
@@ -10,8 +11,8 @@ import { matcher } from './matcher'
 import { constants } from './constants'
 import { throwNoMatchingStep } from './utils/errors'
 import { EStepMethodType, EStepType } from './types'
-import { capitalize, eitherArr, isStr, noOpObj } from '@keg-hub/jsutils'
 import { sanitizeForId, sanitize, validateDefinition } from './utils/helpers'
+import { isArr, capitalize, eitherArr, isStr, noOpObj, ensureArr } from '@keg-hub/jsutils'
 import {
   resolveModule,
   resolveRequire,
@@ -298,6 +299,25 @@ export class Steps {
     return isStr(args[0])
       ? registerFromCall.apply(this, args)
       : registerFromParse.apply(this, args)
+  }
+
+
+  add = (...defs:TAddStepDefs[]) => {
+    const definitions = this.list()
+    defs.forEach(def => {
+      const defsObj = isArr(def) || (def?.match && def?.uuid)
+        ? ensureArr(def)
+        : def
+
+      Object.values(defsObj)
+        .map(def => {
+          if(!def.type) return console.warn(`A definition type is required when adding a definition`, def)
+
+          const internalType = `_${def.type}`
+          const newDefinition = validateDefinition(def, definitions)
+          newDefinition && this[internalType].push(newDefinition)
+        })
+    })
   }
 
   /**

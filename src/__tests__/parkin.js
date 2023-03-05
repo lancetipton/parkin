@@ -139,4 +139,148 @@ describe('Parkin', () => {
     expect(PK.steps[`_${givenStep.type}`][0].method).toHaveBeenCalled()
     expect(PK.steps[`_${whenStep.type}`][2].method).toHaveBeenCalled()
   })
+
+  it('should add an existing parsed step definition when passed to the register step method call', () => {
+    const PK = new Parkin(worldObj)
+    PK.parse.definition(definition)
+
+    const stepDef = PK.steps._given[0]
+    PK.steps.clear()
+    expect(PK.steps._given.length).toBe(0)
+
+    PK.registerSteps(stepDef)
+    const addedDef = PK.steps._given[0]
+
+    expect(addedDef).not.toBe(stepDef)
+    expect(addedDef).toEqual(stepDef)
+  })
+
+  it('should add an existing parsed step definitions when passed to the register step method call as array', () => {
+    const PK = new Parkin(worldObj)
+    PK.parse.definition(definition)
+
+    const givenDef = PK.steps._given[0]
+    const thenDef = PK.steps._then[0]
+    PK.steps.clear()
+    expect(PK.steps._given.length).toBe(0)
+    expect(PK.steps._then.length).toBe(0)
+
+    PK.registerSteps([givenDef, thenDef])
+    const addedGDef = PK.steps._given[0]
+    const addedTDef = PK.steps._then[0]
+
+    expect(addedGDef).not.toBe(givenDef)
+    expect(addedGDef).toEqual(givenDef)
+
+    expect(addedTDef).not.toBe(thenDef)
+    expect(addedTDef).toEqual(thenDef)
+  })
+
+
+  it('should add an existing parsed step definitions when passed to the register step method call as object', () => {
+    const PK = new Parkin(worldObj)
+    PK.parse.definition(definition)
+
+    const givenDef = PK.steps._given[0]
+    const thenDef = PK.steps._then[0]
+    PK.steps.clear()
+    expect(PK.steps._given.length).toBe(0)
+    expect(PK.steps._then.length).toBe(0)
+
+    PK.registerSteps({
+      [givenDef.uuid]: givenDef,
+      [thenDef.uuid]: thenDef
+    })
+    const addedGDef = PK.steps._given[0]
+    const addedTDef = PK.steps._then[0]
+
+    expect(addedGDef).not.toBe(givenDef)
+    expect(addedGDef).toEqual(givenDef)
+
+    expect(addedTDef).not.toBe(thenDef)
+    expect(addedTDef).toEqual(thenDef)
+  })
+
+  it('should add an existing parsed step definition', () => {
+    const PK = new Parkin(worldObj)
+    PK.parse.definition(definition)
+
+    const stepDef = PK.steps._given[0]
+    PK.steps.clear()
+    expect(PK.steps._given.length).toBe(0)
+
+    PK.steps.add(stepDef)
+    const addedDef = PK.steps._given[0]
+
+    expect(addedDef).not.toBe(stepDef)
+    expect(addedDef).toEqual(stepDef)
+  })
+
+  it('should add an array existing parsed step definition', () => {
+    const PK = new Parkin(worldObj)
+    PK.parse.definition(definition)
+
+    const givenDef = PK.steps._given[0]
+    const thenDef = PK.steps._then[0]
+
+    PK.steps.clear()
+    expect(PK.steps._given.length).toBe(0)
+    expect(PK.steps._then.length).toBe(0)
+
+    PK.steps.add([givenDef, thenDef])
+    const addedGDef = PK.steps._given[0]
+    const addedTDef = PK.steps._then[0]
+
+    expect(addedGDef).not.toBe(givenDef)
+    expect(addedGDef).toEqual(givenDef)
+
+    expect(addedTDef).not.toBe(thenDef)
+    expect(addedTDef).toEqual(thenDef)
+
+  })
+
+  it('should add an object of existing parsed step definition', () => {
+    const PK = new Parkin(worldObj)
+    PK.parse.definition(definition)
+
+    const givenDef = PK.steps._given[0]
+    const thenDef = PK.steps._then[0]
+
+    PK.steps.clear()
+    expect(PK.steps._given.length).toBe(0)
+    expect(PK.steps._then.length).toBe(0)
+
+    PK.steps.add({
+      [givenDef.uuid]: givenDef,
+      [thenDef.uuid]: thenDef
+    })
+
+    const addedGDef = PK.steps._given[0]
+    const addedTDef = PK.steps._then[0]
+
+    expect(addedGDef).not.toBe(givenDef)
+    expect(addedGDef).toEqual(givenDef)
+
+    expect(addedTDef).not.toBe(thenDef)
+    expect(addedTDef).toEqual(thenDef)
+
+  })
+
+  it(`should return added steps in the list call`, () => {
+
+    const PK = new Parkin(worldObj)
+    PK.parse.definition(definition)
+
+    const givenDef = PK.steps._given[0]
+    const thenDef = PK.steps._then[0]
+    PK.steps.clear()
+    PK.steps.add(givenDef, thenDef)
+
+    const steps = PK.steps.list()
+    expect(steps[0]).toEqual(givenDef)
+    expect(steps[1]).toEqual(thenDef)
+
+  })
+
+
 })

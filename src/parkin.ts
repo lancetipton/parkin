@@ -1,9 +1,12 @@
 import type {
   TParse,
   IAssemble,
+  EStepType,
   TParkinRun,
   TParamTypes,
   TWorldConfig,
+  TAddStepDefs,
+  TRegisterOrAddStep,
   TRegisterStepsList,
   TRegisterStepMethod,
 } from './types'
@@ -12,9 +15,13 @@ import { Steps } from './steps'
 import { Hooks } from './hooks'
 import { Runner } from './runner'
 import { assemble } from './assemble'
+import { constants } from './constants'
 import { Matcher, registerParamType } from './matcher'
 import { parseFeature, parseDefinition } from './parse'
 import { isObj, capitalize, noOpObj, eitherArr } from '@keg-hub/jsutils'
+
+const { STEP_TYPES } = constants
+
 
 /**
  * @typedef
@@ -208,15 +215,26 @@ export class Parkin {
    *   }
    *
    */
-  registerSteps = (steps:TRegisterStepsList) => {
-    // Loop the steps object
-    Object.entries(steps).map(([type, typedSteps]) =>
-      // Loop each step type ( Given, When, Then, But, And )
-      Object.entries(typedSteps).map(([matcher, content]) =>
-        // Register the step based by type with the Step class instance
-        this.steps[capitalize(type)](matcher, ...eitherArr(content, [content]))
-      )
-    )
+  registerSteps = (steps:TRegisterOrAddStep) => {
+
+    const stepKeys = Object.keys(steps)
+    const doRegister = Boolean(STEP_TYPES.find((type:EStepType) => stepKeys.includes(type)))
+
+    if(doRegister)
+      return Object.entries(steps)
+        .forEach(([type, typedSteps]) => {
+          // Loop each step type ( Given, When, Then, But, And )
+          STEP_TYPES.includes(type)
+            && Object.entries(typedSteps)
+                .forEach(([matcher, content]) => {
+                  // Register the step based by type with the Step class instance
+                  this.steps[capitalize(type)](matcher, ...eitherArr(content, [content]))
+                })
+        })
+
+    // If steps are already parsed, then get add them
+    else this.steps.add(steps as TAddStepDefs)
+
   }
 }
 

@@ -15,8 +15,7 @@ const globalParkin = path.join(rootDir, `src/global.js`)
 const testEntry = path.join(rootDir, `src/test/index.js`)
 const globalTest = path.join(rootDir, `src/test/global.js`)
 
-
-const minify = true
+const minify = false
 
 const cjsBuild = async () => {
   // Build the files with esbuild
