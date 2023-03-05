@@ -108,7 +108,9 @@ const runScenario = (stepsInstance, scenario, background, testMode) => {
 
   // If there's a background, run the background steps first
   background &&
-    responses.push(...runBackground(stepsInstance, scenario.scenario, background, testMode))
+    responses.push(
+      ...runBackground(stepsInstance, scenario.scenario, background, testMode)
+    )
 
   // Next run the scenario steps once the background completes
   return responses.concat(
@@ -157,24 +159,18 @@ const runRule = (stepsInstance, rule, background, testMode) => {
   // Store the returned promise in the responses array
   let responses = []
   describe(`Rule > ${rule.rule}`, () => {
-    background
-      && responses.push(...(
-        responses.concat(runBackground(
-          this.steps,
-          rule.rule,
-          background,
-          testMode
-        ))
-      ))
+    background &&
+      responses.push(
+        ...responses.concat(
+          runBackground(this.steps, rule.rule, background, testMode)
+        )
+      )
 
-    responses.push(...(
-      rule.scenarios.map(scenario => runScenario(
-        stepsInstance,
-        scenario,
-        rule.background,
-        testMode
-      ))
-    ))
+    responses.push(
+      ...rule.scenarios.map(scenario =>
+        runScenario(stepsInstance, scenario, rule.background, testMode)
+      )
+    )
 
     // Ensure we resolve all promises inside the describe block
     Promise.all(responses)
@@ -332,14 +328,17 @@ export class Runner {
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
       describe(buildTitle(feature.feature, `Feature`), () => {
+        responses.push(
+          ...feature.rules.map(rule =>
+            runRule(this.steps, rule, feature.background, testMode)
+          )
+        )
 
-        responses.push(...(
-          feature.rules.map(rule => runRule(this.steps, rule, feature.background, testMode))
-        ))
-
-        responses.push(...(
-          feature.scenarios.map(scenario => runScenario(this.steps, scenario, feature.background, testMode))
-        ))
+        responses.push(
+          ...feature.scenarios.map(scenario =>
+            runScenario(this.steps, scenario, feature.background, testMode)
+          )
+        )
 
         // Ensure we resolve all promises inside the describe block
         Promise.all(responses)

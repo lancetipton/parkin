@@ -2063,7 +2063,9 @@ var init_runner = __esm({
     };
     runScenario = (stepsInstance, scenario, background, testMode) => {
       const responses = [];
-      background && responses.push(...runBackground(stepsInstance, scenario.scenario, background, testMode));
+      background && responses.push(
+        ...runBackground(stepsInstance, scenario.scenario, background, testMode)
+      );
       return responses.concat(
         loopSteps(
           scenario,
@@ -2084,18 +2086,16 @@ var init_runner = __esm({
     runRule = (stepsInstance, rule, background, testMode) => {
       let responses = [];
       describe(`Rule > ${rule.rule}`, () => {
-        background && responses.push(...responses.concat(runBackground(
-          (void 0).steps,
-          rule.rule,
-          background,
-          testMode
-        )));
-        responses.push(...rule.scenarios.map((scenario) => runScenario(
-          stepsInstance,
-          scenario,
-          rule.background,
-          testMode
-        )));
+        background && responses.push(
+          ...responses.concat(
+            runBackground((void 0).steps, rule.rule, background, testMode)
+          )
+        );
+        responses.push(
+          ...rule.scenarios.map(
+            (scenario) => runScenario(stepsInstance, scenario, rule.background, testMode)
+          )
+        );
         Promise.all(responses);
       });
       return responses;
@@ -2187,8 +2187,16 @@ var init_runner = __esm({
           beforeEach(this.hooks.getRegistered("beforeEach"));
           afterEach(this.hooks.getRegistered("afterEach"));
           describe2(buildTitle(feature.feature, `Feature`), () => {
-            responses.push(...feature.rules.map((rule) => runRule(this.steps, rule, feature.background, testMode)));
-            responses.push(...feature.scenarios.map((scenario) => runScenario(this.steps, scenario, feature.background, testMode)));
+            responses.push(
+              ...feature.rules.map(
+                (rule) => runRule(this.steps, rule, feature.background, testMode)
+              )
+            );
+            responses.push(
+              ...feature.scenarios.map(
+                (scenario) => runScenario(this.steps, scenario, feature.background, testMode)
+              )
+            );
             Promise.all(responses);
           });
           return responses;
@@ -3099,18 +3107,22 @@ var init_globals = __esm({
 });
 
 // src/bin/paths.ts
-var import_os, import_node_path, cwd, homeDir, checkRootDir, __RootDir, setRoot;
+var import_os, import_path, import_jsutils26, cwd, homeDir, checkRootDir, __RootDir, setRoot, getRoot;
 var init_paths = __esm({
   "src/bin/paths.ts"() {
     import_os = require("os");
-    import_node_path = __toESM(require("node:path"));
+    import_path = __toESM(require("path"));
+    import_jsutils26 = __toESM(require_umd());
     cwd = process.cwd();
     homeDir = (0, import_os.homedir)();
     checkRootDir = (rootDir) => {
-      return rootDir.startsWith(`/`) ? rootDir : rootDir.startsWith(`~/`) ? import_node_path.default.join(homeDir, rootDir.replace(`~/`, ``)) : import_node_path.default.join(cwd, rootDir);
+      return !(0, import_jsutils26.isStr)(rootDir) ? void 0 : rootDir.startsWith(`/`) ? rootDir : rootDir.startsWith(`~/`) ? import_path.default.join(homeDir, rootDir.replace(`~/`, ``)) : import_path.default.join(cwd, rootDir);
     };
-    setRoot = (loc) => {
-      !__RootDir && (__RootDir = checkRootDir(loc));
+    setRoot = (loc, force) => {
+      (!__RootDir || force) && (__RootDir = checkRootDir(loc));
+    };
+    getRoot = () => {
+      return __RootDir;
     };
   }
 });
@@ -3198,21 +3210,21 @@ function l(r2, t2, n2, i2) {
       if (null == e2) {
         for (const e3 of r3) {
           const r4 = d + e3.name;
-          e3.isDirectory() ? s.push(r4 + import_path.sep) : t2.push(r4);
+          e3.isDirectory() ? s.push(r4 + import_path2.sep) : t2.push(r4);
         }
         n2.resolve(), 0 == --c2 && l(s, t2, n2, i2);
       } else
         n2.reject(e2);
     });
 }
-var import_fs, import_path, t, n, i, c;
+var import_fs, import_path2, t, n, i, c;
 var init_dist = __esm({
   "node_modules/get-all-files/dist/index.js"() {
     import_fs = __toESM(require("fs"), 1);
-    import_path = require("path");
+    import_path2 = require("path");
     t = import_fs.default.promises;
     n = ({ resolve: e2 = false, isExcludedDir: o2 = () => false } = {}) => ({ resolve: e2, isExcludedDir: o2 });
-    i = (e2, t2) => (true === t2.resolve && (e2 = (0, import_path.resolve)(e2)), e2.length > 0 && e2[e2.length - 1] !== import_path.sep && (e2 += import_path.sep), e2);
+    i = (e2, t2) => (true === t2.resolve && (e2 = (0, import_path2.resolve)(e2)), e2.length > 0 && e2[e2.length - 1] !== import_path2.sep && (e2 += import_path2.sep), e2);
     c = (e2, o2) => {
       o2 = n(o2);
       const r2 = { async *[Symbol.asyncIterator]() {
@@ -3254,54 +3266,63 @@ var init_dist = __esm({
 });
 
 // src/bin/helpers.ts
-var import_node_path2, import_jsutils26, locsByTypes, fullLoc;
+var import_path3, import_jsutils27, locsByTypes, fullLoc;
 var init_helpers2 = __esm({
   "src/bin/helpers.ts"() {
-    import_node_path2 = __toESM(require("node:path"));
-    import_jsutils26 = __toESM(require_umd());
+    import_path3 = __toESM(require("path"));
+    import_jsutils27 = __toESM(require_umd());
     init_dist();
     init_paths();
     locsByTypes = async (loc, opts) => {
       const { exclude, include, ext, exts } = opts;
       if (!ext && (!exts || !exts.length))
         return [];
-      const extsArr = (0, import_jsutils26.eitherArr)(exts, []);
+      const extsArr = (0, import_jsutils27.eitherArr)(exts, []);
       ext && !extsArr.includes(ext) && extsArr.push(ext);
       const extensions = extsArr.map((ex) => ex.startsWith(`.`) ? ex : `.${ex}`);
       const files = await c(loc, { resolve: true }).toArray();
       return files.filter((file) => {
-        if (exclude.find((ex) => file.includes(ex)))
+        if ((exclude == null ? void 0 : exclude.length) && exclude.find((ex) => file.includes(ex)))
           return false;
         if ((include == null ? void 0 : include.length) && !include.find((inc) => file.includes(inc)))
           return false;
-        const fileExt = import_node_path2.default.extname(file);
+        const fileExt = import_path3.default.extname(file);
         return extensions.includes(fileExt);
       });
     };
     fullLoc = (loc) => {
-      const root = __RootDir || cwd;
-      return loc.startsWith(`/`) ? loc : loc.startsWith(`~/`) ? import_node_path2.default.join(homeDir, loc.replace(`~/`, ``)) : import_node_path2.default.join(root, loc);
+      const root = getRoot() || cwd;
+      return loc.startsWith(`/`) ? loc : loc.startsWith(`~/`) ? import_path3.default.join(homeDir, loc.replace(`~/`, ``)) : import_path3.default.join(root, loc);
     };
   }
 });
 
 // src/bin/getDefs.ts
-var import_jsutils27, filterDefs, getDefs;
+var import_jsutils28, filterDefs, getDefs;
 var init_getDefs = __esm({
   "src/bin/getDefs.ts"() {
     init_instance();
     init_paths();
-    import_jsutils27 = __toESM(require_umd());
+    import_jsutils28 = __toESM(require_umd());
     init_helpers2();
     filterDefs = async (loc, opts) => {
       return await locsByTypes(loc, {
         ...opts,
-        exts: [`.js`, `.ts`]
+        exts: (0, import_jsutils28.flatUnion)([
+          opts == null ? void 0 : opts.ext,
+          ...(opts == null ? void 0 : opts.exts) || [],
+          `.js`,
+          `.ts`,
+          `.cjs`,
+          `.ejs`,
+          `.tsx`,
+          `.jsx`
+        ])
       });
     };
     getDefs = async (opts) => {
-      let filesArr = (0, import_jsutils27.ensureArr)(opts.defs || []);
-      const defs = !filesArr.length ? await filterDefs(__RootDir || cwd, opts) : await filesArr.reduce(async (resolve, loc) => {
+      let filesArr = (0, import_jsutils28.ensureArr)(opts.defs || []);
+      const defs = !filesArr.length ? await filterDefs(getRoot() || cwd, opts) : await filesArr.reduce(async (resolve, loc) => {
         const acc = await resolve;
         const defs2 = await filterDefs(fullLoc(loc), opts);
         return acc.concat(defs2);
@@ -3359,11 +3380,11 @@ var init_runTests = __esm({
 });
 
 // src/bin/getFeatures.ts
-var import_jsutils28, filterFeatures2, featureFromArg, getFeatures;
+var import_jsutils29, filterFeatures2, featureFromArg, getFeatures;
 var init_getFeatures = __esm({
   "src/bin/getFeatures.ts"() {
     init_paths();
-    import_jsutils28 = __toESM(require_umd());
+    import_jsutils29 = __toESM(require_umd());
     init_helpers2();
     filterFeatures2 = async (loc, opts) => {
       return await locsByTypes(loc, {
@@ -3381,9 +3402,9 @@ var init_getFeatures = __esm({
       });
     };
     getFeatures = async (opts, args) => {
-      let optsFiles = (0, import_jsutils28.ensureArr)(opts.features || []);
+      let optsFiles = (0, import_jsutils29.ensureArr)(opts.features || []);
       const featureArgs = featureFromArg(args);
-      const options2 = featureArgs.length ? { ...opts, include: (0, import_jsutils28.flatArr)([...opts.include, ...featureArgs]) } : opts;
+      const options2 = featureArgs.length ? { ...opts, include: (0, import_jsutils29.flatArr)([...opts.include, ...featureArgs]) } : opts;
       const filesArr = optsFiles.length || !args.length ? optsFiles : args.filter((arg) => !arg.startsWith(`-`) && !arg.includes(`=`));
       if (!filesArr.length) {
         const root = __RootDir || cwd;

@@ -1,7 +1,7 @@
 import path from 'node:path'
 import * as esbuild from 'esbuild'
-import { fileURLToPath } from 'url'
-import { promises as fs } from 'fs'
+import { fileURLToPath } from 'node:url'
+import { promises as fs } from 'node:fs'
 import packConf from '../package.json'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))

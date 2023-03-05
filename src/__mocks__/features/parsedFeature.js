@@ -19,10 +19,12 @@ export const parsedFeature = {
     '    Then the element #search contains the text KegHub/keg-hub',
   feature: 'Google Search',
   tags: [ '@search', '@google' ],
-  empty: [{
-    index: 6,
-    content: "",
-  }],
+  empty: [
+    {
+      index: 6,
+      content: '',
+    },
+  ],
   reason: [{ content: 'In order to find out more about Keg-Hub', index: 3 }],
   comments: [
     // Comments are stored globally, so we keep the full white space of it

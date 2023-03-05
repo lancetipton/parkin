@@ -1,8 +1,9 @@
-import path from 'path'
+import path from 'node:path'
 import * as esbuild from 'esbuild'
-import { fileURLToPath } from 'url'
-import { promises as fs } from 'fs'
+import { fileURLToPath } from 'node:url'
+import { promises as fs } from 'node:fs'
 import { dTSPathAliasPlugin } from 'esbuild-plugin-d-ts-path-alias'
+import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const rootDir = path.join(dirname, `..`)
@@ -32,6 +33,7 @@ const cjsBuild = async () => {
     sourcemap: true,
     platform: "node",
     target: ["node16"],
+    plugins: [NodeModulesPolyfillPlugin()]
   })
   .catch(() => process.exit(1))
 }
@@ -54,6 +56,7 @@ const esmBuild = async () => {
     target: ["esnext"],
     define: { global: "window" },
     plugins: [
+      NodeModulesPolyfillPlugin(),
       dTSPathAliasPlugin({
         outputPath: esmOut,
         tsconfigPath: path.join(rootDir, 'tsconfig.json'),

@@ -1,4 +1,5 @@
-import expect from 'expect'
+// import expect from 'expect'
+import expect from '@storybook/expect'
 import { ParkinTest } from './test'
 import { globalTypes } from './utils'
 import { resolveGlobalObj } from '../utils/globalScope'
