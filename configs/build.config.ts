@@ -2,7 +2,8 @@ import path from 'node:path'
 import * as esbuild from 'esbuild'
 import { fileURLToPath } from 'node:url'
 import { promises as fs } from 'node:fs'
-import { dTSPathAliasPlugin } from 'esbuild-plugin-d-ts-path-alias'
+import { dtsPlugin } from 'esbuild-plugin-d.ts'
+import { typecheckPlugin } from '@jgoz/esbuild-plugin-typecheck'
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -56,26 +57,25 @@ const esmBuild = async () => {
     define: { global: "window" },
     plugins: [
       NodeModulesPolyfillPlugin(),
-      dTSPathAliasPlugin({
-        outputPath: esmOut,
-        tsconfigPath: path.join(rootDir, 'tsconfig.json'),
-      })
+      typecheckPlugin(),
+      dtsPlugin(),
     ]
   })
   .catch(() => process.exit(1))
 }
 
+const cleanBuild  = async () => {
+  await fs.rm(outdir, { recursive: true, force: true })
+}
+
 const entryFiles = async () => {
-  // an entry file for esm at the root of the bundle
   await fs.writeFile(path.join(rootDir, "index.js"), "export * from './build/esm/index.js'")
-  // an entry file for cjs at the root of the bundle
   await fs.writeFile(path.join(rootDir, "index.cjs"), "module.exports = require('./build/cjs/index.js')")
 }
 
-;(async () => {
-  // Remove the existing output dir
-  await fs.rm(outdir, { recursive: true, force: true })
 
+;(async () => {
+  await cleanBuild()
   await cjsBuild()
   await esmBuild()
   await entryFiles()

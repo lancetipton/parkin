@@ -1,4 +1,5 @@
 import type { TSuite, TSpec, TSpecResult, TJasmineEnv } from '../types'
+import { EAstObject, EResultAction } from '../types'
 
 import { constants } from '../constants'
 import { testMethodFill } from './errors'
@@ -55,7 +56,7 @@ const getSuiteData = (suite:TSuite) => {
           : `Feature`
 
   return {
-    type: type.toLowerCase(),
+    type: type.toLowerCase() as EAstObject,
     // Format the description to match the actual Gherkin syntax
     ...(type !== `Feature` && {
       description: description.replace(`${type} >`, `${type}:`),
@@ -103,22 +104,22 @@ const buildReporter = (jasmineEnv:TJasmineEnv) => {
       logResultToTerminal({
         ...suite,
         ...getSuiteData(suite),
-        action: `start`,
-      })
+        action: EResultAction.start,
+      } as TSpecResult)
     },
     specStarted: (result:TSpecResult) => {
       logResultToTerminal({
         ...result,
-        type: `step`,
-        action: `start`,
+        type: EAstObject.step,
+        action: EResultAction.start,
       })
     },
     specDone: (result:TSpecResult) => {
       // Check if the env is set to log the spec result
       logResultToTerminal({
         ...result,
-        type: `step`,
-        action: `end`,
+        type: EAstObject.step,
+        action: EResultAction.end,
       })
 
       // If the spec passed, just return
@@ -135,8 +136,8 @@ const buildReporter = (jasmineEnv:TJasmineEnv) => {
       logResultToTerminal({
         ...suite,
         ...getSuiteData(suite),
-        action: `end`,
-      })
+        action: EResultAction.end,
+      } as TSpecResult)
     },
   }
 }

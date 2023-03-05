@@ -25,7 +25,7 @@ const tokenRegex = joinRegex(
   RX_PARAMETER,
   RX_DOUBLE_QUOTED,
   RX_SINGLE_QUOTED,
-  'g'
+  'g' as unknown as RegExp
 ) as RegExp
 
 export const tokenizeStep = (step:string, def:TStepDef) => {

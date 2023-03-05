@@ -1,17 +1,20 @@
+import { EAstObject } from './helpers.types'
 
-export enum TResultAction {
+
+export enum EResultAction {
   skipped=`skipped`,
-  start=`start`
+  start=`start`,
+  end=`end`
   
 }
 
-export enum TResultStatus {
+export enum EResultStatus {
   skipped=`skipped`,
   passed=`passed`,
   failed=`failed`,
 }
 
-export enum TResultType {
+export enum EResultType {
   it=`it`,
   xit=`xit`,
   root=`root`,
@@ -21,23 +24,23 @@ export enum TResultType {
   xdescribe=`xdescribe`
 }
 
-
 export type TRunResult = {
   id:string
   testPath:string
   fullName:string
   failed?: boolean
   passed?: boolean
-  type:TResultType
   timestamp: number
   description: string
-  action:TResultAction
+  action:EResultAction
+  children?:TSpec[]
+  type:EAstObject
   failedExpectations?: Record<string, any>[]
   passedExpectations?: Record<string, any>[]
 }
 
 export type TSpecResult = TRunResult & {
-  status?:TResultStatus
+  status?:EResultStatus
 }
 
 export type TSpec = {

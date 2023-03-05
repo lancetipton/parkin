@@ -1,8 +1,9 @@
 import type { TMatchResp, TStepDefsArr, TWorldConfig } from '../types'
+import type { Parkin } from '../parkin'
 
 import { constants } from '../constants'
 import { tokenizeStep } from './tokens'
-import { noOpObj } from '@keg-hub/jsutils'
+import { emptyObj, emptyArr } from '@keg-hub/jsutils'
 import { matchRegex, getRegexParts } from './regex'
 import { getParamTypes, registerParamType } from './paramTypes'
 import { findAsRegex, extractParameters, matchExpression } from './expression'
@@ -14,7 +15,24 @@ const { REGEX_VARIANT } = constants
  * <br/>Gives access to underlying matcher methods to be called directly
  */
 export class Matcher {
-  find = matcher
+  
+  parkin:Parkin
+  
+  constructor(parkin?:Parkin){
+    this.parkin = parkin
+  }
+
+  find = (
+    text:string,
+    definitions?:TStepDefsArr,
+    $world?:TWorldConfig
+  ) => {
+    return matcher(
+      definitions || this.parkin?.steps?.list?.() || emptyArr,
+      text,
+      $world || this?.parkin?.world || { $alias: {} } as TWorldConfig
+    )
+  }
   regex = matchRegex
   parts = getRegexParts
   types = getParamTypes
@@ -42,5 +60,5 @@ export const matcher = (
       : definition.variant !== REGEX_VARIANT
         ? matchExpression(definition, text, $world) as TMatchResp
         : matchRegex(definition, text) as TMatchResp
-  }, noOpObj as TMatchResp)
+  }, emptyObj as TMatchResp)
 }

@@ -52,6 +52,8 @@ const outputs = [
 
 const defOne:TStepDef = {
   type: `Given`,
+  variant: `expression`,
+  method: () => {},
   name: `I eat {int} from a total of {int} {word} apple(s)`,
   uuid: `12345-test`,
   content: `some content`,
