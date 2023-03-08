@@ -2,16 +2,16 @@ import type { TStepAst } from './steps.types'
 import type { EAstObject } from './helpers.types'
 
 export type TBackgroundAst = {
-  index: number
+  index?: number
   uuid: string
   tags: string[]
-  whitespace: string
+  whitespace?: string
   background: string
   steps: TStepAst[]
 }
 
 export type TRuleAst = {
-  index: number
+  index?: number
   uuid: string
   tags: string[]
   rule: string
@@ -20,20 +20,19 @@ export type TRuleAst = {
   scenarios: TScenarioAst[]
 }
 
-
 export type TScenarioAst = {
-  index: number
+  index?: number
   uuid: string
   tags: string[]
   alias?:`Example`
   scenario: string
   steps: TStepAst[]
-  whitespace: string
+  whitespace?: string
 }
 
 export type TAstBlock = {
   content: string
-  index: number
+  index?: number
 }
 
 export type TAstParseError = {

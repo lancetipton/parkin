@@ -4,11 +4,13 @@ import type {
   EStepType,
   TParkinRun,
   TParamTypes,
+  TFeatureAst,
   TWorldConfig,
   TAddStepDefs,
   TRegisterOrAddStep,
   TRegisterStepsList,
   TRegisterStepMethod,
+  TAssembleFeatureOpts,
 } from './types'
 
 import { Steps } from './steps'
@@ -236,6 +238,19 @@ export class Parkin {
     else this.steps.add(steps as TAddStepDefs)
 
   }
+  
+  /**
+   * Expose helper method to re-index a parsed feature AST when it's content is modified
+   * This allows the feature to be properly re-assembled at another time
+   */
+  reIndex = (feature:TFeatureAst, opts:TAssembleFeatureOpts) => {
+    // Remove the empty space because the content has changed
+    feature.empty = []
+    const assembled = this.assemble.feature([feature as TFeatureAst], opts)[0]
+
+    return this.parse.feature(assembled)[0]
+  }
+
 }
 
 // Also export a instance of the class

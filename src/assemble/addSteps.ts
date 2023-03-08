@@ -1,4 +1,4 @@
-import type { TStepParentAst } from '../types'
+import type { TStepParentAst, TAssembleFeatureOpts } from '../types'
 
 import { addContent } from './addContent'
 import { isArr, capitalize } from '@keg-hub/jsutils'
@@ -10,15 +10,18 @@ import { isArr, capitalize } from '@keg-hub/jsutils'
  */
 export const addSteps = (
   assembled:string[],
-  parent:TStepParentAst
+  parent:TStepParentAst,
+  opts:TAssembleFeatureOpts
 ) => {
+  const { indexes=true } = opts
+  
   isArr(parent.steps)
     && parent.steps.length
     && parent.steps.map(step => {
         addContent(
           assembled,
           `${step.whitespace || `    `}${capitalize(step.type)} ${step.step}`,
-          step.index
+          indexes && step.index
         )
       })
 }

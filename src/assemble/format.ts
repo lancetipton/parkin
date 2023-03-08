@@ -1,4 +1,4 @@
-import type { TFeatureAst } from '../types'
+import type { TAssembleFeatureOpts } from '../types'
 
 import { exists } from '@keg-hub/jsutils'
 
@@ -43,7 +43,10 @@ const formatComment = (
  * @function
  * @private
  */
-export const formatAssembled = (assembled:string[]) => {
+export const formatAssembled = (
+  assembled:string[],
+  opts:TAssembleFeatureOpts
+) => {
   // Use array.from to allow access to empty array position
   // This ensures we can replace it with an empty string
   return Array.from(assembled, (line, index) => {
@@ -57,5 +60,4 @@ export const formatAssembled = (assembled:string[]) => {
         : `${line}\n`
   })
     .join('')
-    .trim()
 }

@@ -28,7 +28,7 @@ export interface IParkinSteps {
 
 export type TStepAst = {
   uuid: string
-  index: number
+  index?: number
   step: string
   type: EStepType
   whitespace: string

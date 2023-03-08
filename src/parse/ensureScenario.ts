@@ -1,5 +1,6 @@
 import type { TFeatureAst, TScenarioAst, TRuleAst } from '../types'
 
+import { exists } from '@keg-hub/jsutils'
 import { EFeatureTypes } from '../types'
 import { sanitizeForId, getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
@@ -54,7 +55,7 @@ export const ensureScenario = (
 
   // Check if the scenario text was already added, and add it if needed
   // Otherwise create a new scenario with the scenario text
-  !scenario.scenario
+  !exists(scenario.scenario)
     ? (scenario.scenario = scenarioText)
     : (scenario = scenarioFactory(scenarioText, index))
 

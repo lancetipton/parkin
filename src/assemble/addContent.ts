@@ -12,9 +12,9 @@ import { exists } from '@keg-hub/jsutils'
 export const addContent = (
   assembled:string[],
   content:string,
-  index?:number
+  index?:number | false
 ) => {
-  !exists(index)
+  !exists(index) || index === false
     ? assembled.push(content)
     : exists(assembled[index])
       ? assembled.splice(index, 0, content)

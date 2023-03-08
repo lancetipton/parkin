@@ -1,4 +1,4 @@
-import type { TFeatureAst, TAstBlock } from '../types'
+import type { TFeatureAst, TAstBlock, TAssembleFeatureOpts } from '../types'
 
 import { constants } from '../constants'
 import { EFeatureTypes } from '../types'
@@ -15,18 +15,25 @@ const { FEATURE_META } = constants
  */
 export const addMeta = (
   assembled:string[],
-  feature:TFeatureAst
+  feature:TFeatureAst,
+  opts:TAssembleFeatureOpts
 ) => {
+  const { indexes=true } = opts
+
   FEATURE_META.map((key:string) => {
     switch (key) {
     case 'feature':
-      addContent(assembled, `${EFeatureTypes.Feature}: ${feature[key]}`, feature.index)
+      addContent(
+        assembled,
+        `${EFeatureTypes.Feature}: ${feature[key]}`,
+        indexes && feature.index
+      )
       break
     case 'comments':
       const comments = feature[key]
       comments
         && eitherArr<TAstBlock[]>(comments, [comments])
-            .map(item => addContent(assembled, item.content, item.index))
+            .map(item => addContent(assembled, item.content, indexes && item.index))
       break
     case 'reason':
     case 'desire':
@@ -34,7 +41,7 @@ export const addMeta = (
       const other = feature[key]
       other
         && eitherArr<TAstBlock[]>(other, [other])
-            .map(item => addContent(assembled, `  ${item.content}`, item.index))
+            .map(item => addContent(assembled, `  ${item.content}`, indexes && item.index))
       break
     }
   })

@@ -1,7 +1,6 @@
 import path from 'node:path'
 import * as esbuild from 'esbuild'
 import { fileURLToPath } from 'node:url'
-import { promises as fs } from 'node:fs'
 import { dtsPlugin } from 'esbuild-plugin-d.ts'
 import { typecheckPlugin } from '@jgoz/esbuild-plugin-typecheck'
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'

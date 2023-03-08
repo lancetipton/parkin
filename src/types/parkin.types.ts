@@ -35,7 +35,7 @@ export type TAssemble = {
 }
 
 export type TParse = {
-  feature: (feature:string) => TFeatureAst
+  feature: (feature:string) => TFeatureAst[]
   definition: (def:string) => TStepDef
 }
 

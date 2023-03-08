@@ -5,6 +5,18 @@ jest.clearAllMocks()
 const { testMethodFill, ...errorMethods } = require('../errors')
 
 describe('Errors', () => {
+  
+  const oldErr = console.error
+  console.error = jest.fn()
+
+  beforeEach(() => {
+    console.error.mockClear()
+  })
+
+  afterAll(() => {
+    console.error = oldErr
+  })
+
   describe('testMethodFill', () => {
     it('should return a function', () => {
       expect(typeof testMethodFill()).toBe('function')

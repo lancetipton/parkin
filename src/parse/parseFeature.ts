@@ -88,7 +88,7 @@ export const parseFeature = function (
 
     // Check for stepTags before check for the next active parent
     // This way We don't add a step to the wrong parent
-    if (!(activeParent as TFeatureAst)?.feature && parseStep(activeParent, lines, line, index))
+    if ((`steps` in activeParent) && parseStep(activeParent, lines, line, index))
       return featuresGroup
 
     /*

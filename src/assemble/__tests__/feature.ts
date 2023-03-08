@@ -12,7 +12,7 @@ describe('Assemble Feature', () => {
   it('should rebuild a feature into a string', () => {
     const content = parsedFeature.content
     const [assembled] = assembleFeature([parsedFeature])
-    expect(assembled).toEqual(content)
+    expect(assembled.trim()).toEqual(content.trim())
   })
 
   it('should work with multiple features', () => {
@@ -21,14 +21,14 @@ describe('Assemble Feature', () => {
       parsedFeature,
       parsedFeature,
     ])
-    expect(assembled1).toEqual(content)
-    expect(assembled2).toEqual(content)
+    expect(assembled1.trim()).toEqual(content.trim())
+    expect(assembled2.trim()).toEqual(content.trim())
   })
 
   it('should allow passing in a feature model object', () => {
     const content = parsedFeature.content
     const [assembled] = assembleFeature(parsedFeature)
-    expect(assembled).toEqual(content)
+    expect(assembled.trim()).toEqual(content.trim())
   })
 
   it('should create output that is equal to the input', () => {
@@ -36,11 +36,12 @@ describe('Assemble Feature', () => {
 
     const parsed = PK.parse.feature(feature)[0]
     const assembled = assembleFeature(parsed)[0]
-    expect(assembled).toEqual(feature)
+    expect(assembled.trim()).toEqual(feature.trim())
 
     const parsedAdvanced = PK.parse.feature(featureRulesScenarios)[0]
     const assembledAdvanced = assembleFeature(parsedAdvanced)[0]
-    expect(assembledAdvanced).toEqual(featureRulesScenarios)
+
+    expect(assembledAdvanced.trim()).toEqual(featureRulesScenarios.trim())
 
   })
 

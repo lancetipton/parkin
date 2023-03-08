@@ -1,4 +1,4 @@
-import type { TFeatureAst, TRuleAst } from '../types'
+import type { TFeatureAst, TRuleAst, TAssembleFeatureOpts } from '../types'
 
 import { addTags } from './addTags'
 import { EFeatureTypes } from '../types'
@@ -14,15 +14,17 @@ import { addBackground } from './addBackground'
  */
 export const addRules = (
   assembled:string[],
-  feature:TFeatureAst
+  feature:TFeatureAst,
+  opts:TAssembleFeatureOpts
 ) => {
+  const { indexes=true } = opts
   feature.rules &&
     feature.rules.map((rule:TRuleAst) => {
       const whitespace = rule.whitespace || `  `
 
       addTags(assembled, rule.tags, whitespace)
-      addContent(assembled, `${whitespace}${EFeatureTypes.Rule}: ${rule.rule}`, rule.index)
-      addBackground(assembled, rule)
-      addScenarios(assembled, rule)
+      addContent(assembled, `${whitespace}${EFeatureTypes.Rule}: ${rule.rule}`, indexes && rule.index)
+      addBackground(assembled, rule, opts)
+      addScenarios(assembled, rule, opts)
     })
 }

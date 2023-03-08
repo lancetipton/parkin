@@ -1,4 +1,4 @@
-import type { TBackgroundParentAst } from '../types'
+import type { TBackgroundParentAst, TAssembleFeatureOpts } from '../types'
 
 import { addTags } from './addTags'
 import { addSteps } from './addSteps'
@@ -14,15 +14,18 @@ import { addContent } from './addContent'
  */
 export const addBackground = (
   assembled:string[],
-  parent:TBackgroundParentAst
+  parent:TBackgroundParentAst,
+  opts:TAssembleFeatureOpts
 ) => {
+
   const { background } = parent
   if(!background) return
 
+  const { indexes=true } = opts
   const whitespace = background.whitespace || `  `
 
   addTags(assembled, background.tags, whitespace)
-  addContent(assembled, `${whitespace}${EFeatureTypes.Background}:`, background.index)
-  addSteps(assembled, background)
+  addContent(assembled, `${whitespace}${EFeatureTypes.Background}:`, indexes && background.index)
+  addSteps(assembled, background, opts)
 
 }

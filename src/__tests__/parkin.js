@@ -1,6 +1,7 @@
 import {
   definition,
   feature,
+  emptyScenario,
   parsedFeature,
   parsedDefinition,
   registerMockSteps,
@@ -94,6 +95,20 @@ describe('Parkin', () => {
       type: 'feature',
       content: 'Could not find Feature text in file',
     })
+  })
+
+  it(`should properly parse empty scenario text`, () => {
+    const PK = new Parkin(worldObj)
+    const parsed = PK.parse.feature(emptyScenario)[0]
+
+    const rulesScenario = parsed.rules[0].scenarios[0]
+    const featScenario = parsed.scenarios[0]
+
+    expect(rulesScenario.steps?.length).toBe(0)
+    expect(rulesScenario.scenario).toBe(``)
+    
+    expect(featScenario.steps?.length).toBe(1)
+    expect(featScenario.scenario).toBe(`Navigate the Goblog`)
   })
 
   it('should parse step definition text when a definition parse method is passed', () => {
