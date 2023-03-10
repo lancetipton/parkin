@@ -1,3 +1,13 @@
+import type {
+  TStepDef,
+  TFindOpts,
+  TMatchResp,
+  TAnyFunc,
+  TTypeModel,
+  TWorldConfig,
+  TTransformer,
+} from '../types'
+
 import { constants } from '../constants'
 import { removeQuotes } from '../utils/helpers'
 import {
@@ -35,14 +45,14 @@ const { WORLD_KEY, ALIAS_WORLD_KEY, ALIAS_REF } = constants
  *
  * @returns {*} Found value on the world object or undefined
  */
-const checkWorldValue = (func, type) => {
-  return (arg, $world) => {
+const checkWorldValue = (func:TAnyFunc, type:string):TTransformer => {
+  return (arg:string, $world?:TWorldConfig) => {
     const hasWorldVal = arg.match(RX_WORLD)
     const hasAliasVal = arg.match(RX_ALIAS)
 
     // If not world value, just return func response
     if (!isObj($world) || (!hasWorldVal && !hasAliasVal))
-      return matchType(func(arg), type)
+      return matchType(func(arg, $world), type)
 
     // Try to pull from world object
     const worldVal = hasWorldVal
@@ -56,14 +66,17 @@ const checkWorldValue = (func, type) => {
     return exists(worldVal)
       ? matchType(worldVal, type)
       : hasWorldVal
-        ? throwMissingWorldValue(arg, $world)
-        : matchType(func(arg), type)
+        ? throwMissingWorldValue(arg)
+        : matchType(func(arg, $world), type)
   }
 }
 
-// Checks if the val matches the type
-// If matching, returns val, else return null
-const matchType = (val, type) => {
+/**
+ * Checks if the val matches the type
+ * If matching, returns val, else return null
+ *
+ */
+const matchType = (val:any, type:string) => {
   return typeof val === type ? val : null
 }
 
@@ -72,12 +85,13 @@ const matchType = (val, type) => {
  * @type {Object}
  */
 const typeModel = {
-  name: '',
-  regex: '',
-  type: 'string',
+  name: ``,
+  regex: ``,
+  partial: ``,
+  type: `string`,
   useForSnippets: true,
   preferForRegexpMatch: false,
-  transformer: checkWorldValue(arg => arg, 'string'),
+  transformer: checkWorldValue(arg => arg, `string`),
 }
 
 /**
@@ -89,41 +103,46 @@ const typeModel = {
 const __paramTypes = {
   any: {
     ...typeModel,
-    name: 'any',
+    name: `any`,
     regex: RX_ANY,
+    partial: joinRegex(RX_ANY, /{any}/, /{\*}/),
   },
   word: {
     ...typeModel,
-    name: 'word',
+    name: `word`,
     regex: RX_ANY,
+    partial: joinRegex(RX_ANY, /{word}/),
     transformer: checkWorldValue(arg => {
       return !isQuoted(arg) ? toStr(arg) : undefined
     }, typeModel.type),
   },
   float: {
     ...typeModel,
-    name: 'float',
-    type: 'number',
+    name: `float`,
+    type: `number`,
     regex: RX_FLOAT,
+    partial: joinRegex(RX_INT, /{float}/),
     transformer: checkWorldValue(arg => {
       const result = parseFloat(arg)
       return equalsNaN(result) ? undefined : result
-    }, 'number'),
+    }, `number`),
   },
   int: {
     ...typeModel,
-    name: 'int',
-    type: 'number',
+    name: `int`,
+    type: `number`,
     regex: RX_INT,
+    partial: joinRegex(RX_INT, /{int}/, /{number}/),
     transformer: checkWorldValue(arg => {
       const result = parseInt(arg)
-      return equalsNaN(result) || arg.includes('.') ? undefined : result
-    }, 'number'),
+      return equalsNaN(result) || arg.includes(`.`) ? undefined : result
+    }, `number`),
   },
   string: {
     ...typeModel,
-    name: 'string',
+    name: `string`,
     regex: joinRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED),
+    partial: joinRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED, /{string}/),
     transformer: checkWorldValue(arg => {
       return isQuoted(arg) ? removeQuotes(arg) : undefined
     }, typeModel.type),
@@ -150,7 +169,10 @@ export const getParamTypes = () => __paramTypes
  *
  * @return {Object} Registered param types
  */
-export const registerParamType = (model = noOpObj, key = model.name) => {
+export const registerParamType = (
+  model:TTypeModel = noOpObj as TTypeModel,
+  key:string=model.name
+) => {
   if (__paramTypes[key]) return throwParamTypeExists(key)
 
   // Build the new type joining with the default
@@ -177,7 +199,11 @@ export const registerParamType = (model = noOpObj, key = model.name) => {
  *
  * @returns {Array<*>} Matches converted into the correct type
  */
-export const convertTypes = (matches, transformers, $world) => {
+export const convertTypes = (
+  matches:string[],
+  transformers:TTypeModel[],
+  $world:TWorldConfig
+) => {
   return matches
     .map((item, i) => {
       const paramType = transformers[i] || __paramTypes.any

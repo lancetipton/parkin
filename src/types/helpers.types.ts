@@ -49,3 +49,5 @@ export enum EFeatureTypes {
   RULE = `Rule`,
   STEP = `Step`
 }
+
+export type TAnyFunc = (...args:any[]) => any

@@ -1,4 +1,10 @@
-import type { TMatchResp, TStepDefsArr, TWorldConfig } from '../types'
+import type {
+  TStepDef,
+  TFindOpts,
+  TMatchResp,
+  TStepDefsArr,
+  TWorldConfig
+} from '../types'
 import type { Parkin } from '../parkin'
 
 import { constants } from '../constants'
@@ -17,29 +23,81 @@ const { REGEX_VARIANT } = constants
 export class Matcher {
   
   parkin:Parkin
+  options:TFindOpts=emptyObj
   
-  constructor(parkin?:Parkin){
+  constructor(parkin?:Parkin, options?:TFindOpts){
     this.parkin = parkin
+    this.options = options
   }
 
   find = (
     text:string,
     definitions?:TStepDefsArr,
-    $world?:TWorldConfig
+    $world?:TWorldConfig,
+    opts?:TFindOpts
   ) => {
-    return matcher(
-      definitions || this.parkin?.steps?.list?.() || emptyArr,
-      text,
-      $world || this?.parkin?.world || { $alias: {} } as TWorldConfig
-    )
+    const defs = definitions
+      || this.parkin?.steps?.list?.()
+      || emptyArr
+
+    const world = $world
+      || this?.parkin?.world
+      || { $alias: {} } as TWorldConfig
+
+    return matcher(defs, text, world, opts || this.options)
   }
+
+  parts = (defMatchStr:string, opts?:TFindOpts) => getRegexParts(
+    defMatchStr,
+    opts || this.options
+  )
+
+  extract = (
+    text:string,
+    stepMatcher:string,
+    wordMatches:string[],
+    opts?:TFindOpts
+  ) => extractParameters(
+    text,
+    stepMatcher,
+    wordMatches,
+    opts || this.options
+  )
+
+  expression = (
+    def:TStepDef,
+    text:string,
+    $world?:TWorldConfig,
+    opts:TFindOpts=emptyObj
+  ) => matchExpression(
+    def,
+    text,
+    $world || this?.parkin?.world,
+    opts || this.options
+  )
+
+  stepTokens = (
+    step:string,
+    def:TStepDef,
+    opts?:TFindOpts
+  ) => tokenizeStep(
+    step,
+    def,
+    opts || this.options
+  )
+
+  expressionFind = (
+    def:TStepDef,
+    text:string,
+    opts:TFindOpts=emptyObj
+  ) =>  findAsRegex(
+      def,
+      text,
+      opts || this.options
+  )
+
   regex = matchRegex
-  parts = getRegexParts
   types = getParamTypes
-  stepTokens = tokenizeStep
-  extract = extractParameters
-  expression = matchExpression
-  expressionFind = findAsRegex
   register = registerParamType
 }
 
@@ -52,13 +110,14 @@ export class Matcher {
 export const matcher = (
   definitions:TStepDefsArr,
   text:string,
-  $world:TWorldConfig
+  $world:TWorldConfig,
+  opts:TFindOpts=emptyObj
 ) => {
   return definitions.reduce((found, definition) => {
     return found.match || !definition.match
       ? found as TMatchResp
       : definition.variant !== REGEX_VARIANT
-        ? matchExpression(definition, text, $world) as TMatchResp
+        ? matchExpression(definition, text, $world, opts) as TMatchResp
         : matchRegex(definition, text) as TMatchResp
   }, emptyObj as TMatchResp)
 }

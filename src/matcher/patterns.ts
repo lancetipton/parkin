@@ -7,7 +7,7 @@ export const RX_ALT = /\s*\S*\/\S*\s*/
 export const RX_PARAMETER = /\s*{(.*?)}\s*/
 
 // @ts-ignore
-export const RX_EXPRESSION = joinRegex(RX_PARAMETER, RX_OPTIONAL, 'g')
+export const RX_EXPRESSION = joinRegex(RX_PARAMETER, RX_OPTIONAL, 'g') as RegExp
 
 export const RX_ANY = /(.*)/
 

@@ -68,7 +68,7 @@ const defOne:TStepDef = {
 } 
 
 
-describe('getRegexParts', () => {
+describe('tokenizeStep', () => {
   describe('converts the step into expression tokens', () => {
     it(`should convert the step into expression tokens`, () => {
       const tokens = []

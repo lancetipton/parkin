@@ -1,3 +1,10 @@
+import type {
+  TStepDef,
+  TFindOpts,
+  TMatchResp,
+  TWorldConfig
+} from '../types'
+
 import {
   matchRegex,
   getRegexParts,
@@ -14,8 +21,9 @@ import {
   RX_PARAMETER,
 } from './patterns'
 
+
 import { hasWindow } from '../utils/globalScope'
-import { noOpObj, isFunc } from '@keg-hub/jsutils'
+import { emptyObj, isFunc } from '@keg-hub/jsutils'
 import { getParamTypes, convertTypes } from './paramTypes'
 
 /**
@@ -27,7 +35,7 @@ import { getParamTypes, convertTypes } from './paramTypes'
  *
  * @return {string} Escaped string to allow converting into a regular expression
  */
-const escapeStr = str => {
+const escapeStr = (str:string) => {
   return hasWindow
     ? str.replace(/[|\\[\]^$+*?.]/g, '\\$&').replace(/-/g, '\\x2d')
     : str.replace(/[|\\[\]^$+*?.]/g, '\\$&')
@@ -44,13 +52,19 @@ const escapeStr = str => {
  *
  * @return {string} match string with matched content replaced with regex
  */
-const runRegexCheck = (matcher, testRx, replaceWith) => {
+const runRegexCheck = (
+  matcher:string,
+  testRx:RegExp,
+  replaceWith:string|((match:any) => any)
+) => {
   if (!testRx.test(matcher)) return matcher
 
   // Set the default regex match
   let regexStr = matcher
+
   // Replace any expressions with regex, and convert the param types
-  matcher.replace(testRx, (...args) => {
+  // @ts-ignore
+  matcher.replace(testRx, (...args:any[]) => {
     const match = args[0].trim()
     const [ start, ...end ] = regexStr.split(match)
     const replace = isFunc(replaceWith) ? replaceWith(...args) : replaceWith
@@ -64,30 +78,34 @@ const runRegexCheck = (matcher, testRx, replaceWith) => {
  * Find all expressions in the match string, and convert them into into regex
  * @function
  * @private
- * @param {string} match - Step match text from feature scenario
  *
- * @return {Object} { regex: match string with expression replaced, transformers: Array of transformer objects }
  */
-const convertToRegex = match => {
+const convertToRegex = (
+  match:string,
+  opts:TFindOpts=emptyObj
+) => {
   const paramTypes = getParamTypes()
   const transformers = []
-  const regex = runRegexCheck(match, RX_EXPRESSION, (val, ...args) => {
-    // Get the expression type
-    const type = val.trim().replace(RX_MATCH_REPLACE, '')
-    const isParameter = val.match(RX_PARAMETER)
-    const isOptional = val.match(RX_OPTIONAL)
+  const regex = runRegexCheck(
+    match,
+    RX_EXPRESSION,
+    (val, ...args) => {
+      // Get the expression type
+      const type = val.trim().replace(RX_MATCH_REPLACE, '')
+      const isParameter = val.match(RX_PARAMETER)
+      const isOptional = val.match(RX_OPTIONAL)
 
-    // Add the transformer for the type to the transformers array
-    isParameter && transformers.push(paramTypes[type] || paramTypes.any)
+      // Add the transformer for the type to the transformers array
+      isParameter && transformers.push(paramTypes[type] || paramTypes.any)
 
-    // Return the regex
-    return isParameter
-      ? getParamRegex(type)
-      : isOptional
-        ? toAlternateRegex(val)
-        : val
-  })
-
+      // Return the regex
+      return isParameter
+        ? getParamRegex(type, opts?.partial)
+        : isOptional
+          ? toAlternateRegex(val)
+          : val
+    }
+  )
   return { regex, transformers }
 }
 
@@ -95,11 +113,9 @@ const convertToRegex = match => {
  * Find all alternate syntax in the match string, and convert them into into regex
  * @function
  * @private
- * @param {string} match - Step match text from feature scenario
  *
- * @return {string} match string with alternate syntax replaced
  */
-const checkAlternative = match => {
+const checkAlternative = (match:string) => {
   const altIndexes = []
   const regex = runRegexCheck(
     match,
@@ -113,10 +129,8 @@ const checkAlternative = match => {
 
 /**
  * Adds regex anchors to the ends of the regex string, if it needs them
- * @param {string} str
- * @return {string} with anchors
  */
-const checkAnchors = str => {
+const checkAnchors = (str:string) => {
   let final = str
   if (!str.startsWith('^')) final = '^' + final
   if (!str.endsWith('$')) final += '$'
@@ -131,11 +145,17 @@ const checkAnchors = str => {
  * @param {RegExp} stepMatcher
  * @param {Array} wordMatches - matches for the {word} params
  */
-export const extractParameters = (text, stepMatcher, wordMatches) => {
+export const extractParameters = (
+  text:string,
+  stepMatcher:string,
+  wordMatches:string[],
+  opts:TFindOpts=emptyObj
+) => {
   // Gets an array of each dynamic element of the step match text,
   // including: params (e.g. {float}), optionals (e.g. test(s))
   // and alternate text (e.g. required/optional)
   const parts = getRegexParts(stepMatcher)
+
   const expectedParamLength = parts.filter(
     part => part.type === 'parameter'
   ).length
@@ -176,7 +196,9 @@ export const extractParameters = (text, stepMatcher, wordMatches) => {
     { params: [], textIndex: 0, wordMatchIndex: 0 }
   )
 
-  return expectedParamLength === result.params.length ? result.params : null
+  return (opts.partial || expectedParamLength === result.params.length)
+    ? result.params
+    : null
 }
 
 /**
@@ -185,19 +207,24 @@ export const extractParameters = (text, stepMatcher, wordMatches) => {
  * @function
  * @public
  * @export
- * @param {Object} definition - Registered definition
- * @param {string} text - Feature step text to compare with definition text
  *
- * @returns {Object} Found matching definition and regex variations
  */
-export const findAsRegex = (definition, text) => {
-  const escaped = escapeStr(definition.match)
+export const findAsRegex = (
+  definition:TStepDef,
+  text:string,
+  opts:TFindOpts=emptyObj
+) => {
+  const escaped = escapeStr(definition.match as string)
   const { regex: regexAlts } = checkAlternative(escaped)
-  const { transformers, regex: regexConverted } = convertToRegex(regexAlts)
+  const { transformers, regex: regexConverted } = convertToRegex(regexAlts, opts)
   const { regex: regexAnchors } = checkAnchors(regexConverted)
 
+
   // Then call the regex matcher to get the content
-  const found = matchRegex({ ...definition, match: regexAnchors }, text)
+  const found = matchRegex(
+    { ...definition, match: regexAnchors },
+    text,
+  )
 
   return {
     found,
@@ -216,25 +243,35 @@ export const findAsRegex = (definition, text) => {
  * @function
  * @public
  * @export
- * @param {Object} definition - Registered definition
- * @param {string} text - Feature step text to compare with definition text
  *
- * @returns {Object} Found matching definition and matched arguments
+ * @returns - Found matching definition and matched arguments
  *  - form: { definition, match: Array of Arguments to pass to definitions function }
  */
-export const matchExpression = (definition, text, $world) => {
+export const matchExpression = (
+  definition:TStepDef,
+  text:string,
+  $world?:TWorldConfig,
+  opts:TFindOpts=emptyObj
+) => {
   // If it's an exact match, then no variables can exist
   // So we can short circuit and return the definition
   if (definition.match === text) return { definition, match: [] }
 
-  const { found, transformers } = findAsRegex(definition, text)
+  const { found, transformers } = findAsRegex(definition, text, opts)
 
   // If no found definition or match, return an empty object
-  if (!found || !found.definition || !found.match) return noOpObj
+  if (!found || !found.definition || !found.match) return emptyObj
 
   // get all the parameters, without any type coercion
-  const params = extractParameters(text, definition.match, found.match)
-  if (!params) return noOpObj
+  const params = extractParameters(
+    text,
+    definition.match as string,
+    found.match,
+    opts
+  )
+
+
+  if (!params) return emptyObj
 
   // Convert the found variables into their type based on the mapped transformers
   const converted = convertTypes(params, transformers, $world)
@@ -243,6 +280,6 @@ export const matchExpression = (definition, text, $world) => {
   // Then assume the type does not match, so the step does not match.
   // Otherwise return the matched definition, and the converted variables
   return converted.length !== params.length
-    ? noOpObj
-    : { definition, match: converted }
+    ? emptyObj as TMatchResp
+    : { definition, match: converted } as TMatchResp
 }

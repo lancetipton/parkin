@@ -15,6 +15,7 @@ jest.setMock('../../utils/errors', {
 const typeModel = {
   name: ['string'],
   regex: [ 'string', 'regexp' ],
+  partial: [ 'string', 'regexp' ],
   type: ['string'],
   useForSnippets: ['boolean'],
   transformer: ['function'],

@@ -1,4 +1,4 @@
-import { TStepDef } from '../types'
+import { TStepDef, TFindOpts } from '../types'
 import { joinRegex } from '@keg-hub/jsutils'
 import { getRegexParts } from './regex'
 
@@ -28,8 +28,8 @@ const tokenRegex = joinRegex(
   'g' as unknown as RegExp
 ) as RegExp
 
-export const tokenizeStep = (step:string, def:TStepDef) => {
-  const parts = getRegexParts(def.match as string)
+export const tokenizeStep = (step:string, def:TStepDef, opts?:TFindOpts) => {
+  const parts = getRegexParts(def.match as string, opts)
 
   const tokens:TMatchTokens[] = []
 
