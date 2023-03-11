@@ -30,6 +30,13 @@ export class Matcher {
     this.options = options
   }
 
+  /**
+   * Finds a matching step definitions form the passed in text
+   * If no options are passed;
+   * All definition expression must be replaced in text
+   * @member {Matcher}
+   *
+   */
   find = (
     text:string,
     definitions?:TStepDefsArr,
@@ -46,6 +53,17 @@ export class Matcher {
 
     return matcher(defs, text, world, opts || this.options)
   }
+
+  /**
+   * Finds a matching step definitions form the passed in text
+   * Defaults partial option to true, to allow finding partial matches
+   * @member {Matcher}
+   *
+   */
+  search = (
+    text:string,
+    opts:TFindOpts={ partial: true }
+  ) => this.find(text, undefined, undefined, opts)
 
   parts = (defMatchStr:string, opts?:TFindOpts) => getRegexParts(
     defMatchStr,

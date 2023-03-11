@@ -59,16 +59,66 @@ const runRegexCheck = (
 ) => {
   if (!testRx.test(matcher)) return matcher
 
+  const matchLength = matcher.length
+
   // Set the default regex match
   let regexStr = matcher
 
   // Replace any expressions with regex, and convert the param types
   // @ts-ignore
-  matcher.replace(testRx, (...args:any[]) => {
+  matcher.replaceAll(testRx, (...args:any[]) => {
+    const idx = args[3]
     const match = args[0].trim()
-    const [ start, ...end ] = regexStr.split(match)
-    const replace = isFunc(replaceWith) ? replaceWith(...args) : replaceWith
-    regexStr = `${start}${replace}${end.join(match)}`
+
+    /**
+      * Because the regexStr length is changed each time a match is replaced
+      * We can't use the original index of the match in the match-string
+      * Instead, get the difference between the current regexStr and the original match length
+      * Then add it to the idx to get the updated index
+      */
+    const newIdx = idx + (regexStr.length - matchLength)
+
+    /**
+     * Using the updated idx, slice and split on the match value
+     * This gives us an array of strings, split on any string match the match value 
+     * Next get the start of the string up to the new index
+     *
+     *
+     * Looks like this:
+       * match = "When I type {string} into {string}"
+     *
+     *
+     * 1st iteration:
+       * SPLIT:
+            startStr     |  startSl  |     replace     |      endSl
+         "When I type "  |     ""    |  <1st-replace>  |  ["into ", ""]
+       *
+       * ADDED
+         - "When I type " + "" + <1st-replace> + ["into ", ""].join("{string}")
+         - regexStr === "When I type <1st-replace> into {string}"
+     *
+     *
+     * 2nd iteration:
+       * SPLIT:
+                  startStr                 |  startSl  |     replace    |  endSl
+        "When I type <1st-replace> into "  |    ""     |  <2nd-replace> |  [""]
+       *
+       * ADDED
+         - "When I type <1st-replace> into " + "" + <2nd-replace> + [""].join("{string}")
+         - regexStr === "When I type <1st-replace> into <2nd-replace>"
+      */
+
+    // Split on match here, then join on match later
+    // This will remove the first instance found of the match from the string
+    const [startSl, ...endSl] = regexStr.slice(newIdx).split(match)
+    const startStr = regexStr.slice(0, newIdx)
+
+    const replace = isFunc(replaceWith)
+      ? replaceWith(...args)
+      : replaceWith
+
+    regexStr = `${startStr}${startSl}${replace}${endSl.join(match)}`
+
   })
 
   return regexStr
@@ -89,6 +139,7 @@ const convertToRegex = (
   const regex = runRegexCheck(
     match,
     RX_EXPRESSION,
+    // RX_PARAMETER,
     (val, ...args) => {
       // Get the expression type
       const type = val.trim().replace(RX_MATCH_REPLACE, '')
@@ -97,7 +148,6 @@ const convertToRegex = (
 
       // Add the transformer for the type to the transformers array
       isParameter && transformers.push(paramTypes[type] || paramTypes.any)
-
       // Return the regex
       return isParameter
         ? getParamRegex(type, opts?.partial)
@@ -218,7 +268,6 @@ export const findAsRegex = (
   const { regex: regexAlts } = checkAlternative(escaped)
   const { transformers, regex: regexConverted } = convertToRegex(regexAlts, opts)
   const { regex: regexAnchors } = checkAnchors(regexConverted)
-
 
   // Then call the regex matcher to get the content
   const found = matchRegex(

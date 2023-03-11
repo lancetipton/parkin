@@ -183,3 +183,6 @@ jspm_packages/
 # Playwright browser metadata for testing
 browser-meta.json
 reports/
+
+# helper file testing out the cli 
+src/bin/testCli.ts
