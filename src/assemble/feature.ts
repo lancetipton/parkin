@@ -1,21 +1,55 @@
-import type { TFeatureAst, TAssembleFeatureOpts } from '../types'
+import type { TFeatureAst, TAssembleFeatureOpts, TAssembleFeatureArgOpts } from '../types'
 
 import { addMeta } from './addMeta'
 import { addTags } from './addTags'
-import { addEmpty } from './addEmpty'
 import { addRules } from './addRules'
 import { formatAssembled } from './format'
 import { addScenarios } from './addScenarios'
 import { addBackground } from './addBackground'
-import { eitherArr, isObj, emptyObj } from '@keg-hub/jsutils'
+import { addFeatureEmpty } from './addEmpty'
 import { throwFeatureNotAnObj } from '../utils/errors'
+import {
+  eitherArr,
+  isBool,
+  isObj,
+  emptyObj,
+  deepMerge
+} from '@keg-hub/jsutils'
+
+const activeBreaks = {
+  rule: true,
+  scenario: true,
+  background: true,
+  ruleScenario:true,
+  ruleBackground:true
+}
 
 /**
  * Default assemble options
  */
-const assembleOpts = {
+const assembleOpts:TAssembleFeatureOpts = {
   empty: true,
   indexes: true,
+  breaks: {
+    ...activeBreaks,
+    ruleBackground:false
+  }
+}
+
+/**
+ * Merges the assemble options with the default options
+ * Ensure breaks property is set to a breaks object
+ */
+const mergeOptions = (opts:TAssembleFeatureArgOpts) => {
+  return {
+    ...assembleOpts,
+    ...opts,
+    breaks: isBool(opts.breaks)
+      ? activeBreaks
+      : isObj(opts.breaks)
+        ? { ...assembleOpts.breaks, ...opts.breaks }
+        : assembleOpts.breaks
+  } as TAssembleFeatureOpts
 }
 
 /**
@@ -27,9 +61,10 @@ const assembleOpts = {
  */
 export const assembleFeature = (
   toAssemble:TFeatureAst|TFeatureAst[],
-  opts:TAssembleFeatureOpts=emptyObj
+  opts:TAssembleFeatureArgOpts=emptyObj as TAssembleFeatureArgOpts
 ):string[] => {
-  const options = {...assembleOpts, ...opts}
+
+  const options = mergeOptions(opts)
 
   return eitherArr<TFeatureAst[]>(toAssemble, [toAssemble]).map((feature) => {
     let assembled = []
@@ -37,10 +72,12 @@ export const assembleFeature = (
 
     addTags(assembled, feature.tags)
     addMeta(assembled, feature, options)
-    options.empty && addEmpty(assembled, feature, options)
+    options.empty && addFeatureEmpty(assembled, feature, options)
+
     addBackground(assembled, feature, options)
 
     addRules(assembled, feature, options)
+
     addScenarios(assembled, feature, options)
 
     return formatAssembled(assembled, options)

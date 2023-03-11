@@ -2,6 +2,7 @@ import type { TBackgroundParentAst, TAssembleFeatureOpts } from '../types'
 
 import { addTags } from './addTags'
 import { addSteps } from './addSteps'
+import { addEmpty } from './addEmpty'
 import { EFeatureTypes } from '../types'
 import { addContent } from './addContent'
 
@@ -21,8 +22,10 @@ export const addBackground = (
   const { background } = parent
   if(!background) return
 
-  const { indexes=true } = opts
+  const { breaks, indexes=true } = opts
   const whitespace = background.whitespace || `  `
+
+  breaks?.background && addEmpty(assembled, opts)
 
   addTags(assembled, background.tags, whitespace)
   addContent(assembled, `${whitespace}${EFeatureTypes.Background}:`, indexes && background.index)

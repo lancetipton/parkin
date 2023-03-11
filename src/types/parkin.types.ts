@@ -9,6 +9,12 @@ import type {
   TRegisterStepsList
 } from './steps.types'
 
+import type {
+  TParamTypes,
+  TParamTypeMap,
+  TParamTypeModel,
+} from './paramTypes.types'
+
 export type TParkinHookName = `beforeAll`|`afterAll`|`beforeEach`|`afterEach`
 export type TParkinHookMethod = (method:(...args:any[]) => any) => void
 
@@ -39,21 +45,6 @@ export type TParse = {
   definition: (def:string) => TStepDef
 }
 
-export type TParamType = {
-  regex: string|RegExp
-  useForSnippets: boolean
-  name: EExpParmType|string
-  type: EExpParmType|string
-  preferForRegexpMatch: boolean
-  transformer: (...args:any[]) => any
-}
-
-export type TParamTypeMap = Record<EExpParmType|string, TParamType>
-
-export type TParamTypes = {
-  register: (paramType:TParamType) => TParamTypeMap
-}
-
 export type TMatchResp = {
   match?: [string|TWorldConfig]
   definition?:TStepDef
@@ -81,7 +72,7 @@ export type TExpFindResp = {
   regexAnchors:string
   regexConverted:string
   found:TMatchResp,
-  transformers:TParamType[]
+  transformers:TParamTypeModel[]
 }
 
 export type TMatchTokens = {
@@ -94,7 +85,7 @@ export type TMatchTokens = {
 export interface IMatcher {
   types: () => TParamTypeMap
   parts:(match:string) => TPartsMatch[]
-  register:(paramType:TParamType) => Record<string, TParamType>
+  register:(paramType:TParamTypeModel) => Record<string, TParamTypeModel>
   stepTokens:(step:string, definition:TStepDef) => TMatchTokens[]
   find: (definitions:TStepDefs, step:string, world:TWorldConfig) => TMatchResp
   regex: (definition:TStepDef, step:string, world:TWorldConfig) => TMatchResp

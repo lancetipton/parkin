@@ -1,11 +1,9 @@
 import type {
-  TStepDef,
-  TFindOpts,
-  TMatchResp,
   TAnyFunc,
-  TTypeModel,
   TWorldConfig,
   TTransformer,
+  TParamTypeMap,
+  TParamTypeModel,
 } from '../types'
 
 import { constants } from '../constants'
@@ -35,6 +33,12 @@ import {
 import { throwParamTypeExists, throwMissingWorldValue } from '../utils/errors'
 
 const { WORLD_KEY, ALIAS_WORLD_KEY, ALIAS_REF } = constants
+
+/**
+ * TODO: FIX-ME - The types are wrong for joinRegex
+ * This force the correct type to avoid typescript warnings
+ */
+const mergeRegex = joinRegex as (...expressions: RegExp[]) => RegExp
 
 /**
  * Checks if the arg is a path to a value on the world object
@@ -100,18 +104,18 @@ const typeModel = {
  * See https://cucumber.io/docs/cucumber/cucumber-expressions/
  * @type {Object}
  */
-const __paramTypes = {
+const __paramTypes:TParamTypeMap = {
   any: {
     ...typeModel,
     name: `any`,
     regex: RX_ANY,
-    partial: joinRegex(RX_ANY, /{any}/, /{\*}/),
+    partial: mergeRegex(RX_ANY, /{any}/, /{\*}/),
   },
   word: {
     ...typeModel,
     name: `word`,
     regex: RX_ANY,
-    partial: joinRegex(RX_ANY, /{word}/),
+    partial: mergeRegex(RX_ANY, /{word}/),
     transformer: checkWorldValue(arg => {
       return !isQuoted(arg) ? toStr(arg) : undefined
     }, typeModel.type),
@@ -121,7 +125,7 @@ const __paramTypes = {
     name: `float`,
     type: `number`,
     regex: RX_FLOAT,
-    partial: joinRegex(RX_INT, /{float}/),
+    partial: mergeRegex(RX_INT, /{float}/),
     transformer: checkWorldValue(arg => {
       const result = parseFloat(arg)
       return equalsNaN(result) ? undefined : result
@@ -132,7 +136,7 @@ const __paramTypes = {
     name: `int`,
     type: `number`,
     regex: RX_INT,
-    partial: joinRegex(RX_INT, /{int}/, /{number}/),
+    partial: mergeRegex(RX_INT, /{int}/, /{number}/),
     transformer: checkWorldValue(arg => {
       const result = parseInt(arg)
       return equalsNaN(result) || arg.includes(`.`) ? undefined : result
@@ -141,8 +145,8 @@ const __paramTypes = {
   string: {
     ...typeModel,
     name: `string`,
-    regex: joinRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED),
-    partial: joinRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED, /{string}/),
+    regex: mergeRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED),
+    partial: mergeRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED, /{string}/),
     transformer: checkWorldValue(arg => {
       return isQuoted(arg) ? removeQuotes(arg) : undefined
     }, typeModel.type),
@@ -170,7 +174,7 @@ export const getParamTypes = () => __paramTypes
  * @return {Object} Registered param types
  */
 export const registerParamType = (
-  model:TTypeModel = noOpObj as TTypeModel,
+  model:TParamTypeModel = noOpObj as TParamTypeModel,
   key:string=model.name
 ) => {
   if (__paramTypes[key]) return throwParamTypeExists(key)
@@ -201,7 +205,7 @@ export const registerParamType = (
  */
 export const convertTypes = (
   matches:string[],
-  transformers:TTypeModel[],
+  transformers:TParamTypeModel[],
   $world:TWorldConfig
 ) => {
   return matches

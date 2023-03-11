@@ -5,6 +5,11 @@ import { addContent } from './addContent'
 
 export const addEmpty = (
   assembled:string[],
+  opts:TAssembleFeatureOpts
+) => addContent(assembled, '')
+
+export const addFeatureEmpty = (
+  assembled:string[],
   feature:TFeatureAst,
   opts:TAssembleFeatureOpts
 ) => {
@@ -13,3 +18,4 @@ export const addEmpty = (
   feature?.empty?.length
     && feature?.empty?.forEach(item => addContent(assembled, item.content, indexes && item.index))
 }
+
