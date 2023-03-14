@@ -26,7 +26,7 @@ export const scenarioFactory = (
     scenario,
     tags: [],
     steps: [],
-    ...(scenario && { uuid: shortId(index) }),
+    ...(scenario && { uuid: shortId(scenario, index) }),
   } as TScenarioAst
 }
 
@@ -63,7 +63,7 @@ export const ensureScenario = (
   // Ensure the line index is added
   !scenario.index && (scenario.index = index)
   // Add the uuid from the scenario text if it doesn't exist
-  !scenario.uuid && (scenario.uuid = shortId(index))
+  !scenario.uuid && (scenario.uuid = shortId(scenario.scenario, index))
 
   // Get the start whitespace, used when assembling the feature
   scenario.whitespace = getStartWhiteSpace(line)

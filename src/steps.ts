@@ -76,7 +76,8 @@ const registerFromCall = function (
 
   definition.name = sanitize(definition as TStepDef)
   definition.content = getContent(definition as TStepDef)
-  definition.uuid = shortId(`${type}-${definition.name}`.length)
+  const defIdStr = `${type}-${definition.name}`
+  definition.uuid = shortId(defIdStr, defIdStr.length)
 
   const definitions = this.list()
   const newDefinition = validateDefinition(definition as TStepDef, definitions)

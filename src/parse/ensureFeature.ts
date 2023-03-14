@@ -33,7 +33,7 @@ export const featureFactory = (
     comments: [],
     scenarios: [],
     // The feature name should always be unique, so use that as a re-usable id
-    ...(feature && { uuid: shortId(index) }),
+    ...(feature && { uuid: shortId(feature, index) }),
   } as TFeatureAst
 }
 
@@ -79,7 +79,7 @@ export const ensureFeature = (
 
     // Ensure the index is added if needed
     if (!feature.index) feature.index = index
-    if (!feature.uuid) feature.uuid = shortId(index)
+    if (!feature.uuid) feature.uuid = shortId(feature.feature, index)
 
     !featuresGroup.includes(feature) && featuresGroup.push(feature)
 

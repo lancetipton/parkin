@@ -22,7 +22,7 @@ export const ruleFactory = (rule:string|false, index?:number) => {
     tags: [],
     scenarios: [],
     // The feature name should always be unique, so use that as a re-usable id
-    ...(rule && { uuid: shortId(index) }),
+    ...(rule && { uuid: shortId(rule, index) }),
   } as TRuleAst
 }
 
@@ -51,7 +51,7 @@ export const ensureRule = (
   // Ensure the line index is added
   !rule.index && (rule.index = index)
   // Add the uuid from the rule text if it doesn't exist
-  !rule.uuid && (rule.uuid = shortId(index))
+  !rule.uuid && (rule.uuid = shortId(rule.rule, index))
 
   // Get the start whitespace, used when assembling the feature
   rule.whitespace = getStartWhiteSpace(line)

@@ -21,7 +21,7 @@ export const backgroundFactory = (background:string|false, index?:number) => {
     index,
     steps: [],
     background,
-    ...(background && { uuid: shortId(index) }),
+    ...(background && { uuid: shortId(background, index) }),
   } as TBackgroundAst
 }
 
@@ -56,7 +56,7 @@ export const ensureBackground = (
   !background.index && (background.index = index)
   // Add the uuid from the background text if it doesn't exist
   !background.uuid &&
-    (background.uuid = shortId(index))
+    (background.uuid = shortId(background.background, index))
 
   // Get the start whitespace, used when assembling the feature
   background.whitespace = getStartWhiteSpace(line)

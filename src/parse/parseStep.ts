@@ -143,8 +143,8 @@ const stepFactory = (
     type,
     index,
     step: stepText,
-    uuid: shortId(index),
     whitespace: getStartWhiteSpace(line),
+    uuid: shortId(`${type}-${stepText}-${index}`, index),
   } as TStepAst
 
   // TODO: Need to add check if next line is empty of a comment
