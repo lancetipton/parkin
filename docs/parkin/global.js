@@ -2830,7 +2830,7 @@ var matcher = (definitions, text, $world, opts = import_jsutils8.emptyObj) => {
 
 // src/utils/shortId.ts
 var import_jsutils9 = __toESM(require_cjs());
-var shortId = (idx) => (0, import_jsutils9.hashString)((0, import_jsutils9.uuid)(idx));
+var shortId = (str, idx) => `${(0, import_jsutils9.hashString)(str)}-${(0, import_jsutils9.hashString)((0, import_jsutils9.uuid)(idx))}`;
 
 // src/steps.ts
 var import_jsutils10 = __toESM(require_cjs());
@@ -2851,7 +2851,8 @@ var registerFromCall = function(internalType, type, match, method, meta = import
   };
   definition.name = sanitize(definition);
   definition.content = getContent(definition);
-  definition.uuid = shortId(`${type}-${definition.name}`.length);
+  const defIdStr = `${type}-${definition.name}`;
+  definition.uuid = shortId(defIdStr, defIdStr.length);
   const definitions = this.list();
   const newDefinition = validateDefinition(definition, definitions);
   newDefinition && this[internalType].push(newDefinition);
@@ -3112,8 +3113,8 @@ var stepFactory = (type, stepText, lines, line, index) => {
     type,
     index,
     step: stepText,
-    uuid: shortId(index),
-    whitespace: getStartWhiteSpace(line)
+    whitespace: getStartWhiteSpace(line),
+    uuid: shortId(`${type}-${stepText}-${index}`, index)
   };
   const nextIndex = index + 1;
   const nextLine = lines[nextIndex];
@@ -3209,7 +3210,7 @@ var ruleFactory = (rule, index) => {
     tags: [],
     scenarios: [],
     // The feature name should always be unique, so use that as a re-usable id
-    ...rule && { uuid: shortId(index) }
+    ...rule && { uuid: shortId(rule, index) }
   };
 };
 var ensureRule = (feature, rule, line, index) => {
@@ -3218,7 +3219,7 @@ var ensureRule = (feature, rule, line, index) => {
   let ruleText = getRXMatch(line, RX_RULE2, 1);
   !rule.rule ? rule.rule = ruleText : rule = ruleFactory(ruleText, index);
   !rule.index && (rule.index = index);
-  !rule.uuid && (rule.uuid = shortId(index));
+  !rule.uuid && (rule.uuid = shortId(rule.rule, index));
   rule.whitespace = getStartWhiteSpace(line);
   !feature.rules.includes(rule) && feature.rules.push(rule);
   return rule;
@@ -3249,7 +3250,7 @@ var featureFactory = (feature, content, index) => {
     comments: [],
     scenarios: [],
     // The feature name should always be unique, so use that as a re-usable id
-    ...feature && { uuid: shortId(index) }
+    ...feature && { uuid: shortId(feature, index) }
   };
 };
 var ensureFeature = (featuresGroup, feature, line, content, index) => {
@@ -3268,7 +3269,7 @@ var ensureFeature = (featuresGroup, feature, line, content, index) => {
     if (!feature.index)
       feature.index = index;
     if (!feature.uuid)
-      feature.uuid = shortId(index);
+      feature.uuid = shortId(feature.feature, index);
     !featuresGroup.includes(feature) && featuresGroup.push(feature);
     return feature;
   }
@@ -3287,7 +3288,7 @@ var scenarioFactory = (scenario, index) => {
     scenario,
     tags: [],
     steps: [],
-    ...scenario && { uuid: shortId(index) }
+    ...scenario && { uuid: shortId(scenario, index) }
   };
 };
 var ensureScenario = (feature, rule, scenario, line, index) => {
@@ -3298,7 +3299,7 @@ var ensureScenario = (feature, rule, scenario, line, index) => {
   const scenarioText = hasScenario ? getRXMatch(line, RX_SCENARIO2, 1) : getRXMatch(line, RX_EXAMPLE2, 1);
   !(0, import_jsutils13.exists)(scenario.scenario) ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText, index);
   !scenario.index && (scenario.index = index);
-  !scenario.uuid && (scenario.uuid = shortId(index));
+  !scenario.uuid && (scenario.uuid = shortId(scenario.scenario, index));
   scenario.whitespace = getStartWhiteSpace(line);
   if (!hasScenario)
     scenario.alias = "Example" /* Example */;
@@ -3314,7 +3315,7 @@ var backgroundFactory = (background, index) => {
     index,
     steps: [],
     background,
-    ...background && { uuid: shortId(index) }
+    ...background && { uuid: shortId(background, index) }
   };
 };
 var ensureBackground = (feature, rule, background, line, index) => {
@@ -3324,7 +3325,7 @@ var ensureBackground = (feature, rule, background, line, index) => {
   const backgroundText = `${parent.uuid}-background`;
   !background.background ? background.background = backgroundText || "" : background = backgroundFactory(backgroundText, index);
   !background.index && (background.index = index);
-  !background.uuid && (background.uuid = shortId(index));
+  !background.uuid && (background.uuid = shortId(background.background, index));
   background.whitespace = getStartWhiteSpace(line);
   parent.background = background;
   return background;
