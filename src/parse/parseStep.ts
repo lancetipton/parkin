@@ -1,7 +1,8 @@
 import type { TStepAst, TStepParentAst, TParseParentAst } from '../types'
 
 import { EStepType } from '../types'
-import { sanitizeForId, getRXMatch, getStartWhiteSpace } from '../utils/helpers'
+import { shortId } from '../utils/shortId'
+import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 const RX_GIVEN = /^\s*Given (.*)$/
 const RX_WHEN = /^\s*When(.*)$/
@@ -142,8 +143,8 @@ const stepFactory = (
     type,
     index,
     step: stepText,
+    uuid: shortId(index),
     whitespace: getStartWhiteSpace(line),
-    uuid: sanitizeForId(`${type}-${stepText}`),
   } as TStepAst
 
   // TODO: Need to add check if next line is empty of a comment

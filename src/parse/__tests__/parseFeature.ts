@@ -114,9 +114,7 @@ describe('parseFeature', () => {
     it('should parse a background and its steps when it exists', () => {
       const feature = parseFeature(backgroundFeature)[0]
       expect(feature.background).not.toBe(undefined)
-      expect(feature.background.background).toBe(
-        'background-steps-16-background'
-      )
+      expect(feature.background.background.endsWith(`-background`)).toBe(true)
     })
 
     it("should parse a background's steps", () => {

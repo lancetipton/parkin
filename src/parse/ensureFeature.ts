@@ -2,7 +2,8 @@ import type { TFeatureAst } from '../types'
 
 import { EAstObject } from '../types'
 import { parseError } from './parseError'
-import { sanitizeForId, getRXMatch } from '../utils/helpers'
+import { shortId } from '../utils/shortId'
+import { getRXMatch } from '../utils/helpers'
 
 /**
  * Regular expressions for matching feature file keywords
@@ -32,7 +33,7 @@ export const featureFactory = (
     comments: [],
     scenarios: [],
     // The feature name should always be unique, so use that as a re-usable id
-    ...(feature && { uuid: sanitizeForId(feature, index) }),
+    ...(feature && { uuid: shortId(index) }),
   } as TFeatureAst
 }
 
@@ -78,7 +79,7 @@ export const ensureFeature = (
 
     // Ensure the index is added if needed
     if (!feature.index) feature.index = index
-    if (!feature.uuid) feature.uuid = sanitizeForId(feature.feature, index)
+    if (!feature.uuid) feature.uuid = shortId(index)
 
     !featuresGroup.includes(feature) && featuresGroup.push(feature)
 

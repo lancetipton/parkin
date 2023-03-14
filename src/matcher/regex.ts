@@ -1,12 +1,11 @@
 import type {
   TStepDef,
   TFindOpts,
-  TWorldConfig,
   TRegExFoundResp
 } from '../types'
 
 import { getParamTypes } from './paramTypes'
-import { emptyObj, getWordEndingAt } from '@keg-hub/jsutils'
+import { isStr, emptyObj, getWordEndingAt } from '@keg-hub/jsutils'
 import { RX_OPTIONAL, RX_ALT, RX_PARAMETER, RX_MATCH_REPLACE } from './patterns'
 
 
@@ -82,11 +81,9 @@ export const getParamRegex = (
 ) => {
   const params = getParamTypes()
   const spec = params[type] || params.any
-  const src = partial && spec.partial
-    ? spec.partial.source
-    : spec.regex.source
+  const refEx = partial && spec.partial ? spec.partial : spec.regex
 
-  return src
+  return isStr(refEx) ? refEx : refEx.source
 }
 
 /**

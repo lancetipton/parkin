@@ -9,9 +9,10 @@ import type {
 
 import { matcher } from './matcher'
 import { constants } from './constants'
+import { shortId } from './utils/shortId'
 import { throwNoMatchingStep } from './utils/errors'
 import { EStepMethodType, EStepType } from './types'
-import { sanitizeForId, sanitize, validateDefinition } from './utils/helpers'
+import { sanitize, validateDefinition } from './utils/helpers'
 import { isArr, capitalize, eitherArr, isStr, noOpObj, ensureArr } from '@keg-hub/jsutils'
 import {
   resolveModule,
@@ -74,9 +75,8 @@ const registerFromCall = function (
   }
 
   definition.name = sanitize(definition as TStepDef)
-  // The name should always be unique, so we can use that as a consistent uuid
-  definition.uuid = sanitizeForId(`${type}-${definition.name}`)
   definition.content = getContent(definition as TStepDef)
+  definition.uuid = shortId(`${type}-${definition.name}`.length)
 
   const definitions = this.list()
   const newDefinition = validateDefinition(definition as TStepDef, definitions)

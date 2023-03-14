@@ -15,25 +15,6 @@ export const getRXMatch = (
   return matching ? matching.trim() : ` `
 }
 
-/*
- * Sanitizes the passed in text and joins the texts length
- * @function
- * @export
- * @public
- *
- */
-export const sanitizeForId = (text:string, index:number=1) => {
-  const cleaned =
-    text &&
-    text.trim() &&
-    text
-      .trim()
-      .toLowerCase()
-      .replace(/[\s\/\\\(\)\+=_&%\$#@!\*~`\|\?:;"'<>,.{}]/g, '-')
-
-  return cleaned ? `${cleaned}-${text.length}` : `${index}-${index}`
-}
-
 /**
  * Sanitize the step definition text to be used as the name
  * @function

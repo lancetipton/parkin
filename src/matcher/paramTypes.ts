@@ -114,7 +114,7 @@ const __paramTypes:TParamTypeMap = {
   word: {
     ...typeModel,
     name: `word`,
-    regex: RX_ANY,
+    regex: RX_ANY as RegExp,
     partial: mergeRegex(RX_ANY, /{word}/),
     transformer: checkWorldValue(arg => {
       return !isQuoted(arg) ? toStr(arg) : undefined

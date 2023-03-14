@@ -32,7 +32,7 @@ export const parsedDefinition = {
       tokens: [],
       variant: 'regex',
       name: 'I am on (S+)',
-      uuid: 'given-i-am-on--s---18',
+      uuid: `1599`,
       content: 'Given(/I am on (S+)$/, async url => {\n' +
         '  const internalMethod = data => { return data }\n' +
         '  const data = internalMethod ({\n' +
@@ -52,7 +52,7 @@ export const parsedDefinition = {
       tokens: [],
       variant: 'expression',
       name: 'The word of the day is {word}',
-      uuid: 'then-the-word-of-the-day-is--word--34',
+      uuid: `1600`,
       content: 'Then("The word of the day is {word}", async word => {\n' +
         '  customMethod({})\n' +
         '  expect(word).toBe("test")\n' +

@@ -8,7 +8,6 @@ import type {
   TWorldConfig,
   TAddStepDefs,
   TRegisterOrAddStep,
-  TRegisterStepsList,
   TRegisterStepMethod,
   TAssembleFeatureOpts,
 } from './types'
@@ -73,14 +72,14 @@ export class Parkin {
 
   constructor(
     world?:TWorldConfig,
-    steps?:TRegisterStepsList
+    steps?:TRegisterOrAddStep
   ) {
     isObj(world) && this.init(world, steps)
   }
 
   init = (
     world:TWorldConfig = noOpObj as TWorldConfig,
-    steps:TRegisterStepsList,
+    steps:TRegisterOrAddStep,
     warn=true
   ) => {
     if (this.#isInit){

@@ -1,7 +1,7 @@
 import type { TFeatureAst, TTagsParentAst, TAstBlock } from '../types'
 
 import { eitherArr } from '@keg-hub/jsutils'
-import { sanitizeForId, getRXMatch } from '../utils/helpers'
+import { getRXMatch } from '../utils/helpers'
 
 /**
  * Regular expressions for matching feature file keywords
