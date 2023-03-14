@@ -150,8 +150,8 @@ var require_isFunc_f93803cb = __commonJS({
 var require_isStr_8a57710e = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/isStr-8a57710e.js"(exports) {
     "use strict";
-    var isStr3 = (str) => typeof str === "string";
-    exports.isStr = isStr3;
+    var isStr4 = (str) => typeof str === "string";
+    exports.isStr = isStr4;
   }
 });
 
@@ -172,10 +172,10 @@ var require_isValidDate_813b9419 = __commonJS({
     "use strict";
     var isObj5 = require_isObj_6b3aa807();
     var isArr5 = require_isArr_39234014();
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var isNum = require_isNum_c7164b50();
     var typeOf = (val) => Object.prototype.toString.call(val).slice(8, -1);
-    var isEmpty = (val) => isObj5.isObj(val) ? Object.keys(val).length === 0 : isArr5.isArr(val) ? val.length === 0 : isStr3.isStr(val) ? val.trim().length === 0 : isNum.isNum(val) ? val < 1 : false;
+    var isEmpty = (val) => isObj5.isObj(val) ? Object.keys(val).length === 0 : isArr5.isArr(val) ? val.length === 0 : isStr4.isStr(val) ? val.trim().length === 0 : isNum.isNum(val) ? val < 1 : false;
     var isSame = (val1, val2) => val1 === val2 ? val1 !== 0 || 1 / val1 === 1 / val2 : val1 !== val1 && val2 !== val2;
     var isValidDate = (date) => !isNaN((date instanceof Date && date || new Date(date)).getTime());
     exports.isEmpty = isEmpty;
@@ -189,8 +189,8 @@ var require_isValidDate_813b9419 = __commonJS({
 var require_isBool_aa6af74e = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/isBool-aa6af74e.js"(exports) {
     "use strict";
-    var isBool = (val) => typeof val === "boolean";
-    exports.isBool = isBool;
+    var isBool2 = (val) => typeof val === "boolean";
+    exports.isBool = isBool2;
   }
 });
 
@@ -198,8 +198,8 @@ var require_isBool_aa6af74e = __commonJS({
 var require_toStr_8e499966 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/toStr-8e499966.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
-    var toStr3 = (val) => val === null || val === void 0 ? "" : isStr3.isStr(val) ? val : JSON.stringify(val);
+    var isStr4 = require_isStr_8a57710e();
+    var toStr3 = (val) => val === null || val === void 0 ? "" : isStr4.isStr(val) ? val : JSON.stringify(val);
     exports.toStr = toStr3;
   }
 });
@@ -209,9 +209,9 @@ var require_toBool_deb350e4 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/toBool-deb350e4.js"(exports) {
     "use strict";
     var toStr3 = require_toStr_8e499966();
-    var isBool = require_isBool_aa6af74e();
+    var isBool2 = require_isBool_aa6af74e();
     var isStrBool = (val) => val === "false" || val === "true";
-    var convertToStrBool = (val) => isBool.isBool(val) ? toStr3.toStr(val) : !val || val === "false" || val === "0" ? "false" : "true";
+    var convertToStrBool = (val) => isBool2.isBool(val) ? toStr3.toStr(val) : !val || val === "false" || val === "0" ? "false" : "true";
     var toBool = (val) => isStrBool(val) ? val === "true" : convertToStrBool(val) === "true";
     exports.convertToStrBool = convertToStrBool;
     exports.isStrBool = isStrBool;
@@ -294,8 +294,8 @@ var require_deepEqual_adba847a = __commonJS({
 var require_exists_c79204b1 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js"(exports) {
     "use strict";
-    var exists5 = (value) => value === value && value !== void 0 && value !== null;
-    exports.exists = exists5;
+    var exists6 = (value) => value === value && value !== void 0 && value !== null;
+    exports.exists = exists6;
   }
 });
 
@@ -319,13 +319,13 @@ var require_isInt_94ce4199 = __commonJS({
 var require_jsonEqual_7e69ef6a = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/jsonEqual-7e69ef6a.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var isNum = require_isNum_c7164b50();
     var isArr5 = require_isArr_39234014();
     var isObj5 = require_isObj_6b3aa807();
     var toBool = require_toBool_deb350e4();
     var hasOwn = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
-    var isEntry = (maybeEntry) => isArr5.isArr(maybeEntry) && maybeEntry.length === 2 && (isNum.isNum(maybeEntry[0]) || isStr3.isStr(maybeEntry[0]));
+    var isEntry = (maybeEntry) => isArr5.isArr(maybeEntry) && maybeEntry.length === 2 && (isNum.isNum(maybeEntry[0]) || isStr4.isStr(maybeEntry[0]));
     var isArrMap = (obj) => {
       if (!isObj5.isObj(obj))
         return false;
@@ -350,11 +350,11 @@ var require_jsonEqual_7e69ef6a = __commonJS({
 var require_isQuoted_eb6994da = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/isQuoted-eb6994da.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var isLowerCase = (str) => str === str.toLowerCase();
     var isUpperCase = (str) => str === str.toUpperCase();
     var isEmail = (str) => {
-      if (!str || !isStr3.isStr(str))
+      if (!str || !isStr4.isStr(str))
         return false;
       const regex2 = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
       return Boolean(regex2.test(str));
@@ -364,23 +364,23 @@ var require_isQuoted_eb6994da = __commonJS({
       ipv6: /^((?=.*::)(?!.*::.+::)(::)?([\dA-F]{1,4}:(:|\b)|){5}|([\dA-F]{1,4}:){6})((([\dA-F]{1,4}((?!\3)::|:\b|$))|(?!\2\3)){2}|(((2[0-4]|1\d|[1-9])?\d|25[0-5])\.?\b){4})$/i
     };
     var isIp = (str) => {
-      if (!str || !isStr3.isStr(str))
+      if (!str || !isStr4.isStr(str))
         return false;
       const isIp42 = Boolean(regex.ipv4.test(str));
       return isIp42 || Boolean(regex.ipv6.test(str));
     };
     var isIp4 = (str) => {
-      if (!str || !isStr3.isStr(str))
+      if (!str || !isStr4.isStr(str))
         return false;
       return Boolean(regex.ipv4.test(str));
     };
     var isIp6 = (str) => {
-      if (!str || !isStr3.isStr(str))
+      if (!str || !isStr4.isStr(str))
         return false;
       return Boolean(regex.ipv6.test(str));
     };
     var isPhone = (str) => {
-      if (!str || !isStr3.isStr(str))
+      if (!str || !isStr4.isStr(str))
         return false;
       const regex2 = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
       return Boolean(regex2.test(str)) && str.replace(/\D/g, "").length < 11;
@@ -390,14 +390,14 @@ var require_isQuoted_eb6994da = __commonJS({
       return Boolean(regex2.test(str));
     };
     var isUuid = (str) => {
-      if (!str || !isStr3.isStr(str))
+      if (!str || !isStr4.isStr(str))
         return false;
       const regex2 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
       return Boolean(regex2.test(str));
     };
     var quoteSymbols = ['"', "'"];
     var isQuoted2 = (str, quotes = quoteSymbols) => {
-      return isStr3.isStr(str) && quotes.some((quote) => str.startsWith(quote) && str.endsWith(quote));
+      return isStr4.isStr(str) && quotes.some((quote) => str.startsWith(quote) && str.endsWith(quote));
     };
     exports.isEmail = isEmail;
     exports.isIp = isIp;
@@ -431,19 +431,19 @@ var require_not_16fa9c85 = __commonJS({
     var isArr5 = require_isArr_39234014();
     var isValidDate = require_isValidDate_813b9419();
     var isFunc4 = require_isFunc_f93803cb();
-    var isBool = require_isBool_aa6af74e();
+    var isBool2 = require_isBool_aa6af74e();
     var toBool = require_toBool_deb350e4();
     var isColl = require_isColl_5757310a();
     var deepEqual = require_deepEqual_adba847a();
-    var exists5 = require_exists_c79204b1();
-    var isStr3 = require_isStr_8a57710e();
+    var exists6 = require_exists_c79204b1();
+    var isStr4 = require_isStr_8a57710e();
     var isNum = require_isNum_c7164b50();
     var isInt = require_isInt_94ce4199();
     var jsonEqual = require_jsonEqual_7e69ef6a();
     var isObj5 = require_isObj_6b3aa807();
     var isQuoted2 = require_isQuoted_eb6994da();
     var isValidUrl = require_isValidUrl_a77135f0();
-    var isOrderable = (x) => isStr3.isStr(x) || isNum.isNum(x) || isBool.isBool(x);
+    var isOrderable = (x) => isStr4.isStr(x) || isNum.isNum(x) || isBool2.isBool(x);
     var identity = (x) => x;
     var match = (matchArg, ...args) => {
       if (!args.length)
@@ -473,13 +473,13 @@ var require_not_16fa9c85 = __commonJS({
     var not = (func) => {
       return (...args) => !func.apply(null, args);
     };
-    not.bool = not(isBool.isBool);
+    not.bool = not(isBool2.isBool);
     not.strBool = not(toBool.isStrBool);
     not.coll = not(isColl.isColl);
     not.deepEqual = not(deepEqual.deepEqual);
     not.emptyColl = not(deepEqual.isEmptyColl);
     not.dom = not(hasDomAccess);
-    not.exists = not(exists5.exists);
+    not.exists = not(exists6.exists);
     not.empty = not(isValidDate.isEmpty);
     not.same = not(isValidDate.isSame);
     not.validDate = not(isValidDate.isValidDate);
@@ -503,7 +503,7 @@ var require_not_16fa9c85 = __commonJS({
     not.lowerCase = not(isQuoted2.isLowerCase);
     not.phone = not(isQuoted2.isPhone);
     not.quoted = not(isQuoted2.isQuoted);
-    not.str = not(isStr3.isStr);
+    not.str = not(isStr4.isStr);
     not.upperCase = not(isQuoted2.isUpperCase);
     not.url = not(isQuoted2.isUrl);
     not.uuid = not(isQuoted2.isUuid);
@@ -521,7 +521,7 @@ var require_not_16fa9c85 = __commonJS({
 var require_compareTo_d69e4abf = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/compareTo-d69e4abf.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var not = require_not_16fa9c85();
     var validate = require_validate_23297ec2();
     var compareTo = (x, y) => {
@@ -533,7 +533,7 @@ var require_compareTo_d69e4abf = __commonJS({
       });
       if (!valid)
         return null;
-      return isStr3.isStr(x) ? x.localeCompare(y) : x - y;
+      return isStr4.isStr(x) ? x.localeCompare(y) : x - y;
     };
     exports.compareTo = compareTo;
   }
@@ -570,8 +570,8 @@ var require_noOps_c9732e8e = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/noOps-c9732e8e.js"(exports) {
     "use strict";
     var deepFreeze2 = require_deepFreeze_d73ccc57();
-    var noOpObj9 = Object.freeze({});
-    var emptyObj2 = noOpObj9;
+    var noOpObj7 = Object.freeze({});
+    var emptyObj5 = noOpObj7;
     var noPropObj = deepFreeze2.deepFreeze({
       content: {}
     });
@@ -579,9 +579,9 @@ var require_noOps_c9732e8e = __commonJS({
     var noOpArr = noPropArr2;
     var emptyArr2 = noPropArr2;
     exports.emptyArr = emptyArr2;
-    exports.emptyObj = emptyObj2;
+    exports.emptyObj = emptyObj5;
     exports.noOpArr = noOpArr;
-    exports.noOpObj = noOpObj9;
+    exports.noOpObj = noOpObj7;
     exports.noPropArr = noPropArr2;
     exports.noPropObj = noPropObj;
   }
@@ -599,7 +599,7 @@ var require_intersect_77d7e821 = __commonJS({
     var not = require_not_16fa9c85();
     var isNonNegative = require_isNonNegative_9959647c();
     var noOps = require_noOps_c9732e8e();
-    var exists5 = require_exists_c79204b1();
+    var exists6 = require_exists_c79204b1();
     var buildElementCountMap = (arr) => {
       const counts = /* @__PURE__ */ new Map();
       for (let i = 0; i < arr.length; i++) {
@@ -664,7 +664,7 @@ var require_intersect_77d7e821 = __commonJS({
     var flatten = (arr, result, opts) => {
       for (let i = 0; i < arr.length; i++) {
         const value = arr[i];
-        isArr5.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists5.exists(value) || opts.truthy && !value ? result : result.push(value);
+        isArr5.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists6.exists(value) || opts.truthy && !value ? result : result.push(value);
       }
       if (!opts.mutate)
         return result;
@@ -847,22 +847,22 @@ var require_set_c0a98b21 = __commonJS({
 var require_get_00626335 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js"(exports) {
     "use strict";
-    var exists5 = require_exists_c79204b1();
+    var exists6 = require_exists_c79204b1();
     var isArr5 = require_isArr_39234014();
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var get4 = (obj, path, fallback) => {
       const isPathArr = isArr5.isArr(path);
-      if (!isStr3.isStr(path) && !isPathArr)
-        return exists5.exists(fallback) ? fallback : void 0;
+      if (!isStr4.isStr(path) && !isPathArr)
+        return exists6.exists(fallback) ? fallback : void 0;
       const parts = isPathArr ? path : path.split(".");
       const result = parts.reduce((obj2, prop) => {
         const type = typeof obj2;
-        if (!exists5.exists(obj2) || type !== "object" && type !== "function")
+        if (!exists6.exists(obj2) || type !== "object" && type !== "function")
           return void 0;
         prop = prop.startsWith("[") ? prop.replace(/\D/g, "") : prop;
         return obj2[prop];
       }, obj);
-      return exists5.exists(result) ? result : fallback;
+      return exists6.exists(result) ? result : fallback;
     };
     exports.get = get4;
   }
@@ -940,13 +940,13 @@ var require_shallowEqual_eaf2262d = __commonJS({
     var isColl = require_isColl_5757310a();
     var isFunc4 = require_isFunc_f93803cb();
     var isArr5 = require_isArr_39234014();
-    var exists5 = require_exists_c79204b1();
+    var exists6 = require_exists_c79204b1();
     var validate = require_validate_23297ec2();
     var set = require_set_c0a98b21();
     var deepClone = require_deepClone_ae664a21();
     var isNum = require_isNum_c7164b50();
     var get4 = require_get_00626335();
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var cleanColl = (coll, recursive = true) => {
       return isColl.isColl(coll) ? Object.keys(coll).reduce((cleaned, key) => {
         const value = coll[key];
@@ -978,7 +978,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
       }
       return null;
     };
-    var mapFind = (coll, mapper, testFunc = exists5.exists) => {
+    var mapFind = (coll, mapper, testFunc = exists6.exists) => {
       const [valid] = validate.validate({
         coll,
         mapper,
@@ -1011,7 +1011,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
       return arr;
     };
     var shallowEqual = (col1, col2, path) => {
-      if (path && (isArr5.isArr(path) || isStr3.isStr(path))) {
+      if (path && (isArr5.isArr(path) || isStr4.isStr(path))) {
         col1 = get4.get(col1, path);
         col2 = get4.get(col2, path);
       }
@@ -1064,12 +1064,12 @@ var require_toNum_eeb2e51e = __commonJS({
 var require_strToType_00c4481f = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/strToType-00c4481f.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var isNum = require_isNum_c7164b50();
     var toNum = require_toNum_eeb2e51e();
     var toBool = require_toBool_deb350e4();
     var strToType = (val) => {
-      return !val || !isStr3.isStr(val) ? val : toBool.isStrBool(val) ? toBool.toBool(val) : isNum.isNum(val) ? toNum.toNum(val) : (() => {
+      return !val || !isStr4.isStr(val) ? val : toBool.isStrBool(val) ? toBool.toBool(val) : isNum.isNum(val) ? toNum.toNum(val) : (() => {
         try {
           return JSON.parse(val);
         } catch (e) {
@@ -1154,7 +1154,7 @@ var require_stackTracePaths_58b768d2 = __commonJS({
     var jsonEqual = require_jsonEqual_7e69ef6a();
     var isArr5 = require_isArr_39234014();
     var deepClone = require_deepClone_ae664a21();
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var isObj5 = require_isObj_6b3aa807();
     var isValidDate = require_isValidDate_813b9419();
     var checkCall3 = (method, ...params) => {
@@ -1292,11 +1292,11 @@ var require_stackTracePaths_58b768d2 = __commonJS({
     var limboify = (cb, ...args) => {
       return limbo(new Promise((res, rej) => cb(...args, (err, success) => err ? rej(err) : res(success || true))));
     };
-    var uuid = (a) => a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid);
+    var uuid2 = (a) => a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid2);
     var noOp4 = () => {
     };
     var parseErrorMessage = (exception) => {
-      return isStr3.isStr(exception) && !isValidDate.isEmpty(exception) ? exception : isObj5.isObj(exception) ? exception.message : null;
+      return isStr4.isStr(exception) && !isValidDate.isEmpty(exception) ? exception : isObj5.isObj(exception) ? exception.message : null;
     };
     var defFilters = [`node:internal`, `node_modules/jest`];
     var stackTracePaths = (filter = defFilters) => {
@@ -1328,7 +1328,7 @@ var require_stackTracePaths_58b768d2 = __commonJS({
     exports.throttle = throttle;
     exports.throttleLast = throttleLast;
     exports.timedRun = timedRun;
-    exports.uuid = uuid;
+    exports.uuid = uuid2;
   }
 });
 
@@ -1388,8 +1388,8 @@ var require_reduceObj_f41cbf8d = __commonJS({
 var require_sanitize_0a18302d = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/sanitize-0a18302d.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
-    var sanitize2 = (str) => isStr3.isStr(str) && str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") || str;
+    var isStr4 = require_isStr_8a57710e();
+    var sanitize2 = (str) => isStr4.isStr(str) && str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") || str;
     exports.sanitize = sanitize2;
   }
 });
@@ -1408,10 +1408,10 @@ var require_splitByKeys_d0160002 = __commonJS({
     var jsonEqual = require_jsonEqual_7e69ef6a();
     var reduceObj = require_reduceObj_f41cbf8d();
     var sanitize2 = require_sanitize_0a18302d();
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var strToType = require_strToType_00c4481f();
     var pipeline = require_pipeline_e65bdaae();
-    var exists5 = require_exists_c79204b1();
+    var exists6 = require_exists_c79204b1();
     var toStr3 = require_toStr_8e499966();
     var ensureArr2 = require_ensureArr_ae68c041();
     var cloneJson = (obj) => {
@@ -1433,12 +1433,12 @@ var require_splitByKeys_d0160002 = __commonJS({
       });
     };
     var eitherObj = (obj1, obj2) => isObj5.isObj(obj1) && obj1 || obj2;
-    var deepMerge = (...sources) => {
+    var deepMerge2 = (...sources) => {
       return sources.reduce((merged, source) => {
         const srcCopy = deepClone.deepClone(source);
         return isArr5.isArr(srcCopy) ? [...isArr5.isArr(merged) && merged || [], ...srcCopy] : isObj5.isObj(srcCopy) ? Object.entries(srcCopy).reduce((joined, [key, value]) => ({
           ...joined,
-          [key]: isFunc4.isFunc(value) ? deepClone.cloneFunc(value) : isColl.isColl(value) && key in joined ? deepMerge(joined[key], value) : deepClone.deepClone(value)
+          [key]: isFunc4.isFunc(value) ? deepClone.cloneFunc(value) : isColl.isColl(value) && key in joined ? deepMerge2(joined[key], value) : deepClone.deepClone(value)
         }), merged) : merged;
       }, isArr5.isArr(sources[0]) && [] || {});
     };
@@ -1501,7 +1501,7 @@ var require_splitByKeys_d0160002 = __commonJS({
     }, {}) || {};
     var sanitizeCopy = (obj) => JSON.parse(sanitize2.sanitize(JSON.stringify(obj)));
     var trimStringFields = (object) => Object.entries(object).reduce((cleaned, [key, value]) => {
-      cleaned[key] = isStr3.isStr(value) ? value.trim() : value;
+      cleaned[key] = isStr4.isStr(value) ? value.trim() : value;
       return cleaned;
     }, object);
     var toObj = (val, divider, split) => {
@@ -1510,7 +1510,7 @@ var require_splitByKeys_d0160002 = __commonJS({
           obj[key] = val[key];
           return obj;
         }, {});
-      if (!isStr3.isStr(val))
+      if (!isStr4.isStr(val))
         return {};
       divider = divider || "=";
       split = split || "&";
@@ -1521,7 +1521,7 @@ var require_splitByKeys_d0160002 = __commonJS({
       }, {});
     };
     var keyMap = (arr, toUpperCase) => isArr5.isArr(arr) && arr.reduce((obj, key) => {
-      if (!isStr3.isStr(key))
+      if (!isStr4.isStr(key))
         return obj;
       const use = toUpperCase && key.toUpperCase() || key;
       obj[use] = use;
@@ -1617,14 +1617,14 @@ var require_splitByKeys_d0160002 = __commonJS({
       const intersect = [{}, {}];
       const compareKeys = ensureArr2.ensureArr(keys);
       return isObj5.isObj(obj) ? reduceObj.reduceObj(obj, (key, _, updated) => {
-        exists5.exists(compareKeys.find((k) => exists5.exists(k) && toStr3.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
+        exists6.exists(compareKeys.find((k) => exists6.exists(k) && toStr3.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
         return updated;
       }, intersect) : intersect;
     };
     exports.applyToCloneOf = applyToCloneOf;
     exports.clearObj = clearObj;
     exports.cloneJson = cloneJson;
-    exports.deepMerge = deepMerge;
+    exports.deepMerge = deepMerge2;
     exports.eitherObj = eitherObj;
     exports.everyEntry = everyEntry;
     exports.filterObj = filterObj;
@@ -1705,17 +1705,17 @@ var require_wait_8ca88995 = __commonJS({
 var require_joinRegex_431148e2 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/joinRegex-431148e2.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var isArr5 = require_isArr_39234014();
     require_validate_23297ec2();
     require_noOps_c9732e8e();
     var not = require_not_16fa9c85();
-    var getRegexSource = (maybeRx) => not.isRegex(maybeRx) ? maybeRx.source : isStr3.isStr(maybeRx) ? maybeRx : null;
+    var getRegexSource = (maybeRx) => not.isRegex(maybeRx) ? maybeRx.source : isStr4.isStr(maybeRx) ? maybeRx : null;
     var parseArgs = (args) => {
       if (isArr5.isArr(args[0]))
         return [args[0], args[1]];
       const last = args[args.length - 1];
-      const options = isStr3.isStr(last) ? last : void 0;
+      const options = isStr4.isStr(last) ? last : void 0;
       const expressions = options ? args.splice(0, args.length - 1) : args;
       return [expressions, options];
     };
@@ -1736,7 +1736,7 @@ var require_joinRegex_431148e2 = __commonJS({
 var require_getWordEndingAt_63d038a5 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/getWordEndingAt-63d038a5.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var isFunc4 = require_isFunc_f93803cb();
     var isQuoted2 = require_isQuoted_eb6994da();
     var toStr$1 = require_toStr_8e499966();
@@ -1752,7 +1752,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return built.replace(/([^:\/]|^)\/{2,}/g, "$1/");
     };
     var mapString = (str, charMapper) => {
-      if (!isStr3.isStr(str))
+      if (!isStr4.isStr(str))
         return str;
       if (!isFunc4.isFunc(charMapper))
         return str;
@@ -1763,7 +1763,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return result;
     };
     var delimitString = (str, delimiter, delimiters = ["-", "_", " "]) => {
-      if (!isStr3.isStr(str))
+      if (!isStr4.isStr(str))
         return str;
       const isDelimiter = (c) => delimiters.some((del) => del === c);
       let prevChar = "_";
@@ -1785,7 +1785,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return underscored.toLowerCase();
     };
     var capitalize5 = (str, lowercaseTail = true) => {
-      if (!isStr3.isStr(str) || !str[0])
+      if (!isStr4.isStr(str) || !str[0])
         return str;
       const tail = lowercaseTail ? str.slice(1).toLowerCase() : str.slice(1);
       return `${str[0].toUpperCase()}${tail}`;
@@ -1811,11 +1811,11 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return camelCasedSplit.length > 1 ? camelCasedSplit.join("") : path;
     };
     var containsStr = (str, substring, fromIndex) => {
-      str = !isStr3.isStr(str) && toStr$1.toStr(str) || str;
-      substring = !isStr3.isStr(substring) && toStr$1.toStr(substring) || substring;
+      str = !isStr4.isStr(str) && toStr$1.toStr(str) || str;
+      substring = !isStr4.isStr(substring) && toStr$1.toStr(substring) || substring;
       return str.indexOf(substring, fromIndex) !== -1;
     };
-    var eitherStr = (str1, str2) => isStr3.isStr(str1) && str1 || str2;
+    var eitherStr = (str1, str2) => isStr4.isStr(str1) && str1 || str2;
     var uppercasePattern = /[A-Z]/g;
     var msPattern = /^ms-/;
     var hyphenCache = {};
@@ -1826,8 +1826,8 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       const hRule = rule.replace(uppercasePattern, toHyphenLower);
       return hyphenCache[rule] = msPattern.test(hRule) ? "-" + hRule : hRule;
     };
-    var hashString = (str, maxLength) => {
-      if (!isStr3.isStr(str) || str.length == 0)
+    var hashString2 = (str, maxLength) => {
+      if (!isStr4.isStr(str) || str.length == 0)
         return 0;
       str = str.split("").reverse().join("");
       let hash = 0;
@@ -1857,14 +1857,14 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return str[str.length - 1] === "s" ? str.slice(0, str.length - 1) : str;
     };
     var styleCase = (str) => {
-      if (!isStr3.isStr(str))
+      if (!isStr4.isStr(str))
         return str;
       const cased = camelCase(str);
       return `${cased[0].toLowerCase()}${cased.slice(1)}`;
     };
-    var trainCase = (str) => isStr3.isStr(str) && str.split(/(?=[A-Z])|[\s_-]/gm).join("-").toLowerCase() || str;
+    var trainCase = (str) => isStr4.isStr(str) && str.split(/(?=[A-Z])|[\s_-]/gm).join("-").toLowerCase() || str;
     var wordCaps = (str) => {
-      if (!isStr3.isStr(str))
+      if (!isStr4.isStr(str))
         return str;
       let cleaned = cleanStr(str);
       return cleaned.split(" ").map((word) => word && capitalize5(word) || "").join(" ");
@@ -1872,8 +1872,8 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
     var spaceJoin = (original, toAdd) => {
       toAdd = isArr5.isArr(toAdd) ? toAdd : [toAdd];
       return toAdd.reduce((joined, item) => {
-        return isStr3.isStr(item) ? `${joined ? joined + " " : ""}${item}`.trim() : joined;
-      }, isStr3.isStr(original) ? original : "");
+        return isStr4.isStr(item) ? `${joined ? joined + " " : ""}${item}`.trim() : joined;
+      }, isStr4.isStr(original) ? original : "");
     };
     var templateRx = (tempStr, data, fallback = "", rx) => {
       const orgRx = template.regex;
@@ -1885,7 +1885,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
     var template = (tempStr, data, fallback = "") => {
       data = isColl.isColl(data) && data || {};
       const regex = template.regex || /\${(.*?)\}/g;
-      return isStr3.isStr(tempStr) ? tempStr.replace(regex, (match, exact) => {
+      return isStr4.isStr(tempStr) ? tempStr.replace(regex, (match, exact) => {
         const path = (exact || match.substr(2, match.length - 3)).trim();
         const replaceWith = get4.get(data, path, fallback);
         return isFunc4.isFunc(replaceWith) ? replaceWith(data, path, fallback) : replaceWith;
@@ -1900,7 +1900,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return regex.test(fileName) || windowsRegex.test(fileName) || periodRegex.test(fileName) ? false : true;
     };
     var reverseStr = (str) => {
-      if (!isStr3.isStr(str))
+      if (!isStr4.isStr(str))
         return void 0;
       let reversed = "";
       for (let char of str) {
@@ -1932,7 +1932,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
     exports.getNearestDelimiterIndex = getNearestDelimiterIndex;
     exports.getWordEndingAt = getWordEndingAt2;
     exports.getWordStartingAt = getWordStartingAt;
-    exports.hashString = hashString;
+    exports.hashString = hashString2;
     exports.hyphenator = hyphenator;
     exports.mapString = mapString;
     exports.parseJSON = parseJSON;
@@ -1956,9 +1956,9 @@ var require_getURLParam_201ef5fe = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/getURLParam-201ef5fe.js"(exports) {
     "use strict";
     var reduceObj = require_reduceObj_f41cbf8d();
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var isNum = require_isNum_c7164b50();
-    var isBool = require_isBool_aa6af74e();
+    var isBool2 = require_isBool_aa6af74e();
     var isColl = require_isColl_5757310a();
     var isArr5 = require_isArr_39234014();
     var validate = require_validate_23297ec2();
@@ -1992,7 +1992,7 @@ var require_getURLParam_201ef5fe = __commonJS({
       return reduceObj.reduceObj(obj, (key, value, urlStr) => {
         if (!value)
           return urlStr;
-        const useVal = isStr3.isStr(value) || isNum.isNum(value) || isBool.isBool(value) ? value : isColl.isColl(value) ? isArr5.isArr(value) ? value.join(",") : JSON.stringify(value) : null;
+        const useVal = isStr4.isStr(value) || isNum.isNum(value) || isBool2.isBool(value) ? value : isColl.isColl(value) ? isArr5.isArr(value) ? value.join(",") : JSON.stringify(value) : null;
         if (!useVal)
           return urlStr;
         urlStr = !firstSet ? `?${encodeURIComponent(key)}=${encodeURIComponent(useVal)}` : `${urlStr}&${encodeURIComponent(key)}=${encodeURIComponent(useVal)}`;
@@ -2005,13 +2005,13 @@ var require_getURLParam_201ef5fe = __commonJS({
       const [valid] = validate.validate({
         paramKey
       }, {
-        paramKey: isStr3.isStr
+        paramKey: isStr4.isStr
       });
       if (!valid)
         return null;
       const doc = typeof document !== "undefined" ? document : null;
       const search = doc === null || doc === void 0 ? void 0 : (_doc$location = doc.location) === null || _doc$location === void 0 ? void 0 : _doc$location.search;
-      return isStr3.isStr(search) ? (_queryToObj$paramKey = (_queryToObj = queryToObj(search)) === null || _queryToObj === void 0 ? void 0 : _queryToObj[paramKey]) !== null && _queryToObj$paramKey !== void 0 ? _queryToObj$paramKey : null : null;
+      return isStr4.isStr(search) ? (_queryToObj$paramKey = (_queryToObj = queryToObj(search)) === null || _queryToObj === void 0 ? void 0 : _queryToObj[paramKey]) !== null && _queryToObj$paramKey !== void 0 ? _queryToObj$paramKey : null : null;
     };
     exports.getURLParam = getURLParam;
     exports.objToQuery = objToQuery;
@@ -2027,7 +2027,7 @@ var require_cjs = __commonJS({
     var intersect = require_intersect_77d7e821();
     var ensureArr2 = require_ensureArr_ae68c041();
     var isArr5 = require_isArr_39234014();
-    var isBool = require_isBool_aa6af74e();
+    var isBool2 = require_isBool_aa6af74e();
     var toBool = require_toBool_deb350e4();
     var softFalsy = require_softFalsy_3d7ead1c();
     var shallowEqual = require_shallowEqual_eaf2262d();
@@ -2041,7 +2041,7 @@ var require_cjs = __commonJS({
     var noOps = require_noOps_c9732e8e();
     var isValidDate = require_isValidDate_813b9419();
     var strToType = require_strToType_00c4481f();
-    var exists5 = require_exists_c79204b1();
+    var exists6 = require_exists_c79204b1();
     var log = require_log_37bbfac6();
     var pipeline = require_pipeline_e65bdaae();
     var stackTracePaths = require_stackTracePaths_58b768d2();
@@ -2061,7 +2061,7 @@ var require_cjs = __commonJS({
     var joinRegex4 = require_joinRegex_431148e2();
     var getWordEndingAt2 = require_getWordEndingAt_63d038a5();
     var isQuoted2 = require_isQuoted_eb6994da();
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var sanitize2 = require_sanitize_0a18302d();
     var toStr3 = require_toStr_8e499966();
     var validate = require_validate_23297ec2();
@@ -2095,7 +2095,7 @@ var require_cjs = __commonJS({
     exports.uniqArrByReference = intersect.uniqArrByReference;
     exports.ensureArr = ensureArr2.ensureArr;
     exports.isArr = isArr5.isArr;
-    exports.isBool = isBool.isBool;
+    exports.isBool = isBool2.isBool;
     exports.convertToStrBool = toBool.convertToStrBool;
     exports.isStrBool = toBool.isStrBool;
     exports.toBool = toBool.toBool;
@@ -2134,7 +2134,7 @@ var require_cjs = __commonJS({
     exports.isValidDate = isValidDate.isValidDate;
     exports.typeOf = isValidDate.typeOf;
     exports.strToType = strToType.strToType;
-    exports.exists = exists5.exists;
+    exports.exists = exists6.exists;
     exports.logData = log.logData;
     exports.resetLogs = log.resetLogs;
     exports.setLogs = log.setLogs;
@@ -2241,7 +2241,7 @@ var require_cjs = __commonJS({
     exports.isUpperCase = isQuoted2.isUpperCase;
     exports.isUrl = isQuoted2.isUrl;
     exports.isUuid = isQuoted2.isUuid;
-    exports.isStr = isStr3.isStr;
+    exports.isStr = isStr4.isStr;
     exports.sanitize = sanitize2.sanitize;
     exports.toStr = toStr3.toStr;
     exports.validate = validate.validate;
@@ -2424,17 +2424,10 @@ var constants = (0, import_jsutils.deepFreeze)({
 // src/matcher/tokens.ts
 var import_jsutils5 = __toESM(require_cjs());
 
-// src/matcher/regex.js
-var import_jsutils4 = __toESM(require_cjs());
-
 // src/utils/helpers.ts
 var getRXMatch = (line, regex, index) => {
   const matching = line.match(regex)[index];
   return matching ? matching.trim() : ` `;
-};
-var sanitizeForId = (text, index = 1) => {
-  const cleaned = text && text.trim() && text.trim().toLowerCase().replace(/[\s\/\\\(\)\+=_&%\$#@!\*~`\|\?:;"'<>,.{}]/g, "-");
-  return cleaned ? `${cleaned}-${text.length}` : `${index}-${index}`;
 };
 var sanitize = (def) => {
   let name = def.match.toString();
@@ -2464,7 +2457,7 @@ var getStartWhiteSpace = (line) => {
   return new Array(startLength).fill(` `).join("");
 };
 
-// src/matcher/paramTypes.js
+// src/matcher/paramTypes.ts
 var import_jsutils3 = __toESM(require_cjs());
 
 // src/matcher/patterns.ts
@@ -2541,70 +2534,77 @@ var throwAliasReplace = (err, currentMatch) => {
   throw err;
 };
 
-// src/matcher/paramTypes.js
+// src/matcher/paramTypes.ts
 var { WORLD_KEY, ALIAS_WORLD_KEY, ALIAS_REF } = constants;
+var mergeRegex = import_jsutils3.joinRegex;
 var checkWorldValue = (func, type) => {
   return (arg, $world) => {
     const hasWorldVal = arg.match(RX_WORLD);
     const hasAliasVal = arg.match(RX_ALIAS);
     if (!(0, import_jsutils3.isObj)($world) || !hasWorldVal && !hasAliasVal)
-      return matchType(func(arg), type);
+      return matchType(func(arg, $world), type);
     const worldVal = hasWorldVal ? (0, import_jsutils3.get)($world, removeQuotes(arg).replace(`${WORLD_KEY}.`, "")) : (0, import_jsutils3.get)(
       $world,
       removeQuotes(arg).replace(`${ALIAS_REF}`, `${ALIAS_WORLD_KEY}.`)
     );
-    return (0, import_jsutils3.exists)(worldVal) ? matchType(worldVal, type) : hasWorldVal ? throwMissingWorldValue(arg, $world) : matchType(func(arg), type);
+    return (0, import_jsutils3.exists)(worldVal) ? matchType(worldVal, type) : hasWorldVal ? throwMissingWorldValue(arg) : matchType(func(arg, $world), type);
   };
 };
 var matchType = (val, type) => {
   return typeof val === type ? val : null;
 };
 var typeModel = {
-  name: "",
-  regex: "",
-  type: "string",
+  name: ``,
+  regex: ``,
+  partial: ``,
+  type: `string`,
   useForSnippets: true,
   preferForRegexpMatch: false,
-  transformer: checkWorldValue((arg) => arg, "string")
+  transformer: checkWorldValue((arg) => arg, `string`)
 };
 var __paramTypes = {
   any: {
     ...typeModel,
-    name: "any",
-    regex: RX_ANY
+    name: `any`,
+    regex: RX_ANY,
+    partial: mergeRegex(RX_ANY, /{any}/, /{\*}/)
   },
   word: {
     ...typeModel,
-    name: "word",
+    name: `word`,
     regex: RX_ANY,
+    partial: mergeRegex(RX_ANY, /{word}/),
     transformer: checkWorldValue((arg) => {
       return !(0, import_jsutils3.isQuoted)(arg) ? (0, import_jsutils3.toStr)(arg) : void 0;
     }, typeModel.type)
   },
   float: {
     ...typeModel,
-    name: "float",
-    type: "number",
+    name: `float`,
+    type: `number`,
     regex: RX_FLOAT,
+    partial: mergeRegex(RX_INT, /{float}/),
     transformer: checkWorldValue((arg) => {
       const result = parseFloat(arg);
       return (0, import_jsutils3.equalsNaN)(result) ? void 0 : result;
-    }, "number")
+    }, `number`)
   },
   int: {
     ...typeModel,
-    name: "int",
-    type: "number",
+    name: `int`,
+    type: `number`,
     regex: RX_INT,
+    partial: mergeRegex(RX_INT, /{int}/, /{number}/),
     transformer: checkWorldValue((arg) => {
       const result = parseInt(arg);
-      return (0, import_jsutils3.equalsNaN)(result) || arg.includes(".") ? void 0 : result;
-    }, "number")
+      return (0, import_jsutils3.equalsNaN)(result) || arg.includes(`.`) ? void 0 : result;
+    }, `number`)
   },
   string: {
     ...typeModel,
-    name: "string",
-    regex: (0, import_jsutils3.joinRegex)(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED),
+    name: `string`,
+    regex: mergeRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED),
+    partial: mergeRegex(RX_DOUBLE_QUOTED, RX_SINGLE_QUOTED, /{string}/),
     transformer: checkWorldValue((arg) => {
       return (0, import_jsutils3.isQuoted)(arg) ? removeQuotes(arg) : void 0;
     }, typeModel.type)
@@ -2628,10 +2628,11 @@ var convertTypes = (matches, transformers, $world) => {
   }).filter(import_jsutils3.exists);
 };
 
-// src/matcher/regex.js
+// src/matcher/regex.ts
+var import_jsutils4 = __toESM(require_cjs());
 var matchRegex = (definition, text) => {
   const match = text.match(new RegExp(definition.match));
-  return match ? { definition, match: match.slice(1, match.length).filter(Boolean) } : import_jsutils4.noOpObj;
+  return match ? { definition, match: match.slice(1, match.length).filter(Boolean) } : import_jsutils4.emptyObj;
 };
 var toAlternateRegex = (optional) => {
   const split = optional.split(/(\(|\))/);
@@ -2645,37 +2646,38 @@ var toAlternateRegex = (optional) => {
   else
     return `(${start}${end}|${start}${middle}${end})`;
 };
-var getFullOptionalText = (match) => {
-  const text = match.input;
-  const precedingWord = (0, import_jsutils4.getWordEndingAt)(text, match.index);
-  return precedingWord + match[0];
+var getFullOptionalText = (matchArr) => {
+  const text = matchArr.input;
+  const precedingWord = (0, import_jsutils4.getWordEndingAt)(text, matchArr.index);
+  return precedingWord + matchArr[0];
 };
-var getOptionalRegex = (match) => {
-  const optionalText = getFullOptionalText(match);
+var getOptionalRegex = (matchArr) => {
+  const optionalText = getFullOptionalText(matchArr);
   return toAlternateRegex(optionalText);
 };
-var getParamRegex = (type) => {
+var getParamRegex = (type, partial) => {
   const params = getParamTypes();
   const spec = params[type] || params.any;
-  return spec.regex.source;
+  const refEx = partial && spec.partial ? spec.partial : spec.regex;
+  return (0, import_jsutils4.isStr)(refEx) ? refEx : refEx.source;
 };
 var getAlternateRegex = (value) => {
   return `(${value.trim().replace(/\//g, "|")})`;
 };
-var getMatchRegex = (type, match) => {
-  const [val, paramType] = match;
+var getMatchRegex = (type, matchArr, opts) => {
+  const [val, paramType] = matchArr;
   switch (type) {
     case "parameter":
-      return new RegExp(getParamRegex(paramType));
+      return new RegExp(getParamRegex(paramType, opts == null ? void 0 : opts.partial));
     case "optional":
-      return new RegExp(getOptionalRegex(match));
+      return new RegExp(getOptionalRegex(matchArr));
     case "alternate":
       return new RegExp(getAlternateRegex(val));
     default:
       return null;
   }
 };
-var parseMatch = (matchArr, type = "other") => {
+var parseMatch = (matchArr, type = "other", opts) => {
   const val = matchArr[0];
   const trimmed = val.trimStart();
   const diff = val.length - trimmed.length;
@@ -2683,22 +2685,22 @@ var parseMatch = (matchArr, type = "other") => {
     text: val.trim(),
     input: matchArr.input,
     index: matchArr.index + diff,
-    regex: getMatchRegex(type, matchArr),
+    regex: getMatchRegex(type, matchArr, opts),
     type,
     ...type === "parameter" && {
       paramType: val.trim().replace(RX_MATCH_REPLACE, "")
     }
   };
 };
-var getRegexParts = (defMatcher) => {
+var getRegexParts = (defMatcher, opts = import_jsutils4.emptyObj) => {
   const parameters = [
     ...defMatcher.matchAll(new RegExp(RX_PARAMETER, "gi"))
-  ].map((match) => parseMatch(match, "parameter"));
+  ].map((match) => parseMatch(match, "parameter", opts));
   const optionals = [...defMatcher.matchAll(new RegExp(RX_OPTIONAL, "gi"))].map(
-    (match) => parseMatch(match, "optional")
+    (match) => parseMatch(match, "optional", opts)
   );
   const alts = [...defMatcher.matchAll(new RegExp(RX_ALT, "gi"))].map(
-    (match) => parseMatch(match, "alternate")
+    (match) => parseMatch(match, "alternate", opts)
   );
   const sortedExpressions = [...parameters, ...optionals, ...alts].sort(
     (matchA, matchB) => matchA.index - matchB.index
@@ -2716,8 +2718,8 @@ var tokenRegex = (0, import_jsutils5.joinRegex)(
   RX_SINGLE_QUOTED,
   "g"
 );
-var tokenizeStep = (step, def) => {
-  const parts = getRegexParts(def.match);
+var tokenizeStep = (step, def, opts) => {
+  const parts = getRegexParts(def.match, opts);
   const tokens = [];
   let match;
   let idx = 0;
@@ -2761,7 +2763,7 @@ var resolveGlobalObj = () => {
   }
 };
 
-// src/matcher/expression.js
+// src/matcher/expression.ts
 var import_jsutils7 = __toESM(require_cjs());
 var escapeStr = (str) => {
   return hasWindow ? str.replace(/[|\\[\]^$+*?.]/g, "\\$&").replace(/-/g, "\\x2d") : str.replace(/[|\\[\]^$+*?.]/g, "\\$&");
@@ -2769,25 +2771,34 @@ var escapeStr = (str) => {
 var runRegexCheck = (matcher2, testRx, replaceWith) => {
   if (!testRx.test(matcher2))
     return matcher2;
+  const matchLength = matcher2.length;
   let regexStr = matcher2;
-  matcher2.replace(testRx, (...args) => {
+  matcher2.replaceAll(testRx, (...args) => {
+    const idx = args[3];
     const match = args[0].trim();
-    const [start, ...end] = regexStr.split(match);
+    const newIdx = idx + (regexStr.length - matchLength);
+    const [startSl, ...endSl] = regexStr.slice(newIdx).split(match);
+    const startStr = regexStr.slice(0, newIdx);
     const replace = (0, import_jsutils7.isFunc)(replaceWith) ? replaceWith(...args) : replaceWith;
-    regexStr = `${start}${replace}${end.join(match)}`;
+    regexStr = `${startStr}${startSl}${replace}${endSl.join(match)}`;
   });
   return regexStr;
 };
-var convertToRegex = (match) => {
+var convertToRegex = (match, opts = import_jsutils7.emptyObj) => {
   const paramTypes = getParamTypes();
   const transformers = [];
-  const regex = runRegexCheck(match, RX_EXPRESSION, (val, ...args) => {
-    const type = val.trim().replace(RX_MATCH_REPLACE, "");
-    const isParameter = val.match(RX_PARAMETER);
-    const isOptional = val.match(RX_OPTIONAL);
-    isParameter && transformers.push(paramTypes[type] || paramTypes.any);
-    return isParameter ? getParamRegex(type) : isOptional ? toAlternateRegex(val) : val;
-  });
+  const regex = runRegexCheck(
+    match,
+    RX_EXPRESSION,
+    // RX_PARAMETER,
+    (val, ...args) => {
+      const type = val.trim().replace(RX_MATCH_REPLACE, "");
+      const isParameter = val.match(RX_PARAMETER);
+      const isOptional = val.match(RX_OPTIONAL);
+      isParameter && transformers.push(paramTypes[type] || paramTypes.any);
+      return isParameter ? getParamRegex(type, opts == null ? void 0 : opts.partial) : isOptional ? toAlternateRegex(val) : val;
+    }
+  );
   return { regex, transformers };
 };
 var checkAlternative = (match) => {
@@ -2808,7 +2819,7 @@ var checkAnchors = (str) => {
     final += "$";
   return { regex: final };
 };
-var extractParameters = (text, stepMatcher, wordMatches) => {
+var extractParameters = (text, stepMatcher, wordMatches, opts = import_jsutils7.emptyObj) => {
   const parts = getRegexParts(stepMatcher);
   const expectedParamLength = parts.filter(
     (part) => part.type === "parameter"
@@ -2837,14 +2848,17 @@ var extractParameters = (text, stepMatcher, wordMatches) => {
     },
     { params: [], textIndex: 0, wordMatchIndex: 0 }
   );
-  return expectedParamLength === result.params.length ? result.params : null;
+  return opts.partial || expectedParamLength === result.params.length ? result.params : null;
 };
-var findAsRegex = (definition, text) => {
+var findAsRegex = (definition, text, opts = import_jsutils7.emptyObj) => {
   const escaped = escapeStr(definition.match);
   const { regex: regexAlts } = checkAlternative(escaped);
-  const { transformers, regex: regexConverted } = convertToRegex(regexAlts);
+  const { transformers, regex: regexConverted } = convertToRegex(regexAlts, opts);
   const { regex: regexAnchors } = checkAnchors(regexConverted);
-  const found = matchRegex({ ...definition, match: regexAnchors }, text);
+  const found = matchRegex(
+    { ...definition, match: regexAnchors },
+    text
+  );
   return {
     found,
     escaped,
@@ -2854,57 +2868,104 @@ var findAsRegex = (definition, text) => {
     regexConverted
   };
 };
-var matchExpression = (definition, text, $world) => {
+var matchExpression = (definition, text, $world, opts = import_jsutils7.emptyObj) => {
   if (definition.match === text)
     return { definition, match: [] };
-  const { found, transformers } = findAsRegex(definition, text);
+  const { found, transformers } = findAsRegex(definition, text, opts);
   if (!found || !found.definition || !found.match)
-    return import_jsutils7.noOpObj;
-  const params = extractParameters(text, definition.match, found.match);
+    return import_jsutils7.emptyObj;
+  const params = extractParameters(
+    text,
+    definition.match,
+    found.match,
+    opts
+  );
   if (!params)
-    return import_jsutils7.noOpObj;
+    return import_jsutils7.emptyObj;
   const converted = convertTypes(params, transformers, $world);
-  return converted.length !== params.length ? import_jsutils7.noOpObj : { definition, match: converted };
+  return converted.length !== params.length ? import_jsutils7.emptyObj : { definition, match: converted };
 };
 
 // src/matcher/matcher.ts
 var { REGEX_VARIANT } = constants;
 var Matcher = class {
   parkin;
-  constructor(parkin) {
+  options = import_jsutils8.emptyObj;
+  constructor(parkin, options) {
     this.parkin = parkin;
+    this.options = options;
   }
-  find = (text, definitions, $world) => {
+  /**
+   * Finds a matching step definitions form the passed in text
+   * If no options are passed;
+   * All definition expression must be replaced in text
+   * @member {Matcher}
+   *
+   */
+  find = (text, definitions, $world, opts) => {
     var _a, _b, _c, _d;
-    return matcher(
-      definitions || ((_c = (_b = (_a = this.parkin) == null ? void 0 : _a.steps) == null ? void 0 : _b.list) == null ? void 0 : _c.call(_b)) || import_jsutils8.emptyArr,
+    const defs = definitions || ((_c = (_b = (_a = this.parkin) == null ? void 0 : _a.steps) == null ? void 0 : _b.list) == null ? void 0 : _c.call(_b)) || import_jsutils8.emptyArr;
+    const world = $world || ((_d = this == null ? void 0 : this.parkin) == null ? void 0 : _d.world) || { $alias: {} };
+    return matcher(defs, text, world, opts || this.options);
+  };
+  /**
+   * Finds a matching step definitions form the passed in text
+   * Defaults partial option to true, to allow finding partial matches
+   * @member {Matcher}
+   *
+   */
+  search = (text, opts = { partial: true }) => this.find(text, void 0, void 0, opts);
+  parts = (defMatchStr, opts) => getRegexParts(
+    defMatchStr,
+    opts || this.options
+  );
+  extract = (text, stepMatcher, wordMatches, opts) => extractParameters(
+    text,
+    stepMatcher,
+    wordMatches,
+    opts || this.options
+  );
+  expression = (def, text, $world, opts = import_jsutils8.emptyObj) => {
+    var _a;
+    return matchExpression(
+      def,
       text,
-      $world || ((_d = this == null ? void 0 : this.parkin) == null ? void 0 : _d.world) || { $alias: {} }
+      $world || ((_a = this == null ? void 0 : this.parkin) == null ? void 0 : _a.world),
+      opts || this.options
     );
   };
+  stepTokens = (step, def, opts) => tokenizeStep(
+    step,
+    def,
+    opts || this.options
+  );
+  expressionFind = (def, text, opts = import_jsutils8.emptyObj) => findAsRegex(
+    def,
+    text,
+    opts || this.options
+  );
   regex = matchRegex;
-  parts = getRegexParts;
   types = getParamTypes;
-  stepTokens = tokenizeStep;
-  extract = extractParameters;
-  expression = matchExpression;
-  expressionFind = findAsRegex;
   register = registerParamType;
 };
-var matcher = (definitions, text, $world) => {
+var matcher = (definitions, text, $world, opts = import_jsutils8.emptyObj) => {
   return definitions.reduce((found, definition) => {
-    return found.match || !definition.match ? found : definition.variant !== REGEX_VARIANT ? matchExpression(definition, text, $world) : matchRegex(definition, text);
+    return found.match || !definition.match ? found : definition.variant !== REGEX_VARIANT ? matchExpression(definition, text, $world, opts) : matchRegex(definition, text);
   }, import_jsutils8.emptyObj);
 };
 
-// src/steps.ts
+// src/utils/shortId.ts
 var import_jsutils9 = __toESM(require_cjs());
+var shortId = (idx) => (0, import_jsutils9.hashString)((0, import_jsutils9.uuid)(idx));
+
+// src/steps.ts
+var import_jsutils10 = __toESM(require_cjs());
 var { REGEX_VARIANT: REGEX_VARIANT2, EXPRESSION_VARIANT, STEP_TYPES } = constants;
 var getContent = (def) => {
   const match = def.variant === REGEX_VARIANT2 ? def.match.toString() : `"${def.match}"`;
-  return `${(0, import_jsutils9.capitalize)(def.type)}(${match}, ${def.method.toString()})`;
+  return `${(0, import_jsutils10.capitalize)(def.type)}(${match}, ${def.method.toString()})`;
 };
-var registerFromCall = function(internalType, type, match, method, meta = import_jsutils9.noOpObj) {
+var registerFromCall = function(internalType, type, match, method, meta = import_jsutils10.noOpObj) {
   const definition = {
     type,
     meta,
@@ -2915,8 +2976,8 @@ var registerFromCall = function(internalType, type, match, method, meta = import
     variant: match.toString().indexOf("/") === 0 ? REGEX_VARIANT2 : EXPRESSION_VARIANT
   };
   definition.name = sanitize(definition);
-  definition.uuid = sanitizeForId(`${type}-${definition.name}`);
   definition.content = getContent(definition);
+  definition.uuid = shortId(`${type}-${definition.name}`.length);
   const definitions = this.list();
   const newDefinition = validateDefinition(definition, definitions);
   newDefinition && this[internalType].push(newDefinition);
@@ -2930,12 +2991,12 @@ var tempRegister = (parent, type, container) => {
   };
 };
 var registerFromParse = function(definitions) {
-  const DEF_TYPES = this.types.map((type) => (0, import_jsutils9.capitalize)(type));
+  const DEF_TYPES = this.types.map((type) => (0, import_jsutils10.capitalize)(type));
   const container = DEF_TYPES.reduce((built, type) => {
     built[type] = [];
     return built;
   }, {});
-  (0, import_jsutils9.eitherArr)(definitions, [definitions]).map((definition) => {
+  (0, import_jsutils10.eitherArr)(definitions, [definitions]).map((definition) => {
     Function(`return (global, require, module, ${DEF_TYPES.join(",")}) => {
           return (function(global) { ${definition} }).call(global, global)
         }`)()(
@@ -2971,7 +3032,7 @@ var Steps = class {
     this.types.map((type) => {
       const internalType = `_${type}`;
       this[internalType] = [];
-      this[(0, import_jsutils9.capitalize)(type)] = (match, method, meta) => {
+      this[(0, import_jsutils10.capitalize)(type)] = (match, method, meta) => {
         return self.register(internalType, type, match, method, meta);
       };
     });
@@ -3038,12 +3099,12 @@ var Steps = class {
    *
    */
   register = (...args) => {
-    return (0, import_jsutils9.isStr)(args[0]) ? registerFromCall.apply(this, args) : registerFromParse.apply(this, args);
+    return (0, import_jsutils10.isStr)(args[0]) ? registerFromCall.apply(this, args) : registerFromParse.apply(this, args);
   };
   add = (...defs) => {
     const definitions = this.list();
     defs.forEach((def) => {
-      const defsObj = (0, import_jsutils9.isArr)(def) || (def == null ? void 0 : def.match) && (def == null ? void 0 : def.uuid) ? (0, import_jsutils9.ensureArr)(def) : def;
+      const defsObj = (0, import_jsutils10.isArr)(def) || (def == null ? void 0 : def.match) && (def == null ? void 0 : def.uuid) ? (0, import_jsutils10.ensureArr)(def) : def;
       Object.values(defsObj).map((def2) => {
         if (!def2.type)
           return console.warn(`A definition type is required when adding a definition`, def2);
@@ -3066,7 +3127,7 @@ var Steps = class {
 };
 
 // src/hooks.ts
-var import_jsutils10 = __toESM(require_cjs());
+var import_jsutils11 = __toESM(require_cjs());
 var { HOOK_TYPES } = constants;
 var Hooks = class {
   /**
@@ -3088,7 +3149,7 @@ var Hooks = class {
     this.instance = instance;
     this.types.map((type) => {
       this[type] = (clientHookFn) => {
-        if (!(0, import_jsutils10.isFunc)(clientHookFn))
+        if (!(0, import_jsutils11.isFunc)(clientHookFn))
           return;
         this._registeredHooks[type] = this._registeredHooks[type] || [];
         this._registeredHooks[type].push(clientHookFn);
@@ -3099,7 +3160,7 @@ var Hooks = class {
    * Gets the registered hook callback method based on the passed in type
    */
   getRegistered = (type) => {
-    const foundHooks = this.types.includes(type) ? this._registeredHooks[type] || import_jsutils10.noPropArr : throwInvalidHookType(HOOK_TYPES.join(", "), type);
+    const foundHooks = this.types.includes(type) ? this._registeredHooks[type] || import_jsutils11.noPropArr : throwInvalidHookType(HOOK_TYPES.join(", "), type);
     if (!foundHooks)
       return;
     return foundHooks.length ? async () => {
@@ -3107,7 +3168,7 @@ var Hooks = class {
         await toResolve;
         return await hook(this.instance);
       }, Promise.resolve());
-    } : import_jsutils10.noOp;
+    } : import_jsutils11.noOp;
   };
 };
 
@@ -3177,8 +3238,8 @@ var stepFactory = (type, stepText, lines, line, index) => {
     type,
     index,
     step: stepText,
-    whitespace: getStartWhiteSpace(line),
-    uuid: sanitizeForId(`${type}-${stepText}`)
+    uuid: shortId(index),
+    whitespace: getStartWhiteSpace(line)
   };
   const nextIndex = index + 1;
   const nextLine = lines[nextIndex];
@@ -3207,10 +3268,10 @@ var parseStep = (parent, lines, line, index) => {
 };
 
 // src/parse/parseFeature.ts
-var import_jsutils13 = __toESM(require_cjs());
+var import_jsutils15 = __toESM(require_cjs());
 
 // src/utils/worldReplace.ts
-var import_jsutils11 = __toESM(require_cjs());
+var import_jsutils12 = __toESM(require_cjs());
 var {
   ALIAS_REF: ALIAS_REF2,
   WORLD_REF,
@@ -3219,8 +3280,8 @@ var {
   ALIAS_REF_AT_RUNTIME
 } = constants;
 var attemptReplace = (match, world, location) => {
-  const replaceWith = (0, import_jsutils11.get)(world, location);
-  return (0, import_jsutils11.isFunc)(replaceWith) ? replaceWith(world, location) : (0, import_jsutils11.exists)(replaceWith) ? replaceWith : match;
+  const replaceWith = (0, import_jsutils12.get)(world, location);
+  return (0, import_jsutils12.isFunc)(replaceWith) ? replaceWith(world, location) : (0, import_jsutils12.exists)(replaceWith) ? replaceWith : match;
 };
 var aliasReplace = (text, world) => {
   let currentMatch;
@@ -3274,7 +3335,7 @@ var ruleFactory = (rule, index) => {
     tags: [],
     scenarios: [],
     // The feature name should always be unique, so use that as a re-usable id
-    ...rule && { uuid: sanitizeForId(rule, index) }
+    ...rule && { uuid: shortId(index) }
   };
 };
 var ensureRule = (feature, rule, line, index) => {
@@ -3283,7 +3344,7 @@ var ensureRule = (feature, rule, line, index) => {
   let ruleText = getRXMatch(line, RX_RULE2, 1);
   !rule.rule ? rule.rule = ruleText : rule = ruleFactory(ruleText, index);
   !rule.index && (rule.index = index);
-  !rule.uuid && (rule.uuid = sanitizeForId(rule.rule, index));
+  !rule.uuid && (rule.uuid = shortId(index));
   rule.whitespace = getStartWhiteSpace(line);
   !feature.rules.includes(rule) && feature.rules.push(rule);
   return rule;
@@ -3314,7 +3375,7 @@ var featureFactory = (feature, content, index) => {
     comments: [],
     scenarios: [],
     // The feature name should always be unique, so use that as a re-usable id
-    ...feature && { uuid: sanitizeForId(feature, index) }
+    ...feature && { uuid: shortId(index) }
   };
 };
 var ensureFeature = (featuresGroup, feature, line, content, index) => {
@@ -3333,7 +3394,7 @@ var ensureFeature = (featuresGroup, feature, line, content, index) => {
     if (!feature.index)
       feature.index = index;
     if (!feature.uuid)
-      feature.uuid = sanitizeForId(feature.feature, index);
+      feature.uuid = shortId(index);
     !featuresGroup.includes(feature) && featuresGroup.push(feature);
     return feature;
   }
@@ -3343,6 +3404,7 @@ var ensureFeature = (featuresGroup, feature, line, content, index) => {
 };
 
 // src/parse/ensureScenario.ts
+var import_jsutils13 = __toESM(require_cjs());
 var RX_SCENARIO2 = /^\s*Scenario:(.*)$/;
 var RX_EXAMPLE2 = /^\s*Example:(.*)$/;
 var scenarioFactory = (scenario, index) => {
@@ -3351,7 +3413,7 @@ var scenarioFactory = (scenario, index) => {
     scenario,
     tags: [],
     steps: [],
-    ...scenario && { uuid: sanitizeForId(scenario, index) }
+    ...scenario && { uuid: shortId(index) }
   };
 };
 var ensureScenario = (feature, rule, scenario, line, index) => {
@@ -3360,9 +3422,9 @@ var ensureScenario = (feature, rule, scenario, line, index) => {
   if (!hasScenario && !hasExample)
     return scenario;
   const scenarioText = hasScenario ? getRXMatch(line, RX_SCENARIO2, 1) : getRXMatch(line, RX_EXAMPLE2, 1);
-  !scenario.scenario ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText, index);
+  !(0, import_jsutils13.exists)(scenario.scenario) ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText, index);
   !scenario.index && (scenario.index = index);
-  !scenario.uuid && (scenario.uuid = sanitizeForId(scenario.scenario, index));
+  !scenario.uuid && (scenario.uuid = shortId(index));
   scenario.whitespace = getStartWhiteSpace(line);
   if (!hasScenario)
     scenario.alias = "Example" /* Example */;
@@ -3378,7 +3440,7 @@ var backgroundFactory = (background, index) => {
     index,
     steps: [],
     background,
-    ...background && { uuid: sanitizeForId(background, index) }
+    ...background && { uuid: shortId(index) }
   };
 };
 var ensureBackground = (feature, rule, background, line, index) => {
@@ -3388,14 +3450,14 @@ var ensureBackground = (feature, rule, background, line, index) => {
   const backgroundText = `${parent.uuid}-background`;
   !background.background ? background.background = backgroundText || "" : background = backgroundFactory(backgroundText, index);
   !background.index && (background.index = index);
-  !background.uuid && (background.uuid = sanitizeForId(background.background, index));
+  !background.uuid && (background.uuid = shortId(index));
   background.whitespace = getStartWhiteSpace(line);
   parent.background = background;
   return background;
 };
 
 // src/parse/ensureMeta.ts
-var import_jsutils12 = __toESM(require_cjs());
+var import_jsutils14 = __toESM(require_cjs());
 var RX_TAG = /^\s*@(.*)$/;
 var RX_AS = /^\s*As (.*)$/;
 var RX_COMMENT = /^\s*#(.*)$/;
@@ -3411,7 +3473,7 @@ var featureMetaTags = [
 var addReason = (feature, reason, index) => {
   if (!reason)
     return;
-  const reasonArr = (0, import_jsutils12.eitherArr)(feature.reason, [feature.reason]);
+  const reasonArr = (0, import_jsutils14.eitherArr)(feature.reason, [feature.reason]);
   reasonArr.push({ content: reason, index });
   feature.reason = reasonArr;
 };
@@ -3455,7 +3517,7 @@ var featureEmptyLine = (feature, line, index) => {
 // src/parse/parseFeature.ts
 var RX_NEWLINE = /\r?\n/g;
 var parseFeature = function(text, world) {
-  world = world || this && this.world || import_jsutils13.noOpObj;
+  world = world || this && this.world || import_jsutils15.noOpObj;
   const features = [];
   const replaceText = replaceWorld((text || "").toString(), world);
   const lines = replaceText.split(RX_NEWLINE);
@@ -3478,7 +3540,7 @@ var parseFeature = function(text, world) {
     rule = ensureRule(feature, rule, line, index);
     scenario = ensureScenario(feature, rule, scenario, line, index);
     background = ensureBackground(feature, rule, background, line, index);
-    if (!(activeParent == null ? void 0 : activeParent.feature) && parseStep(activeParent, lines, line, index))
+    if (`steps` in activeParent && parseStep(activeParent, lines, line, index))
       return featuresGroup;
     activeParent = setActiveParent(
       activeParent,
@@ -3500,11 +3562,11 @@ var parseDefinition = function(text) {
 };
 
 // src/utils/testMethods.ts
-var import_jsutils14 = __toESM(require_cjs());
+var import_jsutils16 = __toESM(require_cjs());
 var { SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV } = constants;
 var logResultToTerminal = (result) => {
   const timestamp = (/* @__PURE__ */ new Date()).getTime();
-  (0, import_jsutils14.get)(process, `env.${LOG_JEST_SPEC_ENV}`) && process.stdout.write(
+  (0, import_jsutils16.get)(process, `env.${LOG_JEST_SPEC_ENV}`) && process.stdout.write(
     [
       SPEC_RESULT_LOG,
       JSON.stringify({ ...result, timestamp }),
@@ -3513,7 +3575,7 @@ var logResultToTerminal = (result) => {
   );
 };
 var getSuiteData = (suite) => {
-  const description = (0, import_jsutils14.get)(suite, `description`);
+  const description = (0, import_jsutils16.get)(suite, `description`);
   const type = !description ? `Feature` : description.startsWith(`Scenario >`) ? `Scenario` : description.startsWith(`Background >`) ? `Background` : description.startsWith(`Rule >`) ? `Rule` : `Feature`;
   return {
     type: type.toLowerCase(),
@@ -3524,7 +3586,7 @@ var getSuiteData = (suite) => {
   };
 };
 var getTestMethod = (type, testMode) => {
-  return testMode ? import_jsutils14.noOp : globalThis[type] || testMethodFill(type);
+  return testMode ? import_jsutils16.noOp : globalThis[type] || testMethodFill(type);
 };
 var buildReporter = (jasmineEnv) => {
   const suites = [];
@@ -3580,19 +3642,19 @@ var skipTestsOnFail = (testMode) => {
 };
 
 // src/runner.js
-var import_jsutils15 = __toESM(require_cjs());
+var import_jsutils17 = __toESM(require_cjs());
 var buildTitle = (text, type) => {
-  return `${(0, import_jsutils15.capitalize)(type)} > ${text}`;
+  return `${(0, import_jsutils17.capitalize)(type)} > ${text}`;
 };
 var resolveFeatures = (data, $world) => {
-  return (0, import_jsutils15.isStr)(data) ? parseFeature(data, $world) : (0, import_jsutils15.isObj)(data) ? [data] : (0, import_jsutils15.isArr)(data) ? data.reduce(
+  return (0, import_jsutils17.isStr)(data) ? parseFeature(data, $world) : (0, import_jsutils17.isObj)(data) ? [data] : (0, import_jsutils17.isArr)(data) ? data.reduce(
     (features, feature) => features.concat(resolveFeatures(feature, $world)),
     []
   ) : throwMissingFeatureText();
 };
 var runStep = async (stepsInstance, step, testMode) => {
   const test = getTestMethod("test", testMode);
-  test(`${(0, import_jsutils15.capitalize)(step.type)} ${step.step}`, async () => {
+  test(`${(0, import_jsutils17.capitalize)(step.type)} ${step.step}`, async () => {
     return await stepsInstance.resolve(step.step);
   });
 };
@@ -3647,11 +3709,11 @@ var runRule = (stepsInstance, rule, background, testMode) => {
   return responses;
 };
 var parseFeatureTags = (tags) => {
-  return (0, import_jsutils15.isStr)(tags) && tags.match(/[@]\w*/g);
+  return (0, import_jsutils17.isStr)(tags) && tags.match(/[@]\w*/g);
 };
 var itemMatch = (name = "", tags = [], filterOptions = {}) => {
   const { name: filterName, tags: filterTags } = filterOptions;
-  const parsedTags = (0, import_jsutils15.isStr)(filterTags) ? parseFeatureTags(filterTags) : (0, import_jsutils15.eitherArr)(filterTags, []);
+  const parsedTags = (0, import_jsutils17.isStr)(filterTags) ? parseFeatureTags(filterTags) : (0, import_jsutils17.eitherArr)(filterTags, []);
   const nameMatch = !filterName || name.includes(filterName);
   const tagMatch = !parsedTags.length || parsedTags.every((clientTag) => tags.includes(clientTag));
   return nameMatch && tagMatch;
@@ -3715,7 +3777,7 @@ var Runner = class {
    *
    * @returns {boolean} - whether any tests ran
    */
-  run = async (data, options = import_jsutils15.noOpObj) => {
+  run = async (data, options = import_jsutils17.noOpObj) => {
     const testMode = this.run.PARKIN_TEST_MODE;
     skipTestsOnFail(testMode);
     const describe2 = getTestMethod("describe", testMode);
@@ -3753,97 +3815,122 @@ var Runner = class {
 };
 
 // src/assemble/addContent.ts
-var import_jsutils16 = __toESM(require_cjs());
+var import_jsutils18 = __toESM(require_cjs());
 var addContent = (assembled, content, index) => {
-  !(0, import_jsutils16.exists)(index) ? assembled.push(content) : (0, import_jsutils16.exists)(assembled[index]) ? assembled.splice(index, 0, content) : assembled[index] = content;
+  !(0, import_jsutils18.exists)(index) || index === false ? assembled.push(content) : (0, import_jsutils18.exists)(assembled[index]) ? assembled.splice(index, 0, content) : assembled[index] = content;
 };
 
 // src/assemble/addMeta.ts
-var import_jsutils17 = __toESM(require_cjs());
+var import_jsutils19 = __toESM(require_cjs());
 var { FEATURE_META } = constants;
-var addMeta = (assembled, feature) => {
+var addMeta = (assembled, feature, opts) => {
+  const { indexes = true } = opts;
   FEATURE_META.map((key) => {
     switch (key) {
       case "feature":
-        addContent(assembled, `${"Feature" /* Feature */}: ${feature[key]}`, feature.index);
+        addContent(
+          assembled,
+          `${"Feature" /* Feature */}: ${feature[key]}`,
+          indexes && feature.index
+        );
         break;
       case "comments":
         const comments = feature[key];
-        comments && (0, import_jsutils17.eitherArr)(comments, [comments]).map((item) => addContent(assembled, item.content, item.index));
+        comments && (0, import_jsutils19.eitherArr)(comments, [comments]).map((item) => addContent(assembled, item.content, indexes && item.index));
         break;
       case "reason":
       case "desire":
       case "perspective":
         const other = feature[key];
-        other && (0, import_jsutils17.eitherArr)(other, [other]).map((item) => addContent(assembled, `  ${item.content}`, item.index));
+        other && (0, import_jsutils19.eitherArr)(other, [other]).map((item) => addContent(assembled, `  ${item.content}`, indexes && item.index));
         break;
     }
   });
 };
 
 // src/assemble/addTags.ts
-var import_jsutils18 = __toESM(require_cjs());
+var import_jsutils20 = __toESM(require_cjs());
 var addTags = (assembled, tags, spacer = "") => {
-  (0, import_jsutils18.isArr)(tags) && tags.length && addContent(assembled, `${spacer}${tags.join(" ")}`);
+  (0, import_jsutils20.isArr)(tags) && tags.length && addContent(assembled, `${spacer}${tags.join(" ")}`);
 };
 
 // src/assemble/addEmpty.ts
-var addEmpty = (assembled, feature) => {
+var addEmpty = (assembled, opts) => addContent(assembled, "");
+var addFeatureEmpty = (assembled, feature, opts) => {
   var _a, _b;
-  ((_a = feature == null ? void 0 : feature.empty) == null ? void 0 : _a.length) && ((_b = feature == null ? void 0 : feature.empty) == null ? void 0 : _b.forEach((item) => addContent(assembled, item.content, item.index)));
+  const { indexes = true } = opts;
+  ((_a = feature == null ? void 0 : feature.empty) == null ? void 0 : _a.length) && ((_b = feature == null ? void 0 : feature.empty) == null ? void 0 : _b.forEach((item) => addContent(assembled, item.content, indexes && item.index)));
 };
 
+// src/assemble/mergeBreaks.ts
+var mergeBreaks = (options, breaks) => ({ ...options, breaks: { ...options.breaks, ...breaks } });
+
 // src/assemble/addSteps.ts
-var import_jsutils19 = __toESM(require_cjs());
-var addSteps = (assembled, parent) => {
-  (0, import_jsutils19.isArr)(parent.steps) && parent.steps.length && parent.steps.map((step) => {
+var import_jsutils21 = __toESM(require_cjs());
+var addSteps = (assembled, parent, opts) => {
+  const { indexes = true } = opts;
+  (0, import_jsutils21.isArr)(parent.steps) && parent.steps.length && parent.steps.map((step) => {
     addContent(
       assembled,
-      `${step.whitespace || `    `}${(0, import_jsutils19.capitalize)(step.type)} ${step.step}`,
-      step.index
+      `${step.whitespace || `    `}${(0, import_jsutils21.capitalize)(step.type)} ${step.step}`,
+      indexes && step.index
     );
   });
 };
 
 // src/assemble/addScenarios.ts
-var addScenarios = (assembled, parent) => {
+var addScenarios = (assembled, parent, opts) => {
+  const { indexes = true, breaks } = opts;
   parent.scenarios && parent.scenarios.map((scenario) => {
     const whitespace = scenario.whitespace || `  `;
     const type = scenario.alias || "Scenario" /* Scenario */;
+    (breaks == null ? void 0 : breaks.scenario) && addEmpty(assembled, opts);
     addTags(assembled, scenario.tags, whitespace);
-    addContent(assembled, `${whitespace}${type}: ${scenario.scenario}`, scenario.index);
-    addSteps(assembled, scenario);
+    addContent(assembled, `${whitespace}${type}: ${scenario.scenario}`, indexes && scenario.index);
+    addSteps(assembled, scenario, opts);
   });
 };
 
 // src/assemble/addBackground.ts
-var addBackground = (assembled, parent) => {
+var addBackground = (assembled, parent, opts) => {
   const { background } = parent;
   if (!background)
     return;
+  const { breaks, indexes = true } = opts;
   const whitespace = background.whitespace || `  `;
+  (breaks == null ? void 0 : breaks.background) && addEmpty(assembled, opts);
   addTags(assembled, background.tags, whitespace);
-  addContent(assembled, `${whitespace}${"Background" /* Background */}:`, background.index);
-  addSteps(assembled, background);
+  addContent(assembled, `${whitespace}${"Background" /* Background */}:`, indexes && background.index);
+  addSteps(assembled, background, opts);
 };
 
 // src/assemble/addRules.ts
-var addRules = (assembled, feature) => {
+var addRules = (assembled, feature, opts) => {
+  const { indexes = true, breaks } = opts;
   feature.rules && feature.rules.map((rule) => {
+    (breaks == null ? void 0 : breaks.rule) && addEmpty(assembled, opts);
     const whitespace = rule.whitespace || `  `;
     addTags(assembled, rule.tags, whitespace);
-    addContent(assembled, `${whitespace}${"Rule" /* Rule */}: ${rule.rule}`, rule.index);
-    addBackground(assembled, rule);
-    addScenarios(assembled, rule);
+    addContent(assembled, `${whitespace}${"Rule" /* Rule */}: ${rule.rule}`, indexes && rule.index);
+    addBackground(
+      assembled,
+      rule,
+      mergeBreaks(opts, { background: (breaks == null ? void 0 : breaks.ruleBackground) ?? (breaks == null ? void 0 : breaks.background) })
+    );
+    addScenarios(
+      assembled,
+      rule,
+      mergeBreaks(opts, { background: (breaks == null ? void 0 : breaks.ruleScenario) ?? (breaks == null ? void 0 : breaks.scenario) })
+    );
   });
 };
 
 // src/assemble/format.ts
-var import_jsutils20 = __toESM(require_cjs());
+var import_jsutils22 = __toESM(require_cjs());
 var formatComment = (assembled, line, index) => {
   const next = assembled[index + 1];
   const prev = assembled[index - 1];
-  let compareLine = (0, import_jsutils20.exists)(next) ? next : prev;
+  let compareLine = (0, import_jsutils22.exists)(next) ? next : prev;
   if (!compareLine)
     return `${line}
 `;
@@ -3854,26 +3941,49 @@ var formatComment = (assembled, line, index) => {
   return `${whiteSpace} # ${comment}
 `;
 };
-var formatAssembled = (assembled) => {
+var formatAssembled = (assembled, opts) => {
   return Array.from(assembled, (line, index) => {
-    return !(0, import_jsutils20.exists)(line) ? "\n" : line.startsWith("#") ? formatComment(assembled, line, index) : `${line}
+    return !(0, import_jsutils22.exists)(line) ? "\n" : line.startsWith("#") ? formatComment(assembled, line, index) : `${line}
 `;
-  }).join("").trim();
+  }).join("");
 };
 
 // src/assemble/feature.ts
-var import_jsutils21 = __toESM(require_cjs());
-var assembleFeature = (toAssemble) => {
-  return (0, import_jsutils21.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
+var import_jsutils23 = __toESM(require_cjs());
+var activeBreaks = {
+  rule: true,
+  scenario: true,
+  background: true,
+  ruleScenario: true,
+  ruleBackground: true
+};
+var assembleOpts = {
+  empty: true,
+  indexes: true,
+  breaks: {
+    ...activeBreaks,
+    ruleBackground: false
+  }
+};
+var mergeOptions = (opts) => {
+  return {
+    ...assembleOpts,
+    ...opts,
+    breaks: (0, import_jsutils23.isBool)(opts.breaks) ? activeBreaks : (0, import_jsutils23.isObj)(opts.breaks) ? { ...assembleOpts.breaks, ...opts.breaks } : assembleOpts.breaks
+  };
+};
+var assembleFeature = (toAssemble, opts = import_jsutils23.emptyObj) => {
+  const options = mergeOptions(opts);
+  return (0, import_jsutils23.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
     let assembled = [];
-    !(0, import_jsutils21.isObj)(feature) && throwFeatureNotAnObj(feature);
+    !(0, import_jsutils23.isObj)(feature) && throwFeatureNotAnObj(feature);
     addTags(assembled, feature.tags);
-    addMeta(assembled, feature);
-    addEmpty(assembled, feature);
-    addBackground(assembled, feature);
-    addRules(assembled, feature);
-    addScenarios(assembled, feature);
-    return formatAssembled(assembled);
+    addMeta(assembled, feature, options);
+    options.empty && addFeatureEmpty(assembled, feature, options);
+    addBackground(assembled, feature, options);
+    addRules(assembled, feature, options);
+    addScenarios(assembled, feature, options);
+    return formatAssembled(assembled, options);
   });
 };
 
@@ -3883,7 +3993,7 @@ var assemble = {
 };
 
 // src/parkin.ts
-var import_jsutils22 = __toESM(require_cjs());
+var import_jsutils24 = __toESM(require_cjs());
 var { STEP_TYPES: STEP_TYPES2 } = constants;
 var Parkin = class {
   #isInit = false;
@@ -3902,13 +4012,13 @@ var Parkin = class {
   And;
   But;
   constructor(world, steps) {
-    (0, import_jsutils22.isObj)(world) && this.init(world, steps);
+    (0, import_jsutils24.isObj)(world) && this.init(world, steps);
   }
-  init = (world = import_jsutils22.noOpObj, steps, warn = true) => {
+  init = (world = import_jsutils24.noOpObj, steps, warn = true) => {
     if (this.#isInit) {
       return warn && console.warn(`This instance of parkin has already been initialized!`);
     }
-    if (!(0, import_jsutils22.isObj)(world.$alias))
+    if (!(0, import_jsutils24.isObj)(world.$alias))
       world.$alias = {};
     this.#isInit = true;
     this.world = world;
@@ -3923,9 +4033,9 @@ var Parkin = class {
     this.assemble = assemble;
     this.paramTypes = { register: registerParamType };
     this.matcher = new Matcher(this);
-    (0, import_jsutils22.isObj)(steps) && this.registerSteps(steps);
+    (0, import_jsutils24.isObj)(steps) && this.registerSteps(steps);
     this.steps.types.map((type) => {
-      this[(0, import_jsutils22.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
+      this[(0, import_jsutils24.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
     });
   };
   /**
@@ -3954,11 +4064,20 @@ var Parkin = class {
     if (doRegister)
       return Object.entries(steps).forEach(([type, typedSteps]) => {
         STEP_TYPES2.includes(type) && Object.entries(typedSteps).forEach(([matcher2, content]) => {
-          this.steps[(0, import_jsutils22.capitalize)(type)](matcher2, ...(0, import_jsutils22.eitherArr)(content, [content]));
+          this.steps[(0, import_jsutils24.capitalize)(type)](matcher2, ...(0, import_jsutils24.eitherArr)(content, [content]));
         });
       });
     else
       this.steps.add(steps);
+  };
+  /**
+   * Expose helper method to re-index a parsed feature AST when it's content is modified
+   * This allows the feature to be properly re-assembled at another time
+   */
+  reIndex = (feature, opts) => {
+    feature.empty = [];
+    const assembled = this.assemble.feature([feature], opts)[0];
+    return this.parse.feature(assembled)[0];
   };
 };
 var PKInstance = new Parkin();

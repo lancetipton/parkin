@@ -5,7 +5,6 @@ jest.clearAllMocks()
 const { testMethodFill, ...errorMethods } = require('../errors')
 
 describe('Errors', () => {
-  
   const oldErr = console.error
   console.error = jest.fn()
 

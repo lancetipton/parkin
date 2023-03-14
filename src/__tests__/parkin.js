@@ -106,7 +106,7 @@ describe('Parkin', () => {
 
     expect(rulesScenario.steps?.length).toBe(0)
     expect(rulesScenario.scenario).toBe(``)
-    
+
     expect(featScenario.steps?.length).toBe(1)
     expect(featScenario.scenario).toBe(`Navigate the Goblog`)
   })
