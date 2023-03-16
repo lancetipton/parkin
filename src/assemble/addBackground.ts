@@ -27,7 +27,7 @@ export const addBackground = (
 
   breaks?.background && addEmpty(assembled, opts)
 
-  addTags(assembled, background.tags, whitespace)
+  addTags(assembled, background, opts, whitespace)
   addContent(assembled, `${whitespace}${EFeatureTypes.Background}:`, indexes && background.index)
   addSteps(assembled, background, opts)
 

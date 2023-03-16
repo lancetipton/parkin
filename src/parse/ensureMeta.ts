@@ -1,7 +1,8 @@
-import type { TFeatureAst, TTagsParentAst, TAstBlock } from '../types'
+import type { TFeatureAst, TTagsAst, TTagsParentAst, TAstBlock } from '../types'
 
-import { eitherArr } from '@keg-hub/jsutils'
-import { getRXMatch } from '../utils/helpers'
+import { EAstObject } from '../types'
+import { eitherArr, uuid } from '@keg-hub/jsutils'
+import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 /**
  * Regular expressions for matching feature file keywords
@@ -42,7 +43,7 @@ const addReason = (
   if(!reason) return
 
   const reasonArr = eitherArr<TAstBlock[]>(feature.reason, [feature.reason])
-  reasonArr.push({ content: reason, index })
+  reasonArr.push({ content: reason, index, type: EAstObject.reason })
   feature.reason = reasonArr
 }
 
@@ -68,16 +69,44 @@ export const featureMeta = (
     if (!metaAdded && hasTag) metaAdded = true
 
     return hasTag
-      ? regTag.key === 'reason'
+      ? regTag.key === `reason`
         ? addReason(feature, getRXMatch(line, regTag.regex, 0), index)
         : (feature[regTag.key] = {
             content: getRXMatch(line, regTag.regex, 0),
             index,
+            type: regTag.key === `desire`
+              ? EAstObject.desire
+              : regTag.key === `perspective`
+                ? EAstObject.perspective
+                : EAstObject.block
           })
       : hasTag
   }, false)
 
   return metaAdded
+}
+
+/**
+ * Parses the content as an array of tags
+ * Then builds and returns a Tags Ast 
+ */
+const tagsFactory = (
+  index:number,
+  content:string
+) => {
+  const tokens = content.split(` `).reduce((acc, item) => {
+    const token = item.trim()
+    token.startsWith(`@`) && acc.push(token)
+    return acc
+  }, [])
+
+  return {
+    index,
+    tokens,
+    uuid: uuid(),
+    type: EAstObject.tags,
+    content: tokens.join(` `),
+  } as TTagsAst
 }
 
 /*
@@ -89,6 +118,7 @@ export const checkTag = (
   parent:TTagsParentAst,
   feature:TFeatureAst,
   line:string,
+  index:number
 ) => {
   if (!RX_TAG.test(line)) return false
 
@@ -98,7 +128,8 @@ export const checkTag = (
   const tags = getRXMatch(line, RX_TAG, 0)
 
   // Join the tags with the tagParents current tags
-  tagParent.tags = (tagParent.tags || []).concat(tags.split(' '))
+  tagParent.tags = tagsFactory(index, tags)
+  tagParent.tags.whitespace = getStartWhiteSpace(line)
 
   return true
 }
@@ -122,7 +153,7 @@ export const featureComment = (
   // But not much we can do about it
   const comment = line.match(RX_COMMENT)[0]
 
-  feature.comments.push({ content: comment, index })
+  feature.comments.push({ content: comment, index, type: EAstObject.comment })
 
   return true
 }
@@ -139,7 +170,7 @@ export const featureEmptyLine = (
 ) => {
   if(line.trim().length) return false
 
-  feature.empty.push({ content: line, index })
+  feature.empty.push({ content: line, index, type: EAstObject.empty })
 
   return true
 }

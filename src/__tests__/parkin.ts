@@ -1,6 +1,9 @@
 import {
   definition,
   feature,
+  testUUid,
+  thenUuid,
+  givenUuid,
   emptyScenario,
   parsedFeature,
   parsedDefinition,
@@ -8,12 +11,21 @@ import {
   brokenFeatureScenario,
 } from '../__mocks__'
 
+
 import { constants } from '../constants'
 const { REGEX_VARIANT, EXPRESSION_VARIANT } = constants
 
 jest.resetModules()
 jest.resetAllMocks()
 jest.clearAllMocks()
+
+const jsutils = require('@keg-hub/jsutils')
+jest.setMock('@keg-hub/jsutils', {
+  ...jsutils,
+  uuid: jest.fn(() => {
+    return testUUid
+  })
+})
 
 const worldObj = {}
 const { Parkin } = require('../parkin')
@@ -55,28 +67,27 @@ describe('Parkin', () => {
     const PK = new Parkin(worldObj)
     // The uuid is different every time, so don't include it when testing
     // Scenarios can include function identity, so don't include it when testing
-    const { uuid, scenarios, ...parsed } = PK.parse.feature(feature)[0]
+    const { scenarios, ...parsed } = PK.parse.feature(feature)[0]
     const { scenarios: parsedScenarios, ...featureWOScenarios } = parsedFeature
 
     expect(parsed).toEqual(featureWOScenarios)
     let scenarioWs
     let stepsWS = []
 
-    // Remove the uuid from the scenarios so we can validate them
-    const noUuidScenarios = scenarios.map(scenario => {
-      const { uuid, whitespace, ...noUuidScenario } = scenario
+    const uuidScenarios = scenarios.map(scenario => {
+      const { whitespace, ...noWSscenario } = scenario
       scenarioWs = whitespace
-      noUuidScenario.steps = scenario.steps.map(step => {
-        const { uuid, whitespace, ...noUuidStep } = step
+      noWSscenario.steps = scenario.steps.map(step => {
+        const { whitespace, ...uuidStep } = step
         stepsWS.push(whitespace)
-        return noUuidStep
+        return uuidStep
       })
-      return noUuidScenario
+      return noWSscenario
     })
 
     expect(scenarioWs).toEqual(`  `)
     expect(stepsWS).toEqual([ '    ', '    ', '    ', '    ', '    ' ])
-    expect(noUuidScenarios).toEqual(parsedScenarios)
+    expect(uuidScenarios).toEqual(parsedScenarios)
   })
 
   it(`should set the error array for malformed feature content`, () => {
@@ -115,11 +126,12 @@ describe('Parkin', () => {
     const PK = new Parkin(worldObj)
     const parsed = PK.parse.definition(definition)
 
-    const { method: givenMethod, ...givenDef } = parsed.Given[0]
+    const { method: givenMethod, uuid, ...givenDef } = parsed.Given[0]
     expect(typeof givenMethod).toBe('function')
+
     expect(givenDef).toEqual(parsedDefinition.Given[0])
 
-    const { method: thenMethod, ...thenDef } = parsed.Then[0]
+    const { method: thenMethod, uuid:_, ...thenDef } = parsed.Then[0]
     expect(typeof thenMethod).toBe('function')
     expect(thenDef).toEqual(parsedDefinition.Then[0])
   })
@@ -128,11 +140,11 @@ describe('Parkin', () => {
     const PK = new Parkin(worldObj)
     PK.parse.definition(definition)
 
-    const { method: givenMethod, ...givenDef } = PK.steps._given[0]
+    const { method: givenMethod, uuid, ...givenDef } = PK.steps._given[0]
     expect(givenDef).toEqual(parsedDefinition.Given[0])
     expect(typeof givenMethod).toBe('function')
 
-    const { method: thenMethod, ...thenDef } = PK.steps._then[0]
+    const { method: thenMethod, uuid:_, ...thenDef } = PK.steps._then[0]
     expect(typeof thenMethod).toBe('function')
     expect(thenDef).toEqual(parsedDefinition.Then[0])
   })
@@ -197,6 +209,9 @@ describe('Parkin', () => {
 
     const givenDef = PK.steps._given[0]
     const thenDef = PK.steps._then[0]
+    givenDef.uuid = givenUuid
+    thenDef.uuid = thenUuid
+
     PK.steps.clear()
     expect(PK.steps._given.length).toBe(0)
     expect(PK.steps._then.length).toBe(0)
@@ -205,6 +220,7 @@ describe('Parkin', () => {
       [givenDef.uuid]: givenDef,
       [thenDef.uuid]: thenDef,
     })
+    
     const addedGDef = PK.steps._given[0]
     const addedTDef = PK.steps._then[0]
 
@@ -258,6 +274,8 @@ describe('Parkin', () => {
 
     const givenDef = PK.steps._given[0]
     const thenDef = PK.steps._then[0]
+    givenDef.uuid = givenUuid
+    thenDef.uuid = thenUuid
 
     PK.steps.clear()
     expect(PK.steps._given.length).toBe(0)

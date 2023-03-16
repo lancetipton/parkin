@@ -1,7 +1,9 @@
+import { testUUid } from '../helpers'
+
 export const parsedFeature = {
   index: 1,
   // The uuid is different every time, so comment it out for testing
-  // uuid: 'b33c24bf-3b5d-4375-9853-600b1a3c383e',
+  uuid: testUUid,
   content:
     '@search @google\n' +
     'Feature: Google Search\n' +
@@ -18,63 +20,73 @@ export const parsedFeature = {
     '    When I wait for the page to load\n' +
     '    Then the element #search contains the text KegHub/keg-hub',
   feature: 'Google Search',
-  tags: [ '@search', '@google' ],
+  type: `feature`,
+  tags: {
+    index: 0,
+    type: `tags`,
+    uuid: testUUid,
+    whitespace: ``,
+    content: `@search @google`,
+    tokens: [ `@search`, `@google` ],
+  },
   empty: [
     {
       index: 6,
       content: '',
+      type: `empty`,
     },
   ],
-  reason: [{ content: 'In order to find out more about Keg-Hub', index: 3 }],
+  reason: [{ content: 'In order to find out more about Keg-Hub', index: 3, type: `reason` }],
   comments: [
     // Comments are stored globally, so we keep the full white space of it
     // This allows us to format it relative to adjoining lines
-    { content: '  # Test comment in the feature meta', index: 4 },
-    { content: '    # comment for testing in the scenario steps', index: 11 },
+    { content: '  # Test comment in the feature meta', index: 4, type: `comment` },
+    { content: '    # comment for testing in the scenario steps', index: 11, type: `comment` },
     // { content: 'Test comment in the feature meta', index: 4 },
     // { content: 'comment for testing in the scenario steps', index: 11 }
   ],
-  perspective: { content: 'As an internet user', index: 2 },
+  perspective: { content: 'As an internet user', index: 2, type: `perspective` },
   desire: {
     content: 'I want to be able to search for information about the Keg-Hub',
     index: 5,
+    type: `desire`,
   },
   rules: [],
   scenarios: [
     {
       index: 7,
+      type: `scenario`,
       scenario: 'Search the web for google',
-      tags: [],
-      // uuid: 'f75d10d8-645c-4da0-b4b2-70696e3588b3',
+      uuid: testUUid,
       steps: [
         {
           step: 'I open the site https://www.google.com',
           type: 'given',
-          // uuid: 'c257a2b9-2f34-42ac-b7e2-da4a843bc8ef',
+          uuid: testUUid,
           index: 8,
         },
         {
           step: 'I set keg-hub to the input .gLFyf',
           type: 'when',
-          // uuid: '2755d856-c6a9-41b2-bd63-508c2177011e',
+          uuid: testUUid,
           index: 9,
         },
         {
           step: 'I press enter',
           type: 'when',
-          // uuid: 'bb6b22bb-2555-49f6-8c5a-a0c1e8a22246',
+          uuid: testUUid,
           index: 10,
         },
         {
           step: 'I wait for the page to load',
           type: 'when',
-          // uuid: '29ecb393-ec1c-407d-abbb-a6f82049a286',
+          uuid: testUUid,
           index: 12,
         },
         {
           step: 'the element #search contains the text KegHub/keg-hub',
           type: 'then',
-          // uuid: '22f11b4f-2c45-4599-842f-58454dab6a12',
+          uuid: testUUid,
           index: 13,
         },
       ],

@@ -1,3 +1,4 @@
+import { testUUid } from '../helpers'
 
 export const noIndexFeature = {
   // index: 1,
@@ -16,7 +17,14 @@ export const noIndexFeature = {
     '    Given that a second scenario exists\n' +
     "    Then the second scenario's steps should be run after a second background's steps\n",
   feature: 'Background steps',
-  tags: [ '@background' ],
+  tags: {
+    index: 0,
+    type: `tags`,
+    uuid: testUUid,
+    whitespace: ``,
+    content: `@background`,
+    tokens: [ `@background` ],
+  },
   rules: [],
   empty: [
     {
@@ -43,16 +51,14 @@ export const noIndexFeature = {
     {
       // index: 7,
       scenario: 'Run scenario after the background',
-      tags: [],
-      steps: [Array],
+      steps: [],
       uuid: 'run-scenario-after-the-background-33',
       whitespace: '  '
     },
     {
       // index: 11,
       scenario: 'Run second scenario after a second background',
-      tags: [],
-      steps: [Array],
+      steps: [],
       uuid: 'run-second-scenario-after-a-second-background-45',
       whitespace: '  '
     }
@@ -87,7 +93,7 @@ export const noIndexFeature = {
 export const missingIndex = {
   index: 1,
   // The uuid is different every time, so comment it out for testing
-  // uuid: 'b33c24bf-3b5d-4375-9853-600b1a3c383e',
+  uuid: testUUid,
   content:
     '@search @google\n' +
     'Feature: Google Search\n' +
@@ -104,7 +110,14 @@ export const missingIndex = {
     '    When I wait for the page to load\n' +
     '    Then the element #search contains the text KegHub/keg-hub',
   feature: 'Google Search',
-  tags: [ '@search', '@google' ],
+  tags: {
+    index: 0,
+    type: `tags`,
+    uuid: testUUid,
+    whitespace: ``,
+    content: `@search @google`,
+    tokens: [ `@search`, `@google` ],
+  },
   empty: [
     {
       index: 6,
@@ -130,7 +143,6 @@ export const missingIndex = {
     {
       index: 7,
       scenario: 'Search the web for google',
-      tags: [],
       uuid: 'f75d10d8-645c-4da0-b4b2-70696e3588b3',
       steps: [
         {
@@ -170,7 +182,6 @@ export const missingIndex = {
 
 
 export const assembleBackAndEmptyRuleIndex = {
-  tags: [],
   uuid: "demo-4",
   feature: "demo",
   content: "Feature: demo\n  Background:\n  Rule: Rule: rule\n",
@@ -183,7 +194,6 @@ export const assembleBackAndEmptyRuleIndex = {
     {
       index: 2,
       rule: "rule",
-      tags: [],
       scenarios: [],
       uuid: "rule--rule-10",
       whitespace: "  "

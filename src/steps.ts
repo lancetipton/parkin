@@ -9,7 +9,7 @@ import type {
 
 import { matcher } from './matcher'
 import { constants } from './constants'
-import { shortId } from './utils/shortId'
+import { uuid } from '@keg-hub/jsutils'
 import { throwNoMatchingStep } from './utils/errors'
 import { EStepMethodType, EStepType } from './types'
 import { sanitize, validateDefinition } from './utils/helpers'
@@ -76,8 +76,7 @@ const registerFromCall = function (
 
   definition.name = sanitize(definition as TStepDef)
   definition.content = getContent(definition as TStepDef)
-  const defIdStr = `${type}-${definition.name}`
-  definition.uuid = shortId(defIdStr, defIdStr.length)
+  definition.uuid = uuid()
 
   const definitions = this.list()
   const newDefinition = validateDefinition(definition as TStepDef, definitions)

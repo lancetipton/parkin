@@ -1,14 +1,38 @@
+import type { Hooks } from './hooks'
+import type { Steps } from './steps'
+import type {
+  TRuleAst,
+  TStepAst,
+  TFeatureAst,
+  TWorldConfig,
+  TScenarioAst,
+  TStepParentAst,
+  TParkinRunOpts,
+  TBackgroundAst,
+  TParkinRunFeaturesInput
+} from './types'
+
+import { ETestType, EHookType } from './types'
 import { parseFeature } from './parse'
 import { getTestMethod, skipTestsOnFail } from './utils/testMethods'
-import { throwMissingSteps, throwMissingFeatureText } from './utils/errors'
+import {
+  throwMissingSteps,
+  throwMissingHooks,
+  throwMissingFeatureText
+} from './utils/errors'
 import {
   isArr,
-  capitalize,
   isObj,
   isStr,
-  noOpObj,
+  emptyObj,
+  emptyArr,
   eitherArr,
+  capitalize,
 } from '@keg-hub/jsutils'
+
+type TRunTestMode = {
+  PARKIN_TEST_MODE?: boolean
+} & ((...args:any) => any)
 
 /**
  * Builds the title for the current suite and spec being run
@@ -19,7 +43,7 @@ import {
  *
  * @returns {string} - Built title
  */
-const buildTitle = (text, type) => {
+const buildTitle = (text:string, type:string) => {
   return `${capitalize(type)} > ${text}`
 }
 
@@ -28,18 +52,21 @@ const buildTitle = (text, type) => {
  * Ensures an array of parsed features is returned
  * @function
  * @public
- * @param {Object|Array<string|Object>|string} data - Feature content
- * @param {Object} $world - Holds configuration for the running test environment
+ * @param {TFeatureAst} data - Feature content
+ * @param {TWorldConfig} $world - Holds configuration for the running test environment
  *
  * @returns {Array} - passed in data converted into parsed Features
  */
-const resolveFeatures = (data, $world) => {
+const resolveFeatures = (
+  data:TParkinRunFeaturesInput,
+  $world:TWorldConfig
+):TFeatureAst[] => {
   return isStr(data)
     ? parseFeature(data, $world)
-    : isObj(data)
+    : isObj<TFeatureAst>(data)
       ? [data]
-      : isArr(data)
-        ? data.reduce(
+      : isArr<TFeatureAst[]>(data)
+        ? (data as TFeatureAst[]).reduce(
           (features, feature) =>
             features.concat(resolveFeatures(feature, $world)),
           []
@@ -51,14 +78,18 @@ const resolveFeatures = (data, $world) => {
  * Calls the `it` global passing in a registered step function based on the step text
  * @function
  * @private
- * @param {Object} stepsInstance - Instance of the Steps class
- * @param {Object} step - Parsed Step mode object
+ * @param {Steps} stepsInstance - Instance of the Steps class
+ * @param {TStepAst} step - Parsed Step mode object
  * @param {boolean} testMode - Allows testing the runner methods, without running the tests
  *
  * @returns {Void}
  */
-const runStep = async (stepsInstance, step, testMode) => {
-  const test = getTestMethod('test', testMode)
+const runStep = async (
+  stepsInstance:Steps,
+  step:TStepAst,
+  testMode:boolean
+) => {
+  const test = getTestMethod(ETestType.test, testMode)
   test(`${capitalize(step.type)} ${step.step}`, async () => {
     return await stepsInstance.resolve(step.step)
   })
@@ -68,15 +99,20 @@ const runStep = async (stepsInstance, step, testMode) => {
  * Loops through the parents steps and calls the matching definition method
  * @function
  * @private
- * @param {Object} parent - Parent object containing the steps to run
+ * @param {TStepParentAst} parent - Parent object containing the steps to run
  * @param {string} title - Text passed as the first argument to the describe method
- * @param {Object} stepsInstance - Instance of the Steps class
+ * @param {Steps} stepsInstance - Instance of the Steps class
  * @param {boolean} testMode - Allows testing the runner methods, without running the tests
  *
  * @returns {Array} - Responses from the parents steps
  */
-const loopSteps = (parent, title, stepsInstance, testMode) => {
-  const describe = getTestMethod('describe', testMode)
+const loopSteps = (
+  parent:TStepParentAst,
+  title:string,
+  stepsInstance:Steps,
+  testMode:boolean
+) => {
+  const describe = getTestMethod(ETestType.describe, testMode)
 
   let responses = []
   describe(title, () => {
@@ -97,13 +133,19 @@ const loopSteps = (parent, title, stepsInstance, testMode) => {
  * Loops through the passed in scenarios steps and calls runStep for each
  * @function
  * @private
- * @param {Object} stepsInstance - Instance of the Steps class
- * @param {Object} scenario - Parsed feature scenario object containing the steps to run
+ * @param {Steps} stepsInstance - Instance of the Steps class
+ * @param {TScenarioAst} scenario - Parsed feature scenario object containing the steps to run
+ * @param {TBackgroundAst} background - Parsed feature scenario object containing the steps to run
  * @param {boolean} testMode - Allows testing the runner methods, without running the tests
  *
  * @returns {Void}
  */
-const runScenario = (stepsInstance, scenario, background, testMode) => {
+const runScenario = (
+  stepsInstance:Steps,
+  scenario:TScenarioAst,
+  background:TBackgroundAst,
+  testMode:boolean
+) => {
   const responses = []
 
   // If there's a background, run the background steps first
@@ -127,13 +169,19 @@ const runScenario = (stepsInstance, scenario, background, testMode) => {
  * Loops through the steps of the passed in background and calls runStep for each
  * @function
  * @private
- * @param {Object} stepsInstance - Instance of the Steps class
- * @param {Object} background - Parsed feature scenario object containing the steps to run
+ * @param {Steps} stepsInstance - Instance of the Steps class
+ * @param {string} title - Description or title of the background
+ * @param {TBackgroundAst} background - Parsed feature scenario object containing the steps to run
  * @param {boolean} testMode - Allows testing the runner methods, without running the tests
  *
  * @returns {Void}
  */
-const runBackground = (stepsInstance, title, background, testMode) => {
+const runBackground = (
+  stepsInstance:Steps,
+  title:string,
+  background:TBackgroundAst,
+  testMode:boolean
+) => {
   // If there's a background, run the background steps first
   return loopSteps(
     background,
@@ -147,14 +195,19 @@ const runBackground = (stepsInstance, title, background, testMode) => {
  * Loops through the passed in rules steps and calls runStep for each
  * @function
  * @private
- * @param {Object} stepsInstance - Instance of the Steps class
- * @param {Object} rule - Parsed feature rule object containing the steps to run
- * @param {Object} background - Parsed background object containing the steps to run before the rule
+ * @param {Steps} stepsInstance - Instance of the Steps class
+ * @param {TRuleAst} rule - Parsed feature rule object containing the steps to run
+ * @param {TBackgroundAst} background - Parsed background object containing the steps to run before the rule
  * @param {boolean} testMode - Allows testing the runner methods, without running the tests
  *
  * @returns {Void}
  */
-const runRule = (stepsInstance, rule, background, testMode) => {
+const runRule = (
+  stepsInstance:Steps,
+  rule:TRuleAst,
+  background:TBackgroundAst,
+  testMode:boolean
+) => {
   // Map over the rule scenarios and call their steps
   // Store the returned promise in the responses array
   let responses = []
@@ -162,7 +215,7 @@ const runRule = (stepsInstance, rule, background, testMode) => {
     background &&
       responses.push(
         ...responses.concat(
-          runBackground(this.steps, rule.rule, background, testMode)
+          runBackground(stepsInstance, rule.rule, background, testMode)
         )
       )
 
@@ -184,19 +237,30 @@ const runRule = (stepsInstance, rule, background, testMode) => {
  * @return {Array<string>?} A match of all words starting with '@', the tag indicator.
  * Returns false if input is invalid.
  */
-const parseFeatureTags = tags => {
-  return isStr(tags) && tags.match(/[@]\w*/g)
+const parseFeatureTags = (tags?:string|string[]) => {
+  return isStr(tags)
+    ? tags.match(/[@]\w*/g)
+    : isArr<string>(tags)
+      ? tags
+      : emptyArr
 }
 
 /**
- * @param {string?} name - name of item (feature|scenario) to check
- * @param {string | Array<string>} tags - tags of item (feature|scenario) to check
- * @param {string?} filterOptions.name - name filter
- * @param {string | Array<string>} filterOptions.tags - tags filter
+ * @param {string?} name - name of test item to check
+ * @param {string[]} tags - Tags related to the test item
+ * @param {TParkinRunOpts} filterOptions - Define how the steps are run
+ *
  * @return {Boolean} - true if feature matches the filter options
  */
-const itemMatch = (name = '', tags = [], filterOptions = {}) => {
-  const { name: filterName, tags: filterTags } = filterOptions
+const itemMatch = (
+  name:string='',
+  tags:string[]=emptyArr,
+  filterOptions:TParkinRunOpts=emptyObj
+) => {
+  const {
+    name: filterName,
+    tags: filterTags
+  } = filterOptions
 
   const parsedTags = isStr(filterTags)
     ? parseFeatureTags(filterTags)
@@ -205,7 +269,7 @@ const itemMatch = (name = '', tags = [], filterOptions = {}) => {
   const nameMatch = !filterName || name.includes(filterName)
   const tagMatch =
     !parsedTags.length ||
-    parsedTags.every(clientTag => tags.includes(clientTag))
+    parsedTags.every((clientTag:string) => tags.includes(clientTag))
 
   return nameMatch && tagMatch
 }
@@ -215,17 +279,18 @@ const itemMatch = (name = '', tags = [], filterOptions = {}) => {
  * @function
  * @private
  * @param {Array} features - Features to be run
- * @param {Object} tags - Tags to filter which Features and scenarios will be run
- *  * @param {string?} filterOptions.name - name of feature
- * @param {string | Array<string>} filterOptions.tags - feature tags to match
+ * @param {TParkinRunOpts} filterOptions - Filters for running Features
  *
  * @returns {Array} - Filtered features that should be run
  */
-const filterFeatures = (features, filterOptions = {}) => {
+const filterFeatures = (
+  features:TFeatureAst[],
+  filterOptions:TParkinRunOpts = emptyObj
+) => {
   return features.reduce((filtered, feature) => {
     const isMatchingFeature = itemMatch(
       feature.feature,
-      feature.tags,
+      feature?.tags?.tokens,
       filterOptions
     )
     if (isMatchingFeature) {
@@ -237,7 +302,7 @@ const filterFeatures = (features, filterOptions = {}) => {
     const matchingScenarios = feature.scenarios.filter(scenario =>
       itemMatch(
         scenario.scenario,
-        [ ...(scenario.tags || []), ...(feature.tags || []) ],
+        [ ...(scenario?.tags?.tokens || emptyArr), ...(feature?.tags?.tokens || emptyArr) ],
         filterOptions
       )
     )
@@ -262,9 +327,14 @@ const filterFeatures = (features, filterOptions = {}) => {
  * @returns {Object} Instance of the Runner class
  */
 export class Runner {
-  constructor(steps, hooks, world) {
+  
+  steps:Steps
+  hooks:Hooks
+  _world:TWorldConfig
+  
+  constructor(steps:Steps, hooks:Hooks, world:TWorldConfig) {
     !steps && throwMissingSteps()
-    !hooks && throwMissingHooks()
+    !hooks && throwMissingHooks(hooks)
 
     this.steps = steps
     this.hooks = hooks
@@ -273,12 +343,13 @@ export class Runner {
 
   /**
    * Gets the features to be run for a test
-   * @param {string|Array<Object>|Object} data - Feature data as a string or parsed Feature model
-   * @param {Object} options - Define how the steps are run
-   * @param {Array<string>? | string?} options.tags - Tags to filter which features or scenarios are run
-   * @param {string?} options.name - Name of feature
+   * @param {TParkinRunFeaturesInput} data - Feature data as a string or parsed Feature model
+   * @param {TParkinRunOpts} options - Define how the steps are run
    */
-  getFeatures = (data, options) => {
+  getFeatures = (
+    data:TParkinRunFeaturesInput,
+    options:TParkinRunOpts
+  ) => {
     const features = resolveFeatures(data, this._world)
     return filterFeatures(features, options)
   }
@@ -289,26 +360,27 @@ export class Runner {
    * @memberof Runner
    * @function
    * @public
-   * @param {string|Array<Object>|Object} data - Feature data as a string or parsed Feature model
-   * @param {Object} options - Define how the steps are run
-   * @param {Array<string>? | string?} options.tags - Tags to filter which features or scenarios are run
-   * @param {string?} options.name - Name of feature
+   * @param {TParkinRunFeaturesInput} data - Feature data as a string or parsed Feature model
+   * @param {TParkinRunOpts} options - Define how the steps are run
    *
    * @returns {boolean} - whether any tests ran
    */
-  run = async (data, options = noOpObj) => {
+  run = async (
+    data:TParkinRunFeaturesInput,
+    options:TParkinRunOpts=emptyObj
+  ) => {
     // Set if were running tests for Parkin, or external tests
     // Only used for testing purposes
-    const testMode = this.run.PARKIN_TEST_MODE
+    const testMode = (this.run as TRunTestMode).PARKIN_TEST_MODE
 
     // Setup step skip on failed
     skipTestsOnFail(testMode)
 
-    const describe = getTestMethod('describe', testMode)
-    const beforeAll = getTestMethod('beforeAll', testMode)
-    const afterAll = getTestMethod('afterAll', testMode)
-    const beforeEach = getTestMethod('beforeEach', testMode)
-    const afterEach = getTestMethod('afterEach', testMode)
+    const describe = getTestMethod(ETestType.describe, testMode)
+    const beforeAll = getTestMethod(ETestType.beforeAll, testMode)
+    const afterAll = getTestMethod(ETestType.afterAll, testMode)
+    const beforeEach = getTestMethod(ETestType.beforeEach, testMode)
+    const afterEach = getTestMethod(ETestType.afterEach, testMode)
 
     // Get all the features to be run
     // Then filter them based on any options tags
@@ -320,22 +392,22 @@ export class Runner {
     const promises = await features.map(async feature => {
       let responses = []
 
-      beforeAll(this.hooks.getRegistered('beforeAll'))
-      afterAll(this.hooks.getRegistered('afterAll'))
-      beforeEach(this.hooks.getRegistered('beforeEach'))
-      afterEach(this.hooks.getRegistered('afterEach'))
+      beforeAll(this.hooks.getRegistered(EHookType.beforeAll))
+      afterAll(this.hooks.getRegistered(EHookType.afterAll))
+      beforeEach(this.hooks.getRegistered(EHookType.beforeEach))
+      afterEach(this.hooks.getRegistered(EHookType.afterEach))
 
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
       describe(buildTitle(feature.feature, `Feature`), () => {
         responses.push(
-          ...feature.rules.map(rule =>
+          ...feature.rules.map((rule:TRuleAst) =>
             runRule(this.steps, rule, feature.background, testMode)
           )
         )
 
         responses.push(
-          ...feature.scenarios.map(scenario =>
+          ...feature.scenarios.map((scenario:TScenarioAst) =>
             runScenario(this.steps, scenario, feature.background, testMode)
           )
         )

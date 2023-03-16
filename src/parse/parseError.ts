@@ -1,5 +1,4 @@
-import type { EAstObject } from '../types'
-import { TFeatureAst } from '../types'
+import { EAstObject, TFeatureAst } from '../types'
 
 
 export const parseError = (

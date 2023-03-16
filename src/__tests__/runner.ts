@@ -27,6 +27,7 @@ describe('Runner', () => {
 
   beforeEach(() => {
     ogTest = global.test
+    // @ts-ignore
     global.test = () => {}
     resetHooks = mockHooks()
   })

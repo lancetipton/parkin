@@ -1,6 +1,5 @@
 import { EAstObject } from './helpers.types'
 
-
 export enum EResultAction {
   skipped=`skipped`,
   start=`start`,
@@ -22,6 +21,19 @@ export enum EResultType {
   xtest=`xtest`,
   describe=`describe`,
   xdescribe=`xdescribe`
+}
+
+export enum ETestType {
+  it = `it`,
+  itx = `itx`,
+  test = `test`,
+  testx = `testx`,
+  describe = `describe`,
+  describex = `describex`,
+  beforeAll = `beforeAll`,
+  afterAll = `afterAll`,
+  beforeEach = `beforeEach`,
+  afterEach = `afterEach`,
 }
 
 export type TRunResult = {

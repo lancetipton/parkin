@@ -27,7 +27,7 @@ export const addScenarios = (
 
       breaks?.scenario && addEmpty(assembled, opts)
 
-      addTags(assembled, scenario.tags, whitespace)
+      addTags(assembled, scenario, opts, whitespace)
       addContent(assembled, `${whitespace}${type}: ${scenario.scenario}`, indexes && scenario.index)
       addSteps(assembled, scenario, opts)
     })

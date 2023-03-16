@@ -1,7 +1,7 @@
 import type { TStepAst, TStepParentAst, TParseParentAst } from '../types'
 
 import { EStepType } from '../types'
-import { shortId } from '../utils/shortId'
+import { uuid } from '@keg-hub/jsutils'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 const RX_GIVEN = /^\s*Given (.*)$/
@@ -144,7 +144,7 @@ const stepFactory = (
     index,
     step: stepText,
     whitespace: getStartWhiteSpace(line),
-    uuid: shortId(`${type}-${stepText}-${index}`, index),
+    uuid: uuid(),
   } as TStepAst
 
   // TODO: Need to add check if next line is empty of a comment

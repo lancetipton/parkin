@@ -1,4 +1,4 @@
-import type { TSuite, TSpec, TSpecResult, TJasmineEnv } from '../types'
+import type { TSuite, TSpec, TSpecResult, TJasmineEnv, ETestType } from '../types'
 import { EAstObject, EResultAction } from '../types'
 
 import { constants } from '../constants'
@@ -7,14 +7,6 @@ import { noOp, get } from '@keg-hub/jsutils'
 import { hasJasmine, resolveJasmine } from './globalScope'
 const { SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV } = constants
 
-enum ETestType {
-  it = `it`,
-  itx = `itx`,
-  test = `test`,
-  testx = `testx`,
-  describe = `describe`,
-  describex = `describex`,
-}
 
 /**
  * Converts a log into a string, and logs it to stdout wrapped by SPEC_RESULT_LOG constant

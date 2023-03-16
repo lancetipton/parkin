@@ -1,38 +1,56 @@
 import type { TStepAst } from './steps.types'
 import type { EAstObject } from './helpers.types'
 
-export type TBackgroundAst = {
-  index?: number
+export type TTagsAst = {
+  index: number
   uuid: string
-  tags: string[]
+  whitespace?:string
+  type: EAstObject.tags
+  content: string
+  tokens: string[]
+}
+
+export type TBackgroundAst = {
+  index: number
+  uuid: string
+  tags?: TTagsAst
   whitespace?: string
   background: string
   steps: TStepAst[]
+  type:EAstObject.background
 }
 
 export type TRuleAst = {
-  index?: number
+  index: number
   uuid: string
-  tags: string[]
   rule: string
+  tags?: TTagsAst
   whitespace?: string
+  type:EAstObject.rule
   background?: TBackgroundAst
   scenarios: TScenarioAst[]
 }
 
 export type TScenarioAst = {
-  index?: number
+  index: number
   uuid: string
-  tags: string[]
+  tags?: TTagsAst
   alias?:`Example`
   scenario: string
   steps: TStepAst[]
   whitespace?: string
+  type:EAstObject.scenario
 }
 
 export type TAstBlock = {
   content: string
-  index?: number
+  index: number
+  type:EAstObject.block
+    | EAstObject.empty
+    | EAstObject.comment
+    | EAstObject.reason
+    | EAstObject.desire
+    | EAstObject.perspective
 }
 
 export type TAstParseError = {
@@ -42,12 +60,13 @@ export type TAstParseError = {
 }
 
 export type TFeatureAst = {
-  index?: number
-  tags: string[]
+  index: number
+  tags?: TTagsAst
   uuid?: string
   feature: string
   content: string
   empty?: TAstBlock[]
+  type: EAstObject.feature
   reason?: TAstBlock|TAstBlock[]
   desire?: TAstBlock
   comments: TAstBlock[]
@@ -65,4 +84,3 @@ export type TStepParentAst = TBackgroundAst | TScenarioAst
 export type TScenarioParentAst = TRuleAst | TFeatureAst
 export type TTagsParentAst = TScenarioParentAst | TStepParentAst
 export type TBackgroundParentAst = TFeatureAst | TRuleAst
-

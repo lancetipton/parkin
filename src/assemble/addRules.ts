@@ -27,7 +27,7 @@ export const addRules = (
       
       const whitespace = rule.whitespace || `  `
 
-      addTags(assembled, rule.tags, whitespace)
+      addTags(assembled, rule, opts, whitespace)
       addContent(assembled, `${whitespace}${EFeatureTypes.Rule}: ${rule.rule}`, indexes && rule.index)
       addBackground(
         assembled,

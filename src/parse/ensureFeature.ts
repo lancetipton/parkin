@@ -2,7 +2,7 @@ import type { TFeatureAst } from '../types'
 
 import { EAstObject } from '../types'
 import { parseError } from './parseError'
-import { shortId } from '../utils/shortId'
+import { uuid } from '@keg-hub/jsutils'
 import { getRXMatch } from '../utils/helpers'
 
 /**
@@ -26,14 +26,14 @@ export const featureFactory = (
     index,
     content,
     feature,
-    tags: [],
     rules: [],
     empty: [],
     reason: [],
     comments: [],
     scenarios: [],
+    type: EAstObject.feature,
     // The feature name should always be unique, so use that as a re-usable id
-    ...(feature && { uuid: shortId(feature, index) }),
+    ...(feature && { uuid: uuid() }),
   } as TFeatureAst
 }
 
@@ -79,7 +79,7 @@ export const ensureFeature = (
 
     // Ensure the index is added if needed
     if (!feature.index) feature.index = index
-    if (!feature.uuid) feature.uuid = shortId(feature.feature, index)
+    if (!feature.uuid) feature.uuid = uuid()
 
     !featuresGroup.includes(feature) && featuresGroup.push(feature)
 

@@ -125,3 +125,5 @@ export interface IParkin {
   paramTypes:TParamTypes
   registerSteps:TRegisterStepsMethod
 }
+
+export type TParkinRunFeaturesInput = string|string[]|TFeatureAst[]|TFeatureAst

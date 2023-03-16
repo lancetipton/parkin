@@ -105,7 +105,7 @@ export const parseFeature = function (
     )
 
     // Check for tags after the next active parent has been set
-    checkTag(activeParent, feature, line)
+    checkTag(activeParent, feature, line, index)
 
     return featuresGroup
   }, features)

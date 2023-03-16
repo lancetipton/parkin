@@ -1,3 +1,5 @@
+import { testUUid } from '../helpers'
+
 export const featureRulesScenarios = `@rules @scenarios
 Feature: Full set of functionality in feature files
   # This is a test comment
@@ -39,18 +41,23 @@ export const parsedFeatureRulesScenarios = {
   index: 1,
   content: '...',
   feature: 'Full set of functionality in feature files',
-  tags: [ '@rules', '@scenarios' ],
+  tags: {
+    index: 0,
+    type: `tags`,
+    uuid: testUUid,
+    whitespace: ``,
+    content: `@rules @scenarios`,
+    tokens: [ `@rules`, `@scenarios` ],
+  },
   rules: [
     {
       index: 11,
       rule: 'This is Rule 1',
-      tags: [],
       scenarios: [
         {
           index: 12,
           scenario: "Run first rule - first scenario",
           alias: "Example",
-          tags: [],
           steps: [
             {
               type: "given",
@@ -73,7 +80,6 @@ export const parsedFeatureRulesScenarios = {
         {
           index: 16,
           scenario: "Run first rule - second scenario",
-          tags: [],
           steps: [
             {
               type: "given",
@@ -100,7 +106,6 @@ export const parsedFeatureRulesScenarios = {
     {
       index: 24,
       rule: 'This is Rule 2',
-      tags: [],
       background: {
         index: 25,
         steps: [
@@ -128,7 +133,6 @@ export const parsedFeatureRulesScenarios = {
           index: 25,
           alias: "Example",
           scenario: "Run second rule first example",
-          tags: [],
           steps: [
             {
               type: "given",
@@ -159,7 +163,6 @@ export const parsedFeatureRulesScenarios = {
     {
       index: 7,
       scenario: "Scenario before rules",
-      tags: [],
       steps: [
         {
           type: "given",
@@ -182,7 +185,6 @@ export const parsedFeatureRulesScenarios = {
     {
       index: 20,
       scenario: "Scenario in-between rules",
-      tags: [],
       steps: [
         {
           type: "given",
@@ -205,7 +207,6 @@ export const parsedFeatureRulesScenarios = {
     {
       index: 29,
       scenario: "Scenario after rules",
-      tags: [],
       steps: [
         {
           type: "given",

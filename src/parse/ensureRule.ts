@@ -1,8 +1,8 @@
 import type { TFeatureAst, TRuleAst } from '../types'
 
-import { shortId } from '../utils/shortId'
+import { EAstObject } from '../types'
+import { uuid } from '@keg-hub/jsutils'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
-
 
 /**
  * Regular expressions for matching feature file keywords
@@ -19,10 +19,10 @@ export const ruleFactory = (rule:string|false, index?:number) => {
   return {
     index,
     rule,
-    tags: [],
     scenarios: [],
+    type: EAstObject.rule,
     // The feature name should always be unique, so use that as a re-usable id
-    ...(rule && { uuid: shortId(rule, index) }),
+    ...(rule && { uuid: uuid() }),
   } as TRuleAst
 }
 
@@ -51,7 +51,7 @@ export const ensureRule = (
   // Ensure the line index is added
   !rule.index && (rule.index = index)
   // Add the uuid from the rule text if it doesn't exist
-  !rule.uuid && (rule.uuid = shortId(rule.rule, index))
+  !rule.uuid && (rule.uuid = uuid())
 
   // Get the start whitespace, used when assembling the feature
   rule.whitespace = getStartWhiteSpace(line)

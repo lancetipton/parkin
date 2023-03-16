@@ -1,3 +1,5 @@
+import type { TFeatureAst, TTagsParentAst, TTagsAst, TAssembleFeatureOpts } from '../types'
+
 import { addContent } from './addContent'
 import { isArr } from '@keg-hub/jsutils'
 
@@ -10,10 +12,17 @@ import { isArr } from '@keg-hub/jsutils'
  */
 export const addTags = (
   assembled:string[],
-  tags?:string[],
-  spacer:string = ''
+  parent:TTagsParentAst,
+  opts:TAssembleFeatureOpts,
+  whitespace?:string
 ) => {
-  isArr(tags) &&
-    tags.length &&
-    addContent(assembled, `${spacer}${tags.join(' ')}`)
+  if(!parent.tags || !parent.tags?.tokens?.length) return
+
+  const { indexes=true } = opts
+
+  addContent(
+    assembled,
+    `${parent.tags.whitespace || whitespace || ``}${parent.tags.tokens.join(' ')}`,
+    indexes && parent.tags.index
+  )
 }

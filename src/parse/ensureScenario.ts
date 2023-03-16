@@ -1,8 +1,7 @@
 import type { TFeatureAst, TScenarioAst, TRuleAst } from '../types'
 
-import { exists } from '@keg-hub/jsutils'
-import { EFeatureTypes } from '../types'
-import { shortId } from '../utils/shortId'
+import { exists, uuid } from '@keg-hub/jsutils'
+import { EAstObject, EFeatureTypes } from '../types'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 /**
@@ -24,9 +23,9 @@ export const scenarioFactory = (
   return {
     index,
     scenario,
-    tags: [],
     steps: [],
-    ...(scenario && { uuid: shortId(scenario, index) }),
+    type: EAstObject.scenario,
+    ...(scenario && { uuid: uuid() }),
   } as TScenarioAst
 }
 
@@ -63,7 +62,7 @@ export const ensureScenario = (
   // Ensure the line index is added
   !scenario.index && (scenario.index = index)
   // Add the uuid from the scenario text if it doesn't exist
-  !scenario.uuid && (scenario.uuid = shortId(scenario.scenario, index))
+  !scenario.uuid && (scenario.uuid = uuid())
 
   // Get the start whitespace, used when assembling the feature
   scenario.whitespace = getStartWhiteSpace(line)

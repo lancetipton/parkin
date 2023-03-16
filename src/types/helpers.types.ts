@@ -10,7 +10,9 @@ export enum EStepType {
   when=`when`,
   then=`then`,
   and=`and`,
-  but=`but`
+  but=`but`,
+  empty=``,
+  "*"=`*`,
 }
 
 export enum EStepMethodType {
@@ -22,11 +24,18 @@ export enum EStepMethodType {
 }
 
 export enum EAstObject {
-  feature = `feature`,
-  rule = `rule`,
-  background = `background`,
-  scenario = `scenario`,
-  step = `step`
+  tags=`tags`,
+  rule=`rule`,
+  step=`step`,
+  block=`block`,
+  empty=`empty`,
+  reason=`reason`,
+  desire=`desire`,
+  comment=`comment`,
+  feature=`feature`,
+  scenario=`scenario`,
+  background=`background`,
+  perspective=`perspective`,
 }
 
 export enum EFeatureTypes {

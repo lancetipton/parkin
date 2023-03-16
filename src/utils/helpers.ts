@@ -1,4 +1,5 @@
 import type { TStepDef } from '../types'
+import { uuid } from '@keg-hub/jsutils'
 
 /*
  * Extracts keywords from a text string
@@ -45,10 +46,12 @@ export const validateDefinition = (
 ) => {
   return definitions.reduce(
     (validated, def) => {
+      // Check if the checkDef already exists in the definitions array
+      // By comparing the content of the existing definitions to it
       if (!validated || def.content === validated.content) return false
 
-      def.uuid === validated.uuid &&
-        (validated.uuid = `${validated.uuid}-${validated.content.length}`)
+      // If the uuid happens to match an existing definition, give it a new uuid
+      def.uuid === validated.uuid && (validated.uuid = uuid())
 
       return validated
     },

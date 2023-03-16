@@ -70,7 +70,7 @@ export const assembleFeature = (
     let assembled = []
     !isObj(feature) && throwFeatureNotAnObj(feature)
 
-    addTags(assembled, feature.tags)
+    addTags(assembled, feature, options)
     addMeta(assembled, feature, options)
     options.empty && addFeatureEmpty(assembled, feature, options)
 

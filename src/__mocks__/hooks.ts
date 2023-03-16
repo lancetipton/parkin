@@ -9,7 +9,7 @@ const { HOOK_TYPES } = constants
 export const mockHooks = () => {
   // jest functions to reset to when done mocking
   const orig = HOOK_TYPES.reduce(
-    (state, type) => ({
+    (state:any, type:string) => ({
       ...state,
       [type]: global[type],
     }),
@@ -17,13 +17,13 @@ export const mockHooks = () => {
   )
 
   // mock each type using jest.fn
-  HOOK_TYPES.map(type => {
-    global[type] = jest.fn(hook => hook(type))
+  HOOK_TYPES.map((type:string) => {
+    global[type] = jest.fn((hook:any) => hook(type))
   })
 
   // reset function
   return () => {
-    HOOK_TYPES.map(type => {
+    HOOK_TYPES.map((type:string) => {
       global[type] = orig[type]
     })
   }
