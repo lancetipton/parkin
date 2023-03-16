@@ -11,10 +11,14 @@ module.exports = {
   coverageDirectory: "reports/coverage",
   coveragePathIgnorePatterns: [
     "<rootDir>/src/__mocks__",
-    "<rootDir>/src/__tests__"
+    "<rootDir>/src/__tests__",
+    "<rootDir>/src/types",
+    "<rootDir>/src/bin/testCli.ts",
+    "<rootDir>/src/bin/parkin.js",
   ],
   collectCoverageFrom: [
-    "src/**/*.{js,jsx,ts,tsx}"
+    "src/**/*.{js,jsx,ts,tsx}",
+    '!src/**/index.*'
   ],
   moduleFileExtensions: ['js', 'json', 'jsx', 'es6', `ts`, `tsx`, `cjs`, `ejs` ],
   globals: {

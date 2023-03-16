@@ -100,6 +100,7 @@ describe('testMethods', () => {
       addReporterMock.mockClear()
       resolveJasmineMock.mockClear()
       mockSpec.disable.mockClear()
+      // @ts-ignore
       Date.prototype.getTime.mockClear()
       jest.setMock('../globalScope', {
         ...globalScope,
@@ -124,6 +125,7 @@ describe('testMethods', () => {
     })
 
     it(`should call stdout when LOG_JEST_SPEC_ENV env is set`, () => {
+      // @ts-ignore
       process.env[LOG_JEST_SPEC_ENV] = true
       const orgStdOut = process.stdout.write
       process.stdout.write = jest.fn((...data) => {
@@ -140,6 +142,7 @@ describe('testMethods', () => {
     })
 
     it(`should call stdout with the correct type`, () => {
+      // @ts-ignore
       process.env[LOG_JEST_SPEC_ENV] = true
       const orgStdOut = process.stdout.write
       process.stdout.write = jest.fn((...data) => {
@@ -157,6 +160,7 @@ describe('testMethods', () => {
           SPEC_RESULT_LOG,
         ].join(``)
       )
+      // @ts-ignore
       process.stdout.write.mockClear()
 
       reporter.suiteStarted({ id: 'suite01', description: `Background >` })
@@ -167,6 +171,7 @@ describe('testMethods', () => {
           SPEC_RESULT_LOG,
         ].join(``)
       )
+      // @ts-ignore
       process.stdout.write.mockClear()
 
       reporter.suiteStarted({ id: 'suite01', description: `Rule >` })
@@ -177,12 +182,14 @@ describe('testMethods', () => {
           SPEC_RESULT_LOG,
         ].join(``)
       )
+      // @ts-ignore
       process.stdout.write.mockClear()
 
       reporter.suiteStarted({ id: 'suite01' })
       expect(process.stdout.write).toHaveBeenCalledWith(
         `${SPEC_RESULT_LOG}{"id":"suite01","type":"feature","action":"start","timestamp":"fake-time"}${SPEC_RESULT_LOG}`
       )
+      // @ts-ignore
       process.stdout.write.mockClear()
 
       process.stdout.write = orgStdOut

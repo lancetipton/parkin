@@ -31,6 +31,13 @@ const worldObj = {}
 const { Parkin } = require('../parkin')
 
 describe('Parkin', () => {
+  
+  it('should not error when a world object is not passed', () => {
+    expect(() => {
+      const PK = new Parkin()
+    }).not.toThrow()
+  })
+
   it('should allow registering steps', () => {
     const PK = new Parkin(worldObj)
 
@@ -309,4 +316,29 @@ describe('Parkin', () => {
     expect(steps[0]).toEqual(givenDef)
     expect(steps[1]).toEqual(thenDef)
   })
+
+  it(`should register steps when they are passed as the second argument`, () => {
+
+    const PKtest = new Parkin(worldObj)
+    PKtest.parse.definition(definition)
+    const givenDef = PKtest.steps._given[0]
+    const thenDef = PKtest.steps._then[0]
+    PKtest.steps.clear()
+
+    const PK = new Parkin(worldObj, {
+      given: {
+        [givenDef.match]: givenDef.method
+      },
+      then: {
+        [thenDef.match]: thenDef.method
+      }
+    })
+
+    const steps = PK.steps.list()
+    // console.log(steps)
+
+    expect(steps[0]).toEqual(givenDef)
+    expect(steps[1]).toEqual(thenDef)
+  })
+
 })

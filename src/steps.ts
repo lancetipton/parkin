@@ -50,6 +50,13 @@ const getContent = (def:TStepDef) => {
   return `${capitalize(def.type)}(${match}, ${def.method.toString()})`
 }
 
+const stringToRegex = (str:string) => {
+  const main = str.match(/\/(.+)\/.*/)[1]
+  const options = str.match(/\/.+\/(.*)/)[1]
+
+  return new RegExp(main, options)
+}
+
 /**
  * Registers a step definition by type
  * @function
@@ -63,15 +70,20 @@ const registerFromCall = function (
   method:TStepDefMethod,
   meta:TStepMeta = noOpObj
 ) {
+  
+  const variant = match.toString().indexOf('/') === 0 ? REGEX_VARIANT : EXPRESSION_VARIANT
+  const formattedMatch = variant === REGEX_VARIANT
+    ? stringToRegex(match.toString())
+    : match.toString()
+
   const definition:Partial<TStepDef> = {
     type,
     meta,
-    match,
     method,
+    variant,
     // TODO: add token parsing
     tokens: [],
-    variant:
-      match.toString().indexOf('/') === 0 ? REGEX_VARIANT : EXPRESSION_VARIANT,
+    match: formattedMatch,
   }
 
   definition.name = sanitize(definition as TStepDef)

@@ -9,6 +9,7 @@ describe('Errors', () => {
   console.error = jest.fn()
 
   beforeEach(() => {
+    // @ts-ignore
     console.error.mockClear()
   })
 
@@ -25,7 +26,7 @@ describe('Errors', () => {
     })
   })
 
-  Object.entries(errorMethods).map(([ name, method ]) => {
+  Object.entries(errorMethods as Record<string, ()=>any>).map(([ name, method ]) => {
     describe(name, () => {
       it('should throw an error when called', () => {
         expect(() => method()).toThrow()

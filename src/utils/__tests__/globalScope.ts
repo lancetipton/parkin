@@ -19,6 +19,7 @@ describe('globalScope', () => {
   describe('resolveGlobalObj', () => {
     it('should return the window object when it exits', () => {
       const orgWin = global.window
+      // @ts-ignore
       global.window = { test: 'global-window' }
       const { resolveGlobalObj } = require('../globalScope')
       const globalObj = resolveGlobalObj()
@@ -56,6 +57,8 @@ describe('globalScope', () => {
       Object.keys(mod).map(key => {
         expect(moduleKeys.includes(key)).toBe(true)
       })
+
+      // @ts-ignore
       expect(mod.main === module.main).toBe(true)
     })
   })

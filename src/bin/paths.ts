@@ -6,7 +6,7 @@ import { isStr } from '@keg-hub/jsutils'
 export const cwd = process.cwd()
 export const homeDir = homedir()
 
-const checkRootDir = (rootDir:string) => {
+const checkRootDir = (rootDir:string|undefined) => {
   return !isStr(rootDir)
     ? undefined
     : rootDir.startsWith(`/`)
@@ -17,7 +17,7 @@ const checkRootDir = (rootDir:string) => {
 }
 
 let __RootDir:string
-const setRoot = (loc:string, force?:boolean) => {
+const setRoot = (loc:string|undefined, force?:boolean) => {
   (!__RootDir || force) && (__RootDir = checkRootDir(loc))
 }
 

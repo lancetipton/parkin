@@ -19,6 +19,7 @@ describe('globalScope', () => {
   const orgBool = global.Boolean
 
   beforeAll(() => {
+    // @ts-ignore
     global.Boolean = function () {
       return false
     }
