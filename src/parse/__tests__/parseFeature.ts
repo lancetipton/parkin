@@ -20,7 +20,9 @@ describe(`parseFeature`, () => {
     it(`should parse comments within a Feature`, () => {
       const { comments } = parseFeature(backgroundFeature)[0]
       expect(Array.isArray(comments)).toBe(true)
-      expect(comments[0]).toEqual({
+      const { uuid, ...comment } = comments[0]
+      expect(typeof uuid).toBe(`string`)
+      expect(comment).toEqual({
         index: 2,
         type: `comment`,
         content: `  # This is a test comment`,

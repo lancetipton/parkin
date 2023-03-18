@@ -1,4 +1,4 @@
-import type { TFeatureAst, TTagsAst, TTagsParentAst, TAstBlock } from '../types'
+import type { TFeatureAst, TTagsAst, TTagsParentAst, TBlockAst } from '../types'
 
 import { EAstObject } from '../types'
 import { eitherArr, uuid } from '@keg-hub/jsutils'
@@ -42,8 +42,13 @@ const addReason = (
 ) => {
   if(!reason) return
 
-  const reasonArr = eitherArr<TAstBlock[]>(feature.reason, [feature.reason])
-  reasonArr.push({ content: reason, index, type: EAstObject.reason })
+  const reasonArr = eitherArr<TBlockAst[]>(feature.reason, [feature.reason])
+  reasonArr.push({
+    index,
+    uuid: uuid(),
+    content: reason,
+    type: EAstObject.reason
+  })
   feature.reason = reasonArr
 }
 
@@ -153,7 +158,12 @@ export const featureComment = (
   // But not much we can do about it
   const comment = line.match(RX_COMMENT)[0]
 
-  feature.comments.push({ content: comment, index, type: EAstObject.comment })
+  feature.comments.push({
+    index,
+    uuid: uuid(),
+    content: comment,
+    type: EAstObject.comment
+  })
 
   return true
 }
@@ -170,7 +180,12 @@ export const featureEmptyLine = (
 ) => {
   if(line.trim().length) return false
 
-  feature.empty.push({ content: line, index, type: EAstObject.empty })
+  feature.empty.push({
+    index,
+    uuid: uuid(),
+    content: line,
+    type: EAstObject.empty
+  })
 
   return true
 }

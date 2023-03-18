@@ -42,9 +42,10 @@ export type TScenarioAst = {
   type:EAstObject.scenario
 }
 
-export type TAstBlock = {
+export type TBlockAst = {
   content: string
   index: number
+  uuid: string
   type:EAstObject.block
     | EAstObject.empty
     | EAstObject.comment
@@ -65,12 +66,13 @@ export type TFeatureAst = {
   uuid?: string
   feature: string
   content: string
-  empty?: TAstBlock[]
+  whitespace?: string
+  empty?: TBlockAst[]
   type: EAstObject.feature
-  reason?: TAstBlock|TAstBlock[]
-  desire?: TAstBlock
-  comments: TAstBlock[]
-  perspective?: TAstBlock
+  reason?: TBlockAst|TBlockAst[]
+  desire?: TBlockAst
+  comments: TBlockAst[]
+  perspective?: TBlockAst
   background?: TBackgroundAst
   rules?: TRuleAst[]
   scenarios: TScenarioAst[]
@@ -84,3 +86,4 @@ export type TStepParentAst = TBackgroundAst | TScenarioAst
 export type TScenarioParentAst = TRuleAst | TFeatureAst
 export type TTagsParentAst = TScenarioParentAst | TStepParentAst
 export type TBackgroundParentAst = TFeatureAst | TRuleAst
+

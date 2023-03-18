@@ -45,7 +45,7 @@ const formatComment = (
  */
 export const formatAssembled = (
   assembled:string[],
-  opts:TAssembleFeatureOpts
+  opts?:TAssembleFeatureOpts
 ) => {
   // Use array.from to allow access to empty array position
   // This ensures we can replace it with an empty string

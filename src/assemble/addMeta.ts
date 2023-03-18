@@ -1,4 +1,4 @@
-import type { TFeatureAst, TAstBlock, TAssembleFeatureOpts } from '../types'
+import type { TFeatureAst, TBlockAst, TAssembleFeatureOpts } from '../types'
 
 import { constants } from '../constants'
 import { EFeatureTypes } from '../types'
@@ -32,7 +32,7 @@ export const addMeta = (
     case 'comments':
       const comments = feature[key]
       comments
-        && eitherArr<TAstBlock[]>(comments, [comments])
+        && eitherArr<TBlockAst[]>(comments, [comments])
             .map(item => addContent(assembled, item.content, indexes && item.index))
       break
     case 'reason':
@@ -40,7 +40,7 @@ export const addMeta = (
     case 'perspective':
       const other = feature[key]
       other
-        && eitherArr<TAstBlock[]>(other, [other])
+        && eitherArr<TBlockAst[]>(other, [other])
             .map(item => addContent(assembled, `  ${item.content}`, indexes && item.index))
       break
     }

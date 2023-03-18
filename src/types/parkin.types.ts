@@ -9,11 +9,13 @@ import type {
   TRegisterStepsList
 } from './steps.types'
 
+
 import type {
   TParamTypes,
   TParamTypeMap,
   TParamTypeModel,
 } from './paramTypes.types'
+import { IAssemble } from './assemble.types'
 
 export type TParkinHookName = `beforeAll`|`afterAll`|`beforeEach`|`afterEach`
 export type TParkinHookMethod = (method:(...args:any[]) => any) => void
@@ -34,10 +36,6 @@ export interface IParkinRunner {
     data:string|string[]|TFeatureAst|TFeatureAst[],
     options:TParkinRunOpts
   ) => TFeatureAst[]
-}
-
-export type TAssemble = {
-  feature: (feature:TFeatureAst) => string
 }
 
 export type TParse = {
@@ -113,7 +111,7 @@ export interface IParkin {
   run:TParkinRun
   matcher:IMatcher
   world:TWorldConfig
-  assemble:TAssemble
+  assemble:IAssemble
   steps:IParkinSteps
   hooks:IParkinHooks
   runner:IParkinRunner

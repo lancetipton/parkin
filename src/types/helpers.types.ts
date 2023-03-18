@@ -6,12 +6,12 @@ export enum EHookType {
 }
 
 export enum EStepType {
+  step=`step`,
   given=`given`,
   when=`when`,
   then=`then`,
   and=`and`,
   but=`but`,
-  empty=``,
   "*"=`*`,
 }
 

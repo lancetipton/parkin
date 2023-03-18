@@ -34,6 +34,7 @@ export const parsedFeature = {
       index: 6,
       content: '',
       type: `empty`,
+      uuid: testUUid,
     },
   ],
   reason: [
@@ -41,6 +42,7 @@ export const parsedFeature = {
       content: 'In order to find out more about Keg-Hub',
       index: 3,
       type: `reason`,
+      uuid: testUUid,
     },
   ],
   comments: [
@@ -50,11 +52,13 @@ export const parsedFeature = {
       content: '  # Test comment in the feature meta',
       index: 4,
       type: `comment`,
+      uuid: testUUid,
     },
     {
       content: '    # comment for testing in the scenario steps',
       index: 11,
       type: `comment`,
+      uuid: testUUid,
     },
     // { content: 'Test comment in the feature meta', index: 4 },
     // { content: 'comment for testing in the scenario steps', index: 11 }

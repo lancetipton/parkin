@@ -4,6 +4,7 @@ import { EStepType } from '../types'
 import { uuid } from '@keg-hub/jsutils'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
+const RX_STEP = /^\s*Step (.*)$/
 const RX_GIVEN = /^\s*Given (.*)$/
 const RX_WHEN = /^\s*When(.*)$/
 const RX_THEN = /^\s*Then (.*)$/
@@ -23,12 +24,13 @@ const RX_DATA_TABLE_FULL = /^\s*?\|([^\S\r\n]*?|.*)\|/gm
  * @private
  */
 const RegStepTags = [
+  { regex: RX_STEP, type: EStepType.step },
   { regex: RX_GIVEN, type: EStepType.given },
   { regex: RX_WHEN, type: EStepType.when },
   { regex: RX_THEN, type: EStepType.then },
   { regex: RX_AND, type: EStepType.and },
   { regex: RX_BUT, type: EStepType.but },
-  { regex: RX_ASTERISK, type: EStepType.and },
+  { regex: RX_ASTERISK, type: EStepType[`*`] },
 ]
 
 /**
