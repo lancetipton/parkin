@@ -294,8 +294,8 @@ var require_deepEqual_adba847a = __commonJS({
 var require_exists_c79204b1 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js"(exports) {
     "use strict";
-    var exists6 = (value) => value === value && value !== void 0 && value !== null;
-    exports.exists = exists6;
+    var exists7 = (value) => value === value && value !== void 0 && value !== null;
+    exports.exists = exists7;
   }
 });
 
@@ -435,7 +435,7 @@ var require_not_16fa9c85 = __commonJS({
     var toBool = require_toBool_deb350e4();
     var isColl = require_isColl_5757310a();
     var deepEqual = require_deepEqual_adba847a();
-    var exists6 = require_exists_c79204b1();
+    var exists7 = require_exists_c79204b1();
     var isStr4 = require_isStr_8a57710e();
     var isNum = require_isNum_c7164b50();
     var isInt = require_isInt_94ce4199();
@@ -479,7 +479,7 @@ var require_not_16fa9c85 = __commonJS({
     not.deepEqual = not(deepEqual.deepEqual);
     not.emptyColl = not(deepEqual.isEmptyColl);
     not.dom = not(hasDomAccess);
-    not.exists = not(exists6.exists);
+    not.exists = not(exists7.exists);
     not.empty = not(isValidDate.isEmpty);
     not.same = not(isValidDate.isSame);
     not.validDate = not(isValidDate.isValidDate);
@@ -571,7 +571,7 @@ var require_noOps_c9732e8e = __commonJS({
     "use strict";
     var deepFreeze2 = require_deepFreeze_d73ccc57();
     var noOpObj6 = Object.freeze({});
-    var emptyObj6 = noOpObj6;
+    var emptyObj7 = noOpObj6;
     var noPropObj = deepFreeze2.deepFreeze({
       content: {}
     });
@@ -579,7 +579,7 @@ var require_noOps_c9732e8e = __commonJS({
     var noOpArr = noPropArr2;
     var emptyArr3 = noPropArr2;
     exports.emptyArr = emptyArr3;
-    exports.emptyObj = emptyObj6;
+    exports.emptyObj = emptyObj7;
     exports.noOpArr = noOpArr;
     exports.noOpObj = noOpObj6;
     exports.noPropArr = noPropArr2;
@@ -599,7 +599,7 @@ var require_intersect_77d7e821 = __commonJS({
     var not = require_not_16fa9c85();
     var isNonNegative = require_isNonNegative_9959647c();
     var noOps = require_noOps_c9732e8e();
-    var exists6 = require_exists_c79204b1();
+    var exists7 = require_exists_c79204b1();
     var buildElementCountMap = (arr) => {
       const counts = /* @__PURE__ */ new Map();
       for (let i = 0; i < arr.length; i++) {
@@ -664,7 +664,7 @@ var require_intersect_77d7e821 = __commonJS({
     var flatten = (arr, result, opts) => {
       for (let i = 0; i < arr.length; i++) {
         const value = arr[i];
-        isArr4.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists6.exists(value) || opts.truthy && !value ? result : result.push(value);
+        isArr4.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists7.exists(value) || opts.truthy && !value ? result : result.push(value);
       }
       if (!opts.mutate)
         return result;
@@ -847,22 +847,22 @@ var require_set_c0a98b21 = __commonJS({
 var require_get_00626335 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js"(exports) {
     "use strict";
-    var exists6 = require_exists_c79204b1();
+    var exists7 = require_exists_c79204b1();
     var isArr4 = require_isArr_39234014();
     var isStr4 = require_isStr_8a57710e();
     var get4 = (obj, path, fallback) => {
       const isPathArr = isArr4.isArr(path);
       if (!isStr4.isStr(path) && !isPathArr)
-        return exists6.exists(fallback) ? fallback : void 0;
+        return exists7.exists(fallback) ? fallback : void 0;
       const parts = isPathArr ? path : path.split(".");
       const result = parts.reduce((obj2, prop) => {
         const type = typeof obj2;
-        if (!exists6.exists(obj2) || type !== "object" && type !== "function")
+        if (!exists7.exists(obj2) || type !== "object" && type !== "function")
           return void 0;
         prop = prop.startsWith("[") ? prop.replace(/\D/g, "") : prop;
         return obj2[prop];
       }, obj);
-      return exists6.exists(result) ? result : fallback;
+      return exists7.exists(result) ? result : fallback;
     };
     exports.get = get4;
   }
@@ -940,7 +940,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
     var isColl = require_isColl_5757310a();
     var isFunc4 = require_isFunc_f93803cb();
     var isArr4 = require_isArr_39234014();
-    var exists6 = require_exists_c79204b1();
+    var exists7 = require_exists_c79204b1();
     var validate = require_validate_23297ec2();
     var set = require_set_c0a98b21();
     var deepClone = require_deepClone_ae664a21();
@@ -978,7 +978,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
       }
       return null;
     };
-    var mapFind = (coll, mapper, testFunc = exists6.exists) => {
+    var mapFind = (coll, mapper, testFunc = exists7.exists) => {
       const [valid] = validate.validate({
         coll,
         mapper,
@@ -1411,7 +1411,7 @@ var require_splitByKeys_d0160002 = __commonJS({
     var isStr4 = require_isStr_8a57710e();
     var strToType = require_strToType_00c4481f();
     var pipeline = require_pipeline_e65bdaae();
-    var exists6 = require_exists_c79204b1();
+    var exists7 = require_exists_c79204b1();
     var toStr3 = require_toStr_8e499966();
     var ensureArr2 = require_ensureArr_ae68c041();
     var cloneJson = (obj) => {
@@ -1617,7 +1617,7 @@ var require_splitByKeys_d0160002 = __commonJS({
       const intersect = [{}, {}];
       const compareKeys = ensureArr2.ensureArr(keys);
       return isObj5.isObj(obj) ? reduceObj.reduceObj(obj, (key, _, updated) => {
-        exists6.exists(compareKeys.find((k) => exists6.exists(k) && toStr3.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
+        exists7.exists(compareKeys.find((k) => exists7.exists(k) && toStr3.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
         return updated;
       }, intersect) : intersect;
     };
@@ -1784,7 +1784,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       const underscored = delimitString(str, "_");
       return underscored.toLowerCase();
     };
-    var capitalize5 = (str, lowercaseTail = true) => {
+    var capitalize6 = (str, lowercaseTail = true) => {
       if (!isStr4.isStr(str) || !str[0])
         return str;
       const tail = lowercaseTail ? str.slice(1).toLowerCase() : str.slice(1);
@@ -1801,13 +1801,13 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return str && cleanStr(str).split(/[\s_-]/gm).reduce((cased, word, index) => {
         if (!word)
           return cased;
-        cased += (index > 0 || compCase) && capitalize5(word) || word.toLowerCase();
+        cased += (index > 0 || compCase) && capitalize6(word) || word.toLowerCase();
         return cased;
       }, "") || str;
     };
     var camelCasePath = (path) => {
       const split = path.split(".");
-      const camelCasedSplit = split.map((str, idx) => idx > 0 ? capitalize5(str, false) : str);
+      const camelCasedSplit = split.map((str, idx) => idx > 0 ? capitalize6(str, false) : str);
       return camelCasedSplit.length > 1 ? camelCasedSplit.join("") : path;
     };
     var containsStr = (str, substring, fromIndex) => {
@@ -1867,7 +1867,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       if (!isStr4.isStr(str))
         return str;
       let cleaned = cleanStr(str);
-      return cleaned.split(" ").map((word) => word && capitalize5(word) || "").join(" ");
+      return cleaned.split(" ").map((word) => word && capitalize6(word) || "").join(" ");
     };
     var spaceJoin = (original, toAdd) => {
       toAdd = isArr4.isArr(toAdd) ? toAdd : [toAdd];
@@ -1924,7 +1924,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
     exports.buildPath = buildPath;
     exports.camelCase = camelCase;
     exports.camelCasePath = camelCasePath;
-    exports.capitalize = capitalize5;
+    exports.capitalize = capitalize6;
     exports.cleanStr = cleanStr;
     exports.containsStr = containsStr;
     exports.delimitString = delimitString;
@@ -2041,7 +2041,7 @@ var require_cjs = __commonJS({
     var noOps = require_noOps_c9732e8e();
     var isValidDate = require_isValidDate_813b9419();
     var strToType = require_strToType_00c4481f();
-    var exists6 = require_exists_c79204b1();
+    var exists7 = require_exists_c79204b1();
     var log = require_log_37bbfac6();
     var pipeline = require_pipeline_e65bdaae();
     var stackTracePaths = require_stackTracePaths_58b768d2();
@@ -2134,7 +2134,7 @@ var require_cjs = __commonJS({
     exports.isValidDate = isValidDate.isValidDate;
     exports.typeOf = isValidDate.typeOf;
     exports.strToType = strToType.strToType;
-    exports.exists = exists6.exists;
+    exports.exists = exists7.exists;
     exports.logData = log.logData;
     exports.resetLogs = log.resetLogs;
     exports.setLogs = log.setLogs;
@@ -2269,12 +2269,12 @@ var EHookType = /* @__PURE__ */ ((EHookType2) => {
   return EHookType2;
 })(EHookType || {});
 var EStepType = /* @__PURE__ */ ((EStepType2) => {
+  EStepType2["step"] = `step`;
   EStepType2["given"] = `given`;
   EStepType2["when"] = `when`;
   EStepType2["then"] = `then`;
   EStepType2["and"] = `and`;
   EStepType2["but"] = `but`;
-  EStepType2["empty"] = ``;
   EStepType2["*"] = `*`;
   return EStepType2;
 })(EStepType || {});
@@ -3064,6 +3064,7 @@ var Hooks = class {
 
 // src/parse/parseStep.ts
 var import_jsutils13 = __toESM(require_cjs());
+var RX_STEP = /^\s*Step (.*)$/;
 var RX_GIVEN = /^\s*Given (.*)$/;
 var RX_WHEN = /^\s*When(.*)$/;
 var RX_THEN = /^\s*Then (.*)$/;
@@ -3074,12 +3075,13 @@ var RX_DOC_QUOTES = /^\s*?"""\s*?/;
 var RX_DOC_TICKS = /^\s*?```\s*?/;
 var RX_DATA_TABLE = /^\s*?\|/;
 var RegStepTags = [
+  { regex: RX_STEP, type: "step" /* step */ },
   { regex: RX_GIVEN, type: "given" /* given */ },
   { regex: RX_WHEN, type: "when" /* when */ },
   { regex: RX_THEN, type: "then" /* then */ },
   { regex: RX_AND, type: "and" /* and */ },
   { regex: RX_BUT, type: "but" /* but */ },
-  { regex: RX_ASTERISK, type: "and" /* and */ }
+  { regex: RX_ASTERISK, type: "*" /* * */ }
 ];
 var checkDataTable = (step, lines, line, index) => {
   if (!RX_DATA_TABLE.test(line))
@@ -3372,7 +3374,12 @@ var addReason = (feature, reason, index) => {
   if (!reason)
     return;
   const reasonArr = (0, import_jsutils19.eitherArr)(feature.reason, [feature.reason]);
-  reasonArr.push({ content: reason, index, type: "reason" /* reason */ });
+  reasonArr.push({
+    index,
+    uuid: (0, import_jsutils19.uuid)(),
+    content: reason,
+    type: "reason" /* reason */
+  });
   feature.reason = reasonArr;
 };
 var featureMeta = (feature, line, index) => {
@@ -3418,13 +3425,23 @@ var featureComment = (feature, line, index) => {
   if (!RX_COMMENT.test(line))
     return false;
   const comment = line.match(RX_COMMENT)[0];
-  feature.comments.push({ content: comment, index, type: "comment" /* comment */ });
+  feature.comments.push({
+    index,
+    uuid: (0, import_jsutils19.uuid)(),
+    content: comment,
+    type: "comment" /* comment */
+  });
   return true;
 };
 var featureEmptyLine = (feature, line, index) => {
   if (line.trim().length)
     return false;
-  feature.empty.push({ content: line, index, type: "empty" /* empty */ });
+  feature.empty.push({
+    index,
+    uuid: (0, import_jsutils19.uuid)(),
+    content: line,
+    type: "empty" /* empty */
+  });
   return true;
 };
 
@@ -3768,6 +3785,14 @@ var addMeta = (assembled, feature, opts) => {
   });
 };
 
+// src/assemble/addEmpty.ts
+var addEmpty = (assembled, opts) => addContent(assembled, "");
+var addFeatureEmpty = (assembled, feature, opts) => {
+  var _a, _b;
+  const { indexes = true } = opts;
+  ((_a = feature == null ? void 0 : feature.empty) == null ? void 0 : _a.length) && ((_b = feature == null ? void 0 : feature.empty) == null ? void 0 : _b.forEach((item) => addContent(assembled, item.content, indexes && item.index)));
+};
+
 // src/assemble/addTags.ts
 var addTags = (assembled, parent, opts, whitespace) => {
   var _a, _b;
@@ -3781,29 +3806,102 @@ var addTags = (assembled, parent, opts, whitespace) => {
   );
 };
 
-// src/assemble/addEmpty.ts
-var addEmpty = (assembled, opts) => addContent(assembled, "");
-var addFeatureEmpty = (assembled, feature, opts) => {
-  var _a, _b;
-  const { indexes = true } = opts;
-  ((_a = feature == null ? void 0 : feature.empty) == null ? void 0 : _a.length) && ((_b = feature == null ? void 0 : feature.empty) == null ? void 0 : _b.forEach((item) => addContent(assembled, item.content, indexes && item.index)));
+// src/assemble/indexed.ts
+var import_jsutils25 = __toESM(require_cjs());
+var indexed = (indexes, opts = import_jsutils25.emptyObj) => {
+  const assembled = indexes.reduce((assembled2, item, idx) => {
+    const { ast, parent } = item;
+    const type = item.ast.type;
+    switch (type) {
+      case "given" /* given */:
+      case "when" /* when */:
+      case "then" /* then */:
+      case "and" /* and */:
+      case "but" /* but */:
+      case "*" /* * */:
+      case "step" /* step */: {
+        const step = ast;
+        const parentWS = parent.whitespace;
+        const whitespace = step.whitespace || (parentWS ? `${parentWS}  ` : `    `);
+        const type2 = step.type !== "step" /* step */ ? (0, import_jsutils25.capitalize)(step.type) : `Step`;
+        addContent(
+          assembled2,
+          `${whitespace}${type2} ${step.step || ``}`,
+          indexes && step.index
+        );
+        break;
+      }
+      case "tags" /* tags */: {
+        const tags = ast;
+        addContent(
+          assembled2,
+          `${tags.whitespace || parent.whitespace || ``}${tags.tokens.join(" ")}`,
+          indexes && parent.tags.index
+        );
+        break;
+      }
+      case "rule" /* rule */: {
+        const rule = ast;
+        const whitespace = rule.whitespace || `  `;
+        addContent(assembled2, `${whitespace}${"Rule" /* Rule */}: ${rule.rule || ``}`, rule.index);
+        break;
+      }
+      case "block" /* block */:
+      case "empty" /* empty */:
+      case "desire" /* desire */:
+      case "reason" /* reason */:
+      case "comment" /* comment */:
+      case "perspective" /* perspective */: {
+        const block = ast;
+        addContent(assembled2, block.content, block.index);
+        break;
+      }
+      case "feature" /* feature */: {
+        const feature = ast;
+        addContent(
+          assembled2,
+          `${"Feature" /* Feature */}: ${feature.feature}`,
+          feature.index
+        );
+        break;
+      }
+      case "scenario" /* scenario */: {
+        const scenario = ast;
+        const parentWS = parent.whitespace;
+        const type2 = scenario.alias || "Scenario" /* Scenario */;
+        const whitespace = scenario.whitespace || (parentWS ? `${parentWS}  ` : `  `);
+        addContent(assembled2, `${whitespace}${type2}: ${scenario.scenario || ``}`, scenario.index);
+        break;
+      }
+      case "background" /* background */: {
+        const background = ast;
+        const parentWS = parent.whitespace;
+        const whitespace = background.whitespace || (parentWS ? `${parentWS}  ` : `  `);
+        addContent(assembled2, `${whitespace}${"Background" /* Background */}: ${background.background || ``}`, background.index);
+        break;
+      }
+    }
+    return assembled2;
+  }, []);
+  return Array.from(assembled, (line) => !(0, import_jsutils25.exists)(line) ? "\n" : `${line}
+`).join(``);
 };
 
-// src/assemble/mergeBreaks.ts
-var mergeBreaks = (options, breaks) => ({ ...options, breaks: { ...options.breaks, ...breaks } });
-
 // src/assemble/addSteps.ts
-var import_jsutils25 = __toESM(require_cjs());
+var import_jsutils26 = __toESM(require_cjs());
 var addSteps = (assembled, parent, opts) => {
   const { indexes = true } = opts;
-  (0, import_jsutils25.isArr)(parent.steps) && parent.steps.length && parent.steps.map((step) => {
+  (0, import_jsutils26.isArr)(parent.steps) && parent.steps.length && parent.steps.map((step) => {
     addContent(
       assembled,
-      `${step.whitespace || `    `}${(0, import_jsutils25.capitalize)(step.type)} ${step.step}`,
+      `${step.whitespace || `    `}${(0, import_jsutils26.capitalize)(step.type)} ${step.step}`,
       indexes && step.index
     );
   });
 };
+
+// src/assemble/mergeBreaks.ts
+var mergeBreaks = (options, breaks) => ({ ...options, breaks: { ...options.breaks, ...breaks } });
 
 // src/assemble/addScenarios.ts
 var addScenarios = (assembled, parent, opts) => {
@@ -3853,11 +3951,11 @@ var addRules = (assembled, feature, opts) => {
 };
 
 // src/assemble/format.ts
-var import_jsutils26 = __toESM(require_cjs());
+var import_jsutils27 = __toESM(require_cjs());
 var formatComment = (assembled, line, index) => {
   const next = assembled[index + 1];
   const prev = assembled[index - 1];
-  let compareLine = (0, import_jsutils26.exists)(next) ? next : prev;
+  let compareLine = (0, import_jsutils27.exists)(next) ? next : prev;
   if (!compareLine)
     return `${line}
 `;
@@ -3870,13 +3968,13 @@ var formatComment = (assembled, line, index) => {
 };
 var formatAssembled = (assembled, opts) => {
   return Array.from(assembled, (line, index) => {
-    return !(0, import_jsutils26.exists)(line) ? "\n" : line.startsWith("#") ? formatComment(assembled, line, index) : `${line}
+    return !(0, import_jsutils27.exists)(line) ? "\n" : line.startsWith("#") ? formatComment(assembled, line, index) : `${line}
 `;
   }).join("");
 };
 
 // src/assemble/feature.ts
-var import_jsutils27 = __toESM(require_cjs());
+var import_jsutils28 = __toESM(require_cjs());
 var activeBreaks = {
   rule: true,
   scenario: true,
@@ -3896,14 +3994,14 @@ var mergeOptions = (opts) => {
   return {
     ...assembleOpts,
     ...opts,
-    breaks: (0, import_jsutils27.isBool)(opts.breaks) ? activeBreaks : (0, import_jsutils27.isObj)(opts.breaks) ? { ...assembleOpts.breaks, ...opts.breaks } : assembleOpts.breaks
+    breaks: (0, import_jsutils28.isBool)(opts.breaks) ? activeBreaks : (0, import_jsutils28.isObj)(opts.breaks) ? { ...assembleOpts.breaks, ...opts.breaks } : assembleOpts.breaks
   };
 };
-var assembleFeature = (toAssemble, opts = import_jsutils27.emptyObj) => {
+var assembleFeature = (toAssemble, opts = import_jsutils28.emptyObj) => {
   const options = mergeOptions(opts);
-  return (0, import_jsutils27.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
+  return (0, import_jsutils28.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
     let assembled = [];
-    !(0, import_jsutils27.isObj)(feature) && throwFeatureNotAnObj(feature);
+    !(0, import_jsutils28.isObj)(feature) && throwFeatureNotAnObj(feature);
     addTags(assembled, feature, options);
     addMeta(assembled, feature, options);
     options.empty && addFeatureEmpty(assembled, feature, options);
@@ -3916,11 +4014,21 @@ var assembleFeature = (toAssemble, opts = import_jsutils27.emptyObj) => {
 
 // src/assemble/assemble.ts
 var assemble = {
+  addMeta,
+  addTags,
+  addEmpty,
+  addSteps,
+  indexed,
+  addRules,
+  addContent,
+  addScenarios,
+  addBackground,
+  format: formatAssembled,
   feature: assembleFeature
 };
 
 // src/parkin.ts
-var import_jsutils28 = __toESM(require_cjs());
+var import_jsutils29 = __toESM(require_cjs());
 var { STEP_TYPES: STEP_TYPES2 } = constants;
 var Parkin = class {
   #isInit = false;
@@ -3939,13 +4047,13 @@ var Parkin = class {
   And;
   But;
   constructor(world, steps) {
-    (0, import_jsutils28.isObj)(world) && this.init(world, steps);
+    (0, import_jsutils29.isObj)(world) && this.init(world, steps);
   }
-  init = (world = import_jsutils28.noOpObj, steps, warn = true) => {
+  init = (world = import_jsutils29.noOpObj, steps, warn = true) => {
     if (this.#isInit) {
       return warn && console.warn(`This instance of parkin has already been initialized!`);
     }
-    if (!(0, import_jsutils28.isObj)(world.$alias))
+    if (!(0, import_jsutils29.isObj)(world.$alias))
       world.$alias = {};
     this.#isInit = true;
     this.world = world;
@@ -3960,9 +4068,9 @@ var Parkin = class {
     this.assemble = assemble;
     this.paramTypes = { register: registerParamType };
     this.matcher = new Matcher(this);
-    (0, import_jsutils28.isObj)(steps) && this.registerSteps(steps);
+    (0, import_jsutils29.isObj)(steps) && this.registerSteps(steps);
     this.steps.types.map((type) => {
-      this[(0, import_jsutils28.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
+      this[(0, import_jsutils29.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
     });
   };
   /**
@@ -3991,7 +4099,7 @@ var Parkin = class {
     if (doRegister)
       return Object.entries(steps).forEach(([type, typedSteps]) => {
         STEP_TYPES2.includes(type) && Object.entries(typedSteps).forEach(([matcher2, content]) => {
-          this.steps[(0, import_jsutils28.capitalize)(type)](matcher2, ...(0, import_jsutils28.eitherArr)(content, [content]));
+          this.steps[(0, import_jsutils29.capitalize)(type)](matcher2, ...(0, import_jsutils29.eitherArr)(content, [content]));
         });
       });
     else

@@ -65,12 +65,12 @@ var init_helpers_types = __esm({
       return EHookType2;
     })(EHookType || {});
     EStepType = /* @__PURE__ */ ((EStepType2) => {
+      EStepType2["step"] = `step`;
       EStepType2["given"] = `given`;
       EStepType2["when"] = `when`;
       EStepType2["then"] = `then`;
       EStepType2["and"] = `and`;
       EStepType2["but"] = `but`;
-      EStepType2["empty"] = ``;
       EStepType2["*"] = `*`;
       return EStepType2;
     })(EStepType || {});
@@ -107,6 +107,12 @@ var init_paramTypes_types = __esm({
   }
 });
 
+// src/types/indexed.types.ts
+var init_indexed_types = __esm({
+  "src/types/indexed.types.ts"() {
+  }
+});
+
 // src/types/index.ts
 var init_types = __esm({
   "src/types/index.ts"() {
@@ -120,6 +126,7 @@ var init_types = __esm({
     init_assemble_types();
     init_matcher_types();
     init_paramTypes_types();
+    init_indexed_types();
   }
 });
 
@@ -388,8 +395,8 @@ var require_deepEqual_adba847a = __commonJS({
 var require_exists_c79204b1 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js"(exports) {
     "use strict";
-    var exists6 = (value) => value === value && value !== void 0 && value !== null;
-    exports.exists = exists6;
+    var exists7 = (value) => value === value && value !== void 0 && value !== null;
+    exports.exists = exists7;
   }
 });
 
@@ -529,7 +536,7 @@ var require_not_16fa9c85 = __commonJS({
     var toBool = require_toBool_deb350e4();
     var isColl = require_isColl_5757310a();
     var deepEqual = require_deepEqual_adba847a();
-    var exists6 = require_exists_c79204b1();
+    var exists7 = require_exists_c79204b1();
     var isStr7 = require_isStr_8a57710e();
     var isNum = require_isNum_c7164b50();
     var isInt = require_isInt_94ce4199();
@@ -573,7 +580,7 @@ var require_not_16fa9c85 = __commonJS({
     not.deepEqual = not(deepEqual.deepEqual);
     not.emptyColl = not(deepEqual.isEmptyColl);
     not.dom = not(hasDomAccess);
-    not.exists = not(exists6.exists);
+    not.exists = not(exists7.exists);
     not.empty = not(isValidDate.isEmpty);
     not.same = not(isValidDate.isSame);
     not.validDate = not(isValidDate.isValidDate);
@@ -665,7 +672,7 @@ var require_noOps_c9732e8e = __commonJS({
     "use strict";
     var deepFreeze2 = require_deepFreeze_d73ccc57();
     var noOpObj8 = Object.freeze({});
-    var emptyObj6 = noOpObj8;
+    var emptyObj7 = noOpObj8;
     var noPropObj = deepFreeze2.deepFreeze({
       content: {}
     });
@@ -673,7 +680,7 @@ var require_noOps_c9732e8e = __commonJS({
     var noOpArr = noPropArr2;
     var emptyArr4 = noPropArr2;
     exports.emptyArr = emptyArr4;
-    exports.emptyObj = emptyObj6;
+    exports.emptyObj = emptyObj7;
     exports.noOpArr = noOpArr;
     exports.noOpObj = noOpObj8;
     exports.noPropArr = noPropArr2;
@@ -693,7 +700,7 @@ var require_intersect_77d7e821 = __commonJS({
     var not = require_not_16fa9c85();
     var isNonNegative = require_isNonNegative_9959647c();
     var noOps = require_noOps_c9732e8e();
-    var exists6 = require_exists_c79204b1();
+    var exists7 = require_exists_c79204b1();
     var buildElementCountMap = (arr) => {
       const counts = /* @__PURE__ */ new Map();
       for (let i2 = 0; i2 < arr.length; i2++) {
@@ -758,7 +765,7 @@ var require_intersect_77d7e821 = __commonJS({
     var flatten = (arr, result, opts) => {
       for (let i2 = 0; i2 < arr.length; i2++) {
         const value = arr[i2];
-        isArr4.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists6.exists(value) || opts.truthy && !value ? result : result.push(value);
+        isArr4.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists7.exists(value) || opts.truthy && !value ? result : result.push(value);
       }
       if (!opts.mutate)
         return result;
@@ -941,22 +948,22 @@ var require_set_c0a98b21 = __commonJS({
 var require_get_00626335 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js"(exports) {
     "use strict";
-    var exists6 = require_exists_c79204b1();
+    var exists7 = require_exists_c79204b1();
     var isArr4 = require_isArr_39234014();
     var isStr7 = require_isStr_8a57710e();
     var get4 = (obj, path3, fallback) => {
       const isPathArr = isArr4.isArr(path3);
       if (!isStr7.isStr(path3) && !isPathArr)
-        return exists6.exists(fallback) ? fallback : void 0;
+        return exists7.exists(fallback) ? fallback : void 0;
       const parts = isPathArr ? path3 : path3.split(".");
       const result = parts.reduce((obj2, prop) => {
         const type = typeof obj2;
-        if (!exists6.exists(obj2) || type !== "object" && type !== "function")
+        if (!exists7.exists(obj2) || type !== "object" && type !== "function")
           return void 0;
         prop = prop.startsWith("[") ? prop.replace(/\D/g, "") : prop;
         return obj2[prop];
       }, obj);
-      return exists6.exists(result) ? result : fallback;
+      return exists7.exists(result) ? result : fallback;
     };
     exports.get = get4;
   }
@@ -1034,7 +1041,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
     var isColl = require_isColl_5757310a();
     var isFunc5 = require_isFunc_f93803cb();
     var isArr4 = require_isArr_39234014();
-    var exists6 = require_exists_c79204b1();
+    var exists7 = require_exists_c79204b1();
     var validate = require_validate_23297ec2();
     var set = require_set_c0a98b21();
     var deepClone = require_deepClone_ae664a21();
@@ -1072,7 +1079,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
       }
       return null;
     };
-    var mapFind = (coll, mapper, testFunc = exists6.exists) => {
+    var mapFind = (coll, mapper, testFunc = exists7.exists) => {
       const [valid] = validate.validate({
         coll,
         mapper,
@@ -1505,7 +1512,7 @@ var require_splitByKeys_d0160002 = __commonJS({
     var isStr7 = require_isStr_8a57710e();
     var strToType = require_strToType_00c4481f();
     var pipeline = require_pipeline_e65bdaae();
-    var exists6 = require_exists_c79204b1();
+    var exists7 = require_exists_c79204b1();
     var toStr3 = require_toStr_8e499966();
     var ensureArr4 = require_ensureArr_ae68c041();
     var cloneJson = (obj) => {
@@ -1711,7 +1718,7 @@ var require_splitByKeys_d0160002 = __commonJS({
       const intersect = [{}, {}];
       const compareKeys = ensureArr4.ensureArr(keys);
       return isObj6.isObj(obj) ? reduceObj.reduceObj(obj, (key, _, updated) => {
-        exists6.exists(compareKeys.find((k) => exists6.exists(k) && toStr3.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
+        exists7.exists(compareKeys.find((k) => exists7.exists(k) && toStr3.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
         return updated;
       }, intersect) : intersect;
     };
@@ -1878,7 +1885,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       const underscored = delimitString(str, "_");
       return underscored.toLowerCase();
     };
-    var capitalize5 = (str, lowercaseTail = true) => {
+    var capitalize6 = (str, lowercaseTail = true) => {
       if (!isStr7.isStr(str) || !str[0])
         return str;
       const tail = lowercaseTail ? str.slice(1).toLowerCase() : str.slice(1);
@@ -1895,13 +1902,13 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return str && cleanStr(str).split(/[\s_-]/gm).reduce((cased, word, index) => {
         if (!word)
           return cased;
-        cased += (index > 0 || compCase) && capitalize5(word) || word.toLowerCase();
+        cased += (index > 0 || compCase) && capitalize6(word) || word.toLowerCase();
         return cased;
       }, "") || str;
     };
     var camelCasePath = (path3) => {
       const split = path3.split(".");
-      const camelCasedSplit = split.map((str, idx) => idx > 0 ? capitalize5(str, false) : str);
+      const camelCasedSplit = split.map((str, idx) => idx > 0 ? capitalize6(str, false) : str);
       return camelCasedSplit.length > 1 ? camelCasedSplit.join("") : path3;
     };
     var containsStr = (str, substring, fromIndex) => {
@@ -1961,7 +1968,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       if (!isStr7.isStr(str))
         return str;
       let cleaned = cleanStr(str);
-      return cleaned.split(" ").map((word) => word && capitalize5(word) || "").join(" ");
+      return cleaned.split(" ").map((word) => word && capitalize6(word) || "").join(" ");
     };
     var spaceJoin = (original, toAdd) => {
       toAdd = isArr4.isArr(toAdd) ? toAdd : [toAdd];
@@ -2018,7 +2025,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
     exports.buildPath = buildPath;
     exports.camelCase = camelCase;
     exports.camelCasePath = camelCasePath;
-    exports.capitalize = capitalize5;
+    exports.capitalize = capitalize6;
     exports.cleanStr = cleanStr;
     exports.containsStr = containsStr;
     exports.delimitString = delimitString;
@@ -2135,7 +2142,7 @@ var require_cjs = __commonJS({
     var noOps = require_noOps_c9732e8e();
     var isValidDate = require_isValidDate_813b9419();
     var strToType = require_strToType_00c4481f();
-    var exists6 = require_exists_c79204b1();
+    var exists7 = require_exists_c79204b1();
     var log = require_log_37bbfac6();
     var pipeline = require_pipeline_e65bdaae();
     var stackTracePaths = require_stackTracePaths_58b768d2();
@@ -2228,7 +2235,7 @@ var require_cjs = __commonJS({
     exports.isValidDate = isValidDate.isValidDate;
     exports.typeOf = isValidDate.typeOf;
     exports.strToType = strToType.strToType;
-    exports.exists = exists6.exists;
+    exports.exists = exists7.exists;
     exports.logData = log.logData;
     exports.resetLogs = log.resetLogs;
     exports.setLogs = log.setLogs;
@@ -3220,12 +3227,13 @@ var init_hooks = __esm({
 });
 
 // src/parse/parseStep.ts
-var import_jsutils13, RX_GIVEN, RX_WHEN, RX_THEN, RX_AND, RX_BUT, RX_ASTERISK, RX_DOC_QUOTES, RX_DOC_TICKS, RX_DATA_TABLE, RegStepTags, checkDataTable, checkDocString, stepFactory, parseStep;
+var import_jsutils13, RX_STEP, RX_GIVEN, RX_WHEN, RX_THEN, RX_AND, RX_BUT, RX_ASTERISK, RX_DOC_QUOTES, RX_DOC_TICKS, RX_DATA_TABLE, RegStepTags, checkDataTable, checkDocString, stepFactory, parseStep;
 var init_parseStep = __esm({
   "src/parse/parseStep.ts"() {
     init_types();
     import_jsutils13 = __toESM(require_cjs());
     init_helpers();
+    RX_STEP = /^\s*Step (.*)$/;
     RX_GIVEN = /^\s*Given (.*)$/;
     RX_WHEN = /^\s*When(.*)$/;
     RX_THEN = /^\s*Then (.*)$/;
@@ -3236,12 +3244,13 @@ var init_parseStep = __esm({
     RX_DOC_TICKS = /^\s*?```\s*?/;
     RX_DATA_TABLE = /^\s*?\|/;
     RegStepTags = [
+      { regex: RX_STEP, type: "step" /* step */ },
       { regex: RX_GIVEN, type: "given" /* given */ },
       { regex: RX_WHEN, type: "when" /* when */ },
       { regex: RX_THEN, type: "then" /* then */ },
       { regex: RX_AND, type: "and" /* and */ },
       { regex: RX_BUT, type: "but" /* but */ },
-      { regex: RX_ASTERISK, type: "and" /* and */ }
+      { regex: RX_ASTERISK, type: "*" /* * */ }
     ];
     checkDataTable = (step, lines, line, index) => {
       if (!RX_DATA_TABLE.test(line))
@@ -3585,7 +3594,12 @@ var init_ensureMeta = __esm({
       if (!reason)
         return;
       const reasonArr = (0, import_jsutils19.eitherArr)(feature.reason, [feature.reason]);
-      reasonArr.push({ content: reason, index, type: "reason" /* reason */ });
+      reasonArr.push({
+        index,
+        uuid: (0, import_jsutils19.uuid)(),
+        content: reason,
+        type: "reason" /* reason */
+      });
       feature.reason = reasonArr;
     };
     featureMeta = (feature, line, index) => {
@@ -3631,13 +3645,23 @@ var init_ensureMeta = __esm({
       if (!RX_COMMENT.test(line))
         return false;
       const comment = line.match(RX_COMMENT)[0];
-      feature.comments.push({ content: comment, index, type: "comment" /* comment */ });
+      feature.comments.push({
+        index,
+        uuid: (0, import_jsutils19.uuid)(),
+        content: comment,
+        type: "comment" /* comment */
+      });
       return true;
     };
     featureEmptyLine = (feature, line, index) => {
       if (line.trim().length)
         return false;
-      feature.empty.push({ content: line, index, type: "empty" /* empty */ });
+      feature.empty.push({
+        index,
+        uuid: (0, import_jsutils19.uuid)(),
+        content: line,
+        type: "empty" /* empty */
+      });
       return true;
     };
   }
@@ -4041,6 +4065,20 @@ var init_addMeta = __esm({
   }
 });
 
+// src/assemble/addEmpty.ts
+var addEmpty, addFeatureEmpty;
+var init_addEmpty = __esm({
+  "src/assemble/addEmpty.ts"() {
+    init_addContent();
+    addEmpty = (assembled, opts) => addContent(assembled, "");
+    addFeatureEmpty = (assembled, feature, opts) => {
+      var _a, _b;
+      const { indexes = true } = opts;
+      ((_a = feature == null ? void 0 : feature.empty) == null ? void 0 : _a.length) && ((_b = feature == null ? void 0 : feature.empty) == null ? void 0 : _b.forEach((item) => addContent(assembled, item.content, indexes && item.index)));
+    };
+  }
+});
+
 // src/assemble/addTags.ts
 var addTags;
 var init_addTags = __esm({
@@ -4060,16 +4098,109 @@ var init_addTags = __esm({
   }
 });
 
-// src/assemble/addEmpty.ts
-var addEmpty, addFeatureEmpty;
-var init_addEmpty = __esm({
-  "src/assemble/addEmpty.ts"() {
+// src/assemble/indexed.ts
+var import_jsutils25, indexed;
+var init_indexed = __esm({
+  "src/assemble/indexed.ts"() {
     init_addContent();
-    addEmpty = (assembled, opts) => addContent(assembled, "");
-    addFeatureEmpty = (assembled, feature, opts) => {
-      var _a, _b;
+    import_jsutils25 = __toESM(require_cjs());
+    init_types();
+    indexed = (indexes, opts = import_jsutils25.emptyObj) => {
+      const assembled = indexes.reduce((assembled2, item, idx) => {
+        const { ast, parent } = item;
+        const type = item.ast.type;
+        switch (type) {
+          case "given" /* given */:
+          case "when" /* when */:
+          case "then" /* then */:
+          case "and" /* and */:
+          case "but" /* but */:
+          case "*" /* * */:
+          case "step" /* step */: {
+            const step = ast;
+            const parentWS = parent.whitespace;
+            const whitespace = step.whitespace || (parentWS ? `${parentWS}  ` : `    `);
+            const type2 = step.type !== "step" /* step */ ? (0, import_jsutils25.capitalize)(step.type) : `Step`;
+            addContent(
+              assembled2,
+              `${whitespace}${type2} ${step.step || ``}`,
+              indexes && step.index
+            );
+            break;
+          }
+          case "tags" /* tags */: {
+            const tags = ast;
+            addContent(
+              assembled2,
+              `${tags.whitespace || parent.whitespace || ``}${tags.tokens.join(" ")}`,
+              indexes && parent.tags.index
+            );
+            break;
+          }
+          case "rule" /* rule */: {
+            const rule = ast;
+            const whitespace = rule.whitespace || `  `;
+            addContent(assembled2, `${whitespace}${"Rule" /* Rule */}: ${rule.rule || ``}`, rule.index);
+            break;
+          }
+          case "block" /* block */:
+          case "empty" /* empty */:
+          case "desire" /* desire */:
+          case "reason" /* reason */:
+          case "comment" /* comment */:
+          case "perspective" /* perspective */: {
+            const block = ast;
+            addContent(assembled2, block.content, block.index);
+            break;
+          }
+          case "feature" /* feature */: {
+            const feature = ast;
+            addContent(
+              assembled2,
+              `${"Feature" /* Feature */}: ${feature.feature}`,
+              feature.index
+            );
+            break;
+          }
+          case "scenario" /* scenario */: {
+            const scenario = ast;
+            const parentWS = parent.whitespace;
+            const type2 = scenario.alias || "Scenario" /* Scenario */;
+            const whitespace = scenario.whitespace || (parentWS ? `${parentWS}  ` : `  `);
+            addContent(assembled2, `${whitespace}${type2}: ${scenario.scenario || ``}`, scenario.index);
+            break;
+          }
+          case "background" /* background */: {
+            const background = ast;
+            const parentWS = parent.whitespace;
+            const whitespace = background.whitespace || (parentWS ? `${parentWS}  ` : `  `);
+            addContent(assembled2, `${whitespace}${"Background" /* Background */}: ${background.background || ``}`, background.index);
+            break;
+          }
+        }
+        return assembled2;
+      }, []);
+      return Array.from(assembled, (line) => !(0, import_jsutils25.exists)(line) ? "\n" : `${line}
+`).join(``);
+    };
+  }
+});
+
+// src/assemble/addSteps.ts
+var import_jsutils26, addSteps;
+var init_addSteps = __esm({
+  "src/assemble/addSteps.ts"() {
+    init_addContent();
+    import_jsutils26 = __toESM(require_cjs());
+    addSteps = (assembled, parent, opts) => {
       const { indexes = true } = opts;
-      ((_a = feature == null ? void 0 : feature.empty) == null ? void 0 : _a.length) && ((_b = feature == null ? void 0 : feature.empty) == null ? void 0 : _b.forEach((item) => addContent(assembled, item.content, indexes && item.index)));
+      (0, import_jsutils26.isArr)(parent.steps) && parent.steps.length && parent.steps.map((step) => {
+        addContent(
+          assembled,
+          `${step.whitespace || `    `}${(0, import_jsutils26.capitalize)(step.type)} ${step.step}`,
+          indexes && step.index
+        );
+      });
     };
   }
 });
@@ -4079,25 +4210,6 @@ var mergeBreaks;
 var init_mergeBreaks = __esm({
   "src/assemble/mergeBreaks.ts"() {
     mergeBreaks = (options2, breaks) => ({ ...options2, breaks: { ...options2.breaks, ...breaks } });
-  }
-});
-
-// src/assemble/addSteps.ts
-var import_jsutils25, addSteps;
-var init_addSteps = __esm({
-  "src/assemble/addSteps.ts"() {
-    init_addContent();
-    import_jsutils25 = __toESM(require_cjs());
-    addSteps = (assembled, parent, opts) => {
-      const { indexes = true } = opts;
-      (0, import_jsutils25.isArr)(parent.steps) && parent.steps.length && parent.steps.map((step) => {
-        addContent(
-          assembled,
-          `${step.whitespace || `    `}${(0, import_jsutils25.capitalize)(step.type)} ${step.step}`,
-          indexes && step.index
-        );
-      });
-    };
   }
 });
 
@@ -4181,14 +4293,14 @@ var init_addRules = __esm({
 });
 
 // src/assemble/format.ts
-var import_jsutils26, formatComment, formatAssembled;
+var import_jsutils27, formatComment, formatAssembled;
 var init_format = __esm({
   "src/assemble/format.ts"() {
-    import_jsutils26 = __toESM(require_cjs());
+    import_jsutils27 = __toESM(require_cjs());
     formatComment = (assembled, line, index) => {
       const next = assembled[index + 1];
       const prev = assembled[index - 1];
-      let compareLine = (0, import_jsutils26.exists)(next) ? next : prev;
+      let compareLine = (0, import_jsutils27.exists)(next) ? next : prev;
       if (!compareLine)
         return `${line}
 `;
@@ -4201,7 +4313,7 @@ var init_format = __esm({
     };
     formatAssembled = (assembled, opts) => {
       return Array.from(assembled, (line, index) => {
-        return !(0, import_jsutils26.exists)(line) ? "\n" : line.startsWith("#") ? formatComment(assembled, line, index) : `${line}
+        return !(0, import_jsutils27.exists)(line) ? "\n" : line.startsWith("#") ? formatComment(assembled, line, index) : `${line}
 `;
       }).join("");
     };
@@ -4209,7 +4321,7 @@ var init_format = __esm({
 });
 
 // src/assemble/feature.ts
-var import_jsutils27, activeBreaks, assembleOpts, mergeOptions, assembleFeature;
+var import_jsutils28, activeBreaks, assembleOpts, mergeOptions, assembleFeature;
 var init_feature = __esm({
   "src/assemble/feature.ts"() {
     init_addMeta();
@@ -4220,7 +4332,7 @@ var init_feature = __esm({
     init_addBackground();
     init_addEmpty();
     init_errors();
-    import_jsutils27 = __toESM(require_cjs());
+    import_jsutils28 = __toESM(require_cjs());
     activeBreaks = {
       rule: true,
       scenario: true,
@@ -4240,14 +4352,14 @@ var init_feature = __esm({
       return {
         ...assembleOpts,
         ...opts,
-        breaks: (0, import_jsutils27.isBool)(opts.breaks) ? activeBreaks : (0, import_jsutils27.isObj)(opts.breaks) ? { ...assembleOpts.breaks, ...opts.breaks } : assembleOpts.breaks
+        breaks: (0, import_jsutils28.isBool)(opts.breaks) ? activeBreaks : (0, import_jsutils28.isObj)(opts.breaks) ? { ...assembleOpts.breaks, ...opts.breaks } : assembleOpts.breaks
       };
     };
-    assembleFeature = (toAssemble, opts = import_jsutils27.emptyObj) => {
+    assembleFeature = (toAssemble, opts = import_jsutils28.emptyObj) => {
       const options2 = mergeOptions(opts);
-      return (0, import_jsutils27.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
+      return (0, import_jsutils28.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
         let assembled = [];
-        !(0, import_jsutils27.isObj)(feature) && throwFeatureNotAnObj(feature);
+        !(0, import_jsutils28.isObj)(feature) && throwFeatureNotAnObj(feature);
         addTags(assembled, feature, options2);
         addMeta(assembled, feature, options2);
         options2.empty && addFeatureEmpty(assembled, feature, options2);
@@ -4264,8 +4376,28 @@ var init_feature = __esm({
 var assemble;
 var init_assemble = __esm({
   "src/assemble/assemble.ts"() {
+    init_addMeta();
+    init_addEmpty();
+    init_addTags();
+    init_indexed();
+    init_addSteps();
+    init_addRules();
+    init_addContent();
+    init_addScenarios();
+    init_addBackground();
     init_feature();
+    init_format();
     assemble = {
+      addMeta,
+      addTags,
+      addEmpty,
+      addSteps,
+      indexed,
+      addRules,
+      addContent,
+      addScenarios,
+      addBackground,
+      format: formatAssembled,
       feature: assembleFeature
     };
   }
@@ -4279,7 +4411,7 @@ var init_assemble2 = __esm({
 });
 
 // src/parkin.ts
-var import_jsutils28, STEP_TYPES2, Parkin, PKInstance;
+var import_jsutils29, STEP_TYPES2, Parkin, PKInstance;
 var init_parkin = __esm({
   "src/parkin.ts"() {
     init_steps();
@@ -4289,7 +4421,7 @@ var init_parkin = __esm({
     init_constants();
     init_matcher2();
     init_parse();
-    import_jsutils28 = __toESM(require_cjs());
+    import_jsutils29 = __toESM(require_cjs());
     ({ STEP_TYPES: STEP_TYPES2 } = constants);
     Parkin = class {
       #isInit = false;
@@ -4308,13 +4440,13 @@ var init_parkin = __esm({
       And;
       But;
       constructor(world, steps) {
-        (0, import_jsutils28.isObj)(world) && this.init(world, steps);
+        (0, import_jsutils29.isObj)(world) && this.init(world, steps);
       }
-      init = (world = import_jsutils28.noOpObj, steps, warn = true) => {
+      init = (world = import_jsutils29.noOpObj, steps, warn = true) => {
         if (this.#isInit) {
           return warn && console.warn(`This instance of parkin has already been initialized!`);
         }
-        if (!(0, import_jsutils28.isObj)(world.$alias))
+        if (!(0, import_jsutils29.isObj)(world.$alias))
           world.$alias = {};
         this.#isInit = true;
         this.world = world;
@@ -4329,9 +4461,9 @@ var init_parkin = __esm({
         this.assemble = assemble;
         this.paramTypes = { register: registerParamType };
         this.matcher = new Matcher(this);
-        (0, import_jsutils28.isObj)(steps) && this.registerSteps(steps);
+        (0, import_jsutils29.isObj)(steps) && this.registerSteps(steps);
         this.steps.types.map((type) => {
-          this[(0, import_jsutils28.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
+          this[(0, import_jsutils29.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
         });
       };
       /**
@@ -4360,7 +4492,7 @@ var init_parkin = __esm({
         if (doRegister)
           return Object.entries(steps).forEach(([type, typedSteps]) => {
             STEP_TYPES2.includes(type) && Object.entries(typedSteps).forEach(([matcher2, content]) => {
-              this.steps[(0, import_jsutils28.capitalize)(type)](matcher2, ...(0, import_jsutils28.eitherArr)(content, [content]));
+              this.steps[(0, import_jsutils29.capitalize)(type)](matcher2, ...(0, import_jsutils29.eitherArr)(content, [content]));
             });
           });
         else
@@ -12970,29 +13102,29 @@ ${p2}`;
 });
 
 // src/test/utils.ts
-var import_jsutils29, helperTypes, globalTypes, Types, throwError, validateHelper, validateRootRun, validateItem, createItem, createDescribe, createRoot;
+var import_jsutils30, helperTypes, globalTypes, Types, throwError, validateHelper, validateRootRun, validateItem, createItem, createDescribe, createRoot;
 var init_utils = __esm({
   "src/test/utils.ts"() {
-    import_jsutils29 = __toESM(require_cjs());
-    helperTypes = (0, import_jsutils29.keyMap)([
+    import_jsutils30 = __toESM(require_cjs());
+    helperTypes = (0, import_jsutils30.keyMap)([
       `beforeAll`,
       `beforeEach`,
       `afterAll`,
       `afterEach`
     ]);
     globalTypes = {
-      ...(0, import_jsutils29.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
+      ...(0, import_jsutils30.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
       ...helperTypes
     };
     Types = {
       ...globalTypes,
-      ...(0, import_jsutils29.keyMap)([`root`])
+      ...(0, import_jsutils30.keyMap)([`root`])
     };
     throwError = (error) => {
       throw new Error(error);
     };
     validateHelper = (type, action) => {
-      !(0, import_jsutils29.isFunc)(action) && throwError(
+      !(0, import_jsutils30.isFunc)(action) && throwError(
         `The ${type} method requires a "function" as the first argument`
       );
     };
@@ -13001,13 +13133,13 @@ var init_utils = __esm({
       !root.describes || !root.describes.length && throwError(`No tests have been registered to this ParkinTest instance`);
     };
     validateItem = (type, description, action) => {
-      !(0, import_jsutils29.isStr)(type) && throwError(`Test item type is required as a string`);
-      !(0, import_jsutils29.isFunc)(action) && throwError(
+      !(0, import_jsutils30.isStr)(type) && throwError(`Test item type is required as a string`);
+      !(0, import_jsutils30.isFunc)(action) && throwError(
         `The ${type} method requires a "function" as the second argument`
       );
-      !(0, import_jsutils29.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
+      !(0, import_jsutils30.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
     };
-    createItem = (type, metadata = import_jsutils29.noOpObj, validate = true) => {
+    createItem = (type, metadata = import_jsutils30.noOpObj, validate = true) => {
       const { description, action } = metadata;
       validate && validateItem(type, description, action);
       return { ...metadata, type };
@@ -13039,10 +13171,10 @@ var init_utils = __esm({
 });
 
 // src/test/run.js
-var import_jsutils30, runResult, loopHooks, loopTests, callBeforeHooks, callAfterHooks, loopDescribes, run;
+var import_jsutils31, runResult, loopHooks, loopTests, callBeforeHooks, callAfterHooks, loopDescribes, run;
 var init_run = __esm({
   "src/test/run.js"() {
-    import_jsutils30 = __toESM(require_cjs());
+    import_jsutils31 = __toESM(require_cjs());
     init_utils();
     runResult = (item, { id, fullName, action, failed, passed, testPath }) => {
       const result = {
@@ -13058,8 +13190,8 @@ var init_run = __esm({
         description: item.description,
         timestamp: (/* @__PURE__ */ new Date()).getTime()
       };
-      (0, import_jsutils30.isObj)(failed) && result.failedExpectations.push(failed);
-      (0, import_jsutils30.isObj)(passed) && result.passedExpectations.push(passed);
+      (0, import_jsutils31.isObj)(failed) && result.failedExpectations.push(failed);
+      (0, import_jsutils31.isObj)(passed) && result.passedExpectations.push(passed);
       if (passed || failed)
         result.status = passed ? `passed` : `failed`;
       return result;
@@ -13298,24 +13430,24 @@ var init_run = __esm({
 });
 
 // src/test/test.js
-var import_jsutils31, ParkinTest;
+var import_jsutils32, ParkinTest;
 var init_test = __esm({
   "src/test/test.js"() {
     init_run();
-    import_jsutils31 = __toESM(require_cjs());
+    import_jsutils32 = __toESM(require_cjs());
     init_utils();
     ParkinTest = class {
       timeout = 6e3;
-      #specDone = import_jsutils31.noOp;
-      #suiteDone = import_jsutils31.noOp;
-      #specStarted = import_jsutils31.noOp;
-      #suiteStarted = import_jsutils31.noOp;
+      #specDone = import_jsutils32.noOp;
+      #suiteDone = import_jsutils32.noOp;
+      #specStarted = import_jsutils32.noOp;
+      #suiteStarted = import_jsutils32.noOp;
       #activeParent = void 0;
       #testOnly = false;
       #describeOnly = false;
       #autoClean = true;
       #root = createRoot();
-      constructor(config = import_jsutils31.noOpObj) {
+      constructor(config = import_jsutils32.noOpObj) {
         this.#root.description = config.description || `root`;
         this.#addOnly();
         this.#addSkip();
@@ -13325,7 +13457,7 @@ var init_test = __esm({
         this.#activeParent = this.#root;
         this.#setConfig(config);
       }
-      run = (config = import_jsutils31.noOpObj) => {
+      run = (config = import_jsutils32.noOpObj) => {
         if (config.description)
           this.#root.description = config.description;
         this.#setConfig(config);
@@ -13364,7 +13496,7 @@ var init_test = __esm({
       /**
        * Sets the test config from the passed in object
        */
-      setConfig = (config) => this.#setConfig(config || import_jsutils31.noOpObj);
+      setConfig = (config) => this.#setConfig(config || import_jsutils32.noOpObj);
       /**
        * Adds passed in framework hooks to the class instance
        */
@@ -13399,14 +13531,14 @@ var init_test = __esm({
           const item = this.#activeParent.describes[this.#activeParent.describes.length - 1];
           item.only = true;
           this.#describeOnly = true;
-          (0, import_jsutils31.checkCall)(this.#activeParent.hasOnlyChild);
+          (0, import_jsutils32.checkCall)(this.#activeParent.hasOnlyChild);
         };
         this.test.only = (...args) => {
           this.test(...args);
           const item = this.#activeParent.tests[this.#activeParent.tests.length - 1];
           item.only = true;
           this.#testOnly = true;
-          (0, import_jsutils31.checkCall)(this.#activeParent.hasOnlyChild);
+          (0, import_jsutils32.checkCall)(this.#activeParent.hasOnlyChild);
         };
       };
       /**
@@ -13457,7 +13589,7 @@ var init_test = __esm({
         const lastParent = this.#activeParent;
         item.hasOnlyChild = () => {
           item.onlyChild = true;
-          (0, import_jsutils31.checkCall)(lastParent.hasOnlyChild);
+          (0, import_jsutils32.checkCall)(lastParent.hasOnlyChild);
         };
         this.#activeParent = item;
         action();
@@ -13492,7 +13624,7 @@ var init_test = __esm({
           throwError(
             `All ${Types.test} method calls must be called within a ${Types.describe} method`
           );
-        !(0, import_jsutils31.isStr)(description) && throwError(
+        !(0, import_jsutils32.isStr)(description) && throwError(
           `The ${Types.test} method requires a "string" as the first argument`
         );
         const item = createItem(Types.test, { description, skip: true }, false);
@@ -13538,16 +13670,16 @@ var init_globals = __esm({
 });
 
 // src/bin/paths.ts
-var import_os, import_path, import_jsutils32, cwd, homeDir, checkRootDir, __RootDir, setRoot, getRoot;
+var import_os, import_path, import_jsutils33, cwd, homeDir, checkRootDir, __RootDir, setRoot, getRoot;
 var init_paths = __esm({
   "src/bin/paths.ts"() {
     import_os = require("os");
     import_path = __toESM(require("path"));
-    import_jsutils32 = __toESM(require_cjs());
+    import_jsutils33 = __toESM(require_cjs());
     cwd = process.cwd();
     homeDir = (0, import_os.homedir)();
     checkRootDir = (rootDir) => {
-      return !(0, import_jsutils32.isStr)(rootDir) ? void 0 : rootDir.startsWith(`/`) ? rootDir : rootDir.startsWith(`~/`) ? import_path.default.join(homeDir, rootDir.replace(`~/`, ``)) : import_path.default.join(cwd, rootDir);
+      return !(0, import_jsutils33.isStr)(rootDir) ? void 0 : rootDir.startsWith(`/`) ? rootDir : rootDir.startsWith(`~/`) ? import_path.default.join(homeDir, rootDir.replace(`~/`, ``)) : import_path.default.join(cwd, rootDir);
     };
     setRoot = (loc, force) => {
       (!__RootDir || force) && (__RootDir = checkRootDir(loc));
@@ -13697,18 +13829,18 @@ var init_dist = __esm({
 });
 
 // src/bin/helpers.ts
-var import_path3, import_jsutils33, locsByTypes, fullLoc;
+var import_path3, import_jsutils34, locsByTypes, fullLoc;
 var init_helpers2 = __esm({
   "src/bin/helpers.ts"() {
     import_path3 = __toESM(require("path"));
-    import_jsutils33 = __toESM(require_cjs());
+    import_jsutils34 = __toESM(require_cjs());
     init_dist();
     init_paths();
     locsByTypes = async (loc, opts) => {
       const { exclude, include, ext, exts } = opts;
       if (!ext && (!exts || !exts.length))
         return [];
-      const extsArr = (0, import_jsutils33.eitherArr)(exts, []);
+      const extsArr = (0, import_jsutils34.eitherArr)(exts, []);
       ext && !extsArr.includes(ext) && extsArr.push(ext);
       const extensions = extsArr.map((ex) => ex.startsWith(`.`) ? ex : `.${ex}`);
       const files = await c(loc, { resolve: true }).toArray();
@@ -13729,17 +13861,17 @@ var init_helpers2 = __esm({
 });
 
 // src/bin/getDefs.ts
-var import_jsutils34, filterDefs, getDefs;
+var import_jsutils35, filterDefs, getDefs;
 var init_getDefs = __esm({
   "src/bin/getDefs.ts"() {
     init_instance();
     init_paths();
-    import_jsutils34 = __toESM(require_cjs());
+    import_jsutils35 = __toESM(require_cjs());
     init_helpers2();
     filterDefs = async (loc, opts) => {
       return await locsByTypes(loc, {
         ...opts,
-        exts: (0, import_jsutils34.flatUnion)([
+        exts: (0, import_jsutils35.flatUnion)([
           opts == null ? void 0 : opts.ext,
           ...(opts == null ? void 0 : opts.exts) || [],
           `.js`,
@@ -13752,7 +13884,7 @@ var init_getDefs = __esm({
       });
     };
     getDefs = async (opts) => {
-      let filesArr = (0, import_jsutils34.ensureArr)(opts.defs || []);
+      let filesArr = (0, import_jsutils35.ensureArr)(opts.defs || []);
       const defs = !filesArr.length ? await filterDefs(getRoot() || cwd, opts) : await filesArr.reduce(async (resolve, loc) => {
         const acc = await resolve;
         const defs2 = await filterDefs(fullLoc(loc), opts);
@@ -13811,11 +13943,11 @@ var init_runTests = __esm({
 });
 
 // src/bin/getFeatures.ts
-var import_jsutils35, filterFeatures2, featureFromArg, getFeatures;
+var import_jsutils36, filterFeatures2, featureFromArg, getFeatures;
 var init_getFeatures = __esm({
   "src/bin/getFeatures.ts"() {
     init_paths();
-    import_jsutils35 = __toESM(require_cjs());
+    import_jsutils36 = __toESM(require_cjs());
     init_helpers2();
     filterFeatures2 = async (loc, opts) => {
       return await locsByTypes(loc, {
@@ -13833,9 +13965,9 @@ var init_getFeatures = __esm({
       });
     };
     getFeatures = async (opts, args) => {
-      let optsFiles = (0, import_jsutils35.ensureArr)(opts.features || []);
+      let optsFiles = (0, import_jsutils36.ensureArr)(opts.features || []);
       const featureArgs = featureFromArg(args);
-      const options2 = featureArgs.length ? { ...opts, include: (0, import_jsutils35.flatArr)([...opts.include, ...featureArgs]) } : opts;
+      const options2 = featureArgs.length ? { ...opts, include: (0, import_jsutils36.flatArr)([...opts.include, ...featureArgs]) } : opts;
       const filesArr = optsFiles.length || !args.length ? optsFiles : args.filter((arg) => !arg.startsWith(`-`) && !arg.includes(`=`));
       if (!filesArr.length) {
         const root = __RootDir || cwd;
