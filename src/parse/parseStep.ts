@@ -1,4 +1,4 @@
-import type { TStepAst, TStepParentAst, TParseParentAst } from '../types'
+import type { TStepAst, TStepParentAst, TBlockParentAst } from '../types'
 
 import { EStepType } from '../types'
 import { uuid } from '@keg-hub/jsutils'
@@ -169,7 +169,7 @@ const stepFactory = (
  *
  */
 export const parseStep = (
-  parent:TParseParentAst,
+  parent:TBlockParentAst,
   lines:string[],
   line:string,
   index:number

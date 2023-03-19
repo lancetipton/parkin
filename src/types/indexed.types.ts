@@ -1,11 +1,12 @@
 import type {
+  TAstType,
   TRuleAst,
   TTagsAst,
   TBlockAst,
   TFeatureAst,
   TScenarioAst,
   TBackgroundAst,
-  TParseParentAst,
+  TBlockParentAst,
   TStepParentAst,
   TScenarioParentAst,
   TBackgroundParentAst,
@@ -24,10 +25,10 @@ export type TIndexAstAst<T, P> = {
 }
 
 export type TIndexRuleAst = TIndexAstAst<TRuleAst, TFeatureAst>
-export type TIndexTagsAst = TIndexAstAst<TTagsAst, TParseParentAst>
+export type TIndexTagsAst = TIndexAstAst<TTagsAst, TBlockParentAst>
 export type TIndexStepAst = TIndexAstAst<TStepAst, TStepParentAst>
 export type TIndexFeatureAst = TIndexAstAst<TFeatureAst, TFeatureAst>
-export type TIndexBlockAst = TIndexAstAst<TBlockAst, TParseParentAst>
+export type TIndexBlockAst = TIndexAstAst<TBlockAst, TBlockParentAst>
 export type TIndexScenarioAst = TIndexAstAst<TScenarioAst, TScenarioParentAst>
 export type TIndexBackgroundAst = TIndexAstAst<TBackgroundAst, TBackgroundParentAst>
 
@@ -40,3 +41,11 @@ export type TIndexItemAst = TIndexTagsAst
   | TIndexBackgroundAst
 
 export type TIndexAst = TIndexItemAst[]
+
+export type TIndexFromAst = {
+  key:string
+  child:TAstType
+  indexes:TIndexAst
+  feature:TFeatureAst
+  parent:TIndexParentAst
+}

@@ -1,4 +1,4 @@
-import type { TWorldConfig, TParseParentAst, TFeatureAst } from '../types'
+import type { TWorldConfig, TBlockParentAst, TFeatureAst } from '../types'
 
 import { parseStep } from './parseStep'
 import { noOpObj } from '@keg-hub/jsutils'
@@ -40,7 +40,7 @@ export const parseFeature = function (
   let scenario = scenarioFactory(false)
   let background = backgroundFactory(false)
   let feature = featureFactory(false, text)
-  let activeParent:TParseParentAst = feature
+  let activeParent:TBlockParentAst = feature
 
   /*
    * Loop over each line of text, and compose the line with corresponding regex to find a match

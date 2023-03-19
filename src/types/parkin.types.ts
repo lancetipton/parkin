@@ -15,7 +15,7 @@ import type {
   TParamTypeMap,
   TParamTypeModel,
 } from './paramTypes.types'
-import { IAssemble } from './assemble.types'
+import { TAssemble } from './assemble.types'
 
 export type TParkinHookName = `beforeAll`|`afterAll`|`beforeEach`|`afterEach`
 export type TParkinHookMethod = (method:(...args:any[]) => any) => void
@@ -111,7 +111,7 @@ export interface IParkin {
   run:TParkinRun
   matcher:IMatcher
   world:TWorldConfig
-  assemble:IAssemble
+  assemble:TAssemble
   steps:IParkinSteps
   hooks:IParkinHooks
   runner:IParkinRunner

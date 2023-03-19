@@ -21,7 +21,7 @@ const { REGEX_VARIANT } = constants
  * <br/>Gives access to underlying matcher methods to be called directly
  */
 export class Matcher {
-  
+ 
   parkin:Parkin
   options:TFindOpts=emptyObj
   

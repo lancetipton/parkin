@@ -25,7 +25,8 @@ describe(`parseFeature`, () => {
       expect(comment).toEqual({
         index: 2,
         type: `comment`,
-        content: `  # This is a test comment`,
+        whitespace: `  `,
+        content: `# This is a test comment`,
       })
     })
   })
@@ -118,7 +119,7 @@ describe(`parseFeature`, () => {
     it(`should parse a background and its steps when it exists`, () => {
       const feature = parseFeature(backgroundFeature)[0]
       expect(feature.background).not.toBe(undefined)
-      expect(feature.background.background).toBe(`Background steps`)
+      expect(feature.background.background).toBe(``)
     })
 
     it(`should parse a background's steps`, () => {

@@ -26,16 +26,28 @@ export enum EStepMethodType {
 export enum EAstObject {
   tags=`tags`,
   rule=`rule`,
+  rules=`rules`,
   step=`step`,
+  steps=`steps`,
   block=`block`,
+  blocks=`blocks`,
   empty=`empty`,
   reason=`reason`,
   desire=`desire`,
   comment=`comment`,
+  comments=`comments`,
   feature=`feature`,
   scenario=`scenario`,
+  scenarios=`scenarios`,
   background=`background`,
   perspective=`perspective`,
+
+  given=`given`,
+  when=`when`,
+  then=`then`,
+  and=`and`,
+  but=`but`,
+  "*"=`*`,
 }
 
 export enum EFeatureTypes {

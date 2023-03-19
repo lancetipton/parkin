@@ -35,6 +35,7 @@ export const parsedFeature = {
       content: '',
       type: `empty`,
       uuid: testUUid,
+      whitespace: ``,
     },
   ],
   reason: [
@@ -43,35 +44,42 @@ export const parsedFeature = {
       index: 3,
       type: `reason`,
       uuid: testUUid,
+      whitespace: `  `,
     },
   ],
   comments: [
     // Comments are stored globally, so we keep the full white space of it
     // This allows us to format it relative to adjoining lines
     {
-      content: '  # Test comment in the feature meta',
+      content: '# Test comment in the feature meta',
       index: 4,
       type: `comment`,
       uuid: testUUid,
+      whitespace: `  `,
     },
     {
-      content: '    # comment for testing in the scenario steps',
+      content: '# comment for testing in the scenario steps',
       index: 11,
       type: `comment`,
       uuid: testUUid,
+      whitespace: `    `,
     },
     // { content: 'Test comment in the feature meta', index: 4 },
     // { content: 'comment for testing in the scenario steps', index: 11 }
   ],
   perspective: {
-    content: 'As an internet user',
     index: 2,
+    uuid: testUUid,
     type: `perspective`,
+    whitespace: `  `,
+    content: 'As an internet user',
   },
   desire: {
-    content: 'I want to be able to search for information about the Keg-Hub',
     index: 5,
     type: `desire`,
+    uuid: testUUid,
+    whitespace: `  `,
+    content: 'I want to be able to search for information about the Keg-Hub',
   },
   rules: [],
   scenarios: [

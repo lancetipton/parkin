@@ -1,56 +1,9 @@
-import type { TFeatureAst, TAssembleFeatureOpts, TAssembleFeatureArgOpts } from '../types'
+import type { TFeatureAst } from '../types'
 
-import { addMeta } from './addMeta'
-import { addTags } from './addTags'
-import { addRules } from './addRules'
-import { formatAssembled } from './format'
-import { addScenarios } from './addScenarios'
-import { addBackground } from './addBackground'
-import { addFeatureEmpty } from './addEmpty'
+import { indexedToString } from './indexedToString'
 import { throwFeatureNotAnObj } from '../utils/errors'
-import {
-  eitherArr,
-  isBool,
-  isObj,
-  emptyObj,
-  deepMerge
-} from '@keg-hub/jsutils'
-
-const activeBreaks = {
-  rule: true,
-  scenario: true,
-  background: true,
-  ruleScenario:true,
-  ruleBackground:true
-}
-
-/**
- * Default assemble options
- */
-const assembleOpts:TAssembleFeatureOpts = {
-  empty: true,
-  indexes: true,
-  breaks: {
-    ...activeBreaks,
-    ruleBackground:false
-  }
-}
-
-/**
- * Merges the assemble options with the default options
- * Ensure breaks property is set to a breaks object
- */
-const mergeOptions = (opts:TAssembleFeatureArgOpts) => {
-  return {
-    ...assembleOpts,
-    ...opts,
-    breaks: isBool(opts.breaks)
-      ? activeBreaks
-      : isObj(opts.breaks)
-        ? { ...assembleOpts.breaks, ...opts.breaks }
-        : assembleOpts.breaks
-  } as TAssembleFeatureOpts
-}
+import { isObj, eitherArr } from '@keg-hub/jsutils'
+import { featureToIndexes } from '../indexes/featureToIndexes'
 
 /**
  * Converts parsed feature models back into a formatted strings
@@ -60,26 +13,12 @@ const mergeOptions = (opts:TAssembleFeatureArgOpts) => {
  *
  */
 export const assembleFeature = (
-  toAssemble:TFeatureAst|TFeatureAst[],
-  opts:TAssembleFeatureArgOpts=emptyObj as TAssembleFeatureArgOpts
+  toAssemble:TFeatureAst|TFeatureAst[]
 ):string[] => {
-
-  const options = mergeOptions(opts)
-
   return eitherArr<TFeatureAst[]>(toAssemble, [toAssemble]).map((feature) => {
-    let assembled = []
     !isObj(feature) && throwFeatureNotAnObj(feature)
+    const indexes = featureToIndexes(feature)
 
-    addTags(assembled, feature, options)
-    addMeta(assembled, feature, options)
-    options.empty && addFeatureEmpty(assembled, feature, options)
-
-    addBackground(assembled, feature, options)
-
-    addRules(assembled, feature, options)
-
-    addScenarios(assembled, feature, options)
-
-    return formatAssembled(assembled, options)
+    return indexedToString(indexes)
   })
 }

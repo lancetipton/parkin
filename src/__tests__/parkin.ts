@@ -1,11 +1,11 @@
 import {
-  definition,
   feature,
   testUUid,
   thenUuid,
   givenUuid,
-  emptyScenario,
+  definition,
   parsedFeature,
+  emptyScenario,
   parsedDefinition,
   registerMockSteps,
   brokenFeatureScenario,
@@ -30,15 +30,15 @@ jest.setMock('@keg-hub/jsutils', {
 const worldObj = {}
 const { Parkin } = require('../parkin')
 
-describe('Parkin', () => {
+describe(`Parkin`, () => {
   
-  it('should not error when a world object is not passed', () => {
+  it(`should not error when a world object is not passed`, () => {
     expect(() => {
       const PK = new Parkin()
     }).not.toThrow()
   })
 
-  it('should allow registering steps', () => {
+  it(`should allow registering steps`, () => {
     const PK = new Parkin(worldObj)
 
     PK.Given(`Given Step`, jest.fn())
@@ -50,7 +50,7 @@ describe('Parkin', () => {
     expect(PK.steps._then.length).toBe(1)
   })
 
-  it('should set the correct properties of the registered step', () => {
+  it(`should set the correct properties of the registered step`, () => {
     const PK = new Parkin(worldObj)
     registerMockSteps(PK)
 
@@ -70,7 +70,7 @@ describe('Parkin', () => {
     expect(typeof thenDef.content).toBe('string')
   })
 
-  it('should parse feature text', () => {
+  it(`should parse feature text`, () => {
     const PK = new Parkin(worldObj)
     // The uuid is different every time, so don't include it when testing
     // Scenarios can include function identity, so don't include it when testing
@@ -129,7 +129,7 @@ describe('Parkin', () => {
     expect(featScenario.scenario).toBe(`Navigate the Goblog`)
   })
 
-  it('should parse step definition text when a definition parse method is passed', () => {
+  it(`should parse step definition text when a definition parse method is passed`, () => {
     const PK = new Parkin(worldObj)
     const parsed = PK.parse.definition(definition)
 
@@ -143,7 +143,7 @@ describe('Parkin', () => {
     expect(thenDef).toEqual(parsedDefinition.Then[0])
   })
 
-  it('should register parsed step definitions from text', () => {
+  it(`should register parsed step definitions from text`, () => {
     const PK = new Parkin(worldObj)
     PK.parse.definition(definition)
 
@@ -156,7 +156,7 @@ describe('Parkin', () => {
     expect(thenDef).toEqual(parsedDefinition.Then[0])
   })
 
-  it('finds matching definition from a parsed feature and calls the its method', () => {
+  it(`finds matching definition from a parsed feature and calls the its method`, () => {
     const PK = new Parkin(worldObj)
     registerMockSteps(PK)
 
@@ -174,7 +174,7 @@ describe('Parkin', () => {
     expect(PK.steps[`_${whenStep.type}`][2].method).toHaveBeenCalled()
   })
 
-  it('should add an existing parsed step definition when passed to the register step method call', () => {
+  it(`should add an existing parsed step definition when passed to the register step method call`, () => {
     const PK = new Parkin(worldObj)
     PK.parse.definition(definition)
 
@@ -189,7 +189,7 @@ describe('Parkin', () => {
     expect(addedDef).toEqual(stepDef)
   })
 
-  it('should add an existing parsed step definitions when passed to the register step method call as array', () => {
+  it(`should add an existing parsed step definitions when passed to the register step method call as array`, () => {
     const PK = new Parkin(worldObj)
     PK.parse.definition(definition)
 
@@ -210,7 +210,7 @@ describe('Parkin', () => {
     expect(addedTDef).toEqual(thenDef)
   })
 
-  it('should add an existing parsed step definitions when passed to the register step method call as object', () => {
+  it(`should add an existing parsed step definitions when passed to the register step method call as object`, () => {
     const PK = new Parkin(worldObj)
     PK.parse.definition(definition)
 
@@ -238,7 +238,7 @@ describe('Parkin', () => {
     expect(addedTDef).toEqual(thenDef)
   })
 
-  it('should add an existing parsed step definition', () => {
+  it(`should add an existing parsed step definition`, () => {
     const PK = new Parkin(worldObj)
     PK.parse.definition(definition)
 
@@ -253,7 +253,7 @@ describe('Parkin', () => {
     expect(addedDef).toEqual(stepDef)
   })
 
-  it('should add an array existing parsed step definition', () => {
+  it(`should add an array existing parsed step definition`, () => {
     const PK = new Parkin(worldObj)
     PK.parse.definition(definition)
 
@@ -275,7 +275,7 @@ describe('Parkin', () => {
     expect(addedTDef).toEqual(thenDef)
   })
 
-  it('should add an object of existing parsed step definition', () => {
+  it(`should add an object of existing parsed step definition`, () => {
     const PK = new Parkin(worldObj)
     PK.parse.definition(definition)
 

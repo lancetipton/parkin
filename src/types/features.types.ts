@@ -46,6 +46,7 @@ export type TBlockAst = {
   content: string
   index: number
   uuid: string
+  whitespace?:string
   type:EAstObject.block
     | EAstObject.empty
     | EAstObject.comment
@@ -79,11 +80,17 @@ export type TFeatureAst = {
   errors?: TAstParseError[]
 }
 
-export type TParseParentAst = TFeatureAst | TRuleAst | TBackgroundAst | TScenarioAst
-export type TAstType = TParseParentAst | TStepAst
+export type TBlockParentAst = TFeatureAst | TRuleAst | TBackgroundAst | TScenarioAst
+export type TAstType = TBlockParentAst | TStepAst
 
 export type TStepParentAst = TBackgroundAst | TScenarioAst
 export type TScenarioParentAst = TRuleAst | TFeatureAst
 export type TTagsParentAst = TScenarioParentAst | TStepParentAst
 export type TBackgroundParentAst = TFeatureAst | TRuleAst
 
+export type TBlockType = EAstObject.block
+  | EAstObject.empty
+  | EAstObject.comment
+  | EAstObject.desire
+  | EAstObject.reason
+  | EAstObject.perspective

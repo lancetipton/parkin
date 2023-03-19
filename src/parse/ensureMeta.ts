@@ -22,10 +22,10 @@ const RX_IN_ORDER = /^\s*In order (.*)$/
  * @private
  */
 export const featureMetaTags = [
-  { regex: RX_AS, key: 'perspective' },
-  { regex: RX_I_WANT, key: 'desire' },
-  { regex: RX_SO_THAT, key: 'reason' },
-  { regex: RX_IN_ORDER, key: 'reason' },
+  { regex: RX_AS, key: EAstObject.perspective },
+  { regex: RX_I_WANT, key: EAstObject.desire },
+  { regex: RX_SO_THAT, key: EAstObject.reason },
+  { regex: RX_IN_ORDER, key: EAstObject.reason },
 ]
 
 
@@ -38,6 +38,7 @@ export const featureMetaTags = [
 const addReason = (
   feature:TFeatureAst,
   reason:string,
+  line:string,
   index:number
 ) => {
   if(!reason) return
@@ -47,7 +48,8 @@ const addReason = (
     index,
     uuid: uuid(),
     content: reason,
-    type: EAstObject.reason
+    type: EAstObject.reason,
+    whitespace: getStartWhiteSpace(line),
   })
   feature.reason = reasonArr
 }
@@ -74,17 +76,19 @@ export const featureMeta = (
     if (!metaAdded && hasTag) metaAdded = true
 
     return hasTag
-      ? regTag.key === `reason`
-        ? addReason(feature, getRXMatch(line, regTag.regex, 0), index)
-        : (feature[regTag.key] = {
-            content: getRXMatch(line, regTag.regex, 0),
+      ? regTag.key !== EAstObject.reason
+        ? (feature[regTag.key] = {
             index,
-            type: regTag.key === `desire`
+            uuid: uuid(),
+            whitespace: getStartWhiteSpace(line),
+            content: getRXMatch(line, regTag.regex, 0),
+            type: regTag.key === EAstObject.desire
               ? EAstObject.desire
-              : regTag.key === `perspective`
+              : regTag.key === EAstObject.perspective
                 ? EAstObject.perspective
                 : EAstObject.block
           })
+        : addReason(feature, getRXMatch(line, regTag.regex, 0), line, index)
       : hasTag
   }, false)
 
@@ -97,7 +101,8 @@ export const featureMeta = (
  */
 const tagsFactory = (
   index:number,
-  content:string
+  content:string,
+  line:string
 ) => {
   const tokens = content.split(` `).reduce((acc, item) => {
     const token = item.trim()
@@ -111,6 +116,7 @@ const tagsFactory = (
     uuid: uuid(),
     type: EAstObject.tags,
     content: tokens.join(` `),
+    whitespace: getStartWhiteSpace(line),
   } as TTagsAst
 }
 
@@ -133,7 +139,7 @@ export const checkTag = (
   const tags = getRXMatch(line, RX_TAG, 0)
 
   // Join the tags with the tagParents current tags
-  tagParent.tags = tagsFactory(index, tags)
+  tagParent.tags = tagsFactory(index, tags, line)
   tagParent.tags.whitespace = getStartWhiteSpace(line)
 
   return true
@@ -152,17 +158,16 @@ export const featureComment = (
   if (!RX_COMMENT.test(line)) return false
 
   // const comment = getRXMatch(line, RX_COMMENT, 1)
-  // Don't use getRXMatch because we want the full white space
-  // Because comments are added globally and not by line
-  // This could cause some issues if the user starts using different white space settings
-  // But not much we can do about it
+  // Don't use getRXMatch because we want to include the "#" for the comment
+  // Instead trim the whitespace afterwards
   const comment = line.match(RX_COMMENT)[0]
 
   feature.comments.push({
     index,
     uuid: uuid(),
-    content: comment,
-    type: EAstObject.comment
+    content: comment.trim(),
+    type: EAstObject.comment,
+    whitespace: getStartWhiteSpace(line),
   })
 
   return true
@@ -184,7 +189,8 @@ export const featureEmptyLine = (
     index,
     uuid: uuid(),
     content: line,
-    type: EAstObject.empty
+    whitespace: ``,
+    type: EAstObject.empty,
   })
 
   return true

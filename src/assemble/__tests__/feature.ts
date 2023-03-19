@@ -8,14 +8,14 @@ const worldObj = {}
 const { Parkin } = require('../../parkin')
 const { assembleFeature } = require('../feature')
 
-describe('Assemble Feature', () => {
-  it('should rebuild a feature into a string', () => {
+describe(`Assemble Feature`, () => {
+  it(`should rebuild a feature into a string`, () => {
     const content = parsedFeature.content
     const [assembled] = assembleFeature([parsedFeature])
     expect(assembled.trim()).toEqual(content.trim())
   })
 
-  it('should work with multiple features', () => {
+  it(`should work with multiple features`, () => {
     const content = parsedFeature.content
     const [ assembled1, assembled2 ] = assembleFeature([
       parsedFeature,
@@ -25,13 +25,13 @@ describe('Assemble Feature', () => {
     expect(assembled2.trim()).toEqual(content.trim())
   })
 
-  it('should allow passing in a feature model object', () => {
+  it(`should allow passing in a feature model object`, () => {
     const content = parsedFeature.content
     const [assembled] = assembleFeature(parsedFeature)
     expect(assembled.trim()).toEqual(content.trim())
   })
 
-  it('should create output that is equal to the input', () => {
+  it(`should create output that is equal to the input`, () => {
     const PK = new Parkin(worldObj)
 
     const parsed = PK.parse.feature(feature)[0]
@@ -40,7 +40,6 @@ describe('Assemble Feature', () => {
 
     const parsedAdvanced = PK.parse.feature(featureRulesScenarios)[0]
     const assembledAdvanced = assembleFeature(parsedAdvanced)[0]
-
     expect(assembledAdvanced.trim()).toEqual(featureRulesScenarios.trim())
 
   })

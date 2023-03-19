@@ -124,7 +124,7 @@ export const parsedFeatureRulesScenarios = {
             uuid: 'then-the-background-steps-should-be-in-the-second-parsed-rule-61'
           }
         ],
-        background: 'this-is-rule-2-14-background',
+        background: ' ',
         uuid: 'this-is-rule-2-14-background-28',
         whitespace: '    '
       },
@@ -246,7 +246,7 @@ export const parsedFeatureRulesScenarios = {
         uuid: "then-the-background-steps-should-be-called-before-each-rules-scenario-69"
       }
     ],
-    background: 'full-set-of-functionality-in-feature-files-42-background',
+    background: ' ',
     uuid: 'full-set-of-functionality-in-feature-files-42-background-56',
     whitespace: '  '
   }

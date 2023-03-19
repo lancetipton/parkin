@@ -1,4 +1,4 @@
-import type { TFeatureAst, TRuleAst, TBackgroundAst, TScenarioAst, TParseParentAst } from '../types'
+import type { TFeatureAst, TRuleAst, TBackgroundAst, TScenarioAst, TBlockParentAst } from '../types'
 
 /**
  * Regular expressions for matching feature file keywords
@@ -18,7 +18,7 @@ const RX_BACKGROUND = /^\s*Background:(.*)$/
  *
  */
 export const setActiveParent = (
-  activeParent:TParseParentAst,
+  activeParent:TBlockParentAst,
   feature:TFeatureAst,
   rule:TRuleAst,
   scenario:TScenarioAst,
