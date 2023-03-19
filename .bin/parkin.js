@@ -242,8 +242,8 @@ var require_isObj_6b3aa807 = __commonJS({
 var require_isFunc_f93803cb = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/isFunc-f93803cb.js"(exports) {
     "use strict";
-    var isFunc5 = (func) => typeof func === "function";
-    exports.isFunc = isFunc5;
+    var isFunc6 = (func) => typeof func === "function";
+    exports.isFunc = isFunc6;
   }
 });
 
@@ -251,8 +251,8 @@ var require_isFunc_f93803cb = __commonJS({
 var require_isStr_8a57710e = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/isStr-8a57710e.js"(exports) {
     "use strict";
-    var isStr7 = (str) => typeof str === "string";
-    exports.isStr = isStr7;
+    var isStr8 = (str) => typeof str === "string";
+    exports.isStr = isStr8;
   }
 });
 
@@ -273,10 +273,10 @@ var require_isValidDate_813b9419 = __commonJS({
     "use strict";
     var isObj6 = require_isObj_6b3aa807();
     var isArr4 = require_isArr_39234014();
-    var isStr7 = require_isStr_8a57710e();
+    var isStr8 = require_isStr_8a57710e();
     var isNum = require_isNum_c7164b50();
     var typeOf = (val) => Object.prototype.toString.call(val).slice(8, -1);
-    var isEmpty = (val) => isObj6.isObj(val) ? Object.keys(val).length === 0 : isArr4.isArr(val) ? val.length === 0 : isStr7.isStr(val) ? val.trim().length === 0 : isNum.isNum(val) ? val < 1 : false;
+    var isEmpty = (val) => isObj6.isObj(val) ? Object.keys(val).length === 0 : isArr4.isArr(val) ? val.length === 0 : isStr8.isStr(val) ? val.trim().length === 0 : isNum.isNum(val) ? val < 1 : false;
     var isSame = (val1, val2) => val1 === val2 ? val1 !== 0 || 1 / val1 === 1 / val2 : val1 !== val1 && val2 !== val2;
     var isValidDate = (date) => !isNaN((date instanceof Date && date || new Date(date)).getTime());
     exports.isEmpty = isEmpty;
@@ -299,8 +299,8 @@ var require_isBool_aa6af74e = __commonJS({
 var require_toStr_8e499966 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/toStr-8e499966.js"(exports) {
     "use strict";
-    var isStr7 = require_isStr_8a57710e();
-    var toStr3 = (val) => val === null || val === void 0 ? "" : isStr7.isStr(val) ? val : JSON.stringify(val);
+    var isStr8 = require_isStr_8a57710e();
+    var toStr3 = (val) => val === null || val === void 0 ? "" : isStr8.isStr(val) ? val : JSON.stringify(val);
     exports.toStr = toStr3;
   }
 });
@@ -339,7 +339,7 @@ var require_deepEqual_adba847a = __commonJS({
     var isArray = Array.isArray;
     var keyList = Object.keys;
     var hasProp = Object.prototype.hasOwnProperty;
-    var deepEqual = (a, b) => {
+    var deepEqual3 = (a, b) => {
       if (a === b)
         return true;
       if (!a || !b || typeof a != "object" || typeof b != "object")
@@ -354,7 +354,7 @@ var require_deepEqual_adba847a = __commonJS({
         if (length != b.length)
           return false;
         for (i2 = length; i2-- !== 0; )
-          if (!deepEqual(a[i2], b[i2]))
+          if (!deepEqual3(a[i2], b[i2]))
             return false;
         return true;
       }
@@ -381,12 +381,12 @@ var require_deepEqual_adba847a = __commonJS({
           return false;
       for (i2 = length; i2-- !== 0; ) {
         key = keys[i2];
-        if (!deepEqual(a[key], b[key]))
+        if (!deepEqual3(a[key], b[key]))
           return false;
       }
       return true;
     };
-    exports.deepEqual = deepEqual;
+    exports.deepEqual = deepEqual3;
     exports.isEmptyColl = isEmptyColl;
   }
 });
@@ -395,8 +395,8 @@ var require_deepEqual_adba847a = __commonJS({
 var require_exists_c79204b1 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js"(exports) {
     "use strict";
-    var exists7 = (value) => value === value && value !== void 0 && value !== null;
-    exports.exists = exists7;
+    var exists6 = (value) => value === value && value !== void 0 && value !== null;
+    exports.exists = exists6;
   }
 });
 
@@ -420,13 +420,13 @@ var require_isInt_94ce4199 = __commonJS({
 var require_jsonEqual_7e69ef6a = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/jsonEqual-7e69ef6a.js"(exports) {
     "use strict";
-    var isStr7 = require_isStr_8a57710e();
+    var isStr8 = require_isStr_8a57710e();
     var isNum = require_isNum_c7164b50();
     var isArr4 = require_isArr_39234014();
     var isObj6 = require_isObj_6b3aa807();
     var toBool = require_toBool_deb350e4();
     var hasOwn = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
-    var isEntry = (maybeEntry) => isArr4.isArr(maybeEntry) && maybeEntry.length === 2 && (isNum.isNum(maybeEntry[0]) || isStr7.isStr(maybeEntry[0]));
+    var isEntry = (maybeEntry) => isArr4.isArr(maybeEntry) && maybeEntry.length === 2 && (isNum.isNum(maybeEntry[0]) || isStr8.isStr(maybeEntry[0]));
     var isArrMap = (obj) => {
       if (!isObj6.isObj(obj))
         return false;
@@ -451,11 +451,11 @@ var require_jsonEqual_7e69ef6a = __commonJS({
 var require_isQuoted_eb6994da = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/isQuoted-eb6994da.js"(exports) {
     "use strict";
-    var isStr7 = require_isStr_8a57710e();
+    var isStr8 = require_isStr_8a57710e();
     var isLowerCase = (str) => str === str.toLowerCase();
     var isUpperCase = (str) => str === str.toUpperCase();
     var isEmail = (str) => {
-      if (!str || !isStr7.isStr(str))
+      if (!str || !isStr8.isStr(str))
         return false;
       const regex2 = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
       return Boolean(regex2.test(str));
@@ -465,23 +465,23 @@ var require_isQuoted_eb6994da = __commonJS({
       ipv6: /^((?=.*::)(?!.*::.+::)(::)?([\dA-F]{1,4}:(:|\b)|){5}|([\dA-F]{1,4}:){6})((([\dA-F]{1,4}((?!\3)::|:\b|$))|(?!\2\3)){2}|(((2[0-4]|1\d|[1-9])?\d|25[0-5])\.?\b){4})$/i
     };
     var isIp = (str) => {
-      if (!str || !isStr7.isStr(str))
+      if (!str || !isStr8.isStr(str))
         return false;
       const isIp42 = Boolean(regex.ipv4.test(str));
       return isIp42 || Boolean(regex.ipv6.test(str));
     };
     var isIp4 = (str) => {
-      if (!str || !isStr7.isStr(str))
+      if (!str || !isStr8.isStr(str))
         return false;
       return Boolean(regex.ipv4.test(str));
     };
     var isIp6 = (str) => {
-      if (!str || !isStr7.isStr(str))
+      if (!str || !isStr8.isStr(str))
         return false;
       return Boolean(regex.ipv6.test(str));
     };
     var isPhone = (str) => {
-      if (!str || !isStr7.isStr(str))
+      if (!str || !isStr8.isStr(str))
         return false;
       const regex2 = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
       return Boolean(regex2.test(str)) && str.replace(/\D/g, "").length < 11;
@@ -491,14 +491,14 @@ var require_isQuoted_eb6994da = __commonJS({
       return Boolean(regex2.test(str));
     };
     var isUuid = (str) => {
-      if (!str || !isStr7.isStr(str))
+      if (!str || !isStr8.isStr(str))
         return false;
       const regex2 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
       return Boolean(regex2.test(str));
     };
     var quoteSymbols = ['"', "'"];
     var isQuoted2 = (str, quotes = quoteSymbols) => {
-      return isStr7.isStr(str) && quotes.some((quote) => str.startsWith(quote) && str.endsWith(quote));
+      return isStr8.isStr(str) && quotes.some((quote) => str.startsWith(quote) && str.endsWith(quote));
     };
     exports.isEmail = isEmail;
     exports.isIp = isIp;
@@ -531,20 +531,20 @@ var require_not_16fa9c85 = __commonJS({
     "use strict";
     var isArr4 = require_isArr_39234014();
     var isValidDate = require_isValidDate_813b9419();
-    var isFunc5 = require_isFunc_f93803cb();
+    var isFunc6 = require_isFunc_f93803cb();
     var isBool2 = require_isBool_aa6af74e();
     var toBool = require_toBool_deb350e4();
     var isColl = require_isColl_5757310a();
-    var deepEqual = require_deepEqual_adba847a();
-    var exists7 = require_exists_c79204b1();
-    var isStr7 = require_isStr_8a57710e();
+    var deepEqual3 = require_deepEqual_adba847a();
+    var exists6 = require_exists_c79204b1();
+    var isStr8 = require_isStr_8a57710e();
     var isNum = require_isNum_c7164b50();
     var isInt = require_isInt_94ce4199();
     var jsonEqual = require_jsonEqual_7e69ef6a();
     var isObj6 = require_isObj_6b3aa807();
     var isQuoted2 = require_isQuoted_eb6994da();
     var isValidUrl = require_isValidUrl_a77135f0();
-    var isOrderable = (x) => isStr7.isStr(x) || isNum.isNum(x) || isBool2.isBool(x);
+    var isOrderable = (x) => isStr8.isStr(x) || isNum.isNum(x) || isBool2.isBool(x);
     var identity = (x) => x;
     var match = (matchArg, ...args) => {
       if (!args.length)
@@ -555,7 +555,7 @@ var require_not_16fa9c85 = __commonJS({
           break;
         }
         const [caseValueOrPredicate, valueOnMatch] = entry;
-        if (isFunc5.isFunc(caseValueOrPredicate) && caseValueOrPredicate(matchArg))
+        if (isFunc6.isFunc(caseValueOrPredicate) && caseValueOrPredicate(matchArg))
           return valueOnMatch;
         if (caseValueOrPredicate === matchArg)
           return valueOnMatch;
@@ -577,14 +577,14 @@ var require_not_16fa9c85 = __commonJS({
     not.bool = not(isBool2.isBool);
     not.strBool = not(toBool.isStrBool);
     not.coll = not(isColl.isColl);
-    not.deepEqual = not(deepEqual.deepEqual);
-    not.emptyColl = not(deepEqual.isEmptyColl);
+    not.deepEqual = not(deepEqual3.deepEqual);
+    not.emptyColl = not(deepEqual3.isEmptyColl);
     not.dom = not(hasDomAccess);
-    not.exists = not(exists7.exists);
+    not.exists = not(exists6.exists);
     not.empty = not(isValidDate.isEmpty);
     not.same = not(isValidDate.isSame);
     not.validDate = not(isValidDate.isValidDate);
-    not.func = not(isFunc5.isFunc);
+    not.func = not(isFunc6.isFunc);
     not.identity = not(identity);
     not.orderable = not(isOrderable);
     not.equalsNaN = not(isNum.equalsNaN);
@@ -604,7 +604,7 @@ var require_not_16fa9c85 = __commonJS({
     not.lowerCase = not(isQuoted2.isLowerCase);
     not.phone = not(isQuoted2.isPhone);
     not.quoted = not(isQuoted2.isQuoted);
-    not.str = not(isStr7.isStr);
+    not.str = not(isStr8.isStr);
     not.upperCase = not(isQuoted2.isUpperCase);
     not.url = not(isQuoted2.isUrl);
     not.uuid = not(isQuoted2.isUuid);
@@ -622,7 +622,7 @@ var require_not_16fa9c85 = __commonJS({
 var require_compareTo_d69e4abf = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/compareTo-d69e4abf.js"(exports) {
     "use strict";
-    var isStr7 = require_isStr_8a57710e();
+    var isStr8 = require_isStr_8a57710e();
     var not = require_not_16fa9c85();
     var validate = require_validate_23297ec2();
     var compareTo = (x, y) => {
@@ -634,7 +634,7 @@ var require_compareTo_d69e4abf = __commonJS({
       });
       if (!valid)
         return null;
-      return isStr7.isStr(x) ? x.localeCompare(y) : x - y;
+      return isStr8.isStr(x) ? x.localeCompare(y) : x - y;
     };
     exports.compareTo = compareTo;
   }
@@ -654,11 +654,11 @@ var require_isNonNegative_9959647c = __commonJS({
 var require_deepFreeze_d73ccc57 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/deepFreeze-d73ccc57.js"(exports) {
     "use strict";
-    var isFunc5 = require_isFunc_f93803cb();
+    var isFunc6 = require_isFunc_f93803cb();
     var deepFreeze2 = (obj) => {
       Object.freeze(obj);
       Object.getOwnPropertyNames(obj).map((prop) => {
-        obj.hasOwnProperty(prop) && obj[prop] !== null && (typeof obj[prop] === "object" || isFunc5.isFunc(obj[prop])) && !Object.isFrozen(obj[prop]) && deepFreeze2(obj[prop]);
+        obj.hasOwnProperty(prop) && obj[prop] !== null && (typeof obj[prop] === "object" || isFunc6.isFunc(obj[prop])) && !Object.isFrozen(obj[prop]) && deepFreeze2(obj[prop]);
       });
       return obj;
     };
@@ -672,15 +672,15 @@ var require_noOps_c9732e8e = __commonJS({
     "use strict";
     var deepFreeze2 = require_deepFreeze_d73ccc57();
     var noOpObj8 = Object.freeze({});
-    var emptyObj7 = noOpObj8;
+    var emptyObj5 = noOpObj8;
     var noPropObj = deepFreeze2.deepFreeze({
       content: {}
     });
     var noPropArr2 = deepFreeze2.deepFreeze([]);
     var noOpArr = noPropArr2;
-    var emptyArr4 = noPropArr2;
-    exports.emptyArr = emptyArr4;
-    exports.emptyObj = emptyObj7;
+    var emptyArr5 = noPropArr2;
+    exports.emptyArr = emptyArr5;
+    exports.emptyObj = emptyObj5;
     exports.noOpArr = noOpArr;
     exports.noOpObj = noOpObj8;
     exports.noPropArr = noPropArr2;
@@ -695,12 +695,12 @@ var require_intersect_77d7e821 = __commonJS({
     var validate = require_validate_23297ec2();
     var isArr4 = require_isArr_39234014();
     var isObj6 = require_isObj_6b3aa807();
-    var isFunc5 = require_isFunc_f93803cb();
+    var isFunc6 = require_isFunc_f93803cb();
     var compareTo = require_compareTo_d69e4abf();
     var not = require_not_16fa9c85();
     var isNonNegative = require_isNonNegative_9959647c();
     var noOps = require_noOps_c9732e8e();
-    var exists7 = require_exists_c79204b1();
+    var exists6 = require_exists_c79204b1();
     var buildElementCountMap = (arr) => {
       const counts = /* @__PURE__ */ new Map();
       for (let i2 = 0; i2 < arr.length; i2++) {
@@ -765,7 +765,7 @@ var require_intersect_77d7e821 = __commonJS({
     var flatten = (arr, result, opts) => {
       for (let i2 = 0; i2 < arr.length; i2++) {
         const value = arr[i2];
-        isArr4.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists7.exists(value) || opts.truthy && !value ? result : result.push(value);
+        isArr4.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists6.exists(value) || opts.truthy && !value ? result : result.push(value);
       }
       if (!opts.mutate)
         return result;
@@ -779,7 +779,7 @@ var require_intersect_77d7e821 = __commonJS({
         mapFn
       }, {
         arr: isArr4.isArr,
-        mapFn: isFunc5.isFunc
+        mapFn: isFunc6.isFunc
       });
       if (!inputIsValid)
         return arr;
@@ -795,7 +795,7 @@ var require_intersect_77d7e821 = __commonJS({
         comparator
       }, {
         arr: isArr4.isArr,
-        $default: isFunc5.isFunc
+        $default: isFunc6.isFunc
       });
       if (!valid)
         return null;
@@ -848,12 +848,12 @@ var require_intersect_77d7e821 = __commonJS({
       });
       return unique;
     };
-    var flatUnion2 = (...args) => {
+    var flatUnion3 = (...args) => {
       const last = args.pop();
       const opts = {
         exists: true
       };
-      const compare = isFunc5.isFunc(last) ? last : args.push(last) && void 0;
+      const compare = isFunc6.isFunc(last) ? last : args.push(last) && void 0;
       return args.reduce((merged, arr) => {
         if (!isArr4.isArr(arr))
           return merged;
@@ -877,7 +877,7 @@ var require_intersect_77d7e821 = __commonJS({
     exports.findMin = findMin;
     exports.flatArr = flatArr2;
     exports.flatMap = flatMap;
-    exports.flatUnion = flatUnion2;
+    exports.flatUnion = flatUnion3;
     exports.intersect = intersect;
     exports.omitRange = omitRange;
     exports.randomArr = randomArr;
@@ -892,8 +892,8 @@ var require_ensureArr_ae68c041 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/ensureArr-ae68c041.js"(exports) {
     "use strict";
     var isArr4 = require_isArr_39234014();
-    var ensureArr4 = (val) => isArr4.isArr(val) ? val : [val];
-    exports.ensureArr = ensureArr4;
+    var ensureArr5 = (val) => isArr4.isArr(val) ? val : [val];
+    exports.ensureArr = ensureArr5;
   }
 });
 
@@ -910,7 +910,7 @@ var require_softFalsy_3d7ead1c = __commonJS({
 var require_set_c0a98b21 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/set-c0a98b21.js"(exports) {
     "use strict";
-    var isFunc5 = require_isFunc_f93803cb();
+    var isFunc6 = require_isFunc_f93803cb();
     var isArr4 = require_isArr_39234014();
     var isColl = require_isColl_5757310a();
     var updateColl = (obj, path3, type, val) => {
@@ -923,7 +923,7 @@ var require_set_c0a98b21 = __commonJS({
       let breakPath;
       while (prop = parts.shift()) {
         const next = obj[prop];
-        isColl.isColl(next) || isFunc5.isFunc(next) ? obj = next : (() => {
+        isColl.isColl(next) || isFunc6.isFunc(next) ? obj = next : (() => {
           if (type === "set")
             obj[prop] = {};
           else
@@ -948,22 +948,22 @@ var require_set_c0a98b21 = __commonJS({
 var require_get_00626335 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js"(exports) {
     "use strict";
-    var exists7 = require_exists_c79204b1();
+    var exists6 = require_exists_c79204b1();
     var isArr4 = require_isArr_39234014();
-    var isStr7 = require_isStr_8a57710e();
+    var isStr8 = require_isStr_8a57710e();
     var get4 = (obj, path3, fallback) => {
       const isPathArr = isArr4.isArr(path3);
-      if (!isStr7.isStr(path3) && !isPathArr)
-        return exists7.exists(fallback) ? fallback : void 0;
+      if (!isStr8.isStr(path3) && !isPathArr)
+        return exists6.exists(fallback) ? fallback : void 0;
       const parts = isPathArr ? path3 : path3.split(".");
       const result = parts.reduce((obj2, prop) => {
         const type = typeof obj2;
-        if (!exists7.exists(obj2) || type !== "object" && type !== "function")
+        if (!exists6.exists(obj2) || type !== "object" && type !== "function")
           return void 0;
         prop = prop.startsWith("[") ? prop.replace(/\D/g, "") : prop;
         return obj2[prop];
       }, obj);
-      return exists7.exists(result) ? result : fallback;
+      return exists6.exists(result) ? result : fallback;
     };
     exports.get = get4;
   }
@@ -973,7 +973,7 @@ var require_get_00626335 = __commonJS({
 var require_deepClone_ae664a21 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/deepClone-ae664a21.js"(exports) {
     "use strict";
-    var isFunc5 = require_isFunc_f93803cb();
+    var isFunc6 = require_isFunc_f93803cb();
     var get4 = require_get_00626335();
     var isArr4 = require_isArr_39234014();
     var cloneFunc = (func) => {
@@ -1000,7 +1000,7 @@ var require_deepClone_ae664a21 = __commonJS({
         return hash.get(obj);
       if (isArr4.isArr(obj))
         return obj.map((x) => deepClone(x));
-      if (isFunc5.isFunc(obj))
+      if (isFunc6.isFunc(obj))
         return cloneFunc(obj);
       const result = obj instanceof Date ? new Date(obj) : obj instanceof RegExp ? new RegExp(obj.source, obj.flags) : !obj.constructor ? /* @__PURE__ */ Object.create(null) : null;
       if (result === null)
@@ -1039,15 +1039,15 @@ var require_shallowEqual_eaf2262d = __commonJS({
     "use strict";
     var isObj6 = require_isObj_6b3aa807();
     var isColl = require_isColl_5757310a();
-    var isFunc5 = require_isFunc_f93803cb();
+    var isFunc6 = require_isFunc_f93803cb();
     var isArr4 = require_isArr_39234014();
-    var exists7 = require_exists_c79204b1();
+    var exists6 = require_exists_c79204b1();
     var validate = require_validate_23297ec2();
     var set = require_set_c0a98b21();
     var deepClone = require_deepClone_ae664a21();
     var isNum = require_isNum_c7164b50();
     var get4 = require_get_00626335();
-    var isStr7 = require_isStr_8a57710e();
+    var isStr8 = require_isStr_8a57710e();
     var cleanColl = (coll, recursive = true) => {
       return isColl.isColl(coll) ? Object.keys(coll).reduce((cleaned, key) => {
         const value = coll[key];
@@ -1057,7 +1057,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
         return cleaned;
       }, isObj6.isObj(coll) && {} || []) : console.error(`cleanColl requires a collection as the first argument`) || coll;
     };
-    var mapColl = (coll, cb) => isFunc5.isFunc(cb) && isColl.isColl(coll) ? Object.keys(coll).map((key) => cb(key, coll[key], coll)) : isArr4.isArr(coll) ? [] : {};
+    var mapColl = (coll, cb) => isFunc6.isFunc(cb) && isColl.isColl(coll) ? Object.keys(coll).map((key) => cb(key, coll[key], coll)) : isArr4.isArr(coll) ? [] : {};
     var mapFindArr = (arr, mapper, testFunc) => {
       for (let i2 = 0; i2 < arr.length; i2++) {
         const mappedValue = mapper(arr[i2], i2, i2);
@@ -1079,20 +1079,20 @@ var require_shallowEqual_eaf2262d = __commonJS({
       }
       return null;
     };
-    var mapFind = (coll, mapper, testFunc = exists7.exists) => {
+    var mapFind = (coll, mapper, testFunc = exists6.exists) => {
       const [valid] = validate.validate({
         coll,
         mapper,
         testFunc
       }, {
         coll: isColl.isColl,
-        $default: isFunc5.isFunc
+        $default: isFunc6.isFunc
       });
       if (!valid)
         return void 0;
       return isObj6.isObj(coll) ? mapFindObj(coll, mapper, testFunc) : mapFindArr(coll, mapper, testFunc);
     };
-    var reduceColl = (coll, cb, reduce) => isFunc5.isFunc(cb) && isColl.isColl(coll) ? Object.keys(coll).reduce((data, key) => cb(key, coll[key], coll, data), reduce) : isArr4.isArr(coll) ? [] : {};
+    var reduceColl = (coll, cb, reduce) => isFunc6.isFunc(cb) && isColl.isColl(coll) ? Object.keys(coll).reduce((data, key) => cb(key, coll[key], coll, data), reduce) : isArr4.isArr(coll) ? [] : {};
     var unset = (obj, path3) => {
       set.updateColl(obj, path3, "unset");
       return obj;
@@ -1106,13 +1106,13 @@ var require_shallowEqual_eaf2262d = __commonJS({
       }
       const arr = [];
       for (let i2 = 0; i2 < times; i2++) {
-        const value = isFunc5.isFunc(element) ? element() : cloneDeep ? deepClone.deepClone(element) : element;
+        const value = isFunc6.isFunc(element) ? element() : cloneDeep ? deepClone.deepClone(element) : element;
         arr.push(value);
       }
       return arr;
     };
     var shallowEqual = (col1, col2, path3) => {
-      if (path3 && (isArr4.isArr(path3) || isStr7.isStr(path3))) {
+      if (path3 && (isArr4.isArr(path3) || isStr8.isStr(path3))) {
         col1 = get4.get(col1, path3);
         col2 = get4.get(col2, path3);
       }
@@ -1142,8 +1142,8 @@ var require_either_81805472 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/either-81805472.js"(exports) {
     "use strict";
     var softFalsy = require_softFalsy_3d7ead1c();
-    var isFunc5 = require_isFunc_f93803cb();
-    var either = (val1, val2, check) => !isFunc5.isFunc(check) ? softFalsy.softFalsy(val1) && val1 || val2 : check(val1, val2) && val1 || val2;
+    var isFunc6 = require_isFunc_f93803cb();
+    var either = (val1, val2, check) => !isFunc6.isFunc(check) ? softFalsy.softFalsy(val1) && val1 || val2 : check(val1, val2) && val1 || val2;
     exports.either = either;
   }
 });
@@ -1165,12 +1165,12 @@ var require_toNum_eeb2e51e = __commonJS({
 var require_strToType_00c4481f = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/strToType-00c4481f.js"(exports) {
     "use strict";
-    var isStr7 = require_isStr_8a57710e();
+    var isStr8 = require_isStr_8a57710e();
     var isNum = require_isNum_c7164b50();
     var toNum = require_toNum_eeb2e51e();
     var toBool = require_toBool_deb350e4();
     var strToType = (val) => {
-      return !val || !isStr7.isStr(val) ? val : toBool.isStrBool(val) ? toBool.toBool(val) : isNum.isNum(val) ? toNum.toNum(val) : (() => {
+      return !val || !isStr8.isStr(val) ? val : toBool.isStrBool(val) ? toBool.toBool(val) : isNum.isNum(val) ? toNum.toNum(val) : (() => {
         try {
           return JSON.parse(val);
         } catch (e2) {
@@ -1225,12 +1225,12 @@ var require_pipeline_e65bdaae = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/pipeline-e65bdaae.js"(exports) {
     "use strict";
     var isArr4 = require_isArr_39234014();
-    var isFunc5 = require_isFunc_f93803cb();
+    var isFunc6 = require_isFunc_f93803cb();
     var applyToFunc = (item, expression) => {
       if (isArr4.isArr(expression)) {
         const [func, ...args] = expression;
         return func(item, ...args);
-      } else if (isFunc5.isFunc(expression)) {
+      } else if (isFunc6.isFunc(expression)) {
         return expression(item);
       } else {
         console.error(`Pipeline expected either a function or an array (for function expressions). Found ${typeof expression}`);
@@ -1249,31 +1249,31 @@ var require_pipeline_e65bdaae = __commonJS({
 var require_stackTracePaths_58b768d2 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/stackTracePaths-58b768d2.js"(exports) {
     "use strict";
-    var isFunc5 = require_isFunc_f93803cb();
+    var isFunc6 = require_isFunc_f93803cb();
     var validate = require_validate_23297ec2();
     var isNum = require_isNum_c7164b50();
     var jsonEqual = require_jsonEqual_7e69ef6a();
     var isArr4 = require_isArr_39234014();
     var deepClone = require_deepClone_ae664a21();
-    var isStr7 = require_isStr_8a57710e();
+    var isStr8 = require_isStr_8a57710e();
     var isObj6 = require_isObj_6b3aa807();
     var isValidDate = require_isValidDate_813b9419();
     var checkCall4 = (method, ...params) => {
-      return isFunc5.isFunc(method) ? method(...params) : void 0;
+      return isFunc6.isFunc(method) ? method(...params) : void 0;
     };
     var complement = (predicate) => {
       const [valid] = validate.validate({
         predicate
       }, {
-        predicate: isFunc5.isFunc
+        predicate: isFunc6.isFunc
       });
       return valid ? (...args) => !predicate(...args) : null;
     };
-    var eitherFunc = (func1, func2) => isFunc5.isFunc(func1) && func1 || func2;
+    var eitherFunc = (func1, func2) => isFunc6.isFunc(func1) && func1 || func2;
     var debounce = (func, wait = 250, immediate = false) => {
       let timeout;
       function wrapFunc(...args) {
-        if (!isFunc5.isFunc(func))
+        if (!isFunc6.isFunc(func))
           return null;
         const context = this;
         const later = () => {
@@ -1284,7 +1284,7 @@ var require_stackTracePaths_58b768d2 = __commonJS({
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
         if (callNow)
-          return isFunc5.isFunc(func) && func.apply(context, args);
+          return isFunc6.isFunc(func) && func.apply(context, args);
       }
       return wrapFunc;
     };
@@ -1293,7 +1293,7 @@ var require_stackTracePaths_58b768d2 = __commonJS({
       const num = params.shift();
       const bindTo = params.shift();
       const cb = params.pop();
-      if (!isNum.isNum(num) || !isFunc5.isFunc(cb))
+      if (!isNum.isNum(num) || !isFunc6.isFunc(cb))
         return [];
       const doItAmount = new Array(num);
       const responses = [];
@@ -1306,7 +1306,7 @@ var require_stackTracePaths_58b768d2 = __commonJS({
       return responses;
     };
     var memorize = (func, getCacheKey, limit = 1) => {
-      if (!isFunc5.isFunc(func) || getCacheKey && !isFunc5.isFunc(getCacheKey))
+      if (!isFunc6.isFunc(func) || getCacheKey && !isFunc6.isFunc(getCacheKey))
         return console.error("Error: Expected a function", func, getCacheKey);
       let memorized = function() {
         const cache = memorized.cache;
@@ -1342,7 +1342,7 @@ var require_stackTracePaths_58b768d2 = __commonJS({
       } = options2;
       const results = [];
       for (const fn of asyncFns) {
-        const result = isFunc5.isFunc(fn) ? await fn(results.length, cloneResults ? deepClone.deepClone(results) : results) : returnOriginal ? fn : void 0;
+        const result = isFunc6.isFunc(fn) ? await fn(results.length, cloneResults ? deepClone.deepClone(results) : results) : returnOriginal ? fn : void 0;
         results.push(result);
       }
       return results;
@@ -1351,7 +1351,7 @@ var require_stackTracePaths_58b768d2 = __commonJS({
       const [valid] = validate.validate({
         fn
       }, {
-        fn: isFunc5.isFunc
+        fn: isFunc6.isFunc
       });
       if (!valid)
         return [void 0, -1];
@@ -1388,7 +1388,7 @@ var require_stackTracePaths_58b768d2 = __commonJS({
       };
     };
     var limbo = (promise) => {
-      return !promise || !isFunc5.isFunc(promise.then) ? [new Error(`A promise or thenable is required as the first argument!`), null] : promise.then((data) => [null, data]).catch((err) => [err, void 0]);
+      return !promise || !isFunc6.isFunc(promise.then) ? [new Error(`A promise or thenable is required as the first argument!`), null] : promise.then((data) => [null, data]).catch((err) => [err, void 0]);
     };
     var limboify = (cb, ...args) => {
       return limbo(new Promise((res, rej) => cb(...args, (err, success) => err ? rej(err) : res(success || true))));
@@ -1397,7 +1397,7 @@ var require_stackTracePaths_58b768d2 = __commonJS({
     var noOp5 = () => {
     };
     var parseErrorMessage = (exception) => {
-      return isStr7.isStr(exception) && !isValidDate.isEmpty(exception) ? exception : isObj6.isObj(exception) ? exception.message : null;
+      return isStr8.isStr(exception) && !isValidDate.isEmpty(exception) ? exception : isObj6.isObj(exception) ? exception.message : null;
     };
     var defFilters = [`node:internal`, `node_modules/jest`];
     var stackTracePaths = (filter = defFilters) => {
@@ -1409,7 +1409,7 @@ var require_stackTracePaths_58b768d2 = __commonJS({
         const loc = cs.getFileName();
         if (!loc)
           return acc;
-        const ignore = isFunc5.isFunc(filter) ? filter(loc, cs, stack) : Boolean(filter.length && filter.find((filterLoc) => loc.includes(filterLoc)));
+        const ignore = isFunc6.isFunc(filter) ? filter(loc, cs, stack) : Boolean(filter.length && filter.find((filterLoc) => loc.includes(filterLoc)));
         !ignore && acc.push(loc);
         return acc;
       }, []);
@@ -1478,9 +1478,9 @@ var require_mod_31dfe732 = __commonJS({
 var require_reduceObj_f41cbf8d = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/reduceObj-f41cbf8d.js"(exports) {
     "use strict";
-    var isFunc5 = require_isFunc_f93803cb();
+    var isFunc6 = require_isFunc_f93803cb();
     var isObj6 = require_isObj_6b3aa807();
-    var reduceObj = (obj, cb, start = {}) => isObj6.isObj(obj) && isFunc5.isFunc(cb) && Object.entries(obj).reduce((data, [key, value]) => cb(key, value, data), start) || start;
+    var reduceObj = (obj, cb, start = {}) => isObj6.isObj(obj) && isFunc6.isFunc(cb) && Object.entries(obj).reduce((data, [key, value]) => cb(key, value, data), start) || start;
     exports.reduceObj = reduceObj;
   }
 });
@@ -1489,8 +1489,8 @@ var require_reduceObj_f41cbf8d = __commonJS({
 var require_sanitize_0a18302d = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/sanitize-0a18302d.js"(exports) {
     "use strict";
-    var isStr7 = require_isStr_8a57710e();
-    var sanitize2 = (str) => isStr7.isStr(str) && str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") || str;
+    var isStr8 = require_isStr_8a57710e();
+    var sanitize2 = (str) => isStr8.isStr(str) && str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") || str;
     exports.sanitize = sanitize2;
   }
 });
@@ -1501,7 +1501,7 @@ var require_splitByKeys_d0160002 = __commonJS({
     "use strict";
     var log = require_log_37bbfac6();
     var isObj6 = require_isObj_6b3aa807();
-    var isFunc5 = require_isFunc_f93803cb();
+    var isFunc6 = require_isFunc_f93803cb();
     var deepClone = require_deepClone_ae664a21();
     var isArr4 = require_isArr_39234014();
     var isColl = require_isColl_5757310a();
@@ -1509,12 +1509,12 @@ var require_splitByKeys_d0160002 = __commonJS({
     var jsonEqual = require_jsonEqual_7e69ef6a();
     var reduceObj = require_reduceObj_f41cbf8d();
     var sanitize2 = require_sanitize_0a18302d();
-    var isStr7 = require_isStr_8a57710e();
+    var isStr8 = require_isStr_8a57710e();
     var strToType = require_strToType_00c4481f();
     var pipeline = require_pipeline_e65bdaae();
-    var exists7 = require_exists_c79204b1();
+    var exists6 = require_exists_c79204b1();
     var toStr3 = require_toStr_8e499966();
-    var ensureArr4 = require_ensureArr_ae68c041();
+    var ensureArr5 = require_ensureArr_ae68c041();
     var cloneJson = (obj) => {
       try {
         return JSON.parse(JSON.stringify(obj));
@@ -1534,12 +1534,12 @@ var require_splitByKeys_d0160002 = __commonJS({
       });
     };
     var eitherObj = (obj1, obj2) => isObj6.isObj(obj1) && obj1 || obj2;
-    var deepMerge2 = (...sources) => {
+    var deepMerge = (...sources) => {
       return sources.reduce((merged, source) => {
         const srcCopy = deepClone.deepClone(source);
         return isArr4.isArr(srcCopy) ? [...isArr4.isArr(merged) && merged || [], ...srcCopy] : isObj6.isObj(srcCopy) ? Object.entries(srcCopy).reduce((joined, [key, value]) => ({
           ...joined,
-          [key]: isFunc5.isFunc(value) ? deepClone.cloneFunc(value) : isColl.isColl(value) && key in joined ? deepMerge2(joined[key], value) : deepClone.deepClone(value)
+          [key]: isFunc6.isFunc(value) ? deepClone.cloneFunc(value) : isColl.isColl(value) && key in joined ? deepMerge(joined[key], value) : deepClone.deepClone(value)
         }), merged) : merged;
       }, isArr4.isArr(sources[0]) && [] || {});
     };
@@ -1551,7 +1551,7 @@ var require_splitByKeys_d0160002 = __commonJS({
         error = "object (Argument 1) in applyToCloneOf, must be an object!";
       if (!mutatorCb)
         error = "mutator (Argument 2) in applyToCloneOf, must be defined!";
-      if (!isFunc5.isFunc(mutatorCb))
+      if (!isFunc6.isFunc(mutatorCb))
         error = "mutator (Argument 2) arg in applyToCloneOf, must be a function!";
       if (error) {
         console.warn(error);
@@ -1566,7 +1566,7 @@ var require_splitByKeys_d0160002 = __commonJS({
         console.error(obj, `Expected array or object for obj. Found ${typeof obj}`);
         return obj;
       }
-      if (!isFunc5.isFunc(cb)) {
+      if (!isFunc6.isFunc(cb)) {
         console.error(`Expected function for cb. Found ${typeof cb}`);
         return obj;
       }
@@ -1582,7 +1582,7 @@ var require_splitByKeys_d0160002 = __commonJS({
       }, initialValue);
     };
     var mapKeys = (obj, keyMapper) => {
-      if (!isObj6.isObj(obj) || !isFunc5.isFunc(keyMapper))
+      if (!isObj6.isObj(obj) || !isFunc6.isFunc(keyMapper))
         return obj;
       return mapEntries(obj, (key, value) => [keyMapper(key), value]);
     };
@@ -1590,7 +1590,7 @@ var require_splitByKeys_d0160002 = __commonJS({
       if (!isObj6.isObj(obj))
         return [];
       const entries = Object.entries(obj);
-      return isFunc5.isFunc(cb) ? entries.map(([key, value]) => cb(key, value)) : entries;
+      return isFunc6.isFunc(cb) ? entries.map(([key, value]) => cb(key, value)) : entries;
     };
     var omitKeys = (obj = {}, keys = []) => isObj6.isObj(obj) && reduceObj.reduceObj(obj, (key, _, updated) => {
       keys.indexOf(key) === -1 && (updated[key] = obj[key]);
@@ -1602,7 +1602,7 @@ var require_splitByKeys_d0160002 = __commonJS({
     }, {}) || {};
     var sanitizeCopy = (obj) => JSON.parse(sanitize2.sanitize(JSON.stringify(obj)));
     var trimStringFields = (object) => Object.entries(object).reduce((cleaned, [key, value]) => {
-      cleaned[key] = isStr7.isStr(value) ? value.trim() : value;
+      cleaned[key] = isStr8.isStr(value) ? value.trim() : value;
       return cleaned;
     }, object);
     var toObj = (val, divider, split) => {
@@ -1611,7 +1611,7 @@ var require_splitByKeys_d0160002 = __commonJS({
           obj[key] = val[key];
           return obj;
         }, {});
-      if (!isStr7.isStr(val))
+      if (!isStr8.isStr(val))
         return {};
       divider = divider || "=";
       split = split || "&";
@@ -1622,7 +1622,7 @@ var require_splitByKeys_d0160002 = __commonJS({
       }, {});
     };
     var keyMap2 = (arr, toUpperCase) => isArr4.isArr(arr) && arr.reduce((obj, key) => {
-      if (!isStr7.isStr(key))
+      if (!isStr8.isStr(key))
         return obj;
       const use = toUpperCase && key.toUpperCase() || key;
       obj[use] = use;
@@ -1633,7 +1633,7 @@ var require_splitByKeys_d0160002 = __commonJS({
         logError && console.error(`First argument ${obj} must be an object.`);
         return false;
       }
-      if (!isFunc5.isFunc(predicate)) {
+      if (!isFunc6.isFunc(predicate)) {
         logError && console.error(`Second argument ${predicate}, must a function`);
         return false;
       }
@@ -1644,7 +1644,7 @@ var require_splitByKeys_d0160002 = __commonJS({
         logError && console.error(`First argument ${obj} must be an object.`);
         return false;
       }
-      if (!isFunc5.isFunc(predicate)) {
+      if (!isFunc6.isFunc(predicate)) {
         logError && console.error(`Second argument ${predicate}, must a function`);
         return false;
       }
@@ -1655,7 +1655,7 @@ var require_splitByKeys_d0160002 = __commonJS({
         logError && console.error(`First argument ${obj} must be an object.`);
         return obj;
       }
-      if (!isFunc5.isFunc(predicate)) {
+      if (!isFunc6.isFunc(predicate)) {
         logError && console.error(`Second argument ${predicate}, must a function`);
         return obj;
       }
@@ -1716,16 +1716,16 @@ var require_splitByKeys_d0160002 = __commonJS({
           ...obj
         }];
       const intersect = [{}, {}];
-      const compareKeys = ensureArr4.ensureArr(keys);
+      const compareKeys = ensureArr5.ensureArr(keys);
       return isObj6.isObj(obj) ? reduceObj.reduceObj(obj, (key, _, updated) => {
-        exists7.exists(compareKeys.find((k) => exists7.exists(k) && toStr3.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
+        exists6.exists(compareKeys.find((k) => exists6.exists(k) && toStr3.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
         return updated;
       }, intersect) : intersect;
     };
     exports.applyToCloneOf = applyToCloneOf;
     exports.clearObj = clearObj;
     exports.cloneJson = cloneJson;
-    exports.deepMerge = deepMerge2;
+    exports.deepMerge = deepMerge;
     exports.eitherObj = eitherObj;
     exports.everyEntry = everyEntry;
     exports.filterObj = filterObj;
@@ -1749,13 +1749,13 @@ var require_wait_8ca88995 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/wait-8ca88995.js"(exports) {
     "use strict";
     var isObj6 = require_isObj_6b3aa807();
-    var isFunc5 = require_isFunc_f93803cb();
+    var isFunc6 = require_isFunc_f93803cb();
     var promisify = (method) => {
-      if (!isFunc5.isFunc(method))
+      if (!isFunc6.isFunc(method))
         throw `Argument must be a function`;
       return (...args) => {
         return new Promise((res, rej) => {
-          if (!isFunc5.isFunc(args[args.length - 1]))
+          if (!isFunc6.isFunc(args[args.length - 1]))
             return res(method(...args));
           args.pop();
           args.push((...cbData) => {
@@ -1775,11 +1775,11 @@ var require_wait_8ca88995 = __commonJS({
           const isAsync = prop.indexOf("Async") !== -1 || object[`${prop}Async`];
           if (isAsync || defObjProps[prop])
             continue;
-          if (isFunc5.isFunc(object[prop]))
+          if (isFunc6.isFunc(object[prop]))
             object[`${prop}Async`] = promisify(object[prop]);
           else {
             const getValue = Object.getOwnPropertyDescriptor(object, prop).get;
-            if (isFunc5.isFunc(getValue))
+            if (isFunc6.isFunc(getValue))
               object[`${prop}Async`] = promisify(getValue);
           }
         }
@@ -1806,17 +1806,17 @@ var require_wait_8ca88995 = __commonJS({
 var require_joinRegex_431148e2 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/joinRegex-431148e2.js"(exports) {
     "use strict";
-    var isStr7 = require_isStr_8a57710e();
+    var isStr8 = require_isStr_8a57710e();
     var isArr4 = require_isArr_39234014();
     require_validate_23297ec2();
     require_noOps_c9732e8e();
     var not = require_not_16fa9c85();
-    var getRegexSource = (maybeRx) => not.isRegex(maybeRx) ? maybeRx.source : isStr7.isStr(maybeRx) ? maybeRx : null;
+    var getRegexSource = (maybeRx) => not.isRegex(maybeRx) ? maybeRx.source : isStr8.isStr(maybeRx) ? maybeRx : null;
     var parseArgs = (args) => {
       if (isArr4.isArr(args[0]))
         return [args[0], args[1]];
       const last = args[args.length - 1];
-      const options2 = isStr7.isStr(last) ? last : void 0;
+      const options2 = isStr8.isStr(last) ? last : void 0;
       const expressions = options2 ? args.splice(0, args.length - 1) : args;
       return [expressions, options2];
     };
@@ -1837,8 +1837,8 @@ var require_joinRegex_431148e2 = __commonJS({
 var require_getWordEndingAt_63d038a5 = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/getWordEndingAt-63d038a5.js"(exports) {
     "use strict";
-    var isStr7 = require_isStr_8a57710e();
-    var isFunc5 = require_isFunc_f93803cb();
+    var isStr8 = require_isStr_8a57710e();
+    var isFunc6 = require_isFunc_f93803cb();
     var isQuoted2 = require_isQuoted_eb6994da();
     var toStr$1 = require_toStr_8e499966();
     var isNonNegative = require_isNonNegative_9959647c();
@@ -1853,9 +1853,9 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return built.replace(/([^:\/]|^)\/{2,}/g, "$1/");
     };
     var mapString = (str, charMapper) => {
-      if (!isStr7.isStr(str))
+      if (!isStr8.isStr(str))
         return str;
-      if (!isFunc5.isFunc(charMapper))
+      if (!isFunc6.isFunc(charMapper))
         return str;
       let result = "";
       for (const char of str) {
@@ -1864,7 +1864,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return result;
     };
     var delimitString = (str, delimiter, delimiters = ["-", "_", " "]) => {
-      if (!isStr7.isStr(str))
+      if (!isStr8.isStr(str))
         return str;
       const isDelimiter = (c2) => delimiters.some((del) => del === c2);
       let prevChar = "_";
@@ -1885,8 +1885,8 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       const underscored = delimitString(str, "_");
       return underscored.toLowerCase();
     };
-    var capitalize6 = (str, lowercaseTail = true) => {
-      if (!isStr7.isStr(str) || !str[0])
+    var capitalize5 = (str, lowercaseTail = true) => {
+      if (!isStr8.isStr(str) || !str[0])
         return str;
       const tail = lowercaseTail ? str.slice(1).toLowerCase() : str.slice(1);
       return `${str[0].toUpperCase()}${tail}`;
@@ -1902,21 +1902,21 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return str && cleanStr(str).split(/[\s_-]/gm).reduce((cased, word, index) => {
         if (!word)
           return cased;
-        cased += (index > 0 || compCase) && capitalize6(word) || word.toLowerCase();
+        cased += (index > 0 || compCase) && capitalize5(word) || word.toLowerCase();
         return cased;
       }, "") || str;
     };
     var camelCasePath = (path3) => {
       const split = path3.split(".");
-      const camelCasedSplit = split.map((str, idx) => idx > 0 ? capitalize6(str, false) : str);
+      const camelCasedSplit = split.map((str, idx) => idx > 0 ? capitalize5(str, false) : str);
       return camelCasedSplit.length > 1 ? camelCasedSplit.join("") : path3;
     };
     var containsStr = (str, substring, fromIndex) => {
-      str = !isStr7.isStr(str) && toStr$1.toStr(str) || str;
-      substring = !isStr7.isStr(substring) && toStr$1.toStr(substring) || substring;
+      str = !isStr8.isStr(str) && toStr$1.toStr(str) || str;
+      substring = !isStr8.isStr(substring) && toStr$1.toStr(substring) || substring;
       return str.indexOf(substring, fromIndex) !== -1;
     };
-    var eitherStr = (str1, str2) => isStr7.isStr(str1) && str1 || str2;
+    var eitherStr = (str1, str2) => isStr8.isStr(str1) && str1 || str2;
     var uppercasePattern = /[A-Z]/g;
     var msPattern = /^ms-/;
     var hyphenCache = {};
@@ -1928,7 +1928,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return hyphenCache[rule] = msPattern.test(hRule) ? "-" + hRule : hRule;
     };
     var hashString = (str, maxLength) => {
-      if (!isStr7.isStr(str) || str.length == 0)
+      if (!isStr8.isStr(str) || str.length == 0)
         return 0;
       str = str.split("").reverse().join("");
       let hash = 0;
@@ -1958,23 +1958,23 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return str[str.length - 1] === "s" ? str.slice(0, str.length - 1) : str;
     };
     var styleCase = (str) => {
-      if (!isStr7.isStr(str))
+      if (!isStr8.isStr(str))
         return str;
       const cased = camelCase(str);
       return `${cased[0].toLowerCase()}${cased.slice(1)}`;
     };
-    var trainCase = (str) => isStr7.isStr(str) && str.split(/(?=[A-Z])|[\s_-]/gm).join("-").toLowerCase() || str;
+    var trainCase = (str) => isStr8.isStr(str) && str.split(/(?=[A-Z])|[\s_-]/gm).join("-").toLowerCase() || str;
     var wordCaps = (str) => {
-      if (!isStr7.isStr(str))
+      if (!isStr8.isStr(str))
         return str;
       let cleaned = cleanStr(str);
-      return cleaned.split(" ").map((word) => word && capitalize6(word) || "").join(" ");
+      return cleaned.split(" ").map((word) => word && capitalize5(word) || "").join(" ");
     };
     var spaceJoin = (original, toAdd) => {
       toAdd = isArr4.isArr(toAdd) ? toAdd : [toAdd];
       return toAdd.reduce((joined, item) => {
-        return isStr7.isStr(item) ? `${joined ? joined + " " : ""}${item}`.trim() : joined;
-      }, isStr7.isStr(original) ? original : "");
+        return isStr8.isStr(item) ? `${joined ? joined + " " : ""}${item}`.trim() : joined;
+      }, isStr8.isStr(original) ? original : "");
     };
     var templateRx = (tempStr, data, fallback = "", rx) => {
       const orgRx = template.regex;
@@ -1986,10 +1986,10 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
     var template = (tempStr, data, fallback = "") => {
       data = isColl.isColl(data) && data || {};
       const regex = template.regex || /\${(.*?)\}/g;
-      return isStr7.isStr(tempStr) ? tempStr.replace(regex, (match, exact) => {
+      return isStr8.isStr(tempStr) ? tempStr.replace(regex, (match, exact) => {
         const path3 = (exact || match.substr(2, match.length - 3)).trim();
         const replaceWith = get4.get(data, path3, fallback);
-        return isFunc5.isFunc(replaceWith) ? replaceWith(data, path3, fallback) : replaceWith;
+        return isFunc6.isFunc(replaceWith) ? replaceWith(data, path3, fallback) : replaceWith;
       }) : console.error(`template requires a string as the first argument`) || tempStr;
     };
     var validFilename = (fileName) => {
@@ -2001,7 +2001,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return regex.test(fileName) || windowsRegex.test(fileName) || periodRegex.test(fileName) ? false : true;
     };
     var reverseStr = (str) => {
-      if (!isStr7.isStr(str))
+      if (!isStr8.isStr(str))
         return void 0;
       let reversed = "";
       for (let char of str) {
@@ -2025,7 +2025,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
     exports.buildPath = buildPath;
     exports.camelCase = camelCase;
     exports.camelCasePath = camelCasePath;
-    exports.capitalize = capitalize6;
+    exports.capitalize = capitalize5;
     exports.cleanStr = cleanStr;
     exports.containsStr = containsStr;
     exports.delimitString = delimitString;
@@ -2057,7 +2057,7 @@ var require_getURLParam_201ef5fe = __commonJS({
   "node_modules/@keg-hub/jsutils/build/cjs/getURLParam-201ef5fe.js"(exports) {
     "use strict";
     var reduceObj = require_reduceObj_f41cbf8d();
-    var isStr7 = require_isStr_8a57710e();
+    var isStr8 = require_isStr_8a57710e();
     var isNum = require_isNum_c7164b50();
     var isBool2 = require_isBool_aa6af74e();
     var isColl = require_isColl_5757310a();
@@ -2093,7 +2093,7 @@ var require_getURLParam_201ef5fe = __commonJS({
       return reduceObj.reduceObj(obj, (key, value, urlStr) => {
         if (!value)
           return urlStr;
-        const useVal = isStr7.isStr(value) || isNum.isNum(value) || isBool2.isBool(value) ? value : isColl.isColl(value) ? isArr4.isArr(value) ? value.join(",") : JSON.stringify(value) : null;
+        const useVal = isStr8.isStr(value) || isNum.isNum(value) || isBool2.isBool(value) ? value : isColl.isColl(value) ? isArr4.isArr(value) ? value.join(",") : JSON.stringify(value) : null;
         if (!useVal)
           return urlStr;
         urlStr = !firstSet ? `?${encodeURIComponent(key)}=${encodeURIComponent(useVal)}` : `${urlStr}&${encodeURIComponent(key)}=${encodeURIComponent(useVal)}`;
@@ -2106,13 +2106,13 @@ var require_getURLParam_201ef5fe = __commonJS({
       const [valid] = validate.validate({
         paramKey
       }, {
-        paramKey: isStr7.isStr
+        paramKey: isStr8.isStr
       });
       if (!valid)
         return null;
       const doc = typeof document !== "undefined" ? document : null;
       const search = doc === null || doc === void 0 ? void 0 : (_doc$location = doc.location) === null || _doc$location === void 0 ? void 0 : _doc$location.search;
-      return isStr7.isStr(search) ? (_queryToObj$paramKey = (_queryToObj = queryToObj(search)) === null || _queryToObj === void 0 ? void 0 : _queryToObj[paramKey]) !== null && _queryToObj$paramKey !== void 0 ? _queryToObj$paramKey : null : null;
+      return isStr8.isStr(search) ? (_queryToObj$paramKey = (_queryToObj = queryToObj(search)) === null || _queryToObj === void 0 ? void 0 : _queryToObj[paramKey]) !== null && _queryToObj$paramKey !== void 0 ? _queryToObj$paramKey : null : null;
     };
     exports.getURLParam = getURLParam;
     exports.objToQuery = objToQuery;
@@ -2126,7 +2126,7 @@ var require_cjs = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var intersect = require_intersect_77d7e821();
-    var ensureArr4 = require_ensureArr_ae68c041();
+    var ensureArr5 = require_ensureArr_ae68c041();
     var isArr4 = require_isArr_39234014();
     var isBool2 = require_isBool_aa6af74e();
     var toBool = require_toBool_deb350e4();
@@ -2134,7 +2134,7 @@ var require_cjs = __commonJS({
     var shallowEqual = require_shallowEqual_eaf2262d();
     var get4 = require_get_00626335();
     var isColl = require_isColl_5757310a();
-    var deepEqual = require_deepEqual_adba847a();
+    var deepEqual3 = require_deepEqual_adba847a();
     var set = require_set_c0a98b21();
     var deepClone = require_deepClone_ae664a21();
     var not = require_not_16fa9c85();
@@ -2142,12 +2142,12 @@ var require_cjs = __commonJS({
     var noOps = require_noOps_c9732e8e();
     var isValidDate = require_isValidDate_813b9419();
     var strToType = require_strToType_00c4481f();
-    var exists7 = require_exists_c79204b1();
+    var exists6 = require_exists_c79204b1();
     var log = require_log_37bbfac6();
     var pipeline = require_pipeline_e65bdaae();
     var stackTracePaths = require_stackTracePaths_58b768d2();
     var compareTo = require_compareTo_d69e4abf();
-    var isFunc5 = require_isFunc_f93803cb();
+    var isFunc6 = require_isFunc_f93803cb();
     var isNonNegative = require_isNonNegative_9959647c();
     var isInt = require_isInt_94ce4199();
     var isNum = require_isNum_c7164b50();
@@ -2162,7 +2162,7 @@ var require_cjs = __commonJS({
     var joinRegex4 = require_joinRegex_431148e2();
     var getWordEndingAt2 = require_getWordEndingAt_63d038a5();
     var isQuoted2 = require_isQuoted_eb6994da();
-    var isStr7 = require_isStr_8a57710e();
+    var isStr8 = require_isStr_8a57710e();
     var sanitize2 = require_sanitize_0a18302d();
     var toStr3 = require_toStr_8e499966();
     var validate = require_validate_23297ec2();
@@ -2194,7 +2194,7 @@ var require_cjs = __commonJS({
     exports.randomizeArr = intersect.randomizeArr;
     exports.uniqArr = intersect.uniqArr;
     exports.uniqArrByReference = intersect.uniqArrByReference;
-    exports.ensureArr = ensureArr4.ensureArr;
+    exports.ensureArr = ensureArr5.ensureArr;
     exports.isArr = isArr4.isArr;
     exports.isBool = isBool2.isBool;
     exports.convertToStrBool = toBool.convertToStrBool;
@@ -2210,8 +2210,8 @@ var require_cjs = __commonJS({
     exports.unset = shallowEqual.unset;
     exports.get = get4.get;
     exports.isColl = isColl.isColl;
-    exports.deepEqual = deepEqual.deepEqual;
-    exports.isEmptyColl = deepEqual.isEmptyColl;
+    exports.deepEqual = deepEqual3.deepEqual;
+    exports.isEmptyColl = deepEqual3.isEmptyColl;
     exports.set = set.set;
     exports.cloneFunc = deepClone.cloneFunc;
     exports.cloneObjWithPrototypeAndProperties = deepClone.cloneObjWithPrototypeAndProperties;
@@ -2235,7 +2235,7 @@ var require_cjs = __commonJS({
     exports.isValidDate = isValidDate.isValidDate;
     exports.typeOf = isValidDate.typeOf;
     exports.strToType = strToType.strToType;
-    exports.exists = exists7.exists;
+    exports.exists = exists6.exists;
     exports.logData = log.logData;
     exports.resetLogs = log.resetLogs;
     exports.setLogs = log.setLogs;
@@ -2260,7 +2260,7 @@ var require_cjs = __commonJS({
     exports.timedRun = stackTracePaths.timedRun;
     exports.uuid = stackTracePaths.uuid;
     exports.compareTo = compareTo.compareTo;
-    exports.isFunc = isFunc5.isFunc;
+    exports.isFunc = isFunc6.isFunc;
     exports.isNonNegative = isNonNegative.isNonNegative;
     exports.isFloat = isInt.isFloat;
     exports.isInt = isInt.isInt;
@@ -2342,7 +2342,7 @@ var require_cjs = __commonJS({
     exports.isUpperCase = isQuoted2.isUpperCase;
     exports.isUrl = isQuoted2.isUrl;
     exports.isUuid = isQuoted2.isUuid;
-    exports.isStr = isStr7.isStr;
+    exports.isStr = isStr8.isStr;
     exports.sanitize = sanitize2.sanitize;
     exports.toStr = toStr3.toStr;
     exports.validate = validate.validate;
@@ -3554,14 +3554,12 @@ var init_ensureBackground = __esm({
       };
     };
     ensureBackground = (feature, rule, background, line, index) => {
-      var _a, _b;
       if (!RX_BACKGROUND2.test(line))
         return background;
       const existingBgText = getRXMatch(line, RX_BACKGROUND2, 1);
       const parent = (rule == null ? void 0 : rule.uuid) ? rule : feature;
-      const parentText = (rule == null ? void 0 : rule.uuid) ? rule == null ? void 0 : rule.rule : feature == null ? void 0 : feature.feature;
-      const backgroundText = ((_a = existingBgText == null ? void 0 : existingBgText.trim) == null ? void 0 : _a.call(existingBgText)) ? existingBgText : ((_b = parentText == null ? void 0 : parentText.trim) == null ? void 0 : _b.call(parentText)) ? parentText : `${parent.uuid}-background`;
-      !background.background ? background.background = backgroundText || "" : background = backgroundFactory(backgroundText, index);
+      const backgroundText = (0, import_jsutils18.isStr)(existingBgText) ? existingBgText.trim() : "";
+      (0, import_jsutils18.isBool)(background.background) ? background.background = backgroundText : background = backgroundFactory(backgroundText, index);
       !background.index && (background.index = index);
       !background.uuid && (background.uuid = (0, import_jsutils18.uuid)());
       background.whitespace = getStartWhiteSpace(line);
@@ -3585,12 +3583,12 @@ var init_ensureMeta = __esm({
     RX_SO_THAT = /^\s*So that (.*)$/;
     RX_IN_ORDER = /^\s*In order (.*)$/;
     featureMetaTags = [
-      { regex: RX_AS, key: "perspective" },
-      { regex: RX_I_WANT, key: "desire" },
-      { regex: RX_SO_THAT, key: "reason" },
-      { regex: RX_IN_ORDER, key: "reason" }
+      { regex: RX_AS, key: "perspective" /* perspective */ },
+      { regex: RX_I_WANT, key: "desire" /* desire */ },
+      { regex: RX_SO_THAT, key: "reason" /* reason */ },
+      { regex: RX_IN_ORDER, key: "reason" /* reason */ }
     ];
-    addReason = (feature, reason, index) => {
+    addReason = (feature, reason, line, index) => {
       if (!reason)
         return;
       const reasonArr = (0, import_jsutils19.eitherArr)(feature.reason, [feature.reason]);
@@ -3598,7 +3596,8 @@ var init_ensureMeta = __esm({
         index,
         uuid: (0, import_jsutils19.uuid)(),
         content: reason,
-        type: "reason" /* reason */
+        type: "reason" /* reason */,
+        whitespace: getStartWhiteSpace(line)
       });
       feature.reason = reasonArr;
     };
@@ -3610,15 +3609,17 @@ var init_ensureMeta = __esm({
         const hasTag = regTag.regex.test(line);
         if (!metaAdded && hasTag)
           metaAdded = true;
-        return hasTag ? regTag.key === `reason` ? addReason(feature, getRXMatch(line, regTag.regex, 0), index) : feature[regTag.key] = {
-          content: getRXMatch(line, regTag.regex, 0),
+        return hasTag ? regTag.key !== "reason" /* reason */ ? feature[regTag.key] = {
           index,
-          type: regTag.key === `desire` ? "desire" /* desire */ : regTag.key === `perspective` ? "perspective" /* perspective */ : "block" /* block */
-        } : hasTag;
+          uuid: (0, import_jsutils19.uuid)(),
+          whitespace: getStartWhiteSpace(line),
+          content: getRXMatch(line, regTag.regex, 0),
+          type: regTag.key === "desire" /* desire */ ? "desire" /* desire */ : regTag.key === "perspective" /* perspective */ ? "perspective" /* perspective */ : "block" /* block */
+        } : addReason(feature, getRXMatch(line, regTag.regex, 0), line, index) : hasTag;
       }, false);
       return metaAdded;
     };
-    tagsFactory = (index, content) => {
+    tagsFactory = (index, content, line) => {
       const tokens = content.split(` `).reduce((acc, item) => {
         const token = item.trim();
         token.startsWith(`@`) && acc.push(token);
@@ -3629,7 +3630,8 @@ var init_ensureMeta = __esm({
         tokens,
         uuid: (0, import_jsutils19.uuid)(),
         type: "tags" /* tags */,
-        content: tokens.join(` `)
+        content: tokens.join(` `),
+        whitespace: getStartWhiteSpace(line)
       };
     };
     checkTag = (parent, feature, line, index) => {
@@ -3637,7 +3639,7 @@ var init_ensureMeta = __esm({
         return false;
       const tagParent = (parent == null ? void 0 : parent.background) ? feature : parent;
       const tags = getRXMatch(line, RX_TAG, 0);
-      tagParent.tags = tagsFactory(index, tags);
+      tagParent.tags = tagsFactory(index, tags, line);
       tagParent.tags.whitespace = getStartWhiteSpace(line);
       return true;
     };
@@ -3648,8 +3650,9 @@ var init_ensureMeta = __esm({
       feature.comments.push({
         index,
         uuid: (0, import_jsutils19.uuid)(),
-        content: comment,
-        type: "comment" /* comment */
+        content: comment.trim(),
+        type: "comment" /* comment */,
+        whitespace: getStartWhiteSpace(line)
       });
       return true;
     };
@@ -3660,6 +3663,7 @@ var init_ensureMeta = __esm({
         index,
         uuid: (0, import_jsutils19.uuid)(),
         content: line,
+        whitespace: ``,
         type: "empty" /* empty */
       });
       return true;
@@ -4018,94 +4022,29 @@ var init_runner = __esm({
   }
 });
 
-// src/assemble/addContent.ts
-var import_jsutils23, addContent;
-var init_addContent = __esm({
-  "src/assemble/addContent.ts"() {
+// src/assemble/indexedToString.ts
+var import_jsutils23, formatAssembled, addContent, getWhiteSpace, getTextContent, indexedToString;
+var init_indexedToString = __esm({
+  "src/assemble/indexedToString.ts"() {
     import_jsutils23 = __toESM(require_cjs());
+    init_types();
+    formatAssembled = (assembled) => {
+      return Array.from(assembled, (line) => (0, import_jsutils23.exists)(line) ? `${line}
+` : "\n").join("");
+    };
     addContent = (assembled, content, index) => {
       !(0, import_jsutils23.exists)(index) || index === false ? assembled.push(content) : (0, import_jsutils23.exists)(assembled[index]) ? assembled.splice(index, 0, content) : assembled[index] = content;
     };
-  }
-});
-
-// src/assemble/addMeta.ts
-var import_jsutils24, FEATURE_META, addMeta;
-var init_addMeta = __esm({
-  "src/assemble/addMeta.ts"() {
-    init_constants();
-    init_types();
-    init_addContent();
-    import_jsutils24 = __toESM(require_cjs());
-    ({ FEATURE_META } = constants);
-    addMeta = (assembled, feature, opts) => {
-      const { indexes = true } = opts;
-      FEATURE_META.map((key) => {
-        switch (key) {
-          case "feature":
-            addContent(
-              assembled,
-              `${"Feature" /* Feature */}: ${feature[key]}`,
-              indexes && feature.index
-            );
-            break;
-          case "comments":
-            const comments = feature[key];
-            comments && (0, import_jsutils24.eitherArr)(comments, [comments]).map((item) => addContent(assembled, item.content, indexes && item.index));
-            break;
-          case "reason":
-          case "desire":
-          case "perspective":
-            const other = feature[key];
-            other && (0, import_jsutils24.eitherArr)(other, [other]).map((item) => addContent(assembled, `  ${item.content}`, indexes && item.index));
-            break;
-        }
-      });
+    getWhiteSpace = (ast, parent, def = ``) => {
+      return (0, import_jsutils23.exists)(ast.whitespace) ? ast.whitespace : (0, import_jsutils23.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent.whitespace}${def}` : def;
     };
-  }
-});
-
-// src/assemble/addEmpty.ts
-var addEmpty, addFeatureEmpty;
-var init_addEmpty = __esm({
-  "src/assemble/addEmpty.ts"() {
-    init_addContent();
-    addEmpty = (assembled, opts) => addContent(assembled, "");
-    addFeatureEmpty = (assembled, feature, opts) => {
-      var _a, _b;
-      const { indexes = true } = opts;
-      ((_a = feature == null ? void 0 : feature.empty) == null ? void 0 : _a.length) && ((_b = feature == null ? void 0 : feature.empty) == null ? void 0 : _b.forEach((item) => addContent(assembled, item.content, indexes && item.index)));
+    getTextContent = (ast, parent, type, def = ``) => {
+      const content = ast[ast.type] || ``;
+      const whitespace = getWhiteSpace(ast, parent, def);
+      const prefix = `${whitespace}${type}:`;
+      return content.length ? `${prefix} ${content}` : prefix;
     };
-  }
-});
-
-// src/assemble/addTags.ts
-var addTags;
-var init_addTags = __esm({
-  "src/assemble/addTags.ts"() {
-    init_addContent();
-    addTags = (assembled, parent, opts, whitespace) => {
-      var _a, _b;
-      if (!parent.tags || !((_b = (_a = parent.tags) == null ? void 0 : _a.tokens) == null ? void 0 : _b.length))
-        return;
-      const { indexes = true } = opts;
-      addContent(
-        assembled,
-        `${parent.tags.whitespace || whitespace || ``}${parent.tags.tokens.join(" ")}`,
-        indexes && parent.tags.index
-      );
-    };
-  }
-});
-
-// src/assemble/indexed.ts
-var import_jsutils25, indexed;
-var init_indexed = __esm({
-  "src/assemble/indexed.ts"() {
-    init_addContent();
-    import_jsutils25 = __toESM(require_cjs());
-    init_types();
-    indexed = (indexes, opts = import_jsutils25.emptyObj) => {
+    indexedToString = (indexes) => {
       const assembled = indexes.reduce((assembled2, item, idx) => {
         const { ast, parent } = item;
         const type = item.ast.type;
@@ -4118,9 +4057,8 @@ var init_indexed = __esm({
           case "*" /* * */:
           case "step" /* step */: {
             const step = ast;
-            const parentWS = parent.whitespace;
-            const whitespace = step.whitespace || (parentWS ? `${parentWS}  ` : `    `);
-            const type2 = step.type !== "step" /* step */ ? (0, import_jsutils25.capitalize)(step.type) : `Step`;
+            const whitespace = getWhiteSpace(step, parent, `    `);
+            const type2 = step.type !== "step" /* step */ ? (0, import_jsutils23.capitalize)(step.type) : `Step`;
             addContent(
               assembled2,
               `${whitespace}${type2} ${step.step || ``}`,
@@ -4130,9 +4068,10 @@ var init_indexed = __esm({
           }
           case "tags" /* tags */: {
             const tags = ast;
+            const whitespace = getWhiteSpace(tags, parent);
             addContent(
               assembled2,
-              `${tags.whitespace || parent.whitespace || ``}${tags.tokens.join(" ")}`,
+              `${whitespace || ``}${tags.tokens.join(" ")}`,
               indexes && parent.tags.index
             );
             break;
@@ -4150,223 +4089,162 @@ var init_indexed = __esm({
           case "comment" /* comment */:
           case "perspective" /* perspective */: {
             const block = ast;
-            addContent(assembled2, block.content, block.index);
+            const whitespace = getWhiteSpace(block, parent, `  `);
+            addContent(assembled2, `${whitespace}${block.content}`, block.index);
             break;
           }
           case "feature" /* feature */: {
             const feature = ast;
             addContent(
               assembled2,
-              `${"Feature" /* Feature */}: ${feature.feature}`,
+              getTextContent(feature, parent, "Feature" /* Feature */, ``),
               feature.index
             );
             break;
           }
           case "scenario" /* scenario */: {
             const scenario = ast;
-            const parentWS = parent.whitespace;
             const type2 = scenario.alias || "Scenario" /* Scenario */;
-            const whitespace = scenario.whitespace || (parentWS ? `${parentWS}  ` : `  `);
-            addContent(assembled2, `${whitespace}${type2}: ${scenario.scenario || ``}`, scenario.index);
+            addContent(
+              assembled2,
+              getTextContent(scenario, parent, type2, `  `),
+              scenario.index
+            );
             break;
           }
           case "background" /* background */: {
             const background = ast;
-            const parentWS = parent.whitespace;
-            const whitespace = background.whitespace || (parentWS ? `${parentWS}  ` : `  `);
-            addContent(assembled2, `${whitespace}${"Background" /* Background */}: ${background.background || ``}`, background.index);
+            addContent(
+              assembled2,
+              getTextContent(background, parent, "Background" /* Background */, `  `),
+              background.index
+            );
             break;
           }
         }
         return assembled2;
       }, []);
-      return Array.from(assembled, (line) => !(0, import_jsutils25.exists)(line) ? "\n" : `${line}
-`).join(``);
+      return formatAssembled(assembled);
     };
   }
 });
 
-// src/assemble/addSteps.ts
-var import_jsutils26, addSteps;
-var init_addSteps = __esm({
-  "src/assemble/addSteps.ts"() {
-    init_addContent();
-    import_jsutils26 = __toESM(require_cjs());
-    addSteps = (assembled, parent, opts) => {
-      const { indexes = true } = opts;
-      (0, import_jsutils26.isArr)(parent.steps) && parent.steps.length && parent.steps.map((step) => {
-        addContent(
-          assembled,
-          `${step.whitespace || `    `}${(0, import_jsutils26.capitalize)(step.type)} ${step.step}`,
-          indexes && step.index
-        );
+// src/indexes/featureToIndexes.ts
+var import_jsutils24, indexSteps, indexScenario, indexRules, indexReason, indexBackground, indexBlocks, indexTags, featureToIndexes;
+var init_featureToIndexes = __esm({
+  "src/indexes/featureToIndexes.ts"() {
+    init_types();
+    import_jsutils24 = __toESM(require_cjs());
+    indexSteps = (indexes, steps, parent) => {
+      steps.forEach((step) => {
+        indexes[step.index] = { ast: step, parent };
       });
     };
-  }
-});
-
-// src/assemble/mergeBreaks.ts
-var mergeBreaks;
-var init_mergeBreaks = __esm({
-  "src/assemble/mergeBreaks.ts"() {
-    mergeBreaks = (options2, breaks) => ({ ...options2, breaks: { ...options2.breaks, ...breaks } });
-  }
-});
-
-// src/assemble/addScenarios.ts
-var addScenarios;
-var init_addScenarios = __esm({
-  "src/assemble/addScenarios.ts"() {
-    init_addTags();
-    init_addSteps();
-    init_addEmpty();
-    init_types();
-    init_addContent();
-    addScenarios = (assembled, parent, opts) => {
-      const { indexes = true, breaks } = opts;
-      parent.scenarios && parent.scenarios.map((scenario) => {
-        const whitespace = scenario.whitespace || `  `;
-        const type = scenario.alias || "Scenario" /* Scenario */;
-        (breaks == null ? void 0 : breaks.scenario) && addEmpty(assembled, opts);
-        addTags(assembled, scenario, opts, whitespace);
-        addContent(assembled, `${whitespace}${type}: ${scenario.scenario}`, indexes && scenario.index);
-        addSteps(assembled, scenario, opts);
+    indexScenario = (indexes, scenarios, parent) => {
+      scenarios.forEach((scenario) => {
+        indexes[scenario.index] = { ast: scenario, parent };
+        scenario.tags && indexTags(indexes, scenario);
+        scenario.steps && indexSteps(indexes, scenario.steps, scenario);
       });
     };
-  }
-});
-
-// src/assemble/addBackground.ts
-var addBackground;
-var init_addBackground = __esm({
-  "src/assemble/addBackground.ts"() {
-    init_addTags();
-    init_addSteps();
-    init_addEmpty();
-    init_types();
-    init_addContent();
-    addBackground = (assembled, parent, opts) => {
-      const { background } = parent;
-      if (!background)
-        return;
-      const { breaks, indexes = true } = opts;
-      const whitespace = background.whitespace || `  `;
-      (breaks == null ? void 0 : breaks.background) && addEmpty(assembled, opts);
-      addTags(assembled, background, opts, whitespace);
-      addContent(assembled, `${whitespace}${"Background" /* Background */}:`, indexes && background.index);
-      addSteps(assembled, background, opts);
-    };
-  }
-});
-
-// src/assemble/addRules.ts
-var addRules;
-var init_addRules = __esm({
-  "src/assemble/addRules.ts"() {
-    init_addTags();
-    init_addEmpty();
-    init_types();
-    init_addContent();
-    init_mergeBreaks();
-    init_addScenarios();
-    init_addBackground();
-    addRules = (assembled, feature, opts) => {
-      const { indexes = true, breaks } = opts;
-      feature.rules && feature.rules.map((rule) => {
-        (breaks == null ? void 0 : breaks.rule) && addEmpty(assembled, opts);
-        const whitespace = rule.whitespace || `  `;
-        addTags(assembled, rule, opts, whitespace);
-        addContent(assembled, `${whitespace}${"Rule" /* Rule */}: ${rule.rule}`, indexes && rule.index);
-        addBackground(
-          assembled,
-          rule,
-          mergeBreaks(opts, { background: (breaks == null ? void 0 : breaks.ruleBackground) ?? (breaks == null ? void 0 : breaks.background) })
-        );
-        addScenarios(
-          assembled,
-          rule,
-          mergeBreaks(opts, { background: (breaks == null ? void 0 : breaks.ruleScenario) ?? (breaks == null ? void 0 : breaks.scenario) })
-        );
+    indexRules = (indexes, rules, parent) => {
+      rules.forEach((rule) => {
+        indexes[rule.index] = { ast: rule, parent };
+        rule.tags && indexTags(indexes, rule);
+        rule.scenarios && indexScenario(indexes, rule.scenarios, rule);
+        rule.background && indexBackground(indexes, rule.background, rule);
       });
     };
-  }
-});
-
-// src/assemble/format.ts
-var import_jsutils27, formatComment, formatAssembled;
-var init_format = __esm({
-  "src/assemble/format.ts"() {
-    import_jsutils27 = __toESM(require_cjs());
-    formatComment = (assembled, line, index) => {
-      const next = assembled[index + 1];
-      const prev = assembled[index - 1];
-      let compareLine = (0, import_jsutils27.exists)(next) ? next : prev;
-      if (!compareLine)
-        return `${line}
-`;
-      const comment = line.split("#").pop();
-      const whiteSpace = Array(
-        compareLine.length - compareLine.trimStart().length
-      ).join(" ");
-      return `${whiteSpace} # ${comment}
-`;
+    indexReason = (indexes, reason, parent) => {
+      (0, import_jsutils24.isArr)(reason) ? reason.forEach((reason2) => {
+        indexes[reason2.index] = { ast: reason2, parent };
+      }) : (() => {
+        indexes[reason.index] = { ast: reason, parent };
+      })();
     };
-    formatAssembled = (assembled, opts) => {
-      return Array.from(assembled, (line, index) => {
-        return !(0, import_jsutils27.exists)(line) ? "\n" : line.startsWith("#") ? formatComment(assembled, line, index) : `${line}
-`;
-      }).join("");
+    indexBackground = (indexes, background, parent) => {
+      indexes[background.index] = { ast: background, parent };
+      background.tags && indexTags(indexes, background);
+      (background == null ? void 0 : background.steps) && indexSteps(indexes, background.steps, background);
+    };
+    indexBlocks = (indexes, blocks, type, parent) => {
+      blocks.forEach((block) => {
+        if (block.type !== type)
+          block.type = type;
+        indexes[block.index] = { ast: block, parent };
+      });
+    };
+    indexTags = (indexes, parent) => {
+      var _a;
+      const tags = parent == null ? void 0 : parent.tags;
+      ((_a = tags == null ? void 0 : tags.tokens) == null ? void 0 : _a.length) && (indexes[tags.index] = { ast: tags, parent });
+    };
+    featureToIndexes = (feature) => {
+      const indexes = [];
+      (feature == null ? void 0 : feature.tags) && indexTags(indexes, feature);
+      indexes[feature.index || indexes.length] = { ast: feature, parent: feature };
+      (feature == null ? void 0 : feature.empty) && indexBlocks(
+        indexes,
+        feature == null ? void 0 : feature.empty,
+        "empty" /* empty */,
+        feature
+      );
+      (feature == null ? void 0 : feature.comments) && indexBlocks(
+        indexes,
+        feature == null ? void 0 : feature.comments,
+        "comment" /* comment */,
+        feature
+      );
+      feature.desire && indexBlocks(
+        indexes,
+        [feature.desire],
+        "desire" /* desire */,
+        feature
+      );
+      feature.perspective && indexBlocks(
+        indexes,
+        [feature.perspective],
+        "perspective" /* perspective */,
+        feature
+      );
+      feature.reason && indexReason(
+        indexes,
+        feature.reason,
+        feature
+      );
+      feature.background && indexBackground(
+        indexes,
+        feature.background,
+        feature
+      );
+      feature.rules && indexRules(
+        indexes,
+        feature.rules,
+        feature
+      );
+      feature.scenarios && indexScenario(
+        indexes,
+        feature.scenarios,
+        feature
+      );
+      return indexes;
     };
   }
 });
 
 // src/assemble/feature.ts
-var import_jsutils28, activeBreaks, assembleOpts, mergeOptions, assembleFeature;
+var import_jsutils25, assembleFeature;
 var init_feature = __esm({
   "src/assemble/feature.ts"() {
-    init_addMeta();
-    init_addTags();
-    init_addRules();
-    init_format();
-    init_addScenarios();
-    init_addBackground();
-    init_addEmpty();
+    init_indexedToString();
     init_errors();
-    import_jsutils28 = __toESM(require_cjs());
-    activeBreaks = {
-      rule: true,
-      scenario: true,
-      background: true,
-      ruleScenario: true,
-      ruleBackground: true
-    };
-    assembleOpts = {
-      empty: true,
-      indexes: true,
-      breaks: {
-        ...activeBreaks,
-        ruleBackground: false
-      }
-    };
-    mergeOptions = (opts) => {
-      return {
-        ...assembleOpts,
-        ...opts,
-        breaks: (0, import_jsutils28.isBool)(opts.breaks) ? activeBreaks : (0, import_jsutils28.isObj)(opts.breaks) ? { ...assembleOpts.breaks, ...opts.breaks } : assembleOpts.breaks
-      };
-    };
-    assembleFeature = (toAssemble, opts = import_jsutils28.emptyObj) => {
-      const options2 = mergeOptions(opts);
-      return (0, import_jsutils28.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
-        let assembled = [];
-        !(0, import_jsutils28.isObj)(feature) && throwFeatureNotAnObj(feature);
-        addTags(assembled, feature, options2);
-        addMeta(assembled, feature, options2);
-        options2.empty && addFeatureEmpty(assembled, feature, options2);
-        addBackground(assembled, feature, options2);
-        addRules(assembled, feature, options2);
-        addScenarios(assembled, feature, options2);
-        return formatAssembled(assembled, options2);
+    import_jsutils25 = __toESM(require_cjs());
+    init_featureToIndexes();
+    assembleFeature = (toAssemble) => {
+      return (0, import_jsutils25.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
+        !(0, import_jsutils25.isObj)(feature) && throwFeatureNotAnObj(feature);
+        const indexes = featureToIndexes(feature);
+        return indexedToString(indexes);
       });
     };
   }
@@ -4376,29 +4254,11 @@ var init_feature = __esm({
 var assemble;
 var init_assemble = __esm({
   "src/assemble/assemble.ts"() {
-    init_addMeta();
-    init_addEmpty();
-    init_addTags();
-    init_indexed();
-    init_addSteps();
-    init_addRules();
-    init_addContent();
-    init_addScenarios();
-    init_addBackground();
     init_feature();
-    init_format();
+    init_indexedToString();
     assemble = {
-      addMeta,
-      addTags,
-      addEmpty,
-      addSteps,
-      indexed,
-      addRules,
-      addContent,
-      addScenarios,
-      addBackground,
-      format: formatAssembled,
-      feature: assembleFeature
+      feature: assembleFeature,
+      indexedToString
     };
   }
 });
@@ -4410,8 +4270,481 @@ var init_assemble2 = __esm({
   }
 });
 
+// src/indexes/dataMappers.ts
+var import_jsutils26, dataMappers;
+var init_dataMappers = __esm({
+  "src/indexes/dataMappers.ts"() {
+    import_jsutils26 = __toESM(require_cjs());
+    dataMappers = {
+      empty: (current, updated) => {
+        if (!(updated == null ? void 0 : updated.length))
+          return !(current == null ? void 0 : current.length) ? current || [] : [];
+        if (!(current == null ? void 0 : current.length))
+          return updated || [];
+        let hasChange = false;
+        const empty = updated.map((empty2) => {
+          var _a;
+          const found = (_a = current == null ? void 0 : current.find) == null ? void 0 : _a.call(current, (st) => st.uuid === empty2.uuid);
+          if ((0, import_jsutils26.deepEqual)(found, empty2))
+            return found;
+          hasChange = true;
+          return !found ? empty2 : { ...found, ...empty2 };
+        });
+        return hasChange ? empty : current || [];
+      },
+      tags: (current, updated, merge = true) => {
+        const uToken = (updated == null ? void 0 : updated.tokens) || [];
+        const cToken = (current == null ? void 0 : current.tokens) || [];
+        if (!(uToken == null ? void 0 : uToken.length))
+          return !merge || !cToken.length ? void 0 : current;
+        if (!cToken.length)
+          return updated;
+        if ((0, import_jsutils26.deepEqual)(current, updated))
+          return current;
+        const tokens = (0, import_jsutils26.flatUnion)(current == null ? void 0 : current.tokens, updated == null ? void 0 : updated.tokens);
+        return {
+          ...current,
+          ...updated,
+          tokens,
+          content: tokens.join(` `)
+        };
+      },
+      steps: (current, updated) => {
+        if (!(updated == null ? void 0 : updated.length))
+          return !(current == null ? void 0 : current.length) ? current || [] : [];
+        if (!(current == null ? void 0 : current.length))
+          return updated || [];
+        let hasChange = false;
+        const steps = updated.map((step) => {
+          var _a;
+          const found = (_a = current == null ? void 0 : current.find) == null ? void 0 : _a.call(current, (st) => st.uuid === step.uuid);
+          if ((0, import_jsutils26.deepEqual)(found, step))
+            return found;
+          hasChange = true;
+          return !found ? step : { ...found, ...step };
+        });
+        return hasChange ? steps : current;
+      },
+      parentSteps: (current, updated) => {
+        if (!current || !updated)
+          return updated;
+        const { steps: exSteps, tags: exTags, ...exNoSteps } = current;
+        const { steps: uSteps, tags: uTags, ...uNoSteps } = updated;
+        const tags = dataMappers.tags(exTags, uTags);
+        const tagsEql = tags === exTags;
+        const steps = dataMappers.steps(exSteps, uSteps);
+        const stepsEql = steps === exSteps;
+        if (tagsEql && stepsEql && (0, import_jsutils26.deepEqual)(exNoSteps, uNoSteps))
+          return current;
+        const item = { ...exNoSteps, ...uNoSteps, steps };
+        if (tags)
+          item.tags = tags;
+        return item;
+      },
+      background: (current, updated) => {
+        if (!updated)
+          return void 0;
+        if (!current)
+          return updated;
+        return dataMappers.parentSteps(current, updated);
+      },
+      scenarios: (current, updated) => {
+        if (!(updated == null ? void 0 : updated.length))
+          return !(current == null ? void 0 : current.length) ? current || [] : [];
+        if (!(current == null ? void 0 : current.length))
+          return updated || [];
+        let hasChange = false;
+        const scenarios = updated.map((scenario) => {
+          var _a;
+          const existing = (_a = current == null ? void 0 : current.find) == null ? void 0 : _a.call(current, (sc) => sc.uuid === scenario.uuid);
+          if (!existing) {
+            hasChange = true;
+            return scenario;
+          }
+          const mapped = dataMappers.parentSteps(existing, scenario);
+          if (!hasChange)
+            hasChange = mapped !== existing;
+          return mapped;
+        }).filter(Boolean);
+        return hasChange ? scenarios : current;
+      },
+      rules: (current, updated) => {
+        if (!(updated == null ? void 0 : updated.length))
+          return !(current == null ? void 0 : current.length) ? current || [] : [];
+        if (!(current == null ? void 0 : current.length))
+          return updated || [];
+        let hasChange = false;
+        const rules = updated.map((rule) => {
+          var _a;
+          const existing = (_a = current == null ? void 0 : current.find) == null ? void 0 : _a.call(current, (rl) => rl.uuid === rule.uuid);
+          if (!existing) {
+            hasChange = true;
+            return rule;
+          }
+          const { scenarios: exScenarios, background: exBack, ...exRule } = existing;
+          const { scenarios: uScenarios, background: UBack, ...uRule } = rule;
+          const background = dataMappers.background(exBack, UBack);
+          const backEql = exBack === background;
+          const scenarios = dataMappers.scenarios(exScenarios, uScenarios);
+          const scenarioEql = scenarios === exScenarios;
+          if (scenarioEql && backEql && (0, import_jsutils26.deepEqual)(exRule, uRule))
+            return existing;
+          hasChange = true;
+          const item = { ...exRule, ...uRule, scenarios };
+          if (background)
+            item.background = background;
+          return item;
+        });
+        return hasChange ? rules : current;
+      }
+    };
+  }
+});
+
+// src/indexes/indexFromAst.ts
+var import_jsutils27, getLastChild, getBeforeIndex, checkBlocks, findNextIndex, updateChildIndex, reIndex, indexFromAst;
+var init_indexFromAst = __esm({
+  "src/indexes/indexFromAst.ts"() {
+    import_jsutils27 = __toESM(require_cjs());
+    getLastChild = (parent, key) => {
+      const children = (0, import_jsutils27.ensureArr)(parent[key]);
+      return children[children.length - 1];
+    };
+    getBeforeIndex = (parent, key) => {
+      const lastChild = getLastChild(parent, key);
+      return (lastChild == null ? void 0 : lastChild.index) || parent.index;
+    };
+    checkBlocks = (blocks, idx) => {
+      const filtered = blocks.filter((block) => block.index <= idx);
+      const match = filtered.find((block) => block.index === idx);
+      return match ? checkBlocks(filtered, idx + 1) : idx;
+    };
+    findNextIndex = ({
+      parent,
+      feature,
+      key
+    }) => {
+      const beforeIdx = getBeforeIndex(parent, key);
+      return checkBlocks(
+        [
+          ...feature.empty || import_jsutils27.emptyArr,
+          ...feature.comments || import_jsutils27.emptyArr
+        ],
+        beforeIdx + 1
+      );
+    };
+    updateChildIndex = (props, nextIdx) => {
+      const { child, parent, indexes } = props;
+      child.index = nextIdx;
+      indexes.splice(nextIdx, 0, { ast: child, parent });
+      return indexes;
+    };
+    reIndex = (indexes, refIndex, amount = 1) => {
+      const reIndexed = indexes.reduce((acc, item, idx) => {
+        if (idx > refIndex)
+          item.ast.index = item.ast.index + amount;
+        acc.push(item);
+        return acc;
+      }, []);
+      return {
+        amount,
+        index: refIndex,
+        indexed: reIndexed
+      };
+    };
+    indexFromAst = (props) => {
+      const nextIdx = findNextIndex(props);
+      const updatedIndex = updateChildIndex(props, nextIdx);
+      return reIndex(updatedIndex, nextIdx);
+    };
+  }
+});
+
+// src/indexes/indexesToFeature.ts
+var import_jsutils28, mergeItem, astArray, mergeParent, findParent, indexesToFeature;
+var init_indexesToFeature = __esm({
+  "src/indexes/indexesToFeature.ts"() {
+    init_types();
+    import_jsutils28 = __toESM(require_cjs());
+    mergeItem = (parent, key, ast) => {
+      const existing = parent[key];
+      parent[key] = !existing ? ast : (existing == null ? void 0 : existing.uuid) === (ast == null ? void 0 : ast.uuid) ? { ...existing, ...ast } : ast;
+      return parent[key];
+    };
+    astArray = (parent, key, ast) => {
+      ;
+      parent[key] = (0, import_jsutils28.eitherArr)(parent[key], []);
+      const typeArr = parent[key];
+      const found = typeArr.find((item) => (item == null ? void 0 : item.uuid) === (ast == null ? void 0 : ast.uuid));
+      if (!found)
+        return parent[key] = [...typeArr, ast];
+      else if (key === "empty" /* empty */ && found.index === ast.index)
+        return;
+      else if (key === "comments" /* comments */ && (found == null ? void 0 : found.content) === (ast == null ? void 0 : ast.content))
+        return;
+      else {
+        const idx = typeArr.indexOf(found);
+        const updated = [...typeArr];
+        updated[idx] = { ...found, ...ast };
+        parent[key] = updated;
+      }
+    };
+    mergeParent = (oldFeat, newFeat, parent, key) => {
+      var _a, _b;
+      ;
+      newFeat[key] = (0, import_jsutils28.eitherArr)(newFeat[key], []);
+      const existing = (_a = newFeat[key]) == null ? void 0 : _a.find((item) => item.uuid === parent.uuid);
+      if (existing)
+        return parent;
+      const found = (_b = oldFeat[key]) == null ? void 0 : _b.find((item) => item.uuid === parent.uuid);
+      const merged = !found ? parent : { ...found, ...parent };
+      newFeat[key].push(merged);
+      return merged;
+    };
+    findParent = (oldFeat, newFeat, parent) => {
+      switch (parent.type) {
+        case "feature" /* feature */: {
+          return newFeat;
+        }
+        case "background" /* background */: {
+          const background = mergeItem(
+            { background: oldFeat.background },
+            "background" /* background */,
+            parent
+          );
+          if (background)
+            newFeat.background = background;
+          return background;
+        }
+        case "rule" /* rule */: {
+          return mergeParent(
+            oldFeat,
+            newFeat,
+            parent,
+            "rules" /* rules */
+          );
+        }
+        case "scenario" /* scenario */: {
+          return mergeParent(
+            oldFeat,
+            newFeat,
+            parent,
+            "scenarios" /* scenarios */
+          );
+        }
+      }
+    };
+    indexesToFeature = (indexes, feature) => {
+      return indexes.reduce((feat, item, idx) => {
+        const { ast } = item;
+        if (ast === feature)
+          return feat;
+        switch (ast.type) {
+          case "desire" /* desire */: {
+            const parent = findParent(
+              feature,
+              feat,
+              item.parent
+            );
+            mergeItem(
+              parent,
+              "desire" /* desire */,
+              ast
+            );
+            break;
+          }
+          case "perspective" /* perspective */: {
+            const parent = findParent(
+              feature,
+              feat,
+              item.parent
+            );
+            mergeItem(
+              parent,
+              "perspective" /* perspective */,
+              ast
+            );
+            break;
+          }
+          case "tags" /* tags */: {
+            const parent = findParent(
+              feature,
+              feat,
+              item.parent
+            );
+            mergeItem(
+              parent,
+              "tags" /* tags */,
+              ast
+            );
+            break;
+          }
+          case "background" /* background */: {
+            const parent = findParent(
+              feature,
+              feat,
+              item.parent
+            );
+            mergeItem(
+              parent,
+              "background" /* background */,
+              ast
+            );
+            break;
+          }
+          case "given" /* given */:
+          case "when" /* when */:
+          case "then" /* then */:
+          case "and" /* and */:
+          case "but" /* but */:
+          case "*" /* * */:
+          case "step" /* step */: {
+            const parent = findParent(
+              feature,
+              feat,
+              item.parent
+            );
+            astArray(
+              parent,
+              "steps" /* steps */,
+              ast
+            );
+            break;
+          }
+          case "reason" /* reason */: {
+            const parent = findParent(
+              feature,
+              feat,
+              item.parent
+            );
+            astArray(
+              parent,
+              "reason" /* reason */,
+              ast
+            );
+            break;
+          }
+          case "empty" /* empty */: {
+            const parent = findParent(
+              feature,
+              feat,
+              item.parent
+            );
+            astArray(
+              parent,
+              "empty" /* empty */,
+              ast
+            );
+            break;
+          }
+          case "comment" /* comment */: {
+            const parent = findParent(
+              feature,
+              feat,
+              item.parent
+            );
+            astArray(
+              parent,
+              "comments" /* comments */,
+              ast
+            );
+            break;
+          }
+          case "rule" /* rule */: {
+            const parent = findParent(
+              feature,
+              feat,
+              item.parent
+            );
+            astArray(
+              parent,
+              "rules" /* rules */,
+              ast
+            );
+            break;
+          }
+          case "scenario" /* scenario */: {
+            const parent = findParent(
+              feature,
+              feat,
+              item.parent
+            );
+            astArray(
+              parent,
+              "scenarios" /* scenarios */,
+              ast
+            );
+            break;
+          }
+        }
+        return feat;
+      }, {});
+    };
+  }
+});
+
+// src/indexes/indexes.ts
+var Indexes;
+var init_indexes = __esm({
+  "src/indexes/indexes.ts"() {
+    init_dataMappers();
+    init_indexFromAst();
+    init_indexesToFeature();
+    init_featureToIndexes();
+    Indexes = class {
+      parkin;
+      tags;
+      steps;
+      rules;
+      empty;
+      scenarios;
+      background;
+      parentSteps;
+      constructor(parkin) {
+        this.parkin = parkin;
+        Object.assign(this, dataMappers);
+      }
+      indexFrom = indexFromAst.bind(this);
+      toFeature = indexesToFeature.bind(this);
+      toIndexes = featureToIndexes.bind(this);
+    };
+  }
+});
+
+// src/utils/diffFeatures.ts
+var import_jsutils29, doEqlCheck, diffFeatures;
+var init_diffFeatures = __esm({
+  "src/utils/diffFeatures.ts"() {
+    init_dataMappers();
+    import_jsutils29 = __toESM(require_cjs());
+    doEqlCheck = (key, current, updated) => {
+      const mapFunc = dataMappers[key];
+      if ((0, import_jsutils29.isFunc)(mapFunc)) {
+        const resp = mapFunc(current, updated);
+        return resp === current ? void 0 : resp;
+      }
+      return (0, import_jsutils29.deepEqual)(current, updated) ? void 0 : updated;
+    };
+    diffFeatures = (feature, updated) => {
+      return Object.entries(updated).reduce((acc, [key, prop]) => {
+        if (!(0, import_jsutils29.exists)(prop))
+          return acc;
+        const current = feature[key];
+        const hasCurrent = (0, import_jsutils29.exists)(current);
+        if (!hasCurrent) {
+          acc[key] = prop;
+          return acc;
+        }
+        const resp = doEqlCheck(key, current, prop);
+        (0, import_jsutils29.exists)(resp) && (acc[key] = resp);
+        return acc;
+      }, {});
+    };
+  }
+});
+
 // src/parkin.ts
-var import_jsutils29, STEP_TYPES2, Parkin, PKInstance;
+var import_jsutils30, STEP_TYPES2, Parkin, PKInstance;
 var init_parkin = __esm({
   "src/parkin.ts"() {
     init_steps();
@@ -4419,9 +4752,11 @@ var init_parkin = __esm({
     init_runner();
     init_assemble2();
     init_constants();
+    init_indexes();
+    init_diffFeatures();
     init_matcher2();
     init_parse();
-    import_jsutils29 = __toESM(require_cjs());
+    import_jsutils30 = __toESM(require_cjs());
     ({ STEP_TYPES: STEP_TYPES2 } = constants);
     Parkin = class {
       #isInit = false;
@@ -4430,6 +4765,7 @@ var init_parkin = __esm({
       parse;
       runner;
       run;
+      indexes;
       matcher;
       world;
       assemble;
@@ -4440,16 +4776,17 @@ var init_parkin = __esm({
       And;
       But;
       constructor(world, steps) {
-        (0, import_jsutils29.isObj)(world) && this.init(world, steps);
+        (0, import_jsutils30.isObj)(world) && this.init(world, steps);
       }
-      init = (world = import_jsutils29.noOpObj, steps, warn = true) => {
+      init = (world = import_jsutils30.noOpObj, steps, warn = true) => {
         if (this.#isInit) {
           return warn && console.warn(`This instance of parkin has already been initialized!`);
         }
-        if (!(0, import_jsutils29.isObj)(world.$alias))
+        if (!(0, import_jsutils30.isObj)(world.$alias))
           world.$alias = {};
         this.#isInit = true;
         this.world = world;
+        this.indexes = new Indexes(this);
         this.steps = new Steps(this.world);
         this.hooks = new Hooks(this.world, this);
         this.runner = new Runner(this.steps, this.hooks, this.world);
@@ -4461,11 +4798,39 @@ var init_parkin = __esm({
         this.assemble = assemble;
         this.paramTypes = { register: registerParamType };
         this.matcher = new Matcher(this);
-        (0, import_jsutils29.isObj)(steps) && this.registerSteps(steps);
+        (0, import_jsutils30.isObj)(steps) && this.registerSteps(steps);
         this.steps.types.map((type) => {
-          this[(0, import_jsutils29.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
+          this[(0, import_jsutils30.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
         });
       };
+      /**
+       * Helper for getting the difference between two feature Asts
+       * First argument is the base Ast, second argument is an Ast to compare against the base
+       * Response only includes the differences from the second argument feature ast
+       * @memberof Parkin
+       * @alias instance&period;diffFeatures
+       * @function
+       * @public
+       * @example
+       *   // Example call
+       *   diffFeatures(
+       *     {
+       *        feature: `my feature`,
+       *        rules: [{ rule: `my rule` }],
+       *        scenarios:[{ steps: [{ type: `Given` }] }]
+       *     },
+       *     {
+       *        feature: `my feature`,
+       *        rules: [{ rule: `my rule` }],
+       *        scenarios:[{ steps: [{ type: `When` }] }]
+       *     },
+       *   )
+       *   // Example Response
+       *     {
+       *        scenarios:[{ steps: [{ type: `When` }] }]
+       *     },
+       */
+      diffFeatures = diffFeatures.bind(this);
       /**
        * Helper for registering step definitions after the Parkin class instance has ben created
        * @memberof Parkin
@@ -4492,7 +4857,7 @@ var init_parkin = __esm({
         if (doRegister)
           return Object.entries(steps).forEach(([type, typedSteps]) => {
             STEP_TYPES2.includes(type) && Object.entries(typedSteps).forEach(([matcher2, content]) => {
-              this.steps[(0, import_jsutils29.capitalize)(type)](matcher2, ...(0, import_jsutils29.eitherArr)(content, [content]));
+              this.steps[(0, import_jsutils30.capitalize)(type)](matcher2, ...(0, import_jsutils30.eitherArr)(content, [content]));
             });
           });
         else
@@ -4502,9 +4867,9 @@ var init_parkin = __esm({
        * Expose helper method to re-index a parsed feature AST when it's content is modified
        * This allows the feature to be properly re-assembled at another time
        */
-      reIndex = (feature, opts) => {
+      reIndex = (feature) => {
         feature.empty = [];
-        const assembled = this.assemble.feature([feature], opts)[0];
+        const assembled = this.assemble.feature([feature])[0];
         return this.parse.feature(assembled)[0];
       };
     };
@@ -13102,29 +13467,29 @@ ${p2}`;
 });
 
 // src/test/utils.ts
-var import_jsutils30, helperTypes, globalTypes, Types, throwError, validateHelper, validateRootRun, validateItem, createItem, createDescribe, createRoot;
+var import_jsutils31, helperTypes, globalTypes, Types, throwError, validateHelper, validateRootRun, validateItem, createItem, createDescribe, createRoot;
 var init_utils = __esm({
   "src/test/utils.ts"() {
-    import_jsutils30 = __toESM(require_cjs());
-    helperTypes = (0, import_jsutils30.keyMap)([
+    import_jsutils31 = __toESM(require_cjs());
+    helperTypes = (0, import_jsutils31.keyMap)([
       `beforeAll`,
       `beforeEach`,
       `afterAll`,
       `afterEach`
     ]);
     globalTypes = {
-      ...(0, import_jsutils30.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
+      ...(0, import_jsutils31.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
       ...helperTypes
     };
     Types = {
       ...globalTypes,
-      ...(0, import_jsutils30.keyMap)([`root`])
+      ...(0, import_jsutils31.keyMap)([`root`])
     };
     throwError = (error) => {
       throw new Error(error);
     };
     validateHelper = (type, action) => {
-      !(0, import_jsutils30.isFunc)(action) && throwError(
+      !(0, import_jsutils31.isFunc)(action) && throwError(
         `The ${type} method requires a "function" as the first argument`
       );
     };
@@ -13133,13 +13498,13 @@ var init_utils = __esm({
       !root.describes || !root.describes.length && throwError(`No tests have been registered to this ParkinTest instance`);
     };
     validateItem = (type, description, action) => {
-      !(0, import_jsutils30.isStr)(type) && throwError(`Test item type is required as a string`);
-      !(0, import_jsutils30.isFunc)(action) && throwError(
+      !(0, import_jsutils31.isStr)(type) && throwError(`Test item type is required as a string`);
+      !(0, import_jsutils31.isFunc)(action) && throwError(
         `The ${type} method requires a "function" as the second argument`
       );
-      !(0, import_jsutils30.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
+      !(0, import_jsutils31.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
     };
-    createItem = (type, metadata = import_jsutils30.noOpObj, validate = true) => {
+    createItem = (type, metadata = import_jsutils31.noOpObj, validate = true) => {
       const { description, action } = metadata;
       validate && validateItem(type, description, action);
       return { ...metadata, type };
@@ -13171,10 +13536,10 @@ var init_utils = __esm({
 });
 
 // src/test/run.js
-var import_jsutils31, runResult, loopHooks, loopTests, callBeforeHooks, callAfterHooks, loopDescribes, run;
+var import_jsutils32, runResult, loopHooks, loopTests, callBeforeHooks, callAfterHooks, loopDescribes, run;
 var init_run = __esm({
   "src/test/run.js"() {
-    import_jsutils31 = __toESM(require_cjs());
+    import_jsutils32 = __toESM(require_cjs());
     init_utils();
     runResult = (item, { id, fullName, action, failed, passed, testPath }) => {
       const result = {
@@ -13190,8 +13555,8 @@ var init_run = __esm({
         description: item.description,
         timestamp: (/* @__PURE__ */ new Date()).getTime()
       };
-      (0, import_jsutils31.isObj)(failed) && result.failedExpectations.push(failed);
-      (0, import_jsutils31.isObj)(passed) && result.passedExpectations.push(passed);
+      (0, import_jsutils32.isObj)(failed) && result.failedExpectations.push(failed);
+      (0, import_jsutils32.isObj)(passed) && result.passedExpectations.push(passed);
       if (passed || failed)
         result.status = passed ? `passed` : `failed`;
       return result;
@@ -13430,24 +13795,24 @@ var init_run = __esm({
 });
 
 // src/test/test.js
-var import_jsutils32, ParkinTest;
+var import_jsutils33, ParkinTest;
 var init_test = __esm({
   "src/test/test.js"() {
     init_run();
-    import_jsutils32 = __toESM(require_cjs());
+    import_jsutils33 = __toESM(require_cjs());
     init_utils();
     ParkinTest = class {
       timeout = 6e3;
-      #specDone = import_jsutils32.noOp;
-      #suiteDone = import_jsutils32.noOp;
-      #specStarted = import_jsutils32.noOp;
-      #suiteStarted = import_jsutils32.noOp;
+      #specDone = import_jsutils33.noOp;
+      #suiteDone = import_jsutils33.noOp;
+      #specStarted = import_jsutils33.noOp;
+      #suiteStarted = import_jsutils33.noOp;
       #activeParent = void 0;
       #testOnly = false;
       #describeOnly = false;
       #autoClean = true;
       #root = createRoot();
-      constructor(config = import_jsutils32.noOpObj) {
+      constructor(config = import_jsutils33.noOpObj) {
         this.#root.description = config.description || `root`;
         this.#addOnly();
         this.#addSkip();
@@ -13457,7 +13822,7 @@ var init_test = __esm({
         this.#activeParent = this.#root;
         this.#setConfig(config);
       }
-      run = (config = import_jsutils32.noOpObj) => {
+      run = (config = import_jsutils33.noOpObj) => {
         if (config.description)
           this.#root.description = config.description;
         this.#setConfig(config);
@@ -13496,7 +13861,7 @@ var init_test = __esm({
       /**
        * Sets the test config from the passed in object
        */
-      setConfig = (config) => this.#setConfig(config || import_jsutils32.noOpObj);
+      setConfig = (config) => this.#setConfig(config || import_jsutils33.noOpObj);
       /**
        * Adds passed in framework hooks to the class instance
        */
@@ -13531,14 +13896,14 @@ var init_test = __esm({
           const item = this.#activeParent.describes[this.#activeParent.describes.length - 1];
           item.only = true;
           this.#describeOnly = true;
-          (0, import_jsutils32.checkCall)(this.#activeParent.hasOnlyChild);
+          (0, import_jsutils33.checkCall)(this.#activeParent.hasOnlyChild);
         };
         this.test.only = (...args) => {
           this.test(...args);
           const item = this.#activeParent.tests[this.#activeParent.tests.length - 1];
           item.only = true;
           this.#testOnly = true;
-          (0, import_jsutils32.checkCall)(this.#activeParent.hasOnlyChild);
+          (0, import_jsutils33.checkCall)(this.#activeParent.hasOnlyChild);
         };
       };
       /**
@@ -13589,7 +13954,7 @@ var init_test = __esm({
         const lastParent = this.#activeParent;
         item.hasOnlyChild = () => {
           item.onlyChild = true;
-          (0, import_jsutils32.checkCall)(lastParent.hasOnlyChild);
+          (0, import_jsutils33.checkCall)(lastParent.hasOnlyChild);
         };
         this.#activeParent = item;
         action();
@@ -13624,7 +13989,7 @@ var init_test = __esm({
           throwError(
             `All ${Types.test} method calls must be called within a ${Types.describe} method`
           );
-        !(0, import_jsutils32.isStr)(description) && throwError(
+        !(0, import_jsutils33.isStr)(description) && throwError(
           `The ${Types.test} method requires a "string" as the first argument`
         );
         const item = createItem(Types.test, { description, skip: true }, false);
@@ -13670,16 +14035,16 @@ var init_globals = __esm({
 });
 
 // src/bin/paths.ts
-var import_os, import_path, import_jsutils33, cwd, homeDir, checkRootDir, __RootDir, setRoot, getRoot;
+var import_os, import_path, import_jsutils34, cwd, homeDir, checkRootDir, __RootDir, setRoot, getRoot;
 var init_paths = __esm({
   "src/bin/paths.ts"() {
     import_os = require("os");
     import_path = __toESM(require("path"));
-    import_jsutils33 = __toESM(require_cjs());
+    import_jsutils34 = __toESM(require_cjs());
     cwd = process.cwd();
     homeDir = (0, import_os.homedir)();
     checkRootDir = (rootDir) => {
-      return !(0, import_jsutils33.isStr)(rootDir) ? void 0 : rootDir.startsWith(`/`) ? rootDir : rootDir.startsWith(`~/`) ? import_path.default.join(homeDir, rootDir.replace(`~/`, ``)) : import_path.default.join(cwd, rootDir);
+      return !(0, import_jsutils34.isStr)(rootDir) ? void 0 : rootDir.startsWith(`/`) ? rootDir : rootDir.startsWith(`~/`) ? import_path.default.join(homeDir, rootDir.replace(`~/`, ``)) : import_path.default.join(cwd, rootDir);
     };
     setRoot = (loc, force) => {
       (!__RootDir || force) && (__RootDir = checkRootDir(loc));
@@ -13829,18 +14194,18 @@ var init_dist = __esm({
 });
 
 // src/bin/helpers.ts
-var import_path3, import_jsutils34, locsByTypes, fullLoc;
+var import_path3, import_jsutils35, locsByTypes, fullLoc;
 var init_helpers2 = __esm({
   "src/bin/helpers.ts"() {
     import_path3 = __toESM(require("path"));
-    import_jsutils34 = __toESM(require_cjs());
+    import_jsutils35 = __toESM(require_cjs());
     init_dist();
     init_paths();
     locsByTypes = async (loc, opts) => {
       const { exclude, include, ext, exts } = opts;
       if (!ext && (!exts || !exts.length))
         return [];
-      const extsArr = (0, import_jsutils34.eitherArr)(exts, []);
+      const extsArr = (0, import_jsutils35.eitherArr)(exts, []);
       ext && !extsArr.includes(ext) && extsArr.push(ext);
       const extensions = extsArr.map((ex) => ex.startsWith(`.`) ? ex : `.${ex}`);
       const files = await c(loc, { resolve: true }).toArray();
@@ -13861,17 +14226,17 @@ var init_helpers2 = __esm({
 });
 
 // src/bin/getDefs.ts
-var import_jsutils35, filterDefs, getDefs;
+var import_jsutils36, filterDefs, getDefs;
 var init_getDefs = __esm({
   "src/bin/getDefs.ts"() {
     init_instance();
     init_paths();
-    import_jsutils35 = __toESM(require_cjs());
+    import_jsutils36 = __toESM(require_cjs());
     init_helpers2();
     filterDefs = async (loc, opts) => {
       return await locsByTypes(loc, {
         ...opts,
-        exts: (0, import_jsutils35.flatUnion)([
+        exts: (0, import_jsutils36.flatUnion)([
           opts == null ? void 0 : opts.ext,
           ...(opts == null ? void 0 : opts.exts) || [],
           `.js`,
@@ -13884,7 +14249,7 @@ var init_getDefs = __esm({
       });
     };
     getDefs = async (opts) => {
-      let filesArr = (0, import_jsutils35.ensureArr)(opts.defs || []);
+      let filesArr = (0, import_jsutils36.ensureArr)(opts.defs || []);
       const defs = !filesArr.length ? await filterDefs(getRoot() || cwd, opts) : await filesArr.reduce(async (resolve, loc) => {
         const acc = await resolve;
         const defs2 = await filterDefs(fullLoc(loc), opts);
@@ -13943,11 +14308,11 @@ var init_runTests = __esm({
 });
 
 // src/bin/getFeatures.ts
-var import_jsutils36, filterFeatures2, featureFromArg, getFeatures;
+var import_jsutils37, filterFeatures2, featureFromArg, getFeatures;
 var init_getFeatures = __esm({
   "src/bin/getFeatures.ts"() {
     init_paths();
-    import_jsutils36 = __toESM(require_cjs());
+    import_jsutils37 = __toESM(require_cjs());
     init_helpers2();
     filterFeatures2 = async (loc, opts) => {
       return await locsByTypes(loc, {
@@ -13965,9 +14330,9 @@ var init_getFeatures = __esm({
       });
     };
     getFeatures = async (opts, args) => {
-      let optsFiles = (0, import_jsutils36.ensureArr)(opts.features || []);
+      let optsFiles = (0, import_jsutils37.ensureArr)(opts.features || []);
       const featureArgs = featureFromArg(args);
-      const options2 = featureArgs.length ? { ...opts, include: (0, import_jsutils36.flatArr)([...opts.include, ...featureArgs]) } : opts;
+      const options2 = featureArgs.length ? { ...opts, include: (0, import_jsutils37.flatArr)([...opts.include, ...featureArgs]) } : opts;
       const filesArr = optsFiles.length || !args.length ? optsFiles : args.filter((arg) => !arg.startsWith(`-`) && !arg.includes(`=`));
       if (!filesArr.length) {
         const root = __RootDir || cwd;
