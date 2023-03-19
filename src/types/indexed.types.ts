@@ -13,6 +13,7 @@ import type {
 } from './features.types'
 
 import type { TStepAst } from './steps.types'
+import type { EAstObject } from './helpers.types'
 
 export type TIndexParentAst = TRuleAst
   | TScenarioAst
@@ -48,4 +49,14 @@ export type TIndexFromAst = {
   indexes:TIndexAst
   feature:TFeatureAst
   parent:TIndexParentAst
+}
+
+export type TIndexSearchOpts = {
+  child?:string,
+  parent?:string
+  uuid?:string
+  start?:number
+  type?:EAstObject
+  only?:`ast`|`parent`
+  indexes:TIndexAst
 }

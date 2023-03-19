@@ -6,76 +6,77 @@ import { deepMerge } from '@keg-hub/jsutils'
 
 const { dataMappers } = require('../dataMappers')
 
-describe('dataMappers', () => {
-  describe('empty', () => {
-    it('should return an empty array if updated array is empty', () => {
+describe(`dataMappers`, () => {
+
+  describe(`dataMappers.empty`, () => {
+    it(`should return an empty array if updated array is empty`, () => {
       const result = dataMappers.empty([], [])
       expect(result).toEqual([])
     })
 
-    it('should return an empty array if current array and updated array is undefined', () => {
+    it(`should return an empty array if current array and updated array is undefined`, () => {
       const result = dataMappers.empty(undefined, undefined)
       expect(result).toEqual([])
     })
 
-    it('should return the updated array if current array is undefined', () => {
-      const updated = [{ uuid: '123' }]
+    it(`should return the updated array if current array is undefined`, () => {
+      const updated = [{ uuid: `123` }]
       const result = dataMappers.empty(undefined, updated)
       expect(result).toBe(updated)
     })
 
-    it('should return the current array if the arrays are deeply equal', () => {
-      const current = [{ uuid: '123' }]
-      const updated = [{ uuid: '123' }]
+    it(`should return the current array if the arrays are deeply equal`, () => {
+      const current = [{ uuid: `123` }]
+      const updated = [{ uuid: `123` }]
       const result = dataMappers.empty(current, updated)
       expect(result).toBe(current)
     })
 
-    it('should return a new array if the arrays are not deeply equal', () => {
-      const current = [{ uuid: '123', foo: 'bar' }]
-      const updated = [{ uuid: '123', foo: 'baz' }]
+    it(`should return a new array if the arrays are not deeply equal`, () => {
+      const current = [{ uuid: `123`, foo: `bar` }]
+      const updated = [{ uuid: `123`, foo: `baz` }]
       const result = dataMappers.empty(current, updated)
       expect(result).not.toBe(current)
       expect(result).toEqual(updated)
     })
   })
 
-  describe('tags', () => {
-    it('should return an current if updated tags are undefined or have no tokens', () => {
-      const current = { tokens: ['foo'] }
+  describe(`dataMappers.tags`, () => {
+    it(`should return an current if updated tags are undefined or have no tokens`, () => {
+      const current = { tokens: [`foo`] }
       const result1 = dataMappers.tags(current, undefined)
       const result2 = dataMappers.tags(current, { tokens: [] })
       expect(result1).toBe(current)
       expect(result2).toBe(current)
     })
 
-    it('should return updated tags if current tags have no tokens', () => {
-      const updated = { tokens: ['foo'] }
+    it(`should return updated tags if current tags have no tokens`, () => {
+      const updated = { tokens: [`foo`] }
       const result = dataMappers.tags({ tokens: [] }, updated)
       expect(result).toBe(updated)
     })
 
-    it('should return current tags if both tags are deeply equal', () => {
-      const current = { tokens: ['foo', 'bar'] }
-      const updated = { tokens: ['foo', 'bar'] }
+    it(`should return current tags if both tags are deeply equal`, () => {
+      const current = { tokens: [`foo`, `bar`] }
+      const updated = { tokens: [`foo`, `bar`] }
       const result = dataMappers.tags(current, updated)
       expect(result).toBe(current)
     })
 
-    it('should return a new tags object if tags are not deeply equal', () => {
-      const current = { tokens: ['foo', 'bar'] }
-      const updated = { tokens: ['foo', 'baz'] }
+    it(`should return a new tags object if tags are not deeply equal`, () => {
+      const current = { tokens: [`foo`, `bar`] }
+      const updated = { tokens: [`foo`, `baz`] }
       const result = dataMappers.tags(current, updated)
       expect(result).not.toBe(current)
       expect(result).toEqual({
         ...updated,
         content: `foo bar baz`,
-        tokens: ['foo', 'bar', 'baz'],
+        tokens: [`foo`, `bar`, `baz`],
       })
     })
   })
 
-  describe('steps', () => {
+  describe(`dataMappers.steps`, () => {
     const { current, updated } = dataMapperMocks.steps
 
     test('should return an empty array if `updated` is empty and `current` is undefined', () => {
@@ -113,7 +114,7 @@ describe('dataMappers', () => {
     })
   })
 
-  describe('parentSteps', () => {
+  describe(`dataMappers.parentSteps`, () => {
     const {exSteps, exTags, uSteps, uTags, expectedTags, updatedTags} = dataMapperMocks.parentSteps
     const ex = { steps: exSteps, tags: exTags, uuid: 'exUUID' }
     const updated = { steps: uSteps, tags: uTags, uuid: 'uUUID' }
@@ -156,7 +157,7 @@ describe('dataMappers', () => {
     })
   })
 
-  describe('background', () => {
+  describe(`dataMappers.background`, () => {
     const {current, updated, updatedWithoutSteps} = dataMapperMocks.background
 
     it('should return undefined if updated is undefined', () => {
@@ -190,7 +191,7 @@ describe('dataMappers', () => {
     })
   })
 
-  describe('rules', () => {
+  describe(`dataMappers.rules`, () => {
     const {
       newRule,
       currentRule1,
@@ -248,7 +249,7 @@ describe('dataMappers', () => {
     })
   })
 
-  describe('scenarios', () => {
+  describe(`dataMappers.scenarios`, () => {
     it('should return an empty array when given no scenarios', () => {
       const result = dataMappers.scenarios(undefined, undefined)
 

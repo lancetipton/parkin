@@ -277,4 +277,25 @@ export const mockFeatToIdx:TFeatureAst = {
       ],
     },
   ],
-};
+}
+
+export const indexesMocks = {
+  feature: {
+    type: EAstObject.feature,
+    feature: `feature`,
+    uuid: 'a',
+    index: 1,
+    empty: [],
+    rules: [],
+    comments:[],
+    scenarios:[]
+  },
+  step: { type: EAstObject.step, step: `step`, uuid: `uuid`, index: 8 },
+  rule: { type: EAstObject.rule, rule: `rule`, uuid: `rule-uuid`, index: 5, scenarios:[] },
+  scenario: { type: EAstObject.scenario, scenario: `scenario`, uuid: `scenario-uuid`, index: 7, steps: [] },
+  background: { type: EAstObject.background, background: `background`, uuid: `bg-uuid`, index: 6, steps: [] },
+  desire: { type: EAstObject.desire, content: `desire`, uuid: `desire-uuid`, index: 3 },
+  perspective: { type: EAstObject.perspective, content: `perspective`, uuid: `perspective-uuid`, index: 2 },
+  reason: { type: EAstObject.reason, content: `reason`, uuid: `reason-uuid`, index: 4 },
+  tags: { type: EAstObject.tags, index: 0, uuid: `tags`, content: `@tag1 @tag2`, tokens: [`@tag1`, `@tag2`] }
+}

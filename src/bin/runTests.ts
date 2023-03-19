@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 import type { TWorldConfig, TParkinTestConfig, TRegisterStepsList } from '../types'
 
-import { promises as fs } from 'node:fs'
+import { promises as fs } from 'fs'
 import { getParkin, getPTE } from './instance'
 
 

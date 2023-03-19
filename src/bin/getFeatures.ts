@@ -1,7 +1,7 @@
 import type { TParkinOpts } from '../types/bin.types'
 
 import { cwd, rootDir } from './paths'
-import { ensureArr, flatArr } from '@keg-hub/jsutils'
+import { ensureArr, flatArr, emptyArr } from '@keg-hub/jsutils'
 import { locsByTypes, fullLoc } from './helpers'
 
 const filterFeatures = async (loc:string, opts:TParkinOpts) => {
@@ -22,7 +22,7 @@ const featureFromArg = (args:string[]) => {
 
     const past = args[idx -1]
 
-    return !past || ((past.startsWith(`-`) && past.length == 2) || past.startsWith(`--`))
+    return past && ((past.startsWith(`-`) && past.length == 2) || (past.startsWith(`--`) && past.length >= 3))
       ? false
       : true
   })
@@ -36,13 +36,10 @@ export const getFeatures = async (
   const featureArgs = featureFromArg(args)
 
   const options = featureArgs.length
-    ? { ...opts, include: flatArr([...opts.include, ...featureArgs]) }
+    ? { ...opts, include: flatArr([...(opts?.include || emptyArr), ...featureArgs]) }
     : opts
 
-  const filesArr = optsFiles.length || !args.length
-    ? optsFiles 
-    : args.filter(arg => !arg.startsWith(`-`) && !arg.includes(`=`))
-
+  const filesArr = optsFiles.length || !args.length ? optsFiles  : featureArgs
 
   // If no paths, then load from the root / cwd
   if(!filesArr.length){

@@ -15,7 +15,8 @@ import type {
 } from '../types'
 
 import { EAstObject } from '../types'
-import { eitherArr } from '@keg-hub/jsutils'
+import { eitherArr, isArr } from '@keg-hub/jsutils'
+import { searchIndexes } from './searchIndexes'
 
 type TWithUuid = {
   uuid: string
@@ -63,71 +64,92 @@ const astArray = <T extends TWithUuid, P>(
 
 }
 
-const mergeParent = <T extends TWithUuid, P=TFeatureAst>(
-  oldFeat:P,
-  newFeat:P,
-  parent:T,
-  key:keyof typeof oldFeat,
+
+const mergeParent = <T extends TWithUuid, P=TIndexParentAst>(
+  oldParent:P,
+  newParent:P,
+  item:T,
+  key:keyof typeof oldParent,
 ) => {
-  ;(newFeat[key] as T[]) = eitherArr<T[]>(newFeat[key], [])
 
-  const existing = (newFeat[key] as T[])?.find(item => item.uuid === parent.uuid)
-  if(existing) return parent
-  
-  const found = (oldFeat[key] as T[])?.find(item => item.uuid === parent.uuid)
-  const merged = !found ? parent : {...found, ...parent}
+  newParent[key] = key === EAstObject.background
+    ? (newParent[key] || {}) as P[keyof P]
+    : eitherArr<P[keyof P]>(newParent[key], [])
 
-  ;(newFeat[key] as T[]).push(merged)
-  
+  const existing = eitherArr(newParent[key], [newParent[key]])?.find((item:T) => item?.uuid === item?.uuid)
+  if(existing) return item
+
+  const found = eitherArr(oldParent[key], [oldParent[key]])?.find((item:T) => item?.uuid === item?.uuid)
+  const merged = !found ? item : {...found, ...item}
+
+  isArr(newParent[key])
+    ? (newParent[key] as T[]).push(merged)
+    : (newParent[key] = merged)
+
   return merged
 }
 
-const findParent = <T>(
-  oldFeat:TFeatureAst,
-  newFeat:TFeatureAst,
-  parent:TIndexParentAst
-) => {
-  
-  switch(parent.type){
-      case EAstObject.feature: {
-        return newFeat as T
-      }
-      case EAstObject.background: {
-        const background = mergeItem<TBackgroundAst, TFeatureAst>(
-          { background: oldFeat.background },
-          EAstObject.background,
-          parent as TBackgroundAst,
-        )
-        if(background) newFeat.background = background
-
-        return background as T
-      }
-      case EAstObject.rule: {
-        return mergeParent<TRuleAst>(
-          oldFeat,
-          newFeat,
-          parent as TRuleAst,
-          EAstObject.rules
-        ) as T
-      }
-      case EAstObject.scenario: {
-        return mergeParent<TScenarioAst>(
-          oldFeat,
-          newFeat,
-          parent as TScenarioAst,
-          EAstObject.scenarios
-        ) as T
-      }
-  }
-  
+const throwMissing = (parent:TIndexParentAst) => {
+  throw new Error(`The parent ${parent.uuid} does not exist in the Indexes array`)
 }
 
+const findParent = <T>(
+  indexes:TIndexAst,
+  oldFeature:TFeatureAst,
+  newFeature:TFeatureAst,
+  parent:TIndexParentAst
+) => {
+  if(parent.type === EAstObject.feature) return newFeature
+
+  if(parent.type === EAstObject.rule)
+    return mergeParent(
+      oldFeature,
+      newFeature,
+      parent,
+      EAstObject.rules
+    ) as T
+
+  // Find the parent in the indexes where it's a child, and has a parent
+  const found = searchIndexes({
+    indexes,
+    uuid: parent.uuid,
+    type: parent.type,
+  })
+
+  // If not found throw an error
+  if(!found.ast) return throwMissing(parent) || parent
+
+  const parentKey = parent.type === EAstObject.scenario
+    ? EAstObject.scenarios
+    : EAstObject.background
+
+  // If the Parents Parent is the feature, then add the parent directly to the feature
+  if(found.parent === oldFeature)
+    return mergeParent(
+      oldFeature,
+      newFeature,
+      parent,
+      parentKey
+    ) as T
+
+  // Parents Parent is in the rules array then lookup the Parents Parent
+  // And use that as the new Parents Parent
+  const oldPP = found.parent
+  const newPP = findParent<T>(indexes, oldFeature, newFeature, oldPP as TIndexParentAst)
+
+  return mergeParent(
+    oldPP,
+    newPP,
+    parent,
+    parentKey
+  ) as T
+}
 
 /**
- * Builds a TFeatureAst from the passed in TIndexAst
- * Uses the current feature to fill missing feature values
- * Can be treated as a merge of a feature and updates to it
- * The indexes should be of the same feature
+ * Builds a TFeatureAst of changes by comparing in TIndexAst and TFeatureAst
+ * Uses the current feature as the base to compare for differences
+ * The indexes should be of the same feature, but can contain changes the feature does not have
+ * This will return a partial TFeatureAst with those changes
  */
 export const indexesToFeature = (
   indexes:TIndexAst,
@@ -139,34 +161,74 @@ export const indexesToFeature = (
     if(ast === feature) return feat
 
     switch(ast.type as EAstObject){
+    // --- These items parent is always Top level feature
       case EAstObject.desire: {
-        const parent = findParent<TFeatureAst>(
-          feature,
-          feat,
-          item.parent
-        )
         mergeItem<TBlockAst, TFeatureAst>(
-          parent,
+          feat,
           EAstObject.desire,
           ast as TBlockAst
         )
         break
       }
       case EAstObject.perspective: {
-        const parent = findParent<TFeatureAst>(
-          feature,
-          feat,
-          item.parent
-        )
         mergeItem<TBlockAst, TFeatureAst>(
-          parent,
+          feat,
           EAstObject.perspective,
           ast as TBlockAst
         )
         break
       }
+      case EAstObject.reason: {
+        astArray<TBlockAst, TFeatureAst>(
+          feat as TFeatureAst,
+          EAstObject.reason,
+          ast as TBlockAst
+        )
+        break
+      }
+      case EAstObject.empty: {
+        astArray<TBlockAst, TFeatureAst>(
+          feat,
+          EAstObject.empty,
+          ast as TBlockAst
+        )
+        break
+      }
+      case EAstObject.comment: {
+        astArray<TBlockAst, TFeatureAst>(
+          feat,
+          EAstObject.comments,
+          ast as TBlockAst
+        )
+        break
+      }
+      case EAstObject.rule: {
+        astArray<TRuleAst, TFeatureAst>(
+          feat,
+          EAstObject.rules,
+          ast as TRuleAst
+        )
+        break
+      }
+
+    // --- These items have parents other then the Top level feature
+      case EAstObject.scenario: {
+        const parent = findParent<TScenarioParentAst>(
+          indexes,
+          feature,
+          feat,
+          item.parent
+        )
+        astArray<TScenarioAst, TScenarioParentAst>(
+          parent as TScenarioParentAst,
+          EAstObject.scenarios,
+          ast as TScenarioAst
+        )
+        break
+      }
       case EAstObject.tags: {
         const parent = findParent<TTagsParentAst>(
+          indexes,
           feature,
           feat,
           item.parent
@@ -180,12 +242,13 @@ export const indexesToFeature = (
       }
       case EAstObject.background: {
         const parent = findParent<TBackgroundParentAst>(
+          indexes,
           feature,
           feat,
           item.parent
         )
         mergeItem<TBackgroundAst, TBackgroundParentAst>(
-          parent,
+          parent as TBackgroundParentAst,
           EAstObject.background,
           ast as TBackgroundAst
         )
@@ -199,6 +262,7 @@ export const indexesToFeature = (
       case EAstObject[`*`]:
       case EAstObject.step: {
         const parent = findParent<TStepParentAst>(
+          indexes,
           feature,
           feat,
           item.parent
@@ -207,71 +271,6 @@ export const indexesToFeature = (
           parent,
           EAstObject.steps,
           ast as TStepAst
-        )
-        break
-      }
-      case EAstObject.reason: {
-        const parent = findParent<TFeatureAst>(
-          feature,
-          feat,
-          item.parent
-        )
-        astArray<TBlockAst, TFeatureAst>(
-          parent,
-          EAstObject.reason,
-          ast as TBlockAst
-        )
-        break
-      }
-      case EAstObject.empty: {
-        const parent = findParent<TFeatureAst>(
-          feature,
-          feat,
-          item.parent
-        )
-        astArray<TBlockAst, TFeatureAst>(
-          parent,
-          EAstObject.empty,
-          ast as TBlockAst
-        )
-        break
-      }
-      case EAstObject.comment: {
-        const parent = findParent<TFeatureAst>(
-          feature,
-          feat,
-          item.parent
-        )
-        astArray<TBlockAst, TFeatureAst>(
-          parent,
-          EAstObject.comments,
-          ast as TBlockAst
-        )
-        break
-      }
-      case EAstObject.rule: {
-        const parent = findParent<TFeatureAst>(
-          feature,
-          feat,
-          item.parent
-        )
-        astArray<TRuleAst, TFeatureAst>(
-          parent,
-          EAstObject.rules,
-          ast as TRuleAst
-        )
-        break
-      }
-      case EAstObject.scenario: {
-        const parent = findParent<TScenarioParentAst>(
-          feature,
-          feat,
-          item.parent
-        )
-        astArray<TScenarioAst, TScenarioParentAst>(
-          parent,
-          EAstObject.scenarios,
-          ast as TScenarioAst
         )
         break
       }
