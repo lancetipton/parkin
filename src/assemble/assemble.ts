@@ -1,7 +1,7 @@
 import { assembleFeature as feature } from './feature'
-import { indexedToString } from './indexedToString'
+import { fromIndex } from './fromIndex'
 
 export const assemble = {
   feature,
-  indexedToString,
+  fromIndex,
 }

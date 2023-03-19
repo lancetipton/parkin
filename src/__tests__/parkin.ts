@@ -78,23 +78,7 @@ describe(`Parkin`, () => {
     const { scenarios: parsedScenarios, ...featureWOScenarios } = parsedFeature
 
     expect(parsed).toEqual(featureWOScenarios)
-    let scenarioWs
-    let stepsWS = []
-
-    const uuidScenarios = scenarios.map(scenario => {
-      const { whitespace, ...noWSscenario } = scenario
-      scenarioWs = whitespace
-      noWSscenario.steps = scenario.steps.map(step => {
-        const { whitespace, ...uuidStep } = step
-        stepsWS.push(whitespace)
-        return uuidStep
-      })
-      return noWSscenario
-    })
-
-    expect(scenarioWs).toEqual(`  `)
-    expect(stepsWS).toEqual([ '    ', '    ', '    ', '    ', '    ' ])
-    expect(uuidScenarios).toEqual(parsedScenarios)
+    expect(scenarios).toEqual(parsedScenarios)
   })
 
   it(`should set the error array for malformed feature content`, () => {

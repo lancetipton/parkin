@@ -20,7 +20,8 @@ export enum EStepMethodType {
   When=`When`,
   Then=`Then`,
   And=`And`,
-  But=`But`
+  But=`But`,
+  "*"=`*`,
 }
 
 export enum EAstObject {
@@ -48,6 +49,9 @@ export enum EAstObject {
   and=`and`,
   but=`but`,
   "*"=`*`,
+  
+  expression=`expression`,
+  expressions=`expressions`,
 }
 
 export enum EFeatureTypes {

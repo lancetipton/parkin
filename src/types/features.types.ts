@@ -81,7 +81,7 @@ export type TFeatureAst = {
 }
 
 export type TBlockParentAst = TFeatureAst | TRuleAst | TBackgroundAst | TScenarioAst
-export type TAstType = TBlockParentAst | TStepAst
+export type TAstType = TBlockParentAst | TStepAst | TTagsAst | TBlockAst
 
 export type TStepParentAst = TBackgroundAst | TScenarioAst
 export type TScenarioParentAst = TRuleAst | TFeatureAst

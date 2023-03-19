@@ -16,8 +16,6 @@ import { Hooks } from './hooks'
 import { Runner } from './runner'
 import { assemble } from './assemble'
 import { constants } from './constants'
-import { Indexes } from './indexes/indexes'
-import { diffFeatures } from './utils/diffFeatures'
 import { Matcher, registerParamType } from './matcher'
 import { parseFeature, parseDefinition } from './parse'
 import { isObj, capitalize, noOpObj, eitherArr } from '@keg-hub/jsutils'
@@ -61,7 +59,6 @@ export class Parkin {
   parse:TParse
   runner:Runner
   run:TParkinRun
-  indexes:Indexes
   matcher:Matcher
   world:TWorldConfig
   assemble:TAssemble
@@ -95,7 +92,6 @@ export class Parkin {
     // Set isInit, so we can't re-initialized
     this.#isInit = true
     this.world = world
-    this.indexes = new Indexes(this)
     this.steps = new Steps(this.world)
     this.hooks = new Hooks(this.world, this)
     this.runner = new Runner(this.steps, this.hooks, this.world)
@@ -198,35 +194,6 @@ export class Parkin {
         this.steps.register(`_${type}`, type, matcher, method, meta)
     })
   }
-
-  /**
-   * Helper for getting the difference between two feature Asts
-   * First argument is the base Ast, second argument is an Ast to compare against the base
-   * Response only includes the differences from the second argument feature ast
-   * @memberof Parkin
-   * @alias instance&period;diffFeatures
-   * @function
-   * @public
-   * @example
-   *   // Example call
-   *   diffFeatures(
-   *     {
-   *        feature: `my feature`,
-   *        rules: [{ rule: `my rule` }],
-   *        scenarios:[{ steps: [{ type: `Given` }] }]
-   *     },
-   *     {
-   *        feature: `my feature`,
-   *        rules: [{ rule: `my rule` }],
-   *        scenarios:[{ steps: [{ type: `When` }] }]
-   *     },
-   *   )
-   *   // Example Response
-   *     {
-   *        scenarios:[{ steps: [{ type: `When` }] }]
-   *     },
-   */
-  diffFeatures = diffFeatures.bind(this)
 
   /**
    * Helper for registering step definitions after the Parkin class instance has ben created

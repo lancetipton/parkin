@@ -1,9 +1,9 @@
 import type { TFeatureAst } from '../types'
 
-import { indexedToString } from './indexedToString'
+import { fromIndex } from './fromIndex'
 import { throwFeatureNotAnObj } from '../utils/errors'
 import { isObj, eitherArr } from '@keg-hub/jsutils'
-import { featureToIndexes } from '../indexes/featureToIndexes'
+import { featureToIndexes } from './featureToIndexes'
 
 /**
  * Converts parsed feature models back into a formatted strings
@@ -19,6 +19,6 @@ export const assembleFeature = (
     !isObj(feature) && throwFeatureNotAnObj(feature)
     const indexes = featureToIndexes(feature)
 
-    return indexedToString(indexes)
+    return fromIndex(indexes)
   })
 }
