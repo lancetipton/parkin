@@ -15,6 +15,7 @@ module.exports = {
     "<rootDir>/src/types",
     "<rootDir>/src/bin/testCli.ts",
     "<rootDir>/src/bin/parkin.js",
+    "<rootDir>/src/bin/parkin.ts",
   ],
   collectCoverageFrom: [
     "src/**/*.{js,jsx,ts,tsx}",
