@@ -3992,6 +3992,7 @@ var assembleFeature2 = (toAssemble) => {
 // src/assemble/assemble.ts
 var assemble = {
   feature: assembleFeature2,
+  toIndexes: featureToIndexes,
   fromIndex
 };
 

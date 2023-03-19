@@ -4294,8 +4294,10 @@ var init_assemble = __esm({
   "src/assemble/assemble.ts"() {
     init_feature();
     init_fromIndex();
+    init_featureToIndexes();
     assemble = {
       feature: assembleFeature2,
+      toIndexes: featureToIndexes,
       fromIndex
     };
   }
