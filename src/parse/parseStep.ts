@@ -4,13 +4,13 @@ import { EStepType } from '../types'
 import { uuid } from '@keg-hub/jsutils'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
-const RX_STEP = /^\s*Step (.*)$/
-const RX_GIVEN = /^\s*Given (.*)$/
-const RX_WHEN = /^\s*When(.*)$/
-const RX_THEN = /^\s*Then (.*)$/
-const RX_AND = /^\s*And (.*)$/
-const RX_BUT = /^\s*But (.*)$/
-const RX_ASTERISK = /^\s*\* (.*)$/
+const RX_STEP = /^\s*Step\s*(.*)$/
+const RX_GIVEN = /^\s*Given\s*(.*)$/
+const RX_WHEN = /^\s*When\s*(.*)$/
+const RX_THEN = /^\s*Then\s*(.*)$/
+const RX_AND = /^\s*And\s*(.*)$/
+const RX_BUT = /^\s*But\s*(.*)$/
+const RX_ASTERISK = /^\s*\*\s*(.*)$/
 const RX_DOC_QUOTES = /^\s*?"""\s*?/
 const RX_DOC_QUOTES_FULL = /^\s*?"""(\s*?|.*?)*?"""/gm
 const RX_DOC_TICKS = /^\s*?```\s*?/
