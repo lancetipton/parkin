@@ -78,7 +78,7 @@ export class Parkin {
 
   init = (
     world:TWorldConfig = noOpObj as TWorldConfig,
-    steps:TRegisterOrAddStep,
+    steps?:TRegisterOrAddStep,
     warn=true
   ) => {
     if (this.#isInit){
@@ -246,7 +246,7 @@ export class Parkin {
     feature.empty = []
     const assembled = this.assemble.feature([feature as TFeatureAst])[0]
 
-    return this.parse.feature(assembled)[0]
+    return this.parse.feature(assembled, this.world)[0]
   }
 
 }

@@ -9,7 +9,7 @@ import type {
   TRegisterStepsList
 } from './steps.types'
 
-
+import type { parseFeature } from '../parse/parseFeature'
 import type {
   TParamTypes,
   TParamTypeMap,
@@ -39,7 +39,7 @@ export interface IParkinRunner {
 }
 
 export type TParse = {
-  feature: (feature:string) => TFeatureAst[]
+  feature: typeof parseFeature
   definition: (def:string) => TStepDef
 }
 
