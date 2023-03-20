@@ -1,5 +1,4 @@
 import type {
-  TAstType,
   TRuleAst,
   TTagsAst,
   TStepAst,

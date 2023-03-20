@@ -82,8 +82,9 @@ export class Parkin {
     warn=true
   ) => {
     if (this.#isInit){
-      return warn
-        && console.warn(`This instance of parkin has already been initialized!`)
+      warn && console.warn(`This instance of parkin has already been initialized!`)
+
+      return
     }
 
     // Ensure the world.$alias object exists

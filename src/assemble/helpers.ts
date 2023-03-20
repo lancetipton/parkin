@@ -4,7 +4,6 @@ import type {
   TBlockAst,
 } from '../types'
 
-
 import { exists } from '@keg-hub/jsutils'
 import { EFeatureTypes } from '../types'
 
