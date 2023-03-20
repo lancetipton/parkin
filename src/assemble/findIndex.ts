@@ -8,7 +8,7 @@ import type {
 } from '../types'
 
 import { EBlockLoc } from '../types'
-import { emptyArr, isArr } from '@keg-hub/jsutils'
+import { emptyArr, ensureArr, isArr, isObj } from '@keg-hub/jsutils'
 import { EStepType, EAstObject } from '../types'
 
 
@@ -85,14 +85,14 @@ const indexFromBlocks = ({
 const indexFromStory = (
   feature:TFeatureAst
 ) => {
-  return isArr<TBlockAst[]>(feature?.reason)
-    ? feature.reason[feature.reason.length - 1].index + 1
-    : feature?.reason
-      ? feature.reason.index + 1
+  return isArr<TBlockAst[]>(feature?.reason) && feature?.reason?.length
+    ? (feature?.reason[feature?.reason?.length - 1]?.index || 0) + 1
+    : isObj<TBlockAst>(feature?.reason)
+      ? feature?.reason?.index + 1
       : feature?.desire?.index
         ? feature.desire.index + 1
-        : feature.perspective.index
-          ? feature?.perspective?.index + 1
+        : feature?.perspective?.index
+          ? feature.perspective.index + 1
           : feature.index + 1
 }
 

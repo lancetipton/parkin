@@ -19,7 +19,10 @@ export const formatAssembled = (
 ) => {
   // Use array.from to allow access to empty array position
   // This ensures we can replace it with an empty string
-  return Array.from(assembled, (line) => exists(line) ? `${line}\n` : '\n').join('')
+  return Array.from(assembled, (line) => exists(line) ? `${line}\n` : '\n')
+    .join('')
+    .trimEnd()
+    .concat(` `, `\n`)
 }
 
 /**
