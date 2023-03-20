@@ -1,4 +1,5 @@
 import type {
+  TAstType,
   TBlockAst,
   TFindIndex,
   TFeatureAst,
@@ -8,8 +9,8 @@ import type {
 } from '../types'
 
 import { EBlockLoc } from '../types'
-import { emptyArr, ensureArr, isArr, isObj } from '@keg-hub/jsutils'
 import { EStepType, EAstObject } from '../types'
+import { emptyArr, exists, isArr, isObj, isNum } from '@keg-hub/jsutils'
 
 
 /**
@@ -56,6 +57,14 @@ const validateIndex = (
   ], index)
 }
 
+const validObj = (child:TAstType) => {
+  return isObj<TBlockAst>(child) && isNum(child?.index)
+}
+
+const validArr = (childArr:TAstType[]) => {
+  return isArr<TAstType[]>(childArr) && childArr?.length
+}
+
 const indexFromBlocks = ({
   loc,
   type,
@@ -82,18 +91,27 @@ const indexFromBlocks = ({
   return contentSplit.length
 }
 
-const indexFromStory = (
-  feature:TFeatureAst
-) => {
-  return isArr<TBlockAst[]>(feature?.reason) && feature?.reason?.length
-    ? (feature?.reason[feature?.reason?.length - 1]?.index || 0) + 1
-    : isObj<TBlockAst>(feature?.reason)
-      ? feature?.reason?.index + 1
-      : feature?.desire?.index
-        ? feature.desire.index + 1
-        : feature?.perspective?.index
-          ? feature.perspective.index + 1
-          : feature.index + 1
+const indexFromStory = (feature:TFeatureAst) => {
+  const {
+    index,
+    reason,
+    desire,
+    perspective,
+  } = feature
+  
+  if(validArr(reason as TBlockAst[])){
+    const arr = reason as TBlockAst[]
+    const re = arr[arr.length - 1]
+
+    if(validObj(re)) return re.index + 1
+  }
+  else if(validObj(reason as TBlockAst)) return (reason as TBlockAst).index + 1
+
+  if(validObj(desire)) return desire.index + 1
+
+  if(validObj(perspective)) return perspective.index + 1
+
+  return index + 1
 }
 
 const indexFromBackground = (
@@ -101,25 +119,24 @@ const indexFromBackground = (
   feature:TFeatureAst
 ) => {
 
-  return parent?.background
-    ? indexFromSteps(parent.background)
-    : parent === feature
-      ? indexFromStory(feature)
-      : parent.index + 1
+  if(validObj(parent?.background)){
+    const idx = indexFromSteps(parent.background)
+    if(exists(idx)) return idx
+  }
+
+  return parent === feature ? indexFromStory(feature) : parent.index + 1
 }
 
 const indexFromRule = (
   feature:TFeatureAst
 ) => {
+  if(!validArr(feature?.rules)) return indexFromBackground(feature, feature)
 
-  if(!feature?.rules?.length)
-    return indexFromBackground(feature, feature)
+  const rule = feature?.rules?.[feature.rules.length - 1]
 
-  const rule = feature.rules[feature.rules.length - 1]
-
-  return rule?.scenarios?.length
+  return validArr(rule?.scenarios)
     ? indexFromScenarios(rule, feature)
-    : rule?.background
+    : validObj(rule?.background)
       ? indexFromBackground(rule, feature)
       : rule.index + 1
 }
@@ -128,30 +145,31 @@ const indexFromScenarios = (
   parent:TScenarioParentAst,
   feature:TFeatureAst
 ) => {
-
   // Check existing scenarios
   // If the parent is the feature, index from the rules
   // Otherwise parent is a rule, so index from the it's background
-  if(!parent?.scenarios?.length)
-    return  parent === feature
-      ? indexFromRule(feature)
-      : indexFromBackground(parent, feature)
+  if(validArr(parent?.scenarios)){
+    // If last scenario has steps, then use the last steps index + 1
+    // Otherwise use the last scenario's index
+    const scenario = parent.scenarios[parent.scenarios.length - 1]
 
-  // If last scenario has steps, then use the last steps index + 1
-  // Otherwise use the last scenario's index
-  const scenario = parent.scenarios[parent.scenarios.length - 1]
+    if(validObj(scenario)) return indexFromSteps(scenario)
+  }
 
-  return indexFromSteps(scenario)
+  return parent === feature
+    ? indexFromRule(feature)
+    : indexFromBackground(parent, feature)
 }
 
 const indexFromSteps = (
   parent:TStepParentAst
 ) => {
-  return parent?.steps?.length
-    ? parent.steps[parent.steps.length - 1].index + 1
-    : parent.index + 1
-}
 
+  const step = validArr(parent?.steps)
+    && parent.steps[parent.steps.length - 1]
+
+  return validObj(step) ? step.index + 1 : parent?.index + 1
+}
 
 /**
  * Get the parent index, and add the step length to it
