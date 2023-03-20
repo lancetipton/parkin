@@ -87,6 +87,7 @@ export type TStepParentAst = TBackgroundAst | TScenarioAst
 export type TScenarioParentAst = TRuleAst | TFeatureAst
 export type TTagsParentAst = TScenarioParentAst | TStepParentAst
 export type TBackgroundParentAst = TFeatureAst | TRuleAst
+export type TParentAst = TFeatureAst | TRuleAst | TBackgroundAst | TScenarioAst
 
 export type TBlockType = EAstObject.block
   | EAstObject.empty

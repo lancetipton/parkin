@@ -16,156 +16,192 @@ import type {
 
 import { EAstObject } from '../types'
 import { isArr } from '@keg-hub/jsutils'
+import { addToIndexes } from './addToIndexes'
 
 const indexSteps = (
+  feature:TFeatureAst,
   indexes:TIndexAst,
   steps:TStepAst[],
-  parent:TStepParentAst
+  parent:TStepParentAst,
+  offset:number[]
 ) => {
-  steps.forEach(step => {
-    indexes[step.index] = {ast: step, parent}
-  })
+  steps.forEach(step => addToIndexes(feature, indexes, {ast: step, parent}, offset))
 } 
 
 const indexScenario = (
+  feature:TFeatureAst,
   indexes:TIndexAst,
   scenarios:TScenarioAst[],
-  parent:TScenarioParentAst
+  parent:TScenarioParentAst,
+  offset:number[]
 ) => {
   scenarios.forEach(scenario => {
-    indexes[scenario.index] = {ast: scenario, parent}
+    addToIndexes(feature, indexes, {ast: scenario, parent}, offset)
 
-    scenario.tags && indexTags(indexes, scenario)
-    scenario.steps && indexSteps(indexes, scenario.steps, scenario)
+    scenario.tags && indexTags(feature, indexes, scenario, offset)
+    scenario.steps && indexSteps(feature, indexes, scenario.steps, scenario, offset)
   })
 }
 
 const indexRules = (
+  feature:TFeatureAst,
   indexes:TIndexAst,
   rules:TRuleAst[],
-  parent:TFeatureAst
+  parent:TFeatureAst,
+  offset:number[]
 ) => {
   rules.forEach(rule => {
-    indexes[rule.index] = {ast: rule, parent}
+    addToIndexes(feature, indexes, {ast: rule, parent}, offset)
 
-    rule.tags && indexTags(indexes, rule)
-    rule.scenarios && indexScenario(indexes, rule.scenarios, rule)
-    rule.background && indexBackground(indexes, rule.background, rule)
+    rule.tags && indexTags(feature, indexes, rule, offset)
+    rule.scenarios && indexScenario(feature, indexes, rule.scenarios, rule, offset)
+    rule.background && indexBackground(feature, indexes, rule.background, rule, offset)
   })
 }
 
 const indexReason = (
+  feature:TFeatureAst,
   indexes:TIndexAst,
   reason:TBlockAst|TBlockAst[],
-  parent:TFeatureAst
+  parent:TFeatureAst,
+  offset:number[]
 ) => {
   isArr<TBlockAst[]>(reason)
-    ? reason.forEach(reason => {
-        indexes[reason.index] = {ast: reason, parent}
-      })
-    : (() => {
-        indexes[reason.index] = {ast: reason, parent}
-      })()
+    ? reason.forEach(reason => addToIndexes(feature, indexes, {ast: reason, parent}, offset))
+    : addToIndexes(feature, indexes, {ast: reason, parent}, offset)
 }
 
 const indexBackground = (
+  feature:TFeatureAst,
   indexes:TIndexAst,
   background:TBackgroundAst,
-  parent:TBackgroundParentAst
+  parent:TBackgroundParentAst,
+  offset:number[]
 ) => {
-  indexes[background.index] = {ast: background, parent}
-  background.tags && indexTags(indexes, background)
-  background?.steps && indexSteps(indexes, background.steps, background)
+
+  addToIndexes(feature, indexes, {ast: background, parent}, offset)
+
+  background.tags && indexTags(feature, indexes, background, offset)
+  background?.steps && indexSteps(feature, indexes, background.steps, background, offset)
+
 }
 
 const indexBlocks = (
+  feature:TFeatureAst,
   indexes:TIndexAst,
   blocks:TBlockAst[],
   type:TBlockType,
-  parent:TBlockParentAst
+  parent:TBlockParentAst,
+  offset:number[]
 ) => {
   blocks.forEach(block => {
     if(block.type !== type) block.type = type
 
-    indexes[block.index] = {ast: block, parent}
+    addToIndexes(feature, indexes, {ast: block, parent}, offset)
   })
 }
 
 const indexTags = (
+  feature:TFeatureAst,
   indexes:TIndexAst,
-  parent:TTagsParentAst
+  parent:TTagsParentAst,
+  offset:number[]
 ) => {
   const tags = parent?.tags
   tags?.tokens?.length
-    && (indexes[tags.index] = {ast: tags, parent})
+    && addToIndexes(feature, indexes, {ast: tags, parent}, offset)
 }
 
 export const featureToIndexes = (
   feature:TFeatureAst,
 ) => {
-  const indexes = [] as unknown as TIndexAst
+  const indexes:TIndexAst = []
+  let offset:number[] = []
 
   feature?.tags
-    && indexTags(indexes, feature)
+    && indexTags(feature, indexes, feature, offset)
 
   indexes[feature.index || indexes.length] = {ast: feature, parent: feature}
 
   feature?.empty
     && indexBlocks(
+      feature,
       indexes,
       feature?.empty,
       EAstObject.empty,
-      feature
+      feature,
+      offset
     )
 
   feature?.comments
     && indexBlocks(
+        feature,
         indexes,
         feature?.comments,
         EAstObject.comment,
-        feature
+        feature,
+        offset
       )
 
   feature.desire
     && indexBlocks(
+        feature,
         indexes,
         [feature.desire],
          EAstObject.desire,
-         feature
+         feature,
+         offset
       )
   feature.perspective
     && indexBlocks(
+        feature,
         indexes,
         [feature.perspective],
          EAstObject.perspective,
-         feature
+         feature,
+         offset
       )
 
   feature.reason
     && indexReason(
+        feature,
         indexes,
         feature.reason,
-        feature
+        feature,
+        offset
       )
+
 
   feature.background
     && indexBackground(
+        feature,
         indexes,
         feature.background,
-        feature
+        feature,
+        offset
       )
+
   feature.rules
     && indexRules(
+        feature,
         indexes,
         feature.rules,
-        feature
+        feature,
+        offset
       )
+
   feature.scenarios
     && indexScenario(
+        feature,
         indexes,
         feature.scenarios,
-        feature
+        feature,
+        offset
       )
+
+  // Update the index of all items
+  indexes.forEach((item, idx) => item.ast.index = idx)
+  offset = undefined
 
   return indexes
 }
