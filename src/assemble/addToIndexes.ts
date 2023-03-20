@@ -54,10 +54,14 @@ export const addToIndexes = (
   item.ast.index = index
 
   // Get the length of the current items
+  const updatedLen = indexes.length + 1
+
   // If the newIndex is within it
   // Then call splice to add it at the index
-  const updatedLen = indexes.length + 1
-  if(newIdx <= updatedLen) return indexes.splice(newIdx, 0, item)
+  // Otherwise calculate the diff in length and add empty spaces for non-existing items
+  newIdx <= updatedLen
+    ? indexes.splice(newIdx, 0, item)
+    : indexes.splice(newIdx, 0, ...Array(newIdx - updatedLen), item)
 
-  indexes.splice(newIdx, 0, ...Array(newIdx - updatedLen), item)
+  return indexes
 }
