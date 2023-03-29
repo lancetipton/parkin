@@ -171,7 +171,6 @@ export const featureToIndexes = (
         offset
       )
 
-
   feature.background
     && indexBackground(
         feature,
@@ -199,9 +198,13 @@ export const featureToIndexes = (
         offset
       )
 
-  // Update the index of all items
-  indexes.forEach((item, idx) => item.ast.index = idx)
   offset = undefined
 
+  // Remove any empty items, then update their index
   return indexes
+    .filter(item => item)
+    .map((item, idx) => {
+      item.ast.index = idx
+      return item
+    })
 }

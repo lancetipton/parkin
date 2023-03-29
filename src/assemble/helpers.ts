@@ -8,6 +8,7 @@ import { exists } from '@keg-hub/jsutils'
 import { EFeatureTypes } from '../types'
 
 /**
+ * TODO: Allow passing options here that will format the assembled feature
  * Converts the assembled array into a formatted feature string
  * Calls helper to format comment lines containing a #
  * Adds a line ending char at the end of each line => '\n'
@@ -19,7 +20,7 @@ export const formatAssembled = (
 ) => {
   // Use array.from to allow access to empty array position
   // This ensures we can replace it with an empty string
-  return Array.from(assembled, (line) => exists(line) ? `${line}\n` : '\n')
+  return Array.from(assembled, (line) => exists(line) ? `${line.trimEnd()}\n` : '\n')
     .join('')
     .trimEnd()
     .concat(` `, `\n`)
