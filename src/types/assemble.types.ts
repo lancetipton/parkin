@@ -15,3 +15,15 @@ export type TFindIndex = {
   feature:TFeatureAst
   loc?:EBlockLoc|string
 }
+
+export type TAssembleOpts = {
+  removeEmpty?: boolean
+  removeComments?: boolean
+  emptyAfterRule?: boolean
+  emptyAfterSteps?:boolean
+  emptyAfterStory?: boolean
+  emptyAfterFeature?: boolean
+  emptyAfterScenario?: boolean
+  emptyAfterBackground?: boolean
+  backgroundAfterParent?: boolean
+}

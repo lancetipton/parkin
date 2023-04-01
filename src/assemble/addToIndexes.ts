@@ -23,22 +23,23 @@ export const addToIndexes = (
   item:TIndexItemAst,
   offset:number[]
 ) => {
-  const index = item.ast.index || findIndex({
-    feature,
-    parent: item.parent,
-    type: item.ast.type,
-  })
+  const index = exists(item.ast.index)
+    ? item.ast.index
+    : findIndex({
+        feature,
+        parent: item.parent,
+        type: item.ast.type,
+      })
 
   // Get the offset up to the current index
   const preAmount = offset.reduce((acc, val, idx) => {
     return idx <= index && exists(val) ? acc + val : acc
   }, 0)
 
-  // No item and no offset up to the index
-  // Add the item
+  // No item and no offset up to the index, then add the item
   if(!indexes[index] && !preAmount){
     indexes[index] = item
-    return
+    return indexes
   }
   // Otherwise add 1 to the offset and preAmount
   // To account for the current duplicate 

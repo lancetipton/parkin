@@ -1,9 +1,10 @@
-import type { TFeatureAst } from '../types'
+import type { TFeatureAst, TAssembleOpts } from '../types'
 
 import { fromIndex } from './fromIndex'
-import { throwFeatureNotAnObj } from '../utils/errors'
-import { isObj, eitherArr } from '@keg-hub/jsutils'
+import { formatFeature } from './formatters'
 import { featureToIndexes } from './featureToIndexes'
+import { throwFeatureNotAnObj } from '../utils/errors'
+import { isObj, eitherArr, emptyObj } from '@keg-hub/jsutils'
 
 /**
  * Converts parsed feature models back into a formatted strings
@@ -13,11 +14,13 @@ import { featureToIndexes } from './featureToIndexes'
  *
  */
 export const assembleFeature = (
-  toAssemble:TFeatureAst|TFeatureAst[]
+  toAssemble:TFeatureAst|TFeatureAst[],
+  opts:TAssembleOpts=emptyObj
 ):string[] => {
   return eitherArr<TFeatureAst[]>(toAssemble, [toAssemble]).map((feature) => {
     !isObj(feature) && throwFeatureNotAnObj(feature)
-    const indexes = featureToIndexes(feature)
+    const updated = formatFeature(feature, opts)
+    const indexes = featureToIndexes(updated)
 
     return fromIndex(indexes)
   })
