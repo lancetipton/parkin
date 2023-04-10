@@ -49,8 +49,9 @@ describe('globalScope', () => {
     it('should return the mocked jasmine object when global.jasmine does not exists', () => {
       const { resolveJasmine } = require('../globalScope')
       const mockJasmine = resolveJasmine()
-      expect(Object.keys(mockJasmine).length).toBe(1)
+      expect(Object.keys(mockJasmine).length).toBe(2)
       expect(typeof mockJasmine.getEnv).toBe('function')
+      expect(typeof mockJasmine.testPath).toBe('string')
       expect(mockJasmine.getEnv()).toEqual(noOpObj)
     })
   })

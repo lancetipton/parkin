@@ -6,6 +6,7 @@ export type TJasmineEnv = {
 }
 
 export type TJasmine = {
+  testPath: string
   getEnv: () => TJasmineEnv
   [key: string]: any
 }

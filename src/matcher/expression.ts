@@ -114,7 +114,7 @@ const runRegexCheck = (
     const startStr = regexStr.slice(0, newIdx)
 
     const replace = isFunc(replaceWith)
-      ? replaceWith(...args)
+      ? replaceWith.apply(null, args)
       : replaceWith
 
     regexStr = `${startStr}${startSl}${replace}${endSl.join(match)}`

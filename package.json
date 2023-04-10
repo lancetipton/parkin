@@ -1,6 +1,6 @@
 {
   "name": "@ltipton/parkin",
-  "version": "3.0.0-beta-3",
+  "version": "3.0.0-beta-4",
   "description": "Parse gherkin features and map them to step definitions",
   "main": "index.cjs",
   "module": "index.js",
@@ -99,6 +99,7 @@
     "json": "11.0.0",
     "prettier": "2.5.1",
     "rimraf": "3.0.2",
-    "serve": "13.0.2"
+    "serve": "13.0.2",
+    "typescript": "^5.0.4"
   }
 }
