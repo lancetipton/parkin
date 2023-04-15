@@ -2691,15 +2691,18 @@ var matchRegex = (definition, text) => {
 };
 var toAlternateRegex = (optional) => {
   const split = optional.split(/(\(|\))/);
-  const [start, , middle, , end] = split;
+  const start = split.shift();
+  const end = split.pop();
+  const middle = split.join(``);
+  const original = optional.replace(/(\(|\))/ig, `\\$1`);
   if (start === "" && end === "")
-    return optional + "?";
+    return `(${original}|${optional.replace(/(\(|\))/gi, ``)})?`;
   else if (start === "")
-    return `(${middle}|${middle}${end})`;
+    return `(${original}|${middle}|${middle}${end})`;
   else if (end === "")
-    return `(${start}|${start}${middle})`;
+    return `(${original}|${start}|${start}${middle})`;
   else
-    return `(${start}${end}|${start}${middle}${end})`;
+    return `(${original}|${start}${end}|${start}${middle}${end})`;
 };
 var getFullOptionalText = (matchArr) => {
   const text = matchArr.input;
@@ -2845,7 +2848,6 @@ var convertToRegex = (match, opts = import_jsutils8.emptyObj) => {
   const regex = runRegexCheck(
     match,
     RX_EXPRESSION,
-    // RX_PARAMETER,
     (val, ...args) => {
       const type = val.trim().replace(RX_MATCH_REPLACE, "");
       const isParameter = val.match(RX_PARAMETER);
