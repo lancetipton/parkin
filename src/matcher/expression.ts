@@ -139,7 +139,6 @@ const convertToRegex = (
   const regex = runRegexCheck(
     match,
     RX_EXPRESSION,
-    // RX_PARAMETER,
     (val, ...args) => {
       // Get the expression type
       const type = val.trim().replace(RX_MATCH_REPLACE, '')

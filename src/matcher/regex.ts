@@ -40,14 +40,15 @@ export const matchRegex = (
  */
 export const toAlternateRegex = (optional:string) => {
   const split = optional.split(/(\(|\))/)
+  const start = split.shift()
+  const end = split.pop()
+  const middle = split.join(``)
+  const original = optional.replace(/(\(|\))/ig, `\\$1`)
 
-  const [ start, , middle, , end ] = split
-
-  // no words outside of optional boundary
-  if (start === '' && end === '') return optional + '?'
-  else if (start === '') return `(${middle}|${middle}${end})`
-  else if (end === '') return `(${start}|${start}${middle})`
-  else return `(${start}${end}|${start}${middle}${end})`
+  if (start === '' && end === '') return `(${original}|${optional.replace(/(\(|\))/gi, ``)})?`
+  else if (start === '') return `(${original}|${middle}|${middle}${end})`
+  else if (end === '') return `(${original}|${start}|${start}${middle})`
+  else return `(${original}|${start}${end}|${start}${middle}${end})`
 }
 
 /**

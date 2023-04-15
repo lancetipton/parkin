@@ -11,7 +11,7 @@ describe('Match matchExpression', () => {
   it('should match optional expression syntax', () => {
     const optionalDef = expressionDefs[0]
     optionalDef.tests.pass.map(text => {
-      const { definition } = matchExpression(optionalDef.step, text)
+      const { definition } = matchExpression(optionalDef.step, text, {})
       expect(definition).not.toBe(undefined)
       expect(definition).toEqual(optionalDef.step)
     })

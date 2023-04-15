@@ -27,38 +27,38 @@ Then("The word of the day is {word}", async word => {
 export const parsedDefinition = {
   Given: [
     {
-      type: 'given',
+      type: `given`,
       match: /I am on (S+)$/,
       meta: {},
       tokens: [],
-      variant: 'regex',
-      name: 'I am on (S+)',
+      variant: `regex`,
+      name: `I am on (S+)`,
       // uuid: givenUuid,
-      content: 'Given(/I am on (S+)$/, async url => {\n' +
-        '  const internalMethod = data => { return data }\n' +
-        '  const data = internalMethod ({\n' +
-        '    test: "test-method"\n' +
-        '  })\n' +
-        '\n' +
-        '  const page = await getPage()\n' +
-        '  await page.goto(url)\n' +
-        '})'
+      content: `Given(/I am on (S+)$/, async url => {\n` +
+        `  const internalMethod = data => { return data }\n` +
+        `  const data = internalMethod ({\n` +
+        `    test: "test-method"\n` +
+        `  })\n` +
+        `\n` +
+        `  const page = await getPage()\n` +
+        `  await page.goto(url)\n` +
+        `})`
     },
   ],
   Then: [
     {
-      type: 'then',
-      match: 'The word of the day is {word}',
+      type: `then`,
+      match: `The word of the day is {word}`,
       meta: {},
       tokens: [],
-      variant: 'expression',
-      name: 'The word of the day is {word}',
+      variant: `expression`,
+      name: `The word of the day is {word}`,
       // uuid: thenUuid,
-      content: 'Then("The word of the day is {word}", async word => {\n' +
-        '  customMethod({})\n' +
-        '  expect(word).toBe("test")\n' +
-        '  expect({}).toEqual({})\n' +
-        '})'
+      content: `Then("The word of the day is {word}", async word => {\n` +
+        `  customMethod({})\n` +
+        `  expect(word).toBe("test")\n` +
+        `  expect({}).toEqual({})\n` +
+        `})`
     }
   ]
 }
@@ -66,24 +66,28 @@ export const parsedDefinition = {
 export const expressionDefs = [
   {
     step: {
-      type: 'then',
-      match: 'I have {int} item(s) ready to go',
-      variant: 'expression',
-      content: 'Then("I have {int} item(s) ready to go", ()=>{})',
+      type: `then`,
+      match: `I have {int} item(s) ready to go`,
+      variant: `expression`,
+      content: `Then("I have {int} item(s) ready to go", ()=>{})`,
     },
     tests: {
-      pass: [ `I have 1 item ready to go`, `I have 2 items ready to go` ],
+      pass: [
+        `I have 1 item ready to go`,
+        `I have 2 items ready to go`,
+        `I have 1 item(s) ready to go`
+      ],
       fail: [ `I have 1 item`, `I have 1 items ready`, `I have 1 ready to go` ],
     },
   },
   {
     step: {
-      type: 'then',
+      type: `then`,
       match:
-        'The number {int} is optional/required for {word} as {word} by law',
-      variant: 'expression',
+        `The number {int} is optional/required for {word} as {word} by law`,
+      variant: `expression`,
       content:
-        'Then("The number {int} is optional/required for {word} as {word} by law", ()=>{})',
+        `Then("The number {int} is optional/required for {word} as {word} by law", ()=>{})`,
     },
     tests: {
       pass: [
@@ -99,10 +103,10 @@ export const expressionDefs = [
   },
   {
     step: {
-      type: 'then',
-      match: 'Convert {int} and {float} and {word} and {string} properly',
-      variant: 'expression',
-      content: 'Convert {int} and {float} and {word} and {string} properly',
+      type: `then`,
+      match: `Convert {int} and {float} and {word} and {string} properly`,
+      variant: `expression`,
+      content: `Convert {int} and {float} and {word} and {string} properly`,
     },
     tests: {
       validate: [
@@ -116,92 +120,99 @@ export const expressionDefs = [
   },
   {
     step: {
-      type: 'then',
-      match: 'I have (some )apple(s) to eat( and savor)',
-      variant: 'expression',
-      content: 'Then("I have (some )apple(s) to eat( and savor)", ()=>{})',
+      type: `then`,
+      match: `I have {int} (red )apple(s) to eat( and savor)`,
+      variant: `expression`,
+      content: `Then("I have (some )apple(s) to eat( and savor)", ()=>{})`,
     },
     tests: {
       pass: [
-        `I have some apples to eat`,
-        `I have apples to eat`,
-        `I have apples to eat and savor`,
-        `I have some apples to eat and savor`,
-        `I have some apple to eat`,
-        `I have apple to eat`,
-        `I have apple to eat and savor`,
-        `I have some apple to eat and savor`,
+        `I have 3 red apples to eat`,
+        `I have 2 apples to eat`,
+        `I have 5 apples to eat and savor`,
+        `I have 4 red apples to eat and savor`,
+        `I have 1 red apple to eat`,
+        `I have 1 apple to eat`,
+        `I have 1 apple to eat and savor`,
+        `I have 1 red apple to eat and savor`,
+        `I have 2 (red )apple(s) to eat( and savor)`,
+        `I have 2 apple(s) to eat( and savor)`,
+        `I have 2 apples to eat( and savor)`,
+        `I have 2 apple to eat( and savor)`,
+        `I have 2 red apple to eat`,
+        `I have 2 red apple to eat and savor`,
+        `I have 2 red apple to eat( and savor)`
       ],
       fail: [
-        `I have many apples to eat`,
-        `I have apples to eat and spit out`,
-        `I have some apples`,
+        `I have 3 green apples to eat`,
+        `I have 2 apples to eat and spit out`,
+        `I have 3 red apples`,
       ],
     },
   },
   {
     step: {
-      type: 'given',
-      match: 'I wait {float} second(s)',
-      variant: 'expression',
-      content: 'Then("I wait {float} second(s)", ()=>{})',
+      type: `given`,
+      match: `I wait {float} second(s)`,
+      variant: `expression`,
+      content: `Then("I wait {float} second(s)", ()=>{})`,
     },
     tests: {
-      pass: [ 'I wait 1.0 second', 'I wait 0.0 seconds' ],
+      pass: [ `I wait 1.0 second`, `I wait 0.0 seconds` ],
       fail: [
-        'I wait 2 seconds',
-        'I wait some seconds',
-        'I wait 1',
-        'I wait 0 minutes',
-        'I wait 3 seconds tomorrow',
+        `I wait 2 seconds`,
+        `I wait some seconds`,
+        `I wait 1`,
+        `I wait 0 minutes`,
+        `I wait 3 seconds tomorrow`,
       ],
     },
   },
   {
     step: {
-      type: 'given',
-      match: 'I do the thing {int} time(s) and I say {string}',
-      variant: 'expression',
-      content: 'I do the thing {int} time(s) and I say {string}',
+      type: `given`,
+      match: `I do the thing {int} time(s) and I say {string}`,
+      variant: `expression`,
+      content: `I do the thing {int} time(s) and I say {string}`,
     },
     tests: {
       pass: [
-        'I do the thing 3 times and I say "wow"',
-        'I do the thing 1 time and I say "okay"',
+        `I do the thing 3 times and I say "wow"`,
+        `I do the thing 1 time and I say "okay"`,
       ],
       fail: [
-        'I do the thing some time',
-        'I do the thing 3 times and I say',
-        'I do the thing 1 time and I sing',
+        `I do the thing some time`,
+        `I do the thing 3 times and I say`,
+        `I do the thing 1 time and I sing`,
       ],
     },
   },
   {
     step: {
-      type: 'given',
-      match: 'I click the button {string}',
-      variant: 'expression',
-      content: 'I click the button {string}',
+      type: `given`,
+      match: `I click the button {string}`,
+      variant: `expression`,
+      content: `I click the button {string}`,
     },
     tests: {
-      pass: ['I click the button "hey-123"'],
+      pass: [`I click the button "hey-123"`],
       fail: [
-        'I click the button hey-123',
-        'I click the button 34',
-        'I click the button 34.3',
+        `I click the button hey-123`,
+        `I click the button 34`,
+        `I click the button 34.3`,
       ],
     },
   },
   {
     step: {
-      type: 'given',
-      match: 'I navigate to {word}',
-      variant: 'expression',
-      content: 'I navigate to {word}',
+      type: `given`,
+      match: `I navigate to {word}`,
+      variant: `expression`,
+      content: `I navigate to {word}`,
     },
     tests: {
-      pass: [ 'I navigate to google', 'I navigate to .google' ],
-      fail: ['I navigate to "google"'],
+      pass: [ `I navigate to google`, `I navigate to .google` ],
+      fail: [`I navigate to "google"`],
     },
   },
 ]
