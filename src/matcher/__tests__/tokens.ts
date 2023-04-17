@@ -10,9 +10,8 @@ const matchTexts = [
   `I eat {int} from a total of {int} {word} apple(s)`,
   `I eat 4 from a total of {int} {word} apple(s)`,
   `I eat 4 from a total of 20 "red" apple(s)`,
-  `I eat {string} from the {word}`,
-  `I eat "all the apples" from the {word}`,
-  `I eat {string} from the "bin"`,
+  `I eat 1 from a total of 20 "red" apples`,
+  `I eat 300 from a total of 1 "red" apple`
 ]
 
 const outputs = [
@@ -41,16 +40,14 @@ const outputs = [
     { match: `apple(s)`, defIndex: 41, index: 33, type: EPartMatchTypes.optional }
   ],
   [
-    { match: `{string}`, defIndex: 6, index: 6, type: `string` },
-    { match: `{word}`, defIndex: 28, index: 24, type: `word` }
+    { match: `1`, defIndex: 6, index: 6, type: `int` },
+    { match: `20`, defIndex: 28, index: 24, type: `int` },
+    { match: `"red"`, defIndex: 34, index: 27, type: `word` }
   ],
   [
-    { match: `"all the apples"`, defIndex: 6, index: 6, type: `int` },
-    { match: `{word}`, defIndex: 28, index: 32, type: `word` }
-  ],
-  [
-    { match: `{string}`, defIndex: 6, index: 6, type: `string` },
-    { match: `"bin"`, defIndex: 28, index: 24, type: `int` }
+    { match: `300`, defIndex: 6, index: 6, type: `int` },
+    { match: `1`, defIndex: 28, index: 26, type: `int` },
+    { match: `"red"`, defIndex: 34, index: 28, type: `word` }
   ]
 ]
 

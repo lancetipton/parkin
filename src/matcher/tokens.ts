@@ -80,9 +80,9 @@ export const tokenizeStep = (
       match: val.trim(),
       defIndex: part?.index,
       index: match.index + diff,
-      type: parseType
-        || part?.paramType
+      type: part?.paramType
         || matchType
+        || parseType
         || EPartMatchTypes.other,
     })
     idx++
