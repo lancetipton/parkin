@@ -2466,8 +2466,8 @@ var init_patterns = __esm({
     RX_EXPRESSION = (0, import_jsutils3.joinRegex)(RX_PARAMETER, RX_OPTIONAL, "g");
     RX_ANY = /(.*)/;
     RX_MATCH_REPLACE = /{|}/g;
-    RX_DOUBLE_QUOTED = /"[^"]+"/;
-    RX_SINGLE_QUOTED = /'[^']+'/;
+    RX_DOUBLE_QUOTED = /"([^"\\]*(\\.[^"\\]*)*)"/;
+    RX_SINGLE_QUOTED = /\'([^\'\\]*(\\.[^\'\\]*)*)\'/;
     RX_FLOAT = /-?[0-9]+[.][0-9]+/;
     RX_INT = /-?[0-9]+/;
     RX_WORLD = /^["]?\$world\.\S+["]?/;
@@ -2776,7 +2776,7 @@ var init_tokens = __esm({
           match: val.trim(),
           defIndex: part == null ? void 0 : part.index,
           index: match.index + diff,
-          type: parseType || (part == null ? void 0 : part.paramType) || matchType2 || "other" /* other */
+          type: (part == null ? void 0 : part.paramType) || matchType2 || parseType || "other" /* other */
         });
         idx++;
       }
@@ -3014,9 +3014,18 @@ var init_matcher = __esm({
       register = registerParamType;
     };
     matcher = (definitions, text, $world, opts = import_jsutils9.emptyObj) => {
-      return definitions.reduce((found, definition) => {
-        return found.match || !definition.match ? found : definition.variant !== REGEX_VARIANT ? matchExpression(definition, text, $world, opts) : matchRegex(definition, text);
-      }, import_jsutils9.emptyObj);
+      if (!text.trim())
+        return import_jsutils9.emptyObj;
+      const defLength = definitions.length;
+      for (let idx = 0; idx < defLength; idx++) {
+        const definition = definitions[idx];
+        if (!definition.match)
+          continue;
+        const found = definition.variant !== REGEX_VARIANT ? matchExpression(definition, text, $world, opts) : matchRegex(definition, text);
+        if (found.match)
+          return found;
+      }
+      return import_jsutils9.emptyObj;
     };
   }
 });

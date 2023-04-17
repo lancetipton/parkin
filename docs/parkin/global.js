@@ -2380,8 +2380,8 @@ var RX_PARAMETER = /\s*{(.*?)}\s*/;
 var RX_EXPRESSION = (0, import_jsutils3.joinRegex)(RX_PARAMETER, RX_OPTIONAL, "g");
 var RX_ANY = /(.*)/;
 var RX_MATCH_REPLACE = /{|}/g;
-var RX_DOUBLE_QUOTED = /"[^"]+"/;
-var RX_SINGLE_QUOTED = /'[^']+'/;
+var RX_DOUBLE_QUOTED = /"([^"\\]*(\\.[^"\\]*)*)"/;
+var RX_SINGLE_QUOTED = /\'([^\'\\]*(\\.[^\'\\]*)*)\'/;
 var RX_FLOAT = /-?[0-9]+[.][0-9]+/;
 var RX_INT = /-?[0-9]+/;
 var RX_WORLD = /^["]?\$world\.\S+["]?/;
@@ -2657,7 +2657,7 @@ var tokenizeStep = (step, def, opts = import_jsutils6.emptyObj) => {
       match: val.trim(),
       defIndex: part == null ? void 0 : part.index,
       index: match.index + diff,
-      type: parseType || (part == null ? void 0 : part.paramType) || matchType2 || "other" /* other */
+      type: (part == null ? void 0 : part.paramType) || matchType2 || parseType || "other" /* other */
     });
     idx++;
   }
@@ -2872,9 +2872,18 @@ var Matcher = class {
   register = registerParamType;
 };
 var matcher = (definitions, text, $world, opts = import_jsutils9.emptyObj) => {
-  return definitions.reduce((found, definition) => {
-    return found.match || !definition.match ? found : definition.variant !== REGEX_VARIANT ? matchExpression(definition, text, $world, opts) : matchRegex(definition, text);
-  }, import_jsutils9.emptyObj);
+  if (!text.trim())
+    return import_jsutils9.emptyObj;
+  const defLength = definitions.length;
+  for (let idx = 0; idx < defLength; idx++) {
+    const definition = definitions[idx];
+    if (!definition.match)
+      continue;
+    const found = definition.variant !== REGEX_VARIANT ? matchExpression(definition, text, $world, opts) : matchRegex(definition, text);
+    if (found.match)
+      return found;
+  }
+  return import_jsutils9.emptyObj;
 };
 
 // src/steps.ts
