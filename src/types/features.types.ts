@@ -63,21 +63,21 @@ export type TAstParseError = {
 
 export type TFeatureAst = {
   index: number
+  uuid: string
   tags?: TTagsAst
-  uuid?: string
   feature: string
   content: string
+  desire?: TBlockAst
+  rules?: TRuleAst[]
   whitespace?: string
   empty?: TBlockAst[]
-  type: EAstObject.feature
-  reason?: TBlockAst|TBlockAst[]
-  desire?: TBlockAst
   comments: TBlockAst[]
   perspective?: TBlockAst
-  background?: TBackgroundAst
-  rules?: TRuleAst[]
+  type: EAstObject.feature
   scenarios: TScenarioAst[]
   errors?: TAstParseError[]
+  background?: TBackgroundAst
+  reason?: TBlockAst|TBlockAst[]
 }
 
 export type TBlockParentAst = TFeatureAst | TRuleAst | TBackgroundAst | TScenarioAst

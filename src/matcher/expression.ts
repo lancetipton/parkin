@@ -21,7 +21,7 @@ import {
   RX_PARAMETER,
 } from './patterns'
 
-
+import { EPartMatchTypes } from '../types'
 import { hasWindow } from '../utils/globalScope'
 import { emptyObj, isFunc } from '@keg-hub/jsutils'
 import { getParamTypes, convertTypes } from './paramTypes'
@@ -206,7 +206,7 @@ export const extractParameters = (
   const parts = getRegexParts(stepMatcher)
 
   const expectedParamLength = parts.filter(
-    part => part.type === 'parameter'
+    part => part.type === EPartMatchTypes.parameter
   ).length
 
   // extract the params from the text, using the parts array
@@ -230,7 +230,7 @@ export const extractParameters = (
       if (!match) return state
 
       // add the matched parameter if the current part is a param and a match exists
-      part.type === 'parameter' && match && params.push(match[0])
+      part.type === EPartMatchTypes.parameter && match && params.push(match[0])
 
       return {
         params,

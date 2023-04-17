@@ -1,5 +1,5 @@
-import type { TStepDef } from '../types'
-import { uuid } from '@keg-hub/jsutils'
+import type { TTokenOpts, EPartMatchTypes, TStepDef } from '../types'
+import { uuid, emptyObj } from '@keg-hub/jsutils'
 
 /*
  * Extracts keywords from a text string
@@ -79,4 +79,28 @@ export const getStartWhiteSpace = (line:string) => {
   const startLength = line.length - noStartSpace.length
 
   return new Array(startLength).fill(` `).join('')
+}
+
+
+/**
+ * Filters out types to include when getting regex parts
+ * If includes array exists, it override the exclude array
+ *  - So only items in the include array will be added, regardless of the exclude array
+ * Otherwise the exclude array is used, and only items not in it will be used
+ */
+export const includePartType = (
+  type:EPartMatchTypes,
+  opts:TTokenOpts=emptyObj,
+  include?:EPartMatchTypes[],
+  exclude?:EPartMatchTypes[],
+) => {
+  const { include:oInclude, exclude:oExclude } = opts
+  const inArr = include || (Boolean(oInclude?.length) ? oInclude : undefined)
+  const exArr = exclude || (Boolean(oExclude?.length) ? oExclude : undefined)
+  
+  return !inArr && !exArr
+    ? true
+    : !inArr
+      ? !exArr.includes(type)
+      : inArr.includes(type)
 }

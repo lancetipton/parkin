@@ -32,8 +32,6 @@ export const featureFactory = (
     comments: [],
     scenarios: [],
     type: EAstObject.feature,
-    // The feature name should always be unique, so use that as a re-usable id
-    ...(feature && { uuid: uuid() }),
   } as TFeatureAst
 }
 

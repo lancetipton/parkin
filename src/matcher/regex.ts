@@ -1,11 +1,14 @@
 import type {
   TStepDef,
   TFindOpts,
-  TRegExFoundResp
+  TTokenOpts,
+  TRegExFoundResp,
 } from '../types'
 
+import { EPartMatchTypes } from '../types'
 import { getParamTypes } from './paramTypes'
-import { isStr, emptyObj, getWordEndingAt } from '@keg-hub/jsutils'
+import { includePartType } from '../utils/helpers'
+import { emptyArr, isStr, emptyObj, getWordEndingAt } from '@keg-hub/jsutils'
 import { RX_OPTIONAL, RX_ALT, RX_PARAMETER, RX_MATCH_REPLACE } from './patterns'
 
 
@@ -107,11 +110,11 @@ const getMatchRegex = (
   const [ val, paramType ] = matchArr
 
   switch (type) {
-  case 'parameter':
+  case EPartMatchTypes.parameter:
     return new RegExp(getParamRegex(paramType, opts?.partial))
-  case 'optional':
+  case EPartMatchTypes.optional:
     return new RegExp(getOptionalRegex(matchArr))
-  case 'alternate':
+  case EPartMatchTypes.alternate:
     return new RegExp(getAlternateRegex(val))
   default:
     return null
@@ -141,7 +144,7 @@ const parseMatch = (
     index: matchArr.index + diff,
     regex: getMatchRegex(type, matchArr, opts),
     type,
-    ...(type === 'parameter' && {
+    ...(type === EPartMatchTypes.parameter && {
       paramType: val.trim().replace(RX_MATCH_REPLACE, ''),
     }),
   }
@@ -154,28 +157,35 @@ const parseMatch = (
  * const parts = getRegexParts('I eat {int} apple(s)')
  * result:
  * [
- *  { type: 'parameter', text: '{int}', regex: /-?[0-9]+/, paramType: 'int', ... } ,
- *  { type: 'optional', text: 'apple(s)', regex: /(apple|apples)/, ... } ,
+ *  { type: EPartMatchTypes.parameter, text: '{int}', regex: /-?[0-9]+/, paramType: 'int', ... } ,
+ *  { type: EPartMatchTypes.optional, text: 'apple(s)', regex: /(apple|apples)/, ... } ,
  * ]
  *
  */
-export const getRegexParts = (defMatcher:string, opts:TFindOpts=emptyObj) => {
-  const parameters = [
-    ...defMatcher.matchAll(new RegExp(RX_PARAMETER, 'gi')),
-  ].map((match) => parseMatch(match, 'parameter', opts))
+export const getRegexParts = (defMatcher:string, opts:TTokenOpts=emptyObj) => {
 
-  const optionals = [...defMatcher.matchAll(new RegExp(RX_OPTIONAL, 'gi'))].map(
-    match => parseMatch(match, 'optional', opts)
-  )
+  const { include, exclude } = opts
+  const inArr = Boolean(include?.length) ? include : undefined
+  const exArr = Boolean(exclude?.length) ? exclude : undefined
 
-  const alts = [...defMatcher.matchAll(new RegExp(RX_ALT, 'gi'))].map(match =>
-    parseMatch(match, 'alternate', opts)
-  )
+  const parameters = includePartType(EPartMatchTypes.parameter, opts, inArr, exArr)
+    ? [...defMatcher.matchAll(new RegExp(RX_PARAMETER, 'gi')),]
+        .map((match) => parseMatch(match, EPartMatchTypes.parameter, opts))
+    : emptyArr
+
+  const optionals = includePartType(EPartMatchTypes.optional, opts, inArr, exArr)
+    ? [...defMatcher.matchAll(new RegExp(RX_OPTIONAL, 'gi'))]
+        .map(match => parseMatch(match, EPartMatchTypes.optional, opts))
+    : emptyArr
+
+  const alts = includePartType(EPartMatchTypes.alternate, opts, inArr, exArr)
+    ? [...defMatcher.matchAll(new RegExp(RX_ALT, 'gi'))]
+        .map(match => parseMatch(match, EPartMatchTypes.alternate, opts))
+    : emptyArr
 
   // sort matched expressions by their index in the text
-  const sortedExpressions = [ ...parameters, ...optionals, ...alts ].sort(
-    (matchA, matchB) => matchA.index - matchB.index
-  )
+  const sortedExpressions = [ ...parameters, ...optionals, ...alts ]
+    .sort((matchA, matchB) => matchA.index - matchB.index)
 
   return sortedExpressions
 }

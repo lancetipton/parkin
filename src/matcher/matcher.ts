@@ -2,6 +2,7 @@ import type {
   TStepDef,
   TFindOpts,
   TMatchResp,
+  TTokenOpts,
   TStepDefsArr,
   TWorldConfig
 } from '../types'
@@ -65,7 +66,7 @@ export class Matcher {
     opts:TFindOpts={ partial: true }
   ) => this.find(text, undefined, undefined, opts)
 
-  parts = (defMatchStr:string, opts?:TFindOpts) => getRegexParts(
+  parts = (defMatchStr:string, opts?:TTokenOpts) => getRegexParts(
     defMatchStr,
     opts || this.options
   )
@@ -97,7 +98,7 @@ export class Matcher {
   stepTokens = (
     step:string,
     def:TStepDef,
-    opts?:TFindOpts
+    opts?:TTokenOpts
   ) => tokenizeStep(
     step,
     def,
