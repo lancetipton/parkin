@@ -1,5 +1,5 @@
 import { TFeatureAst, EAstObject, EStepType } from '../types'
-
+import { testUUid } from './helpers'
 
 export const dataMapperMocks = {
   tags: {
@@ -139,6 +139,7 @@ export const dataMapperMocks = {
 
 
 export const mockFeatToIdx:TFeatureAst = {
+  uuid: testUUid,
   index: 1,
   content: ``,
   type: EAstObject.feature,
