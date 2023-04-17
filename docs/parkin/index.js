@@ -571,15 +571,15 @@ var require_noOps_c9732e8e = __commonJS({
     "use strict";
     var deepFreeze2 = require_deepFreeze_d73ccc57();
     var noOpObj6 = Object.freeze({});
-    var emptyObj7 = noOpObj6;
+    var emptyObj9 = noOpObj6;
     var noPropObj = deepFreeze2.deepFreeze({
       content: {}
     });
     var noPropArr2 = deepFreeze2.deepFreeze([]);
     var noOpArr = noPropArr2;
-    var emptyArr4 = noPropArr2;
-    exports.emptyArr = emptyArr4;
-    exports.emptyObj = emptyObj7;
+    var emptyArr5 = noPropArr2;
+    exports.emptyArr = emptyArr5;
+    exports.emptyObj = emptyObj9;
     exports.noOpArr = noOpArr;
     exports.noOpObj = noOpObj6;
     exports.noPropArr = noPropArr2;
@@ -2470,9 +2470,6 @@ var constants = (0, import_jsutils.deepFreeze)({
   SPEC_RESULT_LOG: `------- PARKIN SPEC RESULT LOG -------`
 });
 
-// src/matcher/tokens.ts
-var import_jsutils6 = __toESM(require_cjs());
-
 // src/utils/helpers.ts
 var import_jsutils2 = __toESM(require_cjs());
 var getRXMatch = (line, regex, index) => {
@@ -2505,6 +2502,12 @@ var getStartWhiteSpace = (line) => {
   const noStartSpace = line.replace(/^\s+/g, "");
   const startLength = line.length - noStartSpace.length;
   return new Array(startLength).fill(` `).join("");
+};
+var includePartType = (type, opts = import_jsutils2.emptyObj, include, exclude) => {
+  const { include: oInclude, exclude: oExclude } = opts;
+  const inArr = include || (Boolean(oInclude == null ? void 0 : oInclude.length) ? oInclude : void 0);
+  const exArr = exclude || (Boolean(oExclude == null ? void 0 : oExclude.length) ? oExclude : void 0);
+  return !inArr && !exArr ? true : !inArr ? !exArr.includes(type) : inArr.includes(type);
 };
 
 // src/matcher/paramTypes.ts
@@ -2725,11 +2728,11 @@ var getAlternateRegex = (value) => {
 var getMatchRegex = (type, matchArr, opts) => {
   const [val, paramType] = matchArr;
   switch (type) {
-    case "parameter":
+    case "parameter" /* parameter */:
       return new RegExp(getParamRegex(paramType, opts == null ? void 0 : opts.partial));
-    case "optional":
+    case "optional" /* optional */:
       return new RegExp(getOptionalRegex(matchArr));
-    case "alternate":
+    case "alternate" /* alternate */:
       return new RegExp(getAlternateRegex(val));
     default:
       return null;
@@ -2745,45 +2748,49 @@ var parseMatch = (matchArr, type = "other", opts) => {
     index: matchArr.index + diff,
     regex: getMatchRegex(type, matchArr, opts),
     type,
-    ...type === "parameter" && {
+    ...type === "parameter" /* parameter */ && {
       paramType: val.trim().replace(RX_MATCH_REPLACE, "")
     }
   };
 };
 var getRegexParts = (defMatcher, opts = import_jsutils5.emptyObj) => {
-  const parameters = [
-    ...defMatcher.matchAll(new RegExp(RX_PARAMETER, "gi"))
-  ].map((match) => parseMatch(match, "parameter", opts));
-  const optionals = [...defMatcher.matchAll(new RegExp(RX_OPTIONAL, "gi"))].map(
-    (match) => parseMatch(match, "optional", opts)
-  );
-  const alts = [...defMatcher.matchAll(new RegExp(RX_ALT, "gi"))].map(
-    (match) => parseMatch(match, "alternate", opts)
-  );
-  const sortedExpressions = [...parameters, ...optionals, ...alts].sort(
-    (matchA, matchB) => matchA.index - matchB.index
-  );
+  const { include, exclude } = opts;
+  const inArr = Boolean(include == null ? void 0 : include.length) ? include : void 0;
+  const exArr = Boolean(exclude == null ? void 0 : exclude.length) ? exclude : void 0;
+  const parameters = includePartType("parameter" /* parameter */, opts, inArr, exArr) ? [...defMatcher.matchAll(new RegExp(RX_PARAMETER, "gi"))].map((match) => parseMatch(match, "parameter" /* parameter */, opts)) : import_jsutils5.emptyArr;
+  const optionals = includePartType("optional" /* optional */, opts, inArr, exArr) ? [...defMatcher.matchAll(new RegExp(RX_OPTIONAL, "gi"))].map((match) => parseMatch(match, "optional" /* optional */, opts)) : import_jsutils5.emptyArr;
+  const alts = includePartType("alternate" /* alternate */, opts, inArr, exArr) ? [...defMatcher.matchAll(new RegExp(RX_ALT, "gi"))].map((match) => parseMatch(match, "alternate" /* alternate */, opts)) : import_jsutils5.emptyArr;
+  const sortedExpressions = [...parameters, ...optionals, ...alts].sort((matchA, matchB) => matchA.index - matchB.index);
   return sortedExpressions;
 };
 
 // src/matcher/tokens.ts
+var import_jsutils6 = __toESM(require_cjs());
 var tokenRegex = (0, import_jsutils6.joinRegex)(
   RX_INT,
-  // @ts-ignore
   RX_FLOAT,
+  RX_ALT,
+  RX_OPTIONAL,
   RX_PARAMETER,
   RX_DOUBLE_QUOTED,
   RX_SINGLE_QUOTED,
   "g"
 );
-var tokenizeStep = (step, def, opts) => {
+var getMatchType = (val, type) => {
+  return type ? "parameter" /* parameter */ : RX_OPTIONAL.test(val) ? "optional" /* optional */ : RX_ALT.test(val) ? "alternate" /* alternate */ : "parameter" /* parameter */;
+};
+var tokenizeStep = (step, def, opts = import_jsutils6.emptyObj) => {
+  var _a, _b;
   const parts = getRegexParts(def.match, opts);
   const tokens = [];
-  let match;
   let idx = 0;
+  let match;
   while ((match = tokenRegex.exec(step)) !== null) {
     const [val, __, ...rest] = match;
-    let type = rest.pop();
+    const parseType = (_b = (_a = rest.pop()) == null ? void 0 : _a.trim) == null ? void 0 : _b.call(_a);
+    const matchType2 = getMatchType(val, parseType);
+    if (!includePartType(matchType2, opts))
+      continue;
     const part = parts[idx];
     const trimmed = val.trimStart();
     const diff = val.length - trimmed.length;
@@ -2791,7 +2798,7 @@ var tokenizeStep = (step, def, opts) => {
       match: val.trim(),
       defIndex: part == null ? void 0 : part.index,
       index: match.index + diff,
-      type: type || (part == null ? void 0 : part.paramType) || `any`
+      type: parseType || (part == null ? void 0 : part.paramType) || matchType2 || "other" /* other */
     });
     idx++;
   }
@@ -2879,7 +2886,7 @@ var checkAnchors = (str) => {
 var extractParameters = (text, stepMatcher, wordMatches, opts = import_jsutils8.emptyObj) => {
   const parts = getRegexParts(stepMatcher);
   const expectedParamLength = parts.filter(
-    (part) => part.type === "parameter"
+    (part) => part.type === "parameter" /* parameter */
   ).length;
   const result = parts.reduce(
     (state, part) => {
@@ -2894,7 +2901,7 @@ var extractParameters = (text, stepMatcher, wordMatches, opts = import_jsutils8.
       const match = isWord ? wordMatch : partMatch;
       if (!match)
         return state;
-      part.type === "parameter" && match && params.push(match[0]);
+      part.type === "parameter" /* parameter */ && match && params.push(match[0]);
       return {
         params,
         // increment text index so that we don't reevaluate the same text in future iterations
@@ -3439,9 +3446,7 @@ var featureFactory = (feature, content, index) => {
     reason: [],
     comments: [],
     scenarios: [],
-    type: "feature" /* feature */,
-    // The feature name should always be unique, so use that as a re-usable id
-    ...feature && { uuid: (0, import_jsutils16.uuid)() }
+    type: "feature" /* feature */
   };
 };
 var ensureFeature = (featuresGroup, feature, line, content, index) => {
