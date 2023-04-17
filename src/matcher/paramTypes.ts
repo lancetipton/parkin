@@ -22,12 +22,12 @@ import {
 
 import {
   RX_ANY,
-  RX_FLOAT,
   RX_INT,
-  RX_DOUBLE_QUOTED,
-  RX_SINGLE_QUOTED,
+  RX_FLOAT,
   RX_ALIAS,
   RX_WORLD,
+  RX_DOUBLE_QUOTED,
+  RX_SINGLE_QUOTED,
 } from './patterns'
 
 import { throwParamTypeExists, throwMissingWorldValue } from '../utils/errors'

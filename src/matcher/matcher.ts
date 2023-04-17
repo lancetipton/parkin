@@ -132,11 +132,21 @@ export const matcher = (
   $world:TWorldConfig,
   opts:TFindOpts=emptyObj
 ) => {
-  return definitions.reduce((found, definition) => {
-    return found.match || !definition.match
-      ? found as TMatchResp
-      : definition.variant !== REGEX_VARIANT
-        ? matchExpression(definition, text, $world, opts) as TMatchResp
-        : matchRegex(definition, text) as TMatchResp
-  }, emptyObj as TMatchResp)
+
+  if(!text.trim()) return emptyObj as TMatchResp
+
+  const defLength = definitions.length
+
+  for (let idx = 0; idx < defLength; idx++) {
+    const definition = definitions[idx]
+
+    if(!definition.match) continue
+    const found = definition.variant !== REGEX_VARIANT
+      ? matchExpression(definition, text, $world, opts) as TMatchResp
+      : matchRegex(definition, text) as TMatchResp
+
+    if(found.match) return found
+  }
+
+   return emptyObj as TMatchResp
 }
