@@ -1292,7 +1292,7 @@ var require_stackTracePaths_58b768d2 = __commonJS({
     var limboify = (cb, ...args) => {
       return limbo(new Promise((res, rej) => cb(...args, (err, success) => err ? rej(err) : res(success || true))));
     };
-    var uuid9 = (a) => a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid9);
+    var uuid10 = (a) => a ? (a ^ Math.random() * 16 >> a / 4).toString(16) : ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid10);
     var noOp4 = () => {
     };
     var parseErrorMessage = (exception) => {
@@ -1328,7 +1328,7 @@ var require_stackTracePaths_58b768d2 = __commonJS({
     exports.throttle = throttle;
     exports.throttleLast = throttleLast;
     exports.timedRun = timedRun;
-    exports.uuid = uuid9;
+    exports.uuid = uuid10;
   }
 });
 
@@ -3120,7 +3120,7 @@ var RX_ASTERISK = /^\s*\*\s*(.*)$/;
 var RX_DOC_QUOTES = /^\s*?"""\s*?/;
 var RX_DOC_TICKS = /^\s*?```\s*?/;
 var RX_DATA_TABLE = /^\s*?\|/;
-var RegStepTags = [
+var RegStepItems = [
   { regex: RX_STEP, type: "step" /* step */ },
   { regex: RX_GIVEN, type: "given" /* given */ },
   { regex: RX_WHEN, type: "when" /* when */ },
@@ -3189,28 +3189,65 @@ var stepFactory = (type, stepText, lines, line, index) => {
 };
 var parseStep = (parent, lines, line, index) => {
   const stepParent = parent;
-  return RegStepTags.reduce((added, regTag) => {
+  return RegStepItems.reduce((added, regItems) => {
     if (added)
       return added;
-    const hasTag = regTag.regex.test(line);
-    hasTag && stepParent.steps.push(
+    const hasItem = regItems.regex.test(line);
+    hasItem && stepParent.steps.push(
       stepFactory(
-        regTag.type,
-        getRXMatch(line, regTag.regex, 1),
+        regItems.type,
+        getRXMatch(line, regItems.regex, 1),
         lines,
         line,
         index
       )
     );
-    return hasTag;
+    return hasItem;
   }, false);
 };
 
+// src/parse/checkTags.ts
+var import_jsutils14 = __toESM(require_cjs());
+var RX_TAG = /^\s*@(.*)$/;
+var tagsFactory = (index, content, line) => {
+  const tokens = content.split(` `).reduce((acc, item) => {
+    const token = item.trim();
+    token.startsWith(`@`) && acc.push(token);
+    return acc;
+  }, []);
+  return {
+    index,
+    tokens,
+    uuid: (0, import_jsutils14.uuid)(),
+    type: "tags" /* tags */,
+    content: tokens.join(` `),
+    whitespace: getStartWhiteSpace(line)
+  };
+};
+var checkTags = (line, index) => {
+  if (!RX_TAG.test(line))
+    return void 0;
+  const tags = getRXMatch(line, RX_TAG, 0);
+  const tagsBlock = tagsFactory(index, tags, line);
+  tagsBlock.whitespace = getStartWhiteSpace(line);
+  return tagsBlock;
+};
+
 // src/parse/parseFeature.ts
-var import_jsutils20 = __toESM(require_cjs());
+var import_jsutils21 = __toESM(require_cjs());
+
+// src/parse/setActiveParent.ts
+var RX_FEATURE = /^\s*Feature:(.*)$/;
+var RX_RULE = /^\s*Rule:(.*)$/;
+var RX_SCENARIO = /^\s*Scenario:(.*)$/;
+var RX_EXAMPLE = /^\s*Example:(.*)$/;
+var RX_BACKGROUND = /^\s*Background:(.*)$/;
+var setActiveParent = (activeParent, feature, rule, scenario, background, line) => {
+  return RX_SCENARIO.test(line) || RX_EXAMPLE.test(line) ? scenario : RX_FEATURE.test(line) ? feature : RX_RULE.test(line) ? rule : RX_BACKGROUND.test(line) ? background : activeParent;
+};
 
 // src/utils/worldReplace.ts
-var import_jsutils14 = __toESM(require_cjs());
+var import_jsutils15 = __toESM(require_cjs());
 var {
   ALIAS_REF: ALIAS_REF2,
   WORLD_REF,
@@ -3219,8 +3256,8 @@ var {
   ALIAS_REF_AT_RUNTIME
 } = constants;
 var attemptReplace = (match, world, location) => {
-  const replaceWith = (0, import_jsutils14.get)(world, location);
-  return (0, import_jsutils14.isFunc)(replaceWith) ? replaceWith(world, location) : (0, import_jsutils14.exists)(replaceWith) ? replaceWith : match;
+  const replaceWith = (0, import_jsutils15.get)(world, location);
+  return (0, import_jsutils15.isFunc)(replaceWith) ? replaceWith(world, location) : (0, import_jsutils15.exists)(replaceWith) ? replaceWith : match;
 };
 var aliasReplace = (text, world) => {
   let currentMatch;
@@ -3255,18 +3292,8 @@ var replaceWorld = (text, world) => {
   return worldReplace(aliasReplace(text, world), world);
 };
 
-// src/parse/parseHelpers.ts
-var RX_FEATURE = /^\s*Feature:(.*)$/;
-var RX_RULE = /^\s*Rule:(.*)$/;
-var RX_SCENARIO = /^\s*Scenario:(.*)$/;
-var RX_EXAMPLE = /^\s*Example:(.*)$/;
-var RX_BACKGROUND = /^\s*Background:(.*)$/;
-var setActiveParent = (activeParent, feature, rule, scenario, background, line) => {
-  return RX_SCENARIO.test(line) || RX_EXAMPLE.test(line) ? scenario : RX_FEATURE.test(line) ? feature : RX_RULE.test(line) ? rule : RX_BACKGROUND.test(line) ? background : activeParent;
-};
-
 // src/parse/ensureRule.ts
-var import_jsutils15 = __toESM(require_cjs());
+var import_jsutils16 = __toESM(require_cjs());
 var RX_RULE2 = /^\s*Rule:(.*)$/;
 var ruleFactory = (rule, index) => {
   return {
@@ -3275,7 +3302,7 @@ var ruleFactory = (rule, index) => {
     scenarios: [],
     type: "rule" /* rule */,
     // The feature name should always be unique, so use that as a re-usable id
-    ...rule && { uuid: (0, import_jsutils15.uuid)() }
+    ...rule && { uuid: (0, import_jsutils16.uuid)() }
   };
 };
 var ensureRule = (feature, rule, line, index) => {
@@ -3284,7 +3311,7 @@ var ensureRule = (feature, rule, line, index) => {
   let ruleText = getRXMatch(line, RX_RULE2, 1);
   !rule.rule ? rule.rule = ruleText : rule = ruleFactory(ruleText, index);
   !rule.index && (rule.index = index);
-  !rule.uuid && (rule.uuid = (0, import_jsutils15.uuid)());
+  !rule.uuid && (rule.uuid = (0, import_jsutils16.uuid)());
   rule.whitespace = getStartWhiteSpace(line);
   !feature.rules.includes(rule) && feature.rules.push(rule);
   return rule;
@@ -3301,7 +3328,7 @@ var parseError = (feature, type, index, message) => {
 };
 
 // src/parse/ensureFeature.ts
-var import_jsutils16 = __toESM(require_cjs());
+var import_jsutils17 = __toESM(require_cjs());
 var RX_FEATURE2 = /^\s*Feature:(.*)$/;
 var RX_HAS_FEATURE = /\s*Feature:(.*)/;
 var featureFactory = (feature, content, index) => {
@@ -3333,7 +3360,7 @@ var ensureFeature = (featuresGroup, feature, line, content, index) => {
     if (!feature.index)
       feature.index = index;
     if (!feature.uuid)
-      feature.uuid = (0, import_jsutils16.uuid)();
+      feature.uuid = (0, import_jsutils17.uuid)();
     !featuresGroup.includes(feature) && featuresGroup.push(feature);
     return feature;
   }
@@ -3343,7 +3370,7 @@ var ensureFeature = (featuresGroup, feature, line, content, index) => {
 };
 
 // src/parse/ensureScenario.ts
-var import_jsutils17 = __toESM(require_cjs());
+var import_jsutils18 = __toESM(require_cjs());
 var RX_SCENARIO2 = /^\s*Scenario:(.*)$/;
 var RX_EXAMPLE2 = /^\s*Example:(.*)$/;
 var scenarioFactory = (scenario, index) => {
@@ -3352,7 +3379,7 @@ var scenarioFactory = (scenario, index) => {
     scenario,
     steps: [],
     type: "scenario" /* scenario */,
-    ...scenario && { uuid: (0, import_jsutils17.uuid)() }
+    ...scenario && { uuid: (0, import_jsutils18.uuid)() }
   };
 };
 var ensureScenario = (feature, rule, scenario, line, index) => {
@@ -3361,9 +3388,9 @@ var ensureScenario = (feature, rule, scenario, line, index) => {
   if (!hasScenario && !hasExample)
     return scenario;
   const scenarioText = hasScenario ? getRXMatch(line, RX_SCENARIO2, 1) : getRXMatch(line, RX_EXAMPLE2, 1);
-  !(0, import_jsutils17.exists)(scenario.scenario) ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText, index);
+  !(0, import_jsutils18.exists)(scenario.scenario) ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText, index);
   !scenario.index && (scenario.index = index);
-  !scenario.uuid && (scenario.uuid = (0, import_jsutils17.uuid)());
+  !scenario.uuid && (scenario.uuid = (0, import_jsutils18.uuid)());
   scenario.whitespace = getStartWhiteSpace(line);
   if (!hasScenario)
     scenario.alias = "Example" /* Example */;
@@ -3373,7 +3400,7 @@ var ensureScenario = (feature, rule, scenario, line, index) => {
 };
 
 // src/parse/ensureBackground.ts
-var import_jsutils18 = __toESM(require_cjs());
+var import_jsutils19 = __toESM(require_cjs());
 var RX_BACKGROUND2 = /^\s*Background:(.*)$/;
 var backgroundFactory = (background, index) => {
   return {
@@ -3381,7 +3408,7 @@ var backgroundFactory = (background, index) => {
     steps: [],
     background,
     type: "background" /* background */,
-    ...background && { uuid: (0, import_jsutils18.uuid)() }
+    ...background && { uuid: (0, import_jsutils19.uuid)() }
   };
 };
 var ensureBackground = (feature, rule, background, line, index) => {
@@ -3389,24 +3416,23 @@ var ensureBackground = (feature, rule, background, line, index) => {
     return background;
   const existingBgText = getRXMatch(line, RX_BACKGROUND2, 1);
   const parent = (rule == null ? void 0 : rule.uuid) ? rule : feature;
-  const backgroundText = (0, import_jsutils18.isStr)(existingBgText) ? existingBgText.trim() : "";
-  (0, import_jsutils18.isBool)(background.background) ? background.background = backgroundText : background = backgroundFactory(backgroundText, index);
+  const backgroundText = (0, import_jsutils19.isStr)(existingBgText) ? existingBgText.trim() : "";
+  (0, import_jsutils19.isBool)(background.background) ? background.background = backgroundText : background = backgroundFactory(backgroundText, index);
   !background.index && (background.index = index);
-  !background.uuid && (background.uuid = (0, import_jsutils18.uuid)());
+  !background.uuid && (background.uuid = (0, import_jsutils19.uuid)());
   background.whitespace = getStartWhiteSpace(line);
   parent.background = background;
   return background;
 };
 
 // src/parse/ensureMeta.ts
-var import_jsutils19 = __toESM(require_cjs());
-var RX_TAG = /^\s*@(.*)$/;
+var import_jsutils20 = __toESM(require_cjs());
 var RX_AS = /^\s*As (.*)$/;
 var RX_COMMENT = /^\s*#(.*)$/;
 var RX_I_WANT = /^\s*I want (.*)$/;
 var RX_SO_THAT = /^\s*So that (.*)$/;
 var RX_IN_ORDER = /^\s*In order (.*)$/;
-var featureMetaTags = [
+var featureMetaItems = [
   { regex: RX_AS, key: "perspective" /* perspective */ },
   { regex: RX_I_WANT, key: "desire" /* desire */ },
   { regex: RX_SO_THAT, key: "reason" /* reason */ },
@@ -3415,10 +3441,10 @@ var featureMetaTags = [
 var addReason = (feature, reason, line, index) => {
   if (!reason)
     return;
-  const reasonArr = (0, import_jsutils19.eitherArr)(feature.reason, [feature.reason]);
+  const reasonArr = (0, import_jsutils20.eitherArr)(feature.reason, [feature.reason]);
   reasonArr.push({
     index,
-    uuid: (0, import_jsutils19.uuid)(),
+    uuid: (0, import_jsutils20.uuid)(),
     content: reason,
     type: "reason" /* reason */,
     whitespace: getStartWhiteSpace(line)
@@ -3427,45 +3453,21 @@ var addReason = (feature, reason, line, index) => {
 };
 var featureMeta = (feature, line, index) => {
   let metaAdded = false;
-  featureMetaTags.reduce((added, regTag) => {
+  featureMetaItems.reduce((added, regItem) => {
     if (added)
       return added;
-    const hasTag = regTag.regex.test(line);
-    if (!metaAdded && hasTag)
+    const hasItem = regItem.regex.test(line);
+    if (!metaAdded && hasItem)
       metaAdded = true;
-    return hasTag ? regTag.key !== "reason" /* reason */ ? feature[regTag.key] = {
+    return hasItem ? regItem.key !== "reason" /* reason */ ? feature[regItem.key] = {
       index,
-      uuid: (0, import_jsutils19.uuid)(),
+      uuid: (0, import_jsutils20.uuid)(),
       whitespace: getStartWhiteSpace(line),
-      content: getRXMatch(line, regTag.regex, 0),
-      type: regTag.key === "desire" /* desire */ ? "desire" /* desire */ : regTag.key === "perspective" /* perspective */ ? "perspective" /* perspective */ : "block" /* block */
-    } : addReason(feature, getRXMatch(line, regTag.regex, 0), line, index) : hasTag;
+      content: getRXMatch(line, regItem.regex, 0),
+      type: regItem.key === "desire" /* desire */ ? "desire" /* desire */ : regItem.key === "perspective" /* perspective */ ? "perspective" /* perspective */ : "block" /* block */
+    } : addReason(feature, getRXMatch(line, regItem.regex, 0), line, index) : hasItem;
   }, false);
   return metaAdded;
-};
-var tagsFactory = (index, content, line) => {
-  const tokens = content.split(` `).reduce((acc, item) => {
-    const token = item.trim();
-    token.startsWith(`@`) && acc.push(token);
-    return acc;
-  }, []);
-  return {
-    index,
-    tokens,
-    uuid: (0, import_jsutils19.uuid)(),
-    type: "tags" /* tags */,
-    content: tokens.join(` `),
-    whitespace: getStartWhiteSpace(line)
-  };
-};
-var checkTag = (parent, feature, line, index) => {
-  if (!RX_TAG.test(line))
-    return false;
-  const tagParent = (parent == null ? void 0 : parent.background) ? feature : parent;
-  const tags = getRXMatch(line, RX_TAG, 0);
-  tagParent.tags = tagsFactory(index, tags, line);
-  tagParent.tags.whitespace = getStartWhiteSpace(line);
-  return true;
 };
 var featureComment = (feature, line, index) => {
   if (!RX_COMMENT.test(line))
@@ -3473,7 +3475,7 @@ var featureComment = (feature, line, index) => {
   const comment = line.match(RX_COMMENT)[0];
   feature.comments.push({
     index,
-    uuid: (0, import_jsutils19.uuid)(),
+    uuid: (0, import_jsutils20.uuid)(),
     content: comment.trim(),
     type: "comment" /* comment */,
     whitespace: getStartWhiteSpace(line)
@@ -3485,7 +3487,7 @@ var featureEmptyLine = (feature, line, index) => {
     return false;
   feature.empty.push({
     index,
-    uuid: (0, import_jsutils19.uuid)(),
+    uuid: (0, import_jsutils20.uuid)(),
     content: line,
     whitespace: ``,
     type: "empty" /* empty */
@@ -3496,7 +3498,7 @@ var featureEmptyLine = (feature, line, index) => {
 // src/parse/parseFeature.ts
 var RX_NEWLINE = /\r?\n/g;
 var parseFeature = function(text, world) {
-  world = world || this && this.world || import_jsutils20.noOpObj;
+  world = world || this && this.world || import_jsutils21.noOpObj;
   const features = [];
   const replaceText = replaceWorld((text || "").toString(), world);
   const lines = replaceText.split(RX_NEWLINE);
@@ -3506,6 +3508,7 @@ var parseFeature = function(text, world) {
   let background = backgroundFactory(false);
   let feature = featureFactory(false, text);
   let activeParent = feature;
+  let tagCache = void 0;
   return lines.reduce((featuresGroup, line, index) => {
     var _a;
     if (parseError2)
@@ -3529,7 +3532,12 @@ var parseFeature = function(text, world) {
       background,
       line
     );
-    checkTag(activeParent, feature, line, index);
+    if (tagCache) {
+      const tagParent = activeParent.type === "background" /* background */ ? feature : activeParent;
+      tagParent.tags = tagCache;
+      tagCache = void 0;
+    } else
+      tagCache = checkTags(line, index);
     return featuresGroup;
   }, features);
 };
@@ -3541,11 +3549,11 @@ var parseDefinition = function(text) {
 };
 
 // src/utils/testMethods.ts
-var import_jsutils21 = __toESM(require_cjs());
+var import_jsutils22 = __toESM(require_cjs());
 var { SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV } = constants;
 var logResultToTerminal = (result) => {
   const timestamp = (/* @__PURE__ */ new Date()).getTime();
-  (0, import_jsutils21.get)(process, `env.${LOG_JEST_SPEC_ENV}`) && process.stdout.write(
+  (0, import_jsutils22.get)(process, `env.${LOG_JEST_SPEC_ENV}`) && process.stdout.write(
     [
       SPEC_RESULT_LOG,
       JSON.stringify({ ...result, timestamp }),
@@ -3554,7 +3562,7 @@ var logResultToTerminal = (result) => {
   );
 };
 var getSuiteData = (suite) => {
-  const description = (0, import_jsutils21.get)(suite, `description`);
+  const description = (0, import_jsutils22.get)(suite, `description`);
   const type = !description ? `Feature` : description.startsWith(`Scenario >`) ? `Scenario` : description.startsWith(`Background >`) ? `Background` : description.startsWith(`Rule >`) ? `Rule` : `Feature`;
   return {
     type: type.toLowerCase(),
@@ -3565,7 +3573,7 @@ var getSuiteData = (suite) => {
   };
 };
 var getTestMethod = (type, testMode) => {
-  return testMode ? import_jsutils21.noOp : globalThis[type] || testMethodFill(type);
+  return testMode ? import_jsutils22.noOp : globalThis[type] || testMethodFill(type);
 };
 var buildReporter = (jasmineEnv) => {
   const suites = [];
@@ -3621,19 +3629,19 @@ var skipTestsOnFail = (testMode) => {
 };
 
 // src/runner.ts
-var import_jsutils22 = __toESM(require_cjs());
+var import_jsutils23 = __toESM(require_cjs());
 var buildTitle = (text, type) => {
-  return `${(0, import_jsutils22.capitalize)(type)} > ${text}`;
+  return `${(0, import_jsutils23.capitalize)(type)} > ${text}`;
 };
 var resolveFeatures = (data, $world) => {
-  return (0, import_jsutils22.isStr)(data) ? parseFeature(data, $world) : (0, import_jsutils22.isObj)(data) ? [data] : (0, import_jsutils22.isArr)(data) ? data.reduce(
+  return (0, import_jsutils23.isStr)(data) ? parseFeature(data, $world) : (0, import_jsutils23.isObj)(data) ? [data] : (0, import_jsutils23.isArr)(data) ? data.reduce(
     (features, feature) => features.concat(resolveFeatures(feature, $world)),
     []
   ) : throwMissingFeatureText();
 };
 var runStep = async (stepsInstance, step, testMode) => {
   const test = getTestMethod("test" /* test */, testMode);
-  test(`${(0, import_jsutils22.capitalize)(step.type)} ${step.step}`, async () => {
+  test(`${(0, import_jsutils23.capitalize)(step.type)} ${step.step}`, async () => {
     return await stepsInstance.resolve(step.step);
   });
 };
@@ -3688,19 +3696,19 @@ var runRule = (stepsInstance, rule, background, testMode) => {
   return responses;
 };
 var parseFeatureTags = (tags) => {
-  return (0, import_jsutils22.isStr)(tags) ? tags.match(/[@]\w*/g) : (0, import_jsutils22.isArr)(tags) ? tags : import_jsutils22.emptyArr;
+  return (0, import_jsutils23.isStr)(tags) ? tags.match(/[@]\w*/g) : (0, import_jsutils23.isArr)(tags) ? tags : import_jsutils23.emptyArr;
 };
-var itemMatch = (name = "", tags = import_jsutils22.emptyArr, filterOptions = import_jsutils22.emptyObj) => {
+var itemMatch = (name = "", tags = import_jsutils23.emptyArr, filterOptions = import_jsutils23.emptyObj) => {
   const {
     name: filterName,
     tags: filterTags
   } = filterOptions;
-  const parsedTags = (0, import_jsutils22.isStr)(filterTags) ? parseFeatureTags(filterTags) : (0, import_jsutils22.eitherArr)(filterTags, []);
+  const parsedTags = (0, import_jsutils23.isStr)(filterTags) ? parseFeatureTags(filterTags) : (0, import_jsutils23.eitherArr)(filterTags, []);
   const nameMatch = !filterName || name.includes(filterName);
   const tagMatch = !parsedTags.length || parsedTags.every((clientTag) => tags.includes(clientTag));
   return nameMatch && tagMatch;
 };
-var filterFeatures = (features, filterOptions = import_jsutils22.emptyObj) => {
+var filterFeatures = (features, filterOptions = import_jsutils23.emptyObj) => {
   return features.reduce((filtered, feature) => {
     var _a;
     const isMatchingFeature = itemMatch(
@@ -3717,7 +3725,7 @@ var filterFeatures = (features, filterOptions = import_jsutils22.emptyObj) => {
         var _a2, _b;
         return itemMatch(
           scenario.scenario,
-          [...((_a2 = scenario == null ? void 0 : scenario.tags) == null ? void 0 : _a2.tokens) || import_jsutils22.emptyArr, ...((_b = feature == null ? void 0 : feature.tags) == null ? void 0 : _b.tokens) || import_jsutils22.emptyArr],
+          [...((_a2 = scenario == null ? void 0 : scenario.tags) == null ? void 0 : _a2.tokens) || import_jsutils23.emptyArr, ...((_b = feature == null ? void 0 : feature.tags) == null ? void 0 : _b.tokens) || import_jsutils23.emptyArr],
           filterOptions
         );
       }
@@ -3762,7 +3770,7 @@ var Runner = class {
    *
    * @returns {boolean} - whether any tests ran
    */
-  run = async (data, options = import_jsutils22.emptyObj) => {
+  run = async (data, options = import_jsutils23.emptyObj) => {
     const testMode = this.run.PARKIN_TEST_MODE;
     skipTestsOnFail(testMode);
     const describe2 = getTestMethod("describe" /* describe */, testMode);
@@ -3800,17 +3808,17 @@ var Runner = class {
 };
 
 // src/assemble/helpers.ts
-var import_jsutils23 = __toESM(require_cjs());
+var import_jsutils24 = __toESM(require_cjs());
 var formatAssembled = (assembled) => {
-  return Array.from(assembled, (line) => (0, import_jsutils23.exists)(line) ? `${line.trimEnd()}
+  return Array.from(assembled, (line) => (0, import_jsutils24.exists)(line) ? `${line.trimEnd()}
 ` : "\n").join("").trimEnd().concat(` `, `
 `);
 };
 var addContent = (assembled, content, index) => {
-  !(0, import_jsutils23.exists)(index) || index === false ? assembled.push(content) : (0, import_jsutils23.exists)(assembled[index]) ? assembled.splice(index, 0, content) : assembled[index] = content;
+  !(0, import_jsutils24.exists)(index) || index === false ? assembled.push(content) : (0, import_jsutils24.exists)(assembled[index]) ? assembled.splice(index, 0, content) : assembled[index] = content;
 };
 var getWhiteSpace = (ast, parent, def = ``) => {
-  return (0, import_jsutils23.exists)(ast.whitespace) ? ast.whitespace : (0, import_jsutils23.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent == null ? void 0 : parent.whitespace}${def}` : def;
+  return (0, import_jsutils24.exists)(ast.whitespace) ? ast.whitespace : (0, import_jsutils24.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent == null ? void 0 : parent.whitespace}${def}` : def;
 };
 var getTextContent = (ast, parent, type, def = ``) => {
   const content = ast[ast.type] || ``;
@@ -3820,7 +3828,7 @@ var getTextContent = (ast, parent, type, def = ``) => {
 };
 
 // src/assemble/assembleParts.ts
-var import_jsutils24 = __toESM(require_cjs());
+var import_jsutils25 = __toESM(require_cjs());
 var assembleFeature = (assembled, { ast, parent }) => {
   const feature = ast;
   addContent(
@@ -3832,7 +3840,7 @@ var assembleFeature = (assembled, { ast, parent }) => {
 var assembleStep = (assembled, { ast, parent }) => {
   const step = ast;
   const whitespace = getWhiteSpace(step, parent, `  `);
-  const type = step.type !== "step" /* step */ ? (0, import_jsutils24.capitalize)(step.type) : `Step`;
+  const type = step.type !== "step" /* step */ ? (0, import_jsutils25.capitalize)(step.type) : `Step`;
   addContent(
     assembled,
     `${whitespace}${type} ${step.step || ``}`,
@@ -3926,7 +3934,7 @@ var fromIndex = (indexes) => {
 };
 
 // src/assemble/formatters.ts
-var import_jsutils25 = __toESM(require_cjs());
+var import_jsutils26 = __toESM(require_cjs());
 var ensureBackgroundFirst = (parent, opts) => {
   if (!opts.backgroundAfterParent)
     return parent;
@@ -3947,11 +3955,11 @@ var addEmptyLine = (feature, idx, opts) => {
   featureEmptyLine(feature, ``, idx + 1);
   return feature;
 };
-var formatStory = (feature, opts = import_jsutils25.emptyObj) => {
+var formatStory = (feature, opts = import_jsutils26.emptyObj) => {
   const { desire, perspective, reason } = feature;
   let lastIdx = feature.index;
   if (reason)
-    (0, import_jsutils25.isArr)(reason) ? (0, import_jsutils25.ensureArr)(reason).forEach((res) => lastIdx = res.index > lastIdx ? res.index : lastIdx) : lastIdx = reason.index;
+    (0, import_jsutils26.isArr)(reason) ? (0, import_jsutils26.ensureArr)(reason).forEach((res) => lastIdx = res.index > lastIdx ? res.index : lastIdx) : lastIdx = reason.index;
   else if (desire)
     lastIdx = desire.index;
   else if (perspective)
@@ -3959,7 +3967,7 @@ var formatStory = (feature, opts = import_jsutils25.emptyObj) => {
   addEmptyLine(feature, lastIdx, opts);
   return feature;
 };
-var formatOptions = (feature, opts = import_jsutils25.emptyObj) => {
+var formatOptions = (feature, opts = import_jsutils26.emptyObj) => {
   const keys = [];
   const {
     removeEmpty,
@@ -3969,7 +3977,7 @@ var formatOptions = (feature, opts = import_jsutils25.emptyObj) => {
   } = opts;
   removeEmpty && keys.push(`empty`);
   removeComments && keys.push(`comments`);
-  const updated = (0, import_jsutils25.omitKeys)(feature, keys);
+  const updated = (0, import_jsutils26.omitKeys)(feature, keys);
   if (emptyAfterStory || emptyAfterFeature)
     !emptyAfterStory ? addEmptyLine(updated, updated.index, opts) : formatStory(updated, opts);
   return updated;
@@ -4018,7 +4026,7 @@ var formatRules = (feature, opts) => {
   }, []);
   return { ...feature, rules };
 };
-var formatFeature = (feature, opts = import_jsutils25.emptyObj) => {
+var formatFeature = (feature, opts = import_jsutils26.emptyObj) => {
   let updated = formatOptions(feature, opts);
   updated = formatBackground(updated, updated, opts);
   updated = formatRules(updated, opts);
@@ -4027,10 +4035,10 @@ var formatFeature = (feature, opts = import_jsutils25.emptyObj) => {
 };
 
 // src/assemble/featureToIndexes.ts
-var import_jsutils28 = __toESM(require_cjs());
+var import_jsutils29 = __toESM(require_cjs());
 
 // src/assemble/findIndex.ts
-var import_jsutils26 = __toESM(require_cjs());
+var import_jsutils27 = __toESM(require_cjs());
 var AstTypeMap = {
   ...EAstObject,
   ["step" /* step */]: "steps" /* steps */,
@@ -4052,17 +4060,17 @@ var checkBlocks = (blocks, idx) => {
 var validateIndex = (feature, index) => {
   return checkBlocks(
     [
-      ...feature.empty || import_jsutils26.emptyArr,
-      ...feature.comments || import_jsutils26.emptyArr
+      ...feature.empty || import_jsutils27.emptyArr,
+      ...feature.comments || import_jsutils27.emptyArr
     ],
     index
   );
 };
 var validObj = (child) => {
-  return (0, import_jsutils26.isObj)(child) && (0, import_jsutils26.isNum)(child == null ? void 0 : child.index);
+  return (0, import_jsutils27.isObj)(child) && (0, import_jsutils27.isNum)(child == null ? void 0 : child.index);
 };
 var validArr = (childArr) => {
-  return (0, import_jsutils26.isArr)(childArr) && (childArr == null ? void 0 : childArr.length);
+  return (0, import_jsutils27.isArr)(childArr) && (childArr == null ? void 0 : childArr.length);
 };
 var indexFromBlocks = ({
   loc,
@@ -4106,7 +4114,7 @@ var indexFromStory = (feature) => {
 var indexFromBackground = (parent, feature) => {
   if (validObj(parent == null ? void 0 : parent.background)) {
     const idx = indexFromSteps(parent.background);
-    if ((0, import_jsutils26.exists)(idx))
+    if ((0, import_jsutils27.exists)(idx))
       return idx;
   }
   return parent === feature ? indexFromStory(feature) : parent.index + 1;
@@ -4174,21 +4182,21 @@ var findIndex = (props) => {
 };
 
 // src/assemble/addToIndexes.ts
-var import_jsutils27 = __toESM(require_cjs());
+var import_jsutils28 = __toESM(require_cjs());
 var addToIndexes = (feature, indexes, item, offset) => {
-  const index = (0, import_jsutils27.exists)(item.ast.index) ? item.ast.index : findIndex({
+  const index = (0, import_jsutils28.exists)(item.ast.index) ? item.ast.index : findIndex({
     feature,
     parent: item.parent,
     type: item.ast.type
   });
   const preAmount = offset.reduce((acc, val, idx) => {
-    return idx <= index && (0, import_jsutils27.exists)(val) ? acc + val : acc;
+    return idx <= index && (0, import_jsutils28.exists)(val) ? acc + val : acc;
   }, 0);
   if (!indexes[index] && !preAmount) {
     indexes[index] = item;
     return indexes;
   }
-  offset[index] = (0, import_jsutils27.exists)(offset[index]) ? offset[index] + 1 : 1;
+  offset[index] = (0, import_jsutils28.exists)(offset[index]) ? offset[index] + 1 : 1;
   const newIdx = index + preAmount + 1;
   item.ast.index = index;
   const updatedLen = indexes.length + 1;
@@ -4216,7 +4224,7 @@ var indexRules = (feature, indexes, rules, parent, offset) => {
   });
 };
 var indexReason = (feature, indexes, reason, parent, offset) => {
-  (0, import_jsutils28.isArr)(reason) ? reason.forEach((reason2) => addToIndexes(feature, indexes, { ast: reason2, parent }, offset)) : addToIndexes(feature, indexes, { ast: reason, parent }, offset);
+  (0, import_jsutils29.isArr)(reason) ? reason.forEach((reason2) => addToIndexes(feature, indexes, { ast: reason2, parent }, offset)) : addToIndexes(feature, indexes, { ast: reason, parent }, offset);
 };
 var indexBackground = (feature, indexes, background, parent, offset) => {
   addToIndexes(feature, indexes, { ast: background, parent }, offset);
@@ -4308,10 +4316,10 @@ var featureToIndexes = (feature) => {
 };
 
 // src/assemble/feature.ts
-var import_jsutils29 = __toESM(require_cjs());
-var assembleFeature2 = (toAssemble, opts = import_jsutils29.emptyObj) => {
-  return (0, import_jsutils29.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
-    !(0, import_jsutils29.isObj)(feature) && throwFeatureNotAnObj(feature);
+var import_jsutils30 = __toESM(require_cjs());
+var assembleFeature2 = (toAssemble, opts = import_jsutils30.emptyObj) => {
+  return (0, import_jsutils30.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
+    !(0, import_jsutils30.isObj)(feature) && throwFeatureNotAnObj(feature);
     const updated = formatFeature(feature, opts);
     const indexes = featureToIndexes(updated);
     return fromIndex(indexes);
@@ -4327,7 +4335,7 @@ var assemble = {
 };
 
 // src/parkin.ts
-var import_jsutils30 = __toESM(require_cjs());
+var import_jsutils31 = __toESM(require_cjs());
 var { STEP_TYPES: STEP_TYPES2 } = constants;
 var Parkin = class {
   #isInit = false;
@@ -4346,14 +4354,14 @@ var Parkin = class {
   And;
   But;
   constructor(world, steps) {
-    (0, import_jsutils30.isObj)(world) && this.init(world, steps);
+    (0, import_jsutils31.isObj)(world) && this.init(world, steps);
   }
-  init = (world = import_jsutils30.noOpObj, steps, warn = true) => {
+  init = (world = import_jsutils31.noOpObj, steps, warn = true) => {
     if (this.#isInit) {
       warn && console.warn(`This instance of parkin has already been initialized!`);
       return;
     }
-    if (!(0, import_jsutils30.isObj)(world.$alias))
+    if (!(0, import_jsutils31.isObj)(world.$alias))
       world.$alias = {};
     this.#isInit = true;
     this.world = world;
@@ -4368,9 +4376,9 @@ var Parkin = class {
     this.assemble = assemble;
     this.paramTypes = { register: registerParamType };
     this.matcher = new Matcher(this);
-    (0, import_jsutils30.isObj)(steps) && this.registerSteps(steps);
+    (0, import_jsutils31.isObj)(steps) && this.registerSteps(steps);
     this.steps.types.map((type) => {
-      this[(0, import_jsutils30.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
+      this[(0, import_jsutils31.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
     });
   };
   /**
@@ -4399,7 +4407,7 @@ var Parkin = class {
     if (doRegister)
       return Object.entries(steps).forEach(([type, typedSteps]) => {
         STEP_TYPES2.includes(type) && Object.entries(typedSteps).forEach(([matcher2, content]) => {
-          this.steps[(0, import_jsutils30.capitalize)(type)](matcher2, ...(0, import_jsutils30.eitherArr)(content, [content]));
+          this.steps[(0, import_jsutils31.capitalize)(type)](matcher2, ...(0, import_jsutils31.eitherArr)(content, [content]));
         });
       });
     else
