@@ -57,7 +57,20 @@ const runFeature = () => {
  * We use an iif to ensure it's run when the browser is ready
  */
 window.addEventListener('load', async (event) => {
-  await import('/parkin/global.js')
-  await import('/parkin/test/global.js')
+  /**
+   * Fixes issue with github pages, that require the repo name in the import path
+   */
+  if(window.location.href.includes(`lancetipton.github.io`)){
+    await import('/parkin/parkin/global.js')
+    await import('/parkin/parkin/test/global.js')
+  }
+  /**
+   * For local dev we don't want to include the repo name
+   */
+  else {
+    await import('/parkin/global.js')
+    await import('/parkin/test/global.js')
+  }
+
   PK = new Parkin({})
 })
