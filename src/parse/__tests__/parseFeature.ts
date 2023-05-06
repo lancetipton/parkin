@@ -1,4 +1,4 @@
-import { rulesFeature, backgroundFeature } from '../../__mocks__'
+import { featureRulesScenarios, rulesFeature, backgroundFeature } from '../../__mocks__'
 
 jest.resetModules()
 jest.resetAllMocks()
@@ -8,12 +8,59 @@ const { parseFeature } = require('../parseFeature')
 
 describe(`parseFeature`, () => {
   describe(`Feature Tags`, () => {
+
     it(`should parse a Features tags`, () => {
       const { tags } = parseFeature(backgroundFeature)[0]
       expect(tags.index).toBe(0)
       expect(Array.isArray(tags.tokens)).toBe(true)
       expect(tags.tokens[0]).toBe(`@background`)
     })
+
+    it(`should parse tags for Top level Tags, Rules, and Scenarios`, () => {
+      const { tags, rules, scenarios } = parseFeature(featureRulesScenarios)[0]
+
+      expect(tags.index).toBe(0)
+      expect(Array.isArray(tags.tokens)).toBe(true)
+      expect(tags.tokens).toEqual([`@rules`, `@scenarios`])
+
+      const r1 = rules[0]
+      expect(r1.tags.index < r1.index).toBe(true)
+      expect(r1.tags.tokens).toEqual([`@rule-1-tag`])
+      expect(r1.tags.whitespace).toBe(r1.whitespace)
+
+      const r2 = rules[1]
+      expect(r2.tags.index < r2.index).toBe(true)
+      expect(r2.tags.tokens).toEqual([`@rule-2-tag`, `@extra-rule-2-tag`])
+      expect(r2.tags.whitespace).toBe(r2.whitespace)
+
+      const s1 = scenarios[0]
+      expect(s1.tags.index < s1.index).toBe(true)
+      expect(s1.tags.tokens).toEqual([`@scenario-before-rules-tag`])
+      expect(s1.tags.whitespace).toBe(s1.whitespace)
+
+      const s2 = scenarios[1]
+      expect(s2.tags.index < s2.index).toBe(true)
+      expect(s2.tags.tokens).toEqual([`@scenario-in-between-rules-tag`])
+      expect(s2.tags.whitespace).toBe(s2.whitespace)
+
+      const s3 = scenarios[2]
+      expect(s3.tags.index < s3.index).toBe(true)
+      expect(s3.tags.tokens).toEqual([`@scenario-after-rules-tag`, `@last-scenario-tag`])
+      expect(s3.tags.whitespace).toBe(s3.whitespace)
+
+    })
+    
+    it(`should parse tags for Scenarios under Rules`, () => {
+
+      const { rules } = parseFeature(featureRulesScenarios)[0]
+
+      const rs1 = rules[1].scenarios[0]
+      expect(rs1.tags.index < rs1.index).toBe(true)
+      expect(rs1.tags.tokens).toEqual([`@example-tag`, `@extra-example-tag`])
+      expect(rs1.tags.whitespace).toBe(rs1.whitespace)
+
+    })
+
   })
 
   describe(`Feature Comments`, () => {

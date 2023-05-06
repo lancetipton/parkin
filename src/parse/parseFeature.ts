@@ -1,22 +1,22 @@
-import type { TWorldConfig, TBlockParentAst, TFeatureAst } from '../types'
+import type { TTagsAst, TWorldConfig, TBlockParentAst, TFeatureAst } from '../types'
 
+import { EAstObject } from '../types'
 import { parseStep } from './parseStep'
+import { checkTags } from './checkTags'
 import { noOpObj } from '@keg-hub/jsutils'
+import { setActiveParent } from './setActiveParent'
 import { replaceWorld } from '../utils/worldReplace'
-
-import { setActiveParent } from './parseHelpers'
 import { ruleFactory, ensureRule } from './ensureRule'
 import { featureFactory, ensureFeature } from './ensureFeature'
 import { scenarioFactory, ensureScenario } from './ensureScenario'
 import { backgroundFactory, ensureBackground } from './ensureBackground'
-import { featureEmptyLine, featureComment, checkTag, featureMeta } from './ensureMeta'
+import { featureEmptyLine, featureComment, featureMeta } from './ensureMeta'
 
 /**
  * Regular expressions for matching feature file keywords
  * @type {object}
  */
 const RX_NEWLINE = /\r?\n/g
-
 
 /**
  * Parses a feature files text content into an object
@@ -41,11 +41,13 @@ export const parseFeature = function (
   let background = backgroundFactory(false)
   let feature = featureFactory(false, text)
   let activeParent:TBlockParentAst = feature
+  let tagCache:TTagsAst = undefined
 
   /*
    * Loop over each line of text, and compose the line with corresponding regex to find a match
    */
   return lines.reduce((featuresGroup, line, index) => {
+    
     if(parseError) return featuresGroup
 
     /*
@@ -104,8 +106,18 @@ export const parseFeature = function (
       line
     )
 
+    /**
+     * If there's tag cache from the last iteration
+     * After the next active parent has been set
+     */
+    if(tagCache){
+      // background can not have tags, so add them to the feature instead
+      const tagParent = activeParent.type === EAstObject.background ? feature : activeParent
+      tagParent.tags = tagCache
+      tagCache = undefined
+    }
     // Check for tags after the next active parent has been set
-    checkTag(activeParent, feature, line, index)
+    else tagCache = checkTags(line, index)
 
     return featuresGroup
   }, features)

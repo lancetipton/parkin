@@ -1,4 +1,4 @@
-import type { TFeatureAst, TTagsAst, TTagsParentAst, TBlockAst } from '../types'
+import type { TFeatureAst, TBlockAst } from '../types'
 
 import { EAstObject } from '../types'
 import { eitherArr, uuid } from '@keg-hub/jsutils'
@@ -8,7 +8,6 @@ import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
  * Regular expressions for matching feature file keywords
  * @type {object}
  */
-const RX_TAG = /^\s*@(.*)$/
 const RX_AS = /^\s*As (.*)$/
 const RX_COMMENT = /^\s*#(.*)$/
 const RX_I_WANT = /^\s*I want (.*)$/
@@ -21,7 +20,7 @@ const RX_IN_ORDER = /^\s*In order (.*)$/
  * @type {Array}
  * @private
  */
-export const featureMetaTags = [
+const featureMetaItems = [
   { regex: RX_AS, key: EAstObject.perspective },
   { regex: RX_I_WANT, key: EAstObject.desire },
   { regex: RX_SO_THAT, key: EAstObject.reason },
@@ -69,80 +68,30 @@ export const featureMeta = (
   index:number
 ) => {
   let metaAdded = false
-  featureMetaTags.reduce((added, regTag) => {
+  featureMetaItems.reduce((added, regItem) => {
     if (added) return added
 
-    const hasTag = regTag.regex.test(line)
-    if (!metaAdded && hasTag) metaAdded = true
+    const hasItem = regItem.regex.test(line)
+    if (!metaAdded && hasItem) metaAdded = true
 
-    return hasTag
-      ? regTag.key !== EAstObject.reason
-        ? (feature[regTag.key] = {
+    return hasItem
+      ? regItem.key !== EAstObject.reason
+        ? (feature[regItem.key] = {
             index,
             uuid: uuid(),
             whitespace: getStartWhiteSpace(line),
-            content: getRXMatch(line, regTag.regex, 0),
-            type: regTag.key === EAstObject.desire
+            content: getRXMatch(line, regItem.regex, 0),
+            type: regItem.key === EAstObject.desire
               ? EAstObject.desire
-              : regTag.key === EAstObject.perspective
+              : regItem.key === EAstObject.perspective
                 ? EAstObject.perspective
                 : EAstObject.block
           })
-        : addReason(feature, getRXMatch(line, regTag.regex, 0), line, index)
-      : hasTag
+        : addReason(feature, getRXMatch(line, regItem.regex, 0), line, index)
+      : hasItem
   }, false)
 
   return metaAdded
-}
-
-/**
- * Parses the content as an array of tags
- * Then builds and returns a Tags Ast 
- */
-const tagsFactory = (
-  index:number,
-  content:string,
-  line:string
-) => {
-  const tokens = content.split(` `).reduce((acc, item) => {
-    const token = item.trim()
-    token.startsWith(`@`) && acc.push(token)
-    return acc
-  }, [])
-
-  return {
-    index,
-    tokens,
-    uuid: uuid(),
-    type: EAstObject.tags,
-    content: tokens.join(` `),
-    whitespace: getStartWhiteSpace(line),
-  } as TTagsAst
-}
-
-/*
- * Checks for feature file meta-data
- * @function
- *
- */
-export const checkTag = (
-  parent:TTagsParentAst,
-  feature:TFeatureAst,
-  line:string,
-  index:number
-) => {
-  if (!RX_TAG.test(line)) return false
-
-  // background can not have tags, so add them to the feature instead
-  const tagParent = (parent as TFeatureAst)?.background ? feature : parent
-
-  const tags = getRXMatch(line, RX_TAG, 0)
-
-  // Join the tags with the tagParents current tags
-  tagParent.tags = tagsFactory(index, tags, line)
-  tagParent.tags.whitespace = getStartWhiteSpace(line)
-
-  return true
 }
 
 /*

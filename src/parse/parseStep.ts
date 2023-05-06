@@ -23,7 +23,7 @@ const RX_DATA_TABLE_FULL = /^\s*?\|([^\S\r\n]*?|.*)\|/gm
  * @type {Array}
  * @private
  */
-const RegStepTags = [
+const RegStepItems = [
   { regex: RX_STEP, type: EStepType.step },
   { regex: RX_GIVEN, type: EStepType.given },
   { regex: RX_WHEN, type: EStepType.when },
@@ -176,18 +176,18 @@ export const parseStep = (
 ) => {
   const stepParent = parent as TStepParentAst
 
-  return RegStepTags.reduce((added, regTag) => {
+  return RegStepItems.reduce((added, regItems) => {
     // If the line was already added, just return
     if (added) return added
 
     // Check if the line is a step tag
-    const hasTag = regTag.regex.test(line)
+    const hasItem = regItems.regex.test(line)
     // If if is, add the extracted line to the steps of the current scenario
-    hasTag &&
+    hasItem &&
       stepParent.steps.push(
         stepFactory(
-          regTag.type,
-          getRXMatch(line, regTag.regex, 1),
+          regItems.type,
+          getRXMatch(line, regItems.regex, 1),
           lines,
           line,
           index
@@ -195,6 +195,6 @@ export const parseStep = (
       )
 
     // Return if the line was added to the steps
-    return hasTag
+    return hasItem
   }, false)
 }
