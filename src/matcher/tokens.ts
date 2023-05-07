@@ -34,20 +34,6 @@ const tokenRegex = joinRegex(
   'g' as unknown as RegExp
 ) as unknown as RegExp
 
-const getMatchType = (
-  val:string,
-  type?:string
-) => {
-  return type
-    ? EPartMatchTypes.parameter
-    : RX_OPTIONAL.test(val)
-      ? EPartMatchTypes.optional
-      : RX_ALT.test(val)
-        ? EPartMatchTypes.alternate
-        : EPartMatchTypes.parameter
-}
-
-
 export const tokenizeStep = (
   step:string,
   def:TStepDef,
