@@ -2635,29 +2635,25 @@ var tokenRegex = (0, import_jsutils6.joinRegex)(
   RX_SINGLE_QUOTED,
   "g"
 );
-var getMatchType = (val, type) => {
-  return type ? "parameter" /* parameter */ : RX_OPTIONAL.test(val) ? "optional" /* optional */ : RX_ALT.test(val) ? "alternate" /* alternate */ : "parameter" /* parameter */;
-};
 var tokenizeStep = (step, def, opts = import_jsutils6.emptyObj) => {
-  var _a, _b;
   const parts = getRegexParts(def.match, opts);
   const tokens = [];
   let idx = 0;
   let match;
   while ((match = tokenRegex.exec(step)) !== null) {
-    const [val, __, ...rest] = match;
-    const parseType = (_b = (_a = rest.pop()) == null ? void 0 : _a.trim) == null ? void 0 : _b.call(_a);
-    const matchType2 = getMatchType(val, parseType);
-    if (!includePartType(matchType2, opts))
-      continue;
     const part = parts[idx];
+    if (!part)
+      continue;
+    const [val] = match;
+    if (!includePartType(part.type, opts))
+      continue;
     const trimmed = val.trimStart();
     const diff = val.length - trimmed.length;
     tokens.push({
       match: val.trim(),
       defIndex: part == null ? void 0 : part.index,
       index: match.index + diff,
-      type: (part == null ? void 0 : part.paramType) || matchType2 || parseType || "other" /* other */
+      type: (part == null ? void 0 : part.paramType) || (part == null ? void 0 : part.type) || "other" /* other */
     });
     idx++;
   }
