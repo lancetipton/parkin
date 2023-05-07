@@ -66,13 +66,14 @@ export const tokenizeStep = (
   let match:RegExpExecArray
 
   while((match = tokenRegex.exec(step)) !== null) {
-    const [val, __, ...rest] = match
-    const parseType = rest.pop()?.trim?.()
-    const matchType = getMatchType(val, parseType)
-
-    if(!includePartType(matchType as EPartMatchTypes, opts)) continue
 
     const part = parts[idx]
+    if(!part) continue
+
+    const [val] = match
+
+    if(!includePartType(part.type, opts)) continue
+
     const trimmed = val.trimStart()
     const diff = val.length - trimmed.length
 
@@ -81,8 +82,7 @@ export const tokenizeStep = (
       defIndex: part?.index,
       index: match.index + diff,
       type: part?.paramType
-        || matchType
-        || parseType
+        || part?.type
         || EPartMatchTypes.other,
     })
     idx++
