@@ -2,7 +2,6 @@
 
 ## Parkin
 
-* Fully migrate to typescript
 * Investigate migrating to monorepo, with these packages
   * `parkin-cli` - Command line CLI for executing `Parkin` methods
     * Runner to execute feature files from the command line 
@@ -41,8 +40,6 @@
 * Update to accept environment specific actions
 
 ### Definitions
-
-* Add token parsing of match string
 * Add data table helper methods for access from definition method
 
 ### Test
