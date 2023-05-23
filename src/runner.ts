@@ -24,6 +24,7 @@ import {
   isArr,
   isObj,
   isStr,
+  pickKeys,
   emptyObj,
   emptyArr,
   eitherArr,
@@ -90,9 +91,14 @@ const runStep = async (
   testMode:boolean
 ) => {
   const test = getTestMethod(ETestType.test, testMode)
-  test(`${capitalize(step.type)} ${step.step}`, async () => {
-    return await stepsInstance.resolve(step.step)
-  })
+  const testMethod = async () => (await stepsInstance.resolve(step.step))
+  testMethod.ParkinMetaData = pickKeys(
+    step,
+    [ `uuid`, `step`, `index`, `type`, `definition`]
+  )
+  
+
+  test(`${capitalize(step.type)} ${step.step}`, testMethod)
 }
 
 /**
@@ -115,7 +121,7 @@ const loopSteps = (
   const describe = getTestMethod(ETestType.describe, testMode)
 
   let responses = []
-  describe(title, () => {
+  const describeMethod = () => {
     // Map over the steps and call them
     // Store the returned promise in the responses array
     const responses = parent.steps.map(step =>
@@ -124,7 +130,13 @@ const loopSteps = (
 
     // Ensure we resolve all promises inside the describe block
     Promise.all(responses)
-  })
+  }
+  describeMethod.ParkinMetaData = pickKeys(
+    parent,
+    [`index`, `uuid`, `tags`, `type`, `background`, `scenario`]
+  )
+
+  describe(title, describeMethod)
 
   return responses
 }
@@ -211,7 +223,8 @@ const runRule = (
   // Map over the rule scenarios and call their steps
   // Store the returned promise in the responses array
   let responses = []
-  describe(`Rule > ${rule.rule}`, () => {
+  
+  const describeMethod = () => {
     background &&
       responses.push(
         ...responses.concat(
@@ -227,7 +240,13 @@ const runRule = (
 
     // Ensure we resolve all promises inside the describe block
     Promise.all(responses)
-  })
+  }
+  describeMethod.ParkinMetaData = pickKeys(
+    rule,
+    [`index`, `uuid`, `tags`, `type`, `rule`]
+  )
+
+  describe(`Rule > ${rule.rule}`, describeMethod)
 
   return responses
 }
@@ -397,9 +416,7 @@ export class Runner {
       beforeEach(this.hooks.getRegistered(EHookType.beforeEach))
       afterEach(this.hooks.getRegistered(EHookType.afterEach))
 
-      // Map over the features scenarios and call their steps
-      // Store the returned promise in the responses array
-      describe(buildTitle(feature.feature, `Feature`), () => {
+      const describeMethod = () => {
         responses.push(
           ...feature.rules.map((rule:TRuleAst) =>
             runRule(this.steps, rule, feature.background, testMode)
@@ -414,7 +431,15 @@ export class Runner {
 
         // Ensure we resolve all promises inside the describe block
         Promise.all(responses)
-      })
+      }
+      describeMethod.ParkinMetaData = pickKeys(
+        feature,
+        [`index`, `uuid`, `tags`, `feature`, `type`, `errors`]
+      )
+    
+      // Map over the features scenarios and call their steps
+      // Store the returned promise in the responses array
+      describe(buildTitle(feature.feature, `Feature`), describeMethod)
 
       return responses
     })

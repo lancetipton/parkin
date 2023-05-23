@@ -1,4 +1,4 @@
-import { isObj } from '@keg-hub/jsutils'
+import { isObj, noOpObj } from '@keg-hub/jsutils'
 import { Types, validateRootRun } from './utils'
 
 /**
@@ -24,6 +24,7 @@ const runResult = (
     passed: Boolean(passed),
     description: item.description,
     timestamp: new Date().getTime(),
+    metaData: item.action.ParkinMetaData || noOpObj
   }
 
   isObj(failed) && result.failedExpectations.push(failed)

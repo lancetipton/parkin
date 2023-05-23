@@ -1,8 +1,27 @@
+import type { TAstType } from '../types'
+
 import { keyMap, isFunc, isStr, noOpObj } from '@keg-hub/jsutils'
 
 // TODO: fix these types
-type TestObj = Record<any, any>
-type TestMethod = (...args:any[]) => any
+type TestObj = {
+  only?:boolean
+  skip?: boolean
+  action:TestMethod
+  description:string
+  onlyChild?: boolean
+  disabled: () => void
+  hasOnlyChild: () => void
+  type:keyof typeof Types,
+  tests?:TestObj[]
+  describes?:TestObj[]
+  beforeAll?:TestMethod[]
+  beforeEach?:TestMethod[]
+  afterAll?:TestMethod[]
+  afterEach?:TestMethod[]
+}
+type TestMethod = ((...args:any[]) => any) & {
+  ParkinMetaData?:TAstType
+}
 
 
 /**
@@ -58,7 +77,7 @@ export const throwError = (error:string) => {
  *
  */
 export const validateHelper = (
-  type:string,
+  type:keyof typeof Types,
   action:TestMethod,
 ) => {
   !isFunc(action) &&
@@ -100,7 +119,7 @@ export const validateItem = (
  */
 export const createItem = (
   type:string,
-  metadata:TestObj = noOpObj as TestObj,
+  metadata:Partial<TestObj> = noOpObj as TestObj,
   validate = true
 ) => {
   const { description, action } = metadata
