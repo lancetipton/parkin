@@ -1,9 +1,8 @@
-import { testUUid } from '../helpers'
 
 export const parsedFeature = {
   index: 1,
   // The uuid is different every time, so comment it out for testing
-  uuid: testUUid,
+  uuid: `feature-17965329`,
   content:
     '@search @google\n' +
     'Feature: Google Search\n' +
@@ -24,7 +23,7 @@ export const parsedFeature = {
   tags: {
     index: 0,
     type: `tags`,
-    uuid: testUUid,
+    uuid: `tags-37800615`,
     whitespace: ``,
     content: `@search @google`,
     tokens: [ `@search`, `@google` ],
@@ -34,7 +33,7 @@ export const parsedFeature = {
       index: 6,
       content: '',
       type: `empty`,
-      uuid: testUUid,
+      uuid: `feature-17965329.empty.0`,
       whitespace: ``,
     },
   ],
@@ -43,7 +42,7 @@ export const parsedFeature = {
       content: 'In order to find out more about Keg-Hub',
       index: 3,
       type: `reason`,
-      uuid: testUUid,
+      uuid: `feature-17965329.reason.0`,
       whitespace: `  `,
     },
   ],
@@ -54,14 +53,14 @@ export const parsedFeature = {
       content: '# Test comment in the feature meta',
       index: 4,
       type: `comment`,
-      uuid: testUUid,
+      uuid: `feature-17965329.comment.0`,
       whitespace: `  `,
     },
     {
       content: '# comment for testing in the scenario steps',
       index: 11,
       type: `comment`,
-      uuid: testUUid,
+      uuid: `feature-17965329.comment.1`,
       whitespace: `    `,
     },
     // { content: 'Test comment in the feature meta', index: 4 },
@@ -69,17 +68,17 @@ export const parsedFeature = {
   ],
   perspective: {
     index: 2,
-    uuid: testUUid,
+    uuid: `feature-17965329.perspective.0`,
     type: `perspective`,
     whitespace: `  `,
-    content: 'As an internet user',
+    content: `As an internet user`,
   },
   desire: {
     index: 5,
     type: `desire`,
-    uuid: testUUid,
+    uuid: `feature-17965329.desire.0`,
     whitespace: `  `,
-    content: 'I want to be able to search for information about the Keg-Hub',
+    content: `I want to be able to search for information about the Keg-Hub`,
   },
   rules: [],
   scenarios: [
@@ -87,41 +86,41 @@ export const parsedFeature = {
       index: 7,
       type: `scenario`,
       scenario: 'Search the web for google',
-      uuid: testUUid,
+      uuid: `feature-17965329.scenario.0`,
       whitespace: `  `,
       steps: [
         {
           index: 8,
           type: 'given',
-          uuid: testUUid,
+          uuid: `feature-17965329.scenario.0.given.0`,
           whitespace: `    `,
           step: 'I open the site https://www.google.com',
         },
         {
           step: 'I set keg-hub to the input .gLFyf',
           type: 'when',
-          uuid: testUUid,
+          uuid: `feature-17965329.scenario.0.when.1`,
           whitespace: `    `,
           index: 9,
         },
         {
           step: 'I press enter',
           type: 'when',
-          uuid: testUUid,
+          uuid: `feature-17965329.scenario.0.when.2`,
           whitespace: `    `,
           index: 10,
         },
         {
           step: 'I wait for the page to load',
           type: 'when',
-          uuid: testUUid,
+          uuid: `feature-17965329.scenario.0.when.3`,
           whitespace: `    `,
           index: 12,
         },
         {
           step: 'the element #search contains the text KegHub/keg-hub',
           type: 'then',
-          uuid: testUUid,
+          uuid: `feature-17965329.scenario.0.then.4`,
           whitespace: `    `,
           index: 13,
         },

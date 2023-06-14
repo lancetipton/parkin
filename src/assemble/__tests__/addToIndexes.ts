@@ -4,17 +4,6 @@ jest.clearAllMocks()
 
 import type { TFeatureAst } from '../../types'
 
-
-import { testUUid } from '../../__mocks__'
-
-const jsutils = require('@keg-hub/jsutils')
-jest.setMock('@keg-hub/jsutils', {
-  ...jsutils,
-  uuid: jest.fn(() => {
-    return testUUid
-  })
-})
-
 const { addToIndexes } = require('../addToIndexes')
 
 describe('addToIndexes', () => {

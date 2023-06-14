@@ -54,13 +54,13 @@ export const validateDefinition = (
   definitions:TStepDef[]
 ) => {
   return definitions.reduce(
-    (validated, def) => {
+    (validated, def, idx) => {
       // Check if the checkDef already exists in the definitions array
       // By comparing the content of the existing definitions to it
       if (!validated || def.content === validated.content) return false
 
-      // If the uuid happens to match an existing definition, give it a new uuid
-      def.uuid === validated.uuid && (validated.uuid = uuid())
+      // Have to ensure no duplicate uuids, so use the index if there is a match 
+      def.uuid === validated.uuid && (validated.uuid = `${validated.uuid}-${idx}`)
 
       return validated
     },

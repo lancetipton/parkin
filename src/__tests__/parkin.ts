@@ -19,13 +19,6 @@ jest.resetModules()
 jest.resetAllMocks()
 jest.clearAllMocks()
 
-const jsutils = require('@keg-hub/jsutils')
-jest.setMock('@keg-hub/jsutils', {
-  ...jsutils,
-  uuid: jest.fn(() => {
-    return testUUid
-  })
-})
 
 const worldObj = {}
 const { Parkin } = require('../parkin')
@@ -106,8 +99,8 @@ describe(`Parkin`, () => {
     const rulesScenario = parsed.rules[0].scenarios[0]
     const featScenario = parsed.scenarios[0]
 
-    expect(rulesScenario.steps?.length).toBe(0)
-    expect(rulesScenario.scenario).toBe(``)
+    expect(rulesScenario?.steps?.length).toBe(0)
+    expect(rulesScenario?.scenario).toBe(``)
 
     expect(featScenario.steps?.length).toBe(1)
     expect(featScenario.scenario).toBe(`Navigate the Goblog`)

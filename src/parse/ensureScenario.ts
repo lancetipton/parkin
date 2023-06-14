@@ -1,6 +1,12 @@
-import type { TFeatureAst, TScenarioAst, TRuleAst } from '../types'
+import type {
+  TRuleAst,
+  TFeatureAst,
+  TScenarioAst,
+  TScenarioParentAst
+} from '../types'
 
-import { exists, uuid } from '@keg-hub/jsutils'
+import { idFromLoc } from './idFromLoc'
+import { exists } from '@keg-hub/jsutils'
 import { EAstObject, EFeatureTypes } from '../types'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
@@ -18,14 +24,18 @@ const RX_EXAMPLE = /^\s*Example:(.*)$/
  */
 export const scenarioFactory = (
   scenario:string|false,
+  parent?:TScenarioParentAst,
   index?:number
 ) => {
+  const type = EAstObject.scenario
+  const loc = parent?.scenarios?.length || 0
+
   return {
+    type,
     index,
     scenario,
     steps: [],
-    type: EAstObject.scenario,
-    ...(scenario && { uuid: uuid() }),
+    ...(scenario && parent && { uuid: idFromLoc({ loc, type, parent })}),
   } as TScenarioAst
 }
 
@@ -53,16 +63,15 @@ export const ensureScenario = (
     ? getRXMatch(line, RX_SCENARIO, 1)
     : getRXMatch(line, RX_EXAMPLE, 1)
 
+
   // Check if the scenario text was already added, and add it if needed
   // Otherwise create a new scenario with the scenario text
   !exists(scenario.scenario)
     ? (scenario.scenario = scenarioText)
-    : (scenario = scenarioFactory(scenarioText, index))
+    : (scenario = scenarioFactory(scenarioText, undefined, index))
 
   // Ensure the line index is added
   !scenario.index && (scenario.index = index)
-  // Add the uuid from the scenario text if it doesn't exist
-  !scenario.uuid && (scenario.uuid = uuid())
 
   // Get the start whitespace, used when assembling the feature
   scenario.whitespace = getStartWhiteSpace(line)
@@ -77,6 +86,14 @@ export const ensureScenario = (
   const parent = rule.uuid && scenario.whitespace > rule.whitespace
     ? rule
     : feature
+
+  // Add the uuid from the scenario text if it doesn't exist
+  !scenario.uuid
+    && (scenario.uuid = idFromLoc({
+        parent,
+        type: scenario.type,
+        loc: parent?.scenarios?.length || 0,
+      }))
 
   !parent.scenarios.includes(scenario)
     && parent.scenarios.push(scenario)

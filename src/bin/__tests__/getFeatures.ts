@@ -20,12 +20,6 @@ jest.setMock('../paths', pathsMock)
 
 jest.setMock('../helpers', mockHelpers)
 
-// const mockUtils = {
-//   ensureArr: jest.fn(),
-//   flatArr: jest.fn(),
-// }
-// jest.setMock('@keg-hub/jsutils', mockUtils)
-
 const { getFeatures } = require('../getFeatures')
 
 describe('getFeatures', () => {

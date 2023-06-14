@@ -2,8 +2,7 @@ import type { TFeatureAst } from '../types'
 
 import { EAstObject } from '../types'
 import { parseError } from './parseError'
-import { uuid } from '@keg-hub/jsutils'
-import { getRXMatch } from '../utils/helpers'
+import { strToId, getRXMatch } from '../utils/helpers'
 
 /**
  * Regular expressions for matching feature file keywords
@@ -32,6 +31,7 @@ export const featureFactory = (
     comments: [],
     scenarios: [],
     type: EAstObject.feature,
+    ...(feature && { uuid: strToId(feature, `feature-`) })
   } as TFeatureAst
 }
 
@@ -77,7 +77,7 @@ export const ensureFeature = (
 
     // Ensure the index is added if needed
     if (!feature.index) feature.index = index
-    if (!feature.uuid) feature.uuid = uuid()
+    if (!feature.uuid) feature.uuid = strToId(feature.feature, `feature-`)
 
     !featuresGroup.includes(feature) && featuresGroup.push(feature)
 
