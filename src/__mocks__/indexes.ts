@@ -137,11 +137,30 @@ export const dataMapperMocks = {
   }
 }
 
+const mockFeatContent = `@tag1 @tag2
+Feature: Mock Indexed Feature
+
+  # comment
+  desire desire
+  perspective perspective
+  reason reason
+  Background: background 7
+    Given Step
+  @rule_tag1 @rule_tag2
+  Rule: rule 1
+  @scenario_tag1 @scenario_tag2
+  Scenario: scenario 1
+  Given Some text
+  Background: background 1
+  Given Some text
+  @scenario_tag1 @scenario_tag2
+  Scenario: scenario 45
+  Given Some other text`
 
 export const mockFeatToIdx:TFeatureAst = {
   uuid: testUUid,
   index: 1,
-  content: ``,
+  content: mockFeatContent,
   type: EAstObject.feature,
   feature: `Mock Indexed Feature`,
   tags: {
@@ -202,12 +221,12 @@ export const mockFeatToIdx:TFeatureAst = {
   },
   rules: [
     {
-      index: 9,
+      index: 10,
       rule: `rule 1`,
       uuid: `rule-1`,
       type: EAstObject.rule,
       tags: {
-        index: 10,
+        index: 9,
         uuid: `435`,
         type: EAstObject.tags,
         content: "rule_tag1 rule_tag2",
@@ -215,12 +234,12 @@ export const mockFeatToIdx:TFeatureAst = {
       },
       scenarios: [
         {
-          index: 11,
+          index: 12,
           uuid: `scen-1`,
           scenario: `scenario 1`,
           type: EAstObject.scenario,
           tags: {
-            index: 12,
+            index: 11,
             uuid: `433`,
             type: EAstObject.tags,
             content: `scenario_tag1 scenario_tag2`,
@@ -256,12 +275,12 @@ export const mockFeatToIdx:TFeatureAst = {
   ],
   scenarios: [
     {
-      index: 16,
+      index: 17,
       uuid: `scen-45`,
       scenario: `scenario 45`,
       type: EAstObject.scenario,
       tags: {
-        index: 17,
+        index: 16,
         uuid: `433`,
         type: EAstObject.tags,
         content: "scenario_tag1 scenario_tag2",

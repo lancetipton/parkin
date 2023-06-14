@@ -9,7 +9,7 @@ import type {
   TBackgroundAst,
 } from '../types'
 
-import { capitalize } from '@keg-hub/jsutils'
+import { capitalize, exists } from '@keg-hub/jsutils'
 import { EFeatureTypes, EAstObject } from '../types'
 import { getTextContent, getWhiteSpace, addContent } from './helpers'
 
@@ -30,7 +30,13 @@ export const assembleStep = (
   { ast, parent }:TIndexItemAst
 ) => {
   const step = ast as TStepAst
-  const whitespace = getWhiteSpace(step, parent, `  `)
+  const whitespace = getWhiteSpace(
+    step,
+    parent,
+    exists<string>(parent?.whitespace)
+      ? `${parent?.whitespace}  `
+      : `    `
+  )
   const type = (step.type as string) !== EAstObject.step ? capitalize(step.type) : `Step`
   addContent(
     assembled,
@@ -44,10 +50,20 @@ export const assembleTags = (
   { ast, parent }:TIndexItemAst
 ) => {
   const tags = ast as TTagsAst
-  const whitespace = getWhiteSpace(tags, parent)
+  const whitespace = getWhiteSpace(
+    tags,
+    parent,
+    `feature` in parent ? `` : `  `
+  )
+
+  const content = tags.tokens.reduce((acc, token) => {
+    const trimmed = token?.trim?.()
+    return trimmed.length ? `${acc} @${token.replace(/^@/, ``)}` : acc
+  }, ``).trim()
+
   addContent(
     assembled,
-    `${whitespace || ``}${tags.tokens.join(' ')}`,
+    `${whitespace || ``}${content}`,
     parent.tags.index
   )
 }
