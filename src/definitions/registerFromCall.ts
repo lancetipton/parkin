@@ -6,10 +6,9 @@ import type {
 
 
 import { EStepType } from '../types'
-import { uuid } from '@keg-hub/jsutils'
 import { constants } from '../constants'
 import { capitalize, noOpObj } from '@keg-hub/jsutils'
-import { sanitize, validateDefinition } from '../utils/helpers'
+import { strToId, sanitize, validateDefinition } from '../utils/helpers'
 
 const { REGEX_VARIANT, EXPRESSION_VARIANT } = constants
 
@@ -57,14 +56,13 @@ export const registerFromCall = function (
     meta,
     method,
     variant,
-    // TODO: add token parsing
     tokens: [],
     match: formattedMatch,
   }
 
   definition.name = sanitize(definition as TStepDef)
   definition.content = getContent(definition as TStepDef)
-  definition.uuid = uuid()
+  definition.uuid = strToId(definition.name, `def-`)
 
   const definitions = this.list()
   const newDefinition = validateDefinition(definition as TStepDef, definitions)

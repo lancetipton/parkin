@@ -1,5 +1,21 @@
 import type { TTokenOpts, EPartMatchTypes, TStepDef } from '../types'
-import { uuid, emptyObj } from '@keg-hub/jsutils'
+import { uuid, emptyObj, hashString } from '@keg-hub/jsutils'
+
+
+const cleanDefMatch = (match:string|RegExp) => {
+  let name = match.toString()
+  name[0] === '/' && (name = name.substring(1))
+  name[0] === '^' && (name = name.substring(1))
+  
+  name.charAt(name.length - 1) === '/' && (name = name.slice(0, -1))
+  name.charAt(name.length - 1) === '$' && (name = name.slice(0, -1))
+  
+  return name
+}
+
+export const strToId = (str:string, prefix:string=``, postfix:string=``) => {
+  return `${prefix}${hashString(cleanDefMatch(str))}${postfix}`
+}
 
 /*
  * Extracts keywords from a text string
@@ -23,14 +39,7 @@ export const getRXMatch = (
  *
  */
 export const sanitize = (def:TStepDef) => {
-  let name = def.match.toString()
-  name[0] === '/' && (name = name.substring(1))
-  name[0] === '^' && (name = name.substring(1))
-
-  name.charAt(name.length - 1) === '/' && (name = name.slice(0, -1))
-  name.charAt(name.length - 1) === '$' && (name = name.slice(0, -1))
-
-  return name.replace(/\(\?:([^\|]+)+\|+([^\)]+)?\)/, '$1')
+  return cleanDefMatch(def.match).replace(/\(\?:([^\|]+)+\|+([^\)]+)?\)/, '$1')
 }
 
 /**
