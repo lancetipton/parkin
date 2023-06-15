@@ -1,11 +1,12 @@
 import type {
   TTestAction,
   TParkinTestCB,
+  TTestTestObj,
+  TTestHookMethod,
   TDescribeAction,
   TParkinTestConfig,
   TParkinTestFactory,
   TParkinDescribeFactory,
-  TTestTestObj,
 } from '../types'
 
 import { run } from './run'
@@ -17,7 +18,7 @@ import {
   createDescribe,
   throwError,
   hookTypes,
-  validateHelper,
+  validateHook,
 } from './utils'
 
 type TTestSkipFactory = (description:string, action?:TTestAction, timeout?:number) => void
@@ -25,17 +26,21 @@ type TTestSkipFactory = (description:string, action?:TTestAction, timeout?:numbe
 
 export class ParkinTest {
   timeout = 6000
-  #specDone:TParkinTestCB = noOp
-  #suiteDone:TParkinTestCB = noOp
-  #specStarted:TParkinTestCB = noOp
-  #suiteStarted:TParkinTestCB = noOp
-  #activeParent = undefined
-  #testOnly = false
   #autoClean = true
+  #testOnly = false
   #describeOnly = false
   #root = createRoot()
   xit:TTestSkipFactory
   it:TParkinTestFactory
+  #activeParent = undefined
+  #specDone:TParkinTestCB = noOp
+  #suiteDone:TParkinTestCB = noOp
+  #specStarted:TParkinTestCB = noOp
+  #suiteStarted:TParkinTestCB = noOp
+  afterAll:TTestHookMethod = noOp
+  afterEach:TTestHookMethod = noOp
+  beforeAll:TTestHookMethod = noOp
+  beforeEach:TTestHookMethod = noOp
 
   constructor(config:TParkinTestConfig = noOpObj) {
     this.#root.description = config.description || `root`
@@ -178,7 +183,7 @@ export class ParkinTest {
   #addHelpers = () => {
     Object.values(hookTypes).map(type => {
       this[type] = (action) => {
-        validateHelper(type, action)
+        validateHook(type, action)
         this.#activeParent[type].push(action)
       }
     })

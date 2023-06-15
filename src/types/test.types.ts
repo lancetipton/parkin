@@ -119,13 +119,14 @@ export type TParkinTestCB = (result:TRunResult) => void
 export type TDescribeAction = (() => void) & {
   ParkinMetaData?:TRunResultActionMeta
 }
+
 export type TTestAction = ((done?:()=> void) => any) & {
   ParkinMetaData?:TRunResultActionMeta
 }
-export type TTestHookMethod = ((...args:any[]) => any) & {
+
+export type TTestHookMethod = ((fn:(...args:any[]) => any, ...args:any[]) => any) & {
   ParkinMetaData?:TRunResultActionMeta
 }
-
 
 type TDescribeFactory = (description:string, action:TDescribeAction) => void
 export type TParkinDescribeFactory = TDescribeFactory & {

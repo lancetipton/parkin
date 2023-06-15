@@ -18,15 +18,15 @@ type TLoopTests = {
   describe:TDescribeTestObj
 }
 
-type TLoopDescribes = {
+type TRun = {
   testOnly:boolean
   describeOnly:boolean
-  parentIdx:string|number
   specDone:TParkinTestCB
   suiteDone:TParkinTestCB
   specStarted:TParkinTestCB
   suiteStarted:TParkinTestCB
   root:TRootTestObj|TDescribeTestObj
+  parentIdx?:string|number
 }
 
 /**
@@ -145,7 +145,7 @@ const loopTests = async (args:TLoopTests) => {
  *
  * @returns {Object} - Built run results of the test results
  */
-const loopDescribes = async (args:TLoopDescribes) => {
+const loopDescribes = async (args:TRun) => {
   const {
     root,
     testOnly,
@@ -256,8 +256,8 @@ const loopDescribes = async (args:TLoopDescribes) => {
  *
  * @returns {Object} - Results of the test run
  */
-export const run = async (args) => {
-  validateRootRun(args.root)
+export const run = async (args:TRun) => {
+  validateRootRun(args.root as TRootTestObj)
 
   const beforeAllResult = await loopHooks({
     root: args.root,

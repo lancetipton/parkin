@@ -64,7 +64,7 @@ export const throwError = (error:string) => {
  * @throws
  *
  */
-export const validateHelper = (
+export const validateHook = (
   type:keyof typeof Types,
   action:TTestHookMethod,
 ) => {
