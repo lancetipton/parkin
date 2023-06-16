@@ -137,6 +137,11 @@ export const matcher = (
 
   const defLength = definitions.length
 
+  /**
+   * TODO: investigate how to improve this to speed it up
+   * Currently loops through all steps until the correct one is found
+   * See if there's a way to filter which defs are looked at based on the step text
+   */
   for (let idx = 0; idx < defLength; idx++) {
     const definition = definitions[idx]
 

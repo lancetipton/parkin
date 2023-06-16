@@ -107,7 +107,7 @@ export class Steps {
    */
   match = (text:string) => {
     // Join all step types together when finding a match
-    // Cucumber treats all step definition types as the same when matching to step text
+    // Treat all step definition types as the same when matching to step text
     const list = this.list()
 
     // Call the matcher to find a matching step definition
