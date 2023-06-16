@@ -1,4 +1,10 @@
-import type { TDescribeTestObj, TParkinTestAbort, TParkinTestCB, TRootTestObj, TRunResult } from '../types'
+import type {
+  TRunResult,
+  TRootTestObj,
+  TParkinTestCB,
+  TDescribeTestObj,
+  TParkinTestAbort,
+} from '../types'
 
 import { runResult } from './runResult'
 import { Types, validateRootRun } from './utils'
@@ -9,6 +15,11 @@ import {
   callBeforeHooks,
 } from './hooks'
 
+import {
+  buildTestArgs,
+  shouldSkipTest,
+  shouldSkipDescribe,
+} from './runHelpers'
 
 type TLoopTests = {
   suiteId:string
@@ -57,10 +68,12 @@ const loopTests = async (args:TLoopTests) => {
 
     if(shouldAbort()) break
 
-    const test = describe.tests[testIdx]
-    const specId = `spec${testIdx}`
-    const testPath = `/${suiteId}/${specId}`
-    const fullName = `${describe.description} > ${test.description}`
+    const {
+      test,
+      specId,
+      testPath,
+      fullName,
+    } = buildTestArgs({ suiteId, testIdx, describe })
 
     let testResult = runResult(test, {
       fullName,
@@ -69,7 +82,7 @@ const loopTests = async (args:TLoopTests) => {
       action: EResultAction.start,
     })
 
-    if ((testOnly && !test.only) || test.skip) {
+    if(shouldSkipTest({ testOnly, test })){
       specStarted({
         ...testResult,
         skipped: true,
@@ -151,7 +164,6 @@ const loopTests = async (args:TLoopTests) => {
 
 }
 
-
 /**
  * Helper to loop over describe methods and call child tests
  * @param {Object} args - Config to overwrite the initial test config object
@@ -188,12 +200,8 @@ const loopDescribes = async (args:TRun) => {
       fullName: describe.description,
     })
 
-    const shouldSkip =
-      describe.skip ||
-      (describeOnly && !describe.only && !describe.onlyChild) ||
-      (testOnly && !describe.onlyChild)
 
-    if (shouldSkip) {
+    if (shouldSkipDescribe({ describe, describeOnly, testOnly })) {
       suiteStarted({
         ...describeResult,
         skipped: true,

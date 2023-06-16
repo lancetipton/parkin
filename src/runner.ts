@@ -12,8 +12,9 @@ import type {
   TParkinRunFeaturesInput
 } from './types'
 
-import { ETestType, EHookType } from './types'
 import { parseFeature } from './parse'
+import { ETestType, EHookType } from './types'
+import { filterFeatures } from './utils/filterFeatures'
 import { getTestMethod, skipTestsOnFail } from './utils/testMethods'
 import {
   throwMissingSteps,
@@ -26,8 +27,6 @@ import {
   isStr,
   pickKeys,
   emptyObj,
-  emptyArr,
-  eitherArr,
   capitalize,
 } from '@keg-hub/jsutils'
 
@@ -252,90 +251,6 @@ const runRule = (
 }
 
 /**
- * @param {string} tags
- * @return {Array<string>?} A match of all words starting with '@', the tag indicator.
- * Returns false if input is invalid.
- */
-const parseFeatureTags = (tags?:string|string[]) => {
-  return isStr(tags)
-    ? tags.match(/[@]\w*/g)
-    : isArr<string>(tags)
-      ? tags
-      : emptyArr
-}
-
-/**
- * @param {string?} name - name of test item to check
- * @param {string[]} tags - Tags related to the test item
- * @param {TParkinRunOpts} filterOptions - Define how the steps are run
- *
- * @return {Boolean} - true if feature matches the filter options
- */
-const itemMatch = (
-  name:string='',
-  tags:string[]=emptyArr,
-  filterOptions:TParkinRunOpts=emptyObj
-) => {
-  const {
-    name: filterName,
-    tags: filterTags
-  } = filterOptions
-
-  const parsedTags = isStr(filterTags)
-    ? parseFeatureTags(filterTags)
-    : eitherArr(filterTags, [])
-
-  const nameMatch = !filterName || name.includes(filterName)
-  const tagMatch =
-    !parsedTags.length ||
-    parsedTags.every((clientTag:string) => tags.includes(clientTag))
-
-  return nameMatch && tagMatch
-}
-
-/**
- * Filters features and scenarios based on the passed in filterOptions
- * @function
- * @private
- * @param {Array} features - Features to be run
- * @param {TParkinRunOpts} filterOptions - Filters for running Features
- *
- * @returns {Array} - Filtered features that should be run
- */
-const filterFeatures = (
-  features:TFeatureAst[],
-  filterOptions:TParkinRunOpts = emptyObj
-) => {
-  return features.reduce((filtered, feature) => {
-    const isMatchingFeature = itemMatch(
-      feature.feature,
-      feature?.tags?.tokens,
-      filterOptions
-    )
-    if (isMatchingFeature) {
-      filtered.push(feature)
-      return filtered
-    }
-
-    // check for matching scenarios, where scenarios inherit their parent feature's tags
-    const matchingScenarios = feature.scenarios.filter(scenario =>
-      itemMatch(
-        scenario.scenario,
-        [ ...(scenario?.tags?.tokens || emptyArr), ...(feature?.tags?.tokens || emptyArr) ],
-        filterOptions
-      )
-    )
-    if (matchingScenarios.length) {
-      filtered.push({
-        ...feature,
-        scenarios: matchingScenarios,
-      })
-    }
-    return filtered
-  }, [])
-}
-
-/**
  * Parses and runs the steps of a feature text string
  * Uses the registered steps of the passed in Steps class instance to evaluate the feature steps
  * @class
@@ -418,15 +333,29 @@ export class Runner {
 
       const describeMethod = () => {
         responses.push(
-          ...feature.rules.map((rule:TRuleAst) =>
-            runRule(this.steps, rule, feature.background, testMode)
-          )
+          ...feature.rules.reduce((acc:any[], rule:TRuleAst) => {
+            acc.push(runRule(
+              this.steps,
+              rule,
+              feature.background,
+              testMode
+            ))
+
+            return acc
+          }, [] as any[])
         )
 
         responses.push(
-          ...feature.scenarios.map((scenario:TScenarioAst) =>
-            runScenario(this.steps, scenario, feature.background, testMode)
-          )
+          ...feature.scenarios.reduce((acc:any[], scenario:TScenarioAst) => {
+            acc.push(runScenario(
+              this.steps,
+              scenario,
+              feature.background,
+              testMode
+            ))
+
+            return acc
+          }, [] as any[])
         )
 
         // Ensure we resolve all promises inside the describe block
