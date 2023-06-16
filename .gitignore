@@ -109,7 +109,6 @@ buck-out/
 # GoogleService-Info.plist
 
 # RNFirebaseStarter
-yarn.lock
 package-lock.json
 .next
 
