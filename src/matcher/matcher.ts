@@ -1,10 +1,10 @@
 import type {
   TStepDef,
   TFindOpts,
-  TMatchResp,
   TTokenOpts,
   TStepDefsArr,
-  TWorldConfig
+  TWorldConfig,
+  TNoExtMatchResp
 } from '../types'
 import type { Parkin } from '../parkin'
 
@@ -133,7 +133,7 @@ export const matcher = (
   opts:TFindOpts=emptyObj
 ) => {
 
-  if(!text.trim()) return emptyObj as TMatchResp
+  if(!text.trim()) return emptyObj as TNoExtMatchResp
 
   const defLength = definitions.length
 
@@ -142,11 +142,11 @@ export const matcher = (
 
     if(!definition.match) continue
     const found = definition.variant !== REGEX_VARIANT
-      ? matchExpression(definition, text, $world, opts) as TMatchResp
-      : matchRegex(definition, text) as TMatchResp
+      ? matchExpression(definition, text, $world, opts) as TNoExtMatchResp
+      : matchRegex(definition, text) as TNoExtMatchResp
 
-    if(found.match) return found
+    if(found.match) return found as TNoExtMatchResp
   }
 
-   return emptyObj as TMatchResp
+   return emptyObj as TNoExtMatchResp
 }

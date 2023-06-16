@@ -1,10 +1,12 @@
 import type {
   TStepDef,
   TStepMeta,
+  TStepDefs,
+  TMatchResp,
   TAddStepDefs,
   TWorldConfig,
   TStepDefMethod,
-  TStepDefs,
+  TMatchRespExt,
 } from './types'
 
 import { EStepType } from './types'
@@ -116,9 +118,12 @@ export class Steps {
 
     // Add the Step instance's world to the match arguments
     // Always added as the last argument
-    found.match.push(this._world)
+    // TODO: add parsed doc strings and tables to ext Object
+    const extObj:TMatchRespExt = { world: this._world }
 
-    return found
+    found.match.push(extObj)
+
+    return found as TMatchResp
   }
 
   /**

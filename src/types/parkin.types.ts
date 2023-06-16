@@ -43,8 +43,18 @@ export type TParse = {
   definition: (def:string) => TStepDef
 }
 
+export type TMatchRespExt = {
+  world:TWorldConfig
+  [key:string]: any
+}
+
+export type TNoExtMatchResp = {
+  match?: [...any]
+  definition?:TStepDef
+}
+
 export type TMatchResp = {
-  match?: [string|TWorldConfig]
+  match?: [...any, TMatchRespExt]
   definition?:TStepDef
 }
 

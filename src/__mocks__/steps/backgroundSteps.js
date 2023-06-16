@@ -13,7 +13,7 @@ const SCENARIO2_GIVEN = 'scenario 2 step - Given'
 const SCENARIO2_THEN = 'scenario 2 step - Then'
 
 export const registerBackgroundSteps = PK => {
-  PK.Given(`that background exists`, world => {
+  PK.Given(`that background exists`, ({ world }) => {
     expect(world.callOrder === undefined || world.callOrder.length === 4).toBe(
       true
     )
@@ -22,7 +22,7 @@ export const registerBackgroundSteps = PK => {
 
   PK.Then(
     `the background steps should be called before each scenario`,
-    world => {
+    ({ world }) => {
       expect(world.callOrder.length === 1 || world.callOrder.length === 5).toBe(
         true
       )
@@ -31,7 +31,7 @@ export const registerBackgroundSteps = PK => {
     }
   )
 
-  PK.Given(`that this Feature has a background`, world => {
+  PK.Given(`that this Feature has a background`, ({ world }) => {
     expect(world.callOrder.length).toBe(2)
     expect(world.callOrder[0]).toBe(BACKGROUND_GIVEN)
     expect(world.callOrder[1]).toBe(BACKGROUND_THEN)
@@ -40,7 +40,7 @@ export const registerBackgroundSteps = PK => {
 
   PK.Then(
     `this scenario's steps should be run after the background's steps`,
-    world => {
+    ({ world }) => {
       expect(world.callOrder.length).toBe(3)
       expect(world.callOrder[0]).toBe(BACKGROUND_GIVEN)
       expect(world.callOrder[1]).toBe(BACKGROUND_THEN)
@@ -49,7 +49,7 @@ export const registerBackgroundSteps = PK => {
     }
   )
 
-  PK.Given(`that a second scenario exists`, world => {
+  PK.Given(`that a second scenario exists`, ({ world }) => {
     expect(world.callOrder.length).toBe(6)
     expect(world.callOrder[0]).toBe(BACKGROUND_GIVEN)
     expect(world.callOrder[1]).toBe(BACKGROUND_THEN)
@@ -62,7 +62,7 @@ export const registerBackgroundSteps = PK => {
 
   PK.Then(
     `the second scenario's steps should be run after a second background's steps`,
-    world => {
+    ({ world }) => {
       expect(world.callOrder.length).toBe(7)
       expect(world.callOrder[0]).toBe(BACKGROUND_GIVEN)
       expect(world.callOrder[1]).toBe(BACKGROUND_THEN)

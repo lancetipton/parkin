@@ -22,25 +22,25 @@ Feature: World Replace steps
 
 export const worldReplaceObj = {
   feature: {
-    comment: 'is a comment',
+    comment: `is a comment`,
     background: {
-      then: 'world path values',
+      then: `world path values`,
     },
     scenario: {
-      first: 'First Scenario Text',
+      first: `First Scenario Text`,
     },
-    status: 'failed',
+    status: `failed`,
   },
   $alias: {
-    element: 'test-element',
+    element: `test-element`,
   },
   app: {
-    url: 'https://lancetipton.github.io/parkin',
+    url: `https://lancetipton.github.io/parkin`,
   },
   types: {
     int: 500,
     float: 3.14,
-    word: 'PARKIN',
-    string: 'Stored in the world object',
+    word: `PARKIN`,
+    string: `Stored in the world object`,
   },
 }
