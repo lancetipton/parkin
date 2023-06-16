@@ -1,5 +1,5 @@
 export const registerAliasSteps = PK => {
-  PK.Given('that a world.$alias object exists', (ctx) => {
+  PK.Given('that a world.$alias object exists', ctx => {
     const { world } = ctx
     expect(typeof world).toBe('object')
   })

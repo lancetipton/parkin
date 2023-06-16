@@ -1,5 +1,5 @@
 import type { Types } from '../test/utils'
-import type { EStepType } from './helpers.types'
+import type { EAstObject, EStepType } from './helpers.types'
 
 export enum EResultAction {
   test=`test`,
@@ -94,8 +94,9 @@ export type TRunResult = {
   description: string
   action:EResultAction
   status?:EResultStatus
-  type:keyof typeof Types,
+  describes?:TRunResult[]
   metaData?:TRunResultActionMeta
+  type:keyof typeof Types | EAstObject,
   failedExpectations?:Partial<TRunResult>[]
   passedExpectations?:Partial<TRunResult>[]
 }
