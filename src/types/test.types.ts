@@ -114,6 +114,7 @@ export type TSuite = {
   children: TSpec[]
 }
 
+export type TParkinTestAbort = () => void
 export type TParkinTestCB = (result:TRunResult) => void
 
 export type TDescribeAction = (() => void) & {
@@ -145,6 +146,7 @@ export type TParkinTestConfig = {
   timeout?:number
   autoClean?:boolean
   description?:string
+  onAbort?:TParkinTestAbort
   specDone?:TParkinTestCB
   suiteDone?:TParkinTestCB
   specStarted?:TParkinTestCB

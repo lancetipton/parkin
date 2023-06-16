@@ -1,4 +1,4 @@
-import type { TDescribeTestObj, TParkinTestCB, TRootTestObj } from '../types'
+import type { TDescribeTestObj, TParkinTestAbort, TParkinTestCB, TRootTestObj, TRunResult } from '../types'
 
 import { runResult } from './runResult'
 import { Types, validateRootRun } from './utils'
@@ -14,6 +14,7 @@ type TLoopTests = {
   suiteId:string
   testOnly:boolean
   specDone:TParkinTestCB
+  shouldAbort:() => boolean
   specStarted:TParkinTestCB
   describe:TDescribeTestObj
 }
@@ -23,11 +24,15 @@ type TRun = {
   describeOnly:boolean
   specDone:TParkinTestCB
   suiteDone:TParkinTestCB
+  onAbort:TParkinTestAbort
+  shouldAbort:() => boolean
   specStarted:TParkinTestCB
   suiteStarted:TParkinTestCB
   root:TRootTestObj|TDescribeTestObj
   parentIdx?:string|number
 }
+
+type TRunResults = TRunResult[] & { aborted?:boolean }
 
 /**
  * Helper to loop over tests and call their test method
@@ -40,6 +45,7 @@ const loopTests = async (args:TLoopTests) => {
     describe,
     testOnly,
     specDone,
+    shouldAbort,
     specStarted
   } = args
 
@@ -48,6 +54,9 @@ const loopTests = async (args:TLoopTests) => {
 
   // ------ describe - loop tests ------ //
   for (let testIdx = 0; testIdx < describe.tests.length; testIdx++) {
+
+    if(shouldAbort()) break
+
     const test = describe.tests[testIdx]
     const specId = `spec${testIdx}`
     const testPath = `/${suiteId}/${specId}`
@@ -70,6 +79,8 @@ const loopTests = async (args:TLoopTests) => {
       continue
     }
     else specStarted(testResult)
+
+    if(shouldAbort()) break
 
     const beforeEachResult = await loopHooks({
       test,
@@ -110,6 +121,8 @@ const loopTests = async (args:TLoopTests) => {
       })
       describeFailed = true
     }
+    
+    if(shouldAbort()) break
 
     const afterEachResult = await loopHooks({
       test,
@@ -132,10 +145,10 @@ const loopTests = async (args:TLoopTests) => {
     })
   }
 
-  return {
-    tests: results,
-    failed: describeFailed,
-  }
+  return shouldAbort()
+    ? { tests: [], failed: describeFailed }
+    : { tests: results, failed: describeFailed }
+
 }
 
 
@@ -151,17 +164,21 @@ const loopDescribes = async (args:TRun) => {
     testOnly,
     specDone,
     suiteDone,
+    shouldAbort,
     specStarted,
-    parentIdx = ``,
     suiteStarted,
     describeOnly,
+    parentIdx = ``,
   } = args
 
   let describeFailed = false
-  const results = []
+  const results:TRunResults = []
 
   // ------ loop describes ------ //
   for (let idx = 0; idx < root.describes.length; idx++) {
+
+    if(shouldAbort()) break
+
     const describe = root.describes[idx]
     const suiteId = `suite-${parentIdx}${idx}`
     let describeResult = runResult(describe, {
@@ -192,6 +209,7 @@ const loopDescribes = async (args:TRun) => {
       suiteId,
       describe,
     })
+    
     if (beforeResult) {
       describeFailed = true
       describeResult = { ...describeResult, ...beforeResult }
@@ -200,13 +218,18 @@ const loopDescribes = async (args:TRun) => {
       continue
     }
 
+    if(shouldAbort()) break
+
     const testResults = await loopTests({
       suiteId,
       describe,
       testOnly,
       specDone,
+      shouldAbort,
       specStarted,
     })
+
+    if(shouldAbort()) break
 
     const describesResults =
       describe.describes &&
@@ -243,11 +266,16 @@ const loopDescribes = async (args:TRun) => {
       continue
     }
 
+    if(shouldAbort()) break
+
     suiteDone(describeResult)
     results.push(describeResult)
   }
 
-  return { describes: results, failed: describeFailed }
+  return shouldAbort()
+    ? { describes: [], failed: describeFailed }
+    : { describes: results, failed: describeFailed }
+
 }
 
 /**
@@ -256,22 +284,43 @@ const loopDescribes = async (args:TRun) => {
  *
  * @returns {Object} - Results of the test run
  */
-export const run = async (args:TRun) => {
-  validateRootRun(args.root as TRootTestObj)
+export const run = async (args:TRun):Promise<TRunResults> => {
+  
+  const {
+    root,
+    onAbort,
+    shouldAbort
+  } = args
+  
+  validateRootRun(root as TRootTestObj)
 
   const beforeAllResult = await loopHooks({
-    root: args.root,
+    root: root,
     suiteId: Types.root,
     type: Types.beforeAll,
   })
+
+  if(shouldAbort()){
+    onAbort?.()
+    const results:TRunResults = []
+    results.aborted = true
+    return results
+  }
 
   // If a before all throws an error, we don't want to run the rest of the tests, so just return
   if (beforeAllResult) return [beforeAllResult]
 
   const { describes } = await loopDescribes(args)
 
+  if(shouldAbort()){
+    onAbort?.()
+    const results:TRunResults = []
+    results.aborted = true
+    return results
+  }
+
   const afterAllResult = await loopHooks({
-    root: args.root,
+    root: root,
     suiteId: Types.root,
     type: Types.afterAll,
   })

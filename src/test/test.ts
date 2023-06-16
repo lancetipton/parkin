@@ -4,6 +4,7 @@ import type {
   TTestTestObj,
   TTestHookMethod,
   TDescribeAction,
+  TParkinTestAbort,
   TParkinTestConfig,
   TParkinTestFactory,
   TParkinDescribeFactory,
@@ -28,6 +29,7 @@ export class ParkinTest {
   timeout = 6000
   #autoClean = true
   #testOnly = false
+  #abortRun = false
   #describeOnly = false
   #root = createRoot()
   xit:TTestSkipFactory
@@ -37,6 +39,7 @@ export class ParkinTest {
   #suiteDone:TParkinTestCB = noOp
   #specStarted:TParkinTestCB = noOp
   #suiteStarted:TParkinTestCB = noOp
+  #onAbort:TParkinTestAbort = noOp
   afterAll:TTestHookMethod = noOp
   afterEach:TTestHookMethod = noOp
   beforeAll:TTestHookMethod = noOp
@@ -55,15 +58,18 @@ export class ParkinTest {
   }
 
   run = (config:TParkinTestConfig = noOpObj) => {
+
     if (config.description) this.#root.description = config.description
 
     this.#setConfig(config)
     const result = run({
       root: this.#root,
+      onAbort: this.#onAbort,
       testOnly: this.#testOnly,
       specDone: this.#specDone,
       suiteDone: this.#suiteDone,
       specStarted: this.#specStarted,
+      shouldAbort: this.#shouldAbort,
       describeOnly: this.#describeOnly,
       suiteStarted: this.#suiteStarted,
     })
@@ -73,6 +79,12 @@ export class ParkinTest {
     return result
   }
 
+  #shouldAbort = () => this.#abortRun
+
+  abort = () => {
+    this.#abortRun = true
+  }
+
   /**
    * Resets the instance to it's initial state
    * Clears all previously loaded tests and describes
@@ -80,6 +92,7 @@ export class ParkinTest {
   clean = () => {
     this.timeout = 6000
     this.#autoClean = true
+    this.#abortRun = false
     this.#testOnly = false
     this.#describeOnly = false
 
@@ -106,6 +119,7 @@ export class ParkinTest {
    */
   #setConfig = ({
     timeout,
+    onAbort,
     autoClean,
     specDone,
     suiteDone,
@@ -113,10 +127,13 @@ export class ParkinTest {
     suiteStarted,
   }:TParkinTestConfig) => {
     if (timeout) this.timeout = timeout
+    if (onAbort) this.#onAbort = onAbort
+
     if (specDone) this.#specDone = specDone
     if (suiteDone) this.#suiteDone = suiteDone
     if (specStarted) this.#specStarted = specStarted
     if (suiteStarted) this.#suiteStarted = suiteStarted
+    
     if (autoClean === false) this.#autoClean = autoClean
   }
 
