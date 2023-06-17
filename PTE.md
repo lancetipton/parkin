@@ -2,7 +2,7 @@
 * Parkin Test Executer (PTE) is a Node.js and Browser Test runner, with a similar API to [Jest](https://jestjs.io/) or [Vitest](https://vitest.dev/)
 * **It is not designed to be a full Testing Suite replacement**
 * Instead acts as fallback for Parkin when no other Testing Suite is defined
-* Because of this it has a smaller feature set, only implementing features required be Parkin
+* Because of this, it has a smaller feature set, only implementing features required by Parkin
 
 
 ## Use
@@ -34,7 +34,7 @@ describe(`Test the thing`, () => {
       * Here we assume `./tests/index.js` imports the `@ltipton/parkin` library
 * If using another framework such as [Jest](https://jestjs.io/), and the ParkinTest globals are imported
   * They will **NOT** override the existing global methods by default
-  * If needed the global methods can be overridden in one of the following ways
+  * If needed, the global methods can be overridden in one of the following ways
     *  Setting `PARKIN_TEST_GLOBALS_OVERRIDE=true` before importing them
       * Example: `process.env.PARKIN_TEST_GLOBALS_OVERRIDE = true; import '@ltipton/parkin/global'`
     *  Calling the returned `setParkinTestGlobals` method from the Parkin Global import
