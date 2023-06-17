@@ -3,13 +3,14 @@ import type { TWorldConfig } from './types'
 
 import { EHookType } from './types'
 import { constants } from './constants'
-import { isFunc, noPropArr, noOp } from '@keg-hub/jsutils'
 import { throwInvalidHookType } from './utils/errors'
+import { isFunc, noPropArr, noOp } from '@keg-hub/jsutils'
 
 const { HOOK_TYPES } = constants
 
 type THookMethod = (parkin:Parkin) => void|Promise<void>
 type TRegisteredHooks = Record<EHookType, THookMethod[]>
+type THookFactory = (clientHookFn:THookMethod) => void
 
 /**
  * Allows registering hook functions, which are then called when
@@ -19,6 +20,12 @@ type TRegisteredHooks = Record<EHookType, THookMethod[]>
  *
  */
 export class Hooks {
+
+  afterAll:THookFactory=noOp
+  beforeAll:THookFactory=noOp
+  afterEach:THookFactory=noOp
+  beforeEach:THookFactory=noOp
+
   /**
    * Allowed hook types
    * @memberof Hooks
