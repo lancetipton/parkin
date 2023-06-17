@@ -29,9 +29,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// node_modules/@storybook/expect/dist/cjs/index.js
+// node_modules/.pnpm/@storybook+expect@27.5.2-0/node_modules/@storybook/expect/dist/cjs/index.js
 var require_cjs = __commonJS({
-  "node_modules/@storybook/expect/dist/cjs/index.js"(exports) {
+  "node_modules/.pnpm/@storybook+expect@27.5.2-0/node_modules/@storybook/expect/dist/cjs/index.js"(exports) {
     (() => {
       var e = { "./node_modules/@babel/code-frame/lib/index.js": (e2, t2, n2) => {
         "use strict";
@@ -8600,9 +8600,9 @@ ${p2}`;
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/validate-23297ec2.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/validate-23297ec2.js
 var require_validate_23297ec2 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/validate-23297ec2.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/validate-23297ec2.js"(exports) {
     "use strict";
     var OPTIONS = {
       SHOULD_LOG: true,
@@ -8690,45 +8690,45 @@ var require_validate_23297ec2 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/isArr-39234014.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isArr-39234014.js
 var require_isArr_39234014 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/isArr-39234014.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isArr-39234014.js"(exports) {
     "use strict";
     var isArr = (value) => Array.isArray(value);
     exports.isArr = isArr;
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/isObj-6b3aa807.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isObj-6b3aa807.js
 var require_isObj_6b3aa807 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/isObj-6b3aa807.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isObj-6b3aa807.js"(exports) {
     "use strict";
     var isObj2 = (obj) => typeof obj === "object" && !Array.isArray(obj) && obj !== null;
     exports.isObj = isObj2;
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/isFunc-f93803cb.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isFunc-f93803cb.js
 var require_isFunc_f93803cb = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/isFunc-f93803cb.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isFunc-f93803cb.js"(exports) {
     "use strict";
     var isFunc2 = (func) => typeof func === "function";
     exports.isFunc = isFunc2;
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/isStr-8a57710e.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isStr-8a57710e.js
 var require_isStr_8a57710e = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/isStr-8a57710e.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isStr-8a57710e.js"(exports) {
     "use strict";
     var isStr3 = (str) => typeof str === "string";
     exports.isStr = isStr3;
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/isNum-c7164b50.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isNum-c7164b50.js
 var require_isNum_c7164b50 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/isNum-c7164b50.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isNum-c7164b50.js"(exports) {
     "use strict";
     var equalsNaN = (val) => typeof val === "number" && val != val;
     var isNum = (val) => typeof val === "number" && !equalsNaN(val);
@@ -8737,9 +8737,9 @@ var require_isNum_c7164b50 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/isValidDate-813b9419.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isValidDate-813b9419.js
 var require_isValidDate_813b9419 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/isValidDate-813b9419.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isValidDate-813b9419.js"(exports) {
     "use strict";
     var isObj2 = require_isObj_6b3aa807();
     var isArr = require_isArr_39234014();
@@ -8756,18 +8756,18 @@ var require_isValidDate_813b9419 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/isBool-aa6af74e.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isBool-aa6af74e.js
 var require_isBool_aa6af74e = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/isBool-aa6af74e.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isBool-aa6af74e.js"(exports) {
     "use strict";
     var isBool = (val) => typeof val === "boolean";
     exports.isBool = isBool;
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/toStr-8e499966.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/toStr-8e499966.js
 var require_toStr_8e499966 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/toStr-8e499966.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/toStr-8e499966.js"(exports) {
     "use strict";
     var isStr3 = require_isStr_8a57710e();
     var toStr2 = (val) => val === null || val === void 0 ? "" : isStr3.isStr(val) ? val : JSON.stringify(val);
@@ -8775,9 +8775,9 @@ var require_toStr_8e499966 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/toBool-deb350e4.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/toBool-deb350e4.js
 var require_toBool_deb350e4 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/toBool-deb350e4.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/toBool-deb350e4.js"(exports) {
     "use strict";
     var toStr2 = require_toStr_8e499966();
     var isBool = require_isBool_aa6af74e();
@@ -8790,18 +8790,18 @@ var require_toBool_deb350e4 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/isColl-5757310a.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isColl-5757310a.js
 var require_isColl_5757310a = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/isColl-5757310a.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isColl-5757310a.js"(exports) {
     "use strict";
     var isColl = (val) => typeof val === "object" && val !== null;
     exports.isColl = isColl;
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/deepEqual-adba847a.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/deepEqual-adba847a.js
 var require_deepEqual_adba847a = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/deepEqual-adba847a.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/deepEqual-adba847a.js"(exports) {
     "use strict";
     var isColl = require_isColl_5757310a();
     var isArr = require_isArr_39234014();
@@ -8861,18 +8861,18 @@ var require_deepEqual_adba847a = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js
 var require_exists_c79204b1 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js"(exports) {
     "use strict";
     var exists = (value) => value === value && value !== void 0 && value !== null;
     exports.exists = exists;
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/isInt-94ce4199.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isInt-94ce4199.js
 var require_isInt_94ce4199 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/isInt-94ce4199.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isInt-94ce4199.js"(exports) {
     "use strict";
     var isNum = require_isNum_c7164b50();
     var isNegative = (x) => isNum.isNum(x) && x < 0;
@@ -8886,9 +8886,9 @@ var require_isInt_94ce4199 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/jsonEqual-7e69ef6a.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/jsonEqual-7e69ef6a.js
 var require_jsonEqual_7e69ef6a = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/jsonEqual-7e69ef6a.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/jsonEqual-7e69ef6a.js"(exports) {
     "use strict";
     var isStr3 = require_isStr_8a57710e();
     var isNum = require_isNum_c7164b50();
@@ -8917,9 +8917,9 @@ var require_jsonEqual_7e69ef6a = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/isQuoted-eb6994da.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isQuoted-eb6994da.js
 var require_isQuoted_eb6994da = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/isQuoted-eb6994da.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isQuoted-eb6994da.js"(exports) {
     "use strict";
     var isStr3 = require_isStr_8a57710e();
     var isLowerCase = (str) => str === str.toLowerCase();
@@ -8983,9 +8983,9 @@ var require_isQuoted_eb6994da = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/isValidUrl-a77135f0.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isValidUrl-a77135f0.js
 var require_isValidUrl_a77135f0 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/isValidUrl-a77135f0.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isValidUrl-a77135f0.js"(exports) {
     "use strict";
     var isValidUrl = (str) => {
       var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/;
@@ -8995,9 +8995,9 @@ var require_isValidUrl_a77135f0 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/not-16fa9c85.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/not-16fa9c85.js
 var require_not_16fa9c85 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/not-16fa9c85.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/not-16fa9c85.js"(exports) {
     "use strict";
     var isArr = require_isArr_39234014();
     var isValidDate = require_isValidDate_813b9419();
@@ -9088,9 +9088,9 @@ var require_not_16fa9c85 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/compareTo-d69e4abf.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/compareTo-d69e4abf.js
 var require_compareTo_d69e4abf = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/compareTo-d69e4abf.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/compareTo-d69e4abf.js"(exports) {
     "use strict";
     var isStr3 = require_isStr_8a57710e();
     var not = require_not_16fa9c85();
@@ -9110,9 +9110,9 @@ var require_compareTo_d69e4abf = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/isNonNegative-9959647c.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isNonNegative-9959647c.js
 var require_isNonNegative_9959647c = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/isNonNegative-9959647c.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isNonNegative-9959647c.js"(exports) {
     "use strict";
     var isNum = require_isNum_c7164b50();
     var isNonNegative = (val) => isNum.isNum(val) && val >= 0;
@@ -9120,9 +9120,9 @@ var require_isNonNegative_9959647c = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/deepFreeze-d73ccc57.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/deepFreeze-d73ccc57.js
 var require_deepFreeze_d73ccc57 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/deepFreeze-d73ccc57.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/deepFreeze-d73ccc57.js"(exports) {
     "use strict";
     var isFunc2 = require_isFunc_f93803cb();
     var deepFreeze = (obj) => {
@@ -9136,9 +9136,9 @@ var require_deepFreeze_d73ccc57 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/noOps-c9732e8e.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/noOps-c9732e8e.js
 var require_noOps_c9732e8e = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/noOps-c9732e8e.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/noOps-c9732e8e.js"(exports) {
     "use strict";
     var deepFreeze = require_deepFreeze_d73ccc57();
     var noOpObj4 = Object.freeze({});
@@ -9158,9 +9158,9 @@ var require_noOps_c9732e8e = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/intersect-77d7e821.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/intersect-77d7e821.js
 var require_intersect_77d7e821 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/intersect-77d7e821.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/intersect-77d7e821.js"(exports) {
     "use strict";
     var validate = require_validate_23297ec2();
     var isArr = require_isArr_39234014();
@@ -9357,9 +9357,9 @@ var require_intersect_77d7e821 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/ensureArr-ae68c041.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/ensureArr-ae68c041.js
 var require_ensureArr_ae68c041 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/ensureArr-ae68c041.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/ensureArr-ae68c041.js"(exports) {
     "use strict";
     var isArr = require_isArr_39234014();
     var ensureArr = (val) => isArr.isArr(val) ? val : [val];
@@ -9367,18 +9367,18 @@ var require_ensureArr_ae68c041 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/softFalsy-3d7ead1c.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/softFalsy-3d7ead1c.js
 var require_softFalsy_3d7ead1c = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/softFalsy-3d7ead1c.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/softFalsy-3d7ead1c.js"(exports) {
     "use strict";
     var softFalsy = (val) => Boolean(val || val === "" || val === 0);
     exports.softFalsy = softFalsy;
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/set-c0a98b21.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/set-c0a98b21.js
 var require_set_c0a98b21 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/set-c0a98b21.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/set-c0a98b21.js"(exports) {
     "use strict";
     var isFunc2 = require_isFunc_f93803cb();
     var isArr = require_isArr_39234014();
@@ -9414,9 +9414,9 @@ var require_set_c0a98b21 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js
 var require_get_00626335 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js"(exports) {
     "use strict";
     var exists = require_exists_c79204b1();
     var isArr = require_isArr_39234014();
@@ -9439,9 +9439,9 @@ var require_get_00626335 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/deepClone-ae664a21.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/deepClone-ae664a21.js
 var require_deepClone_ae664a21 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/deepClone-ae664a21.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/deepClone-ae664a21.js"(exports) {
     "use strict";
     var isFunc2 = require_isFunc_f93803cb();
     var get = require_get_00626335();
@@ -9503,9 +9503,9 @@ var require_deepClone_ae664a21 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/shallowEqual-eaf2262d.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/shallowEqual-eaf2262d.js
 var require_shallowEqual_eaf2262d = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/shallowEqual-eaf2262d.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/shallowEqual-eaf2262d.js"(exports) {
     "use strict";
     var isObj2 = require_isObj_6b3aa807();
     var isColl = require_isColl_5757310a();
@@ -9607,9 +9607,9 @@ var require_shallowEqual_eaf2262d = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/either-81805472.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/either-81805472.js
 var require_either_81805472 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/either-81805472.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/either-81805472.js"(exports) {
     "use strict";
     var softFalsy = require_softFalsy_3d7ead1c();
     var isFunc2 = require_isFunc_f93803cb();
@@ -9618,9 +9618,9 @@ var require_either_81805472 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/toNum-eeb2e51e.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/toNum-eeb2e51e.js
 var require_toNum_eeb2e51e = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/toNum-eeb2e51e.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/toNum-eeb2e51e.js"(exports) {
     "use strict";
     var isNum = require_isNum_c7164b50();
     var toStr2 = require_toStr_8e499966();
@@ -9631,9 +9631,9 @@ var require_toNum_eeb2e51e = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/strToType-00c4481f.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/strToType-00c4481f.js
 var require_strToType_00c4481f = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/strToType-00c4481f.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/strToType-00c4481f.js"(exports) {
     "use strict";
     var isStr3 = require_isStr_8a57710e();
     var isNum = require_isNum_c7164b50();
@@ -9652,9 +9652,9 @@ var require_strToType_00c4481f = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/log-37bbfac6.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/log-37bbfac6.js
 var require_log_37bbfac6 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/log-37bbfac6.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/log-37bbfac6.js"(exports) {
     "use strict";
     var SHOW_LOGS;
     var METH_DEF = "dir";
@@ -9690,9 +9690,9 @@ var require_log_37bbfac6 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/pipeline-e65bdaae.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/pipeline-e65bdaae.js
 var require_pipeline_e65bdaae = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/pipeline-e65bdaae.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/pipeline-e65bdaae.js"(exports) {
     "use strict";
     var isArr = require_isArr_39234014();
     var isFunc2 = require_isFunc_f93803cb();
@@ -9715,9 +9715,9 @@ var require_pipeline_e65bdaae = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/stackTracePaths-58b768d2.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/stackTracePaths-58b768d2.js
 var require_stackTracePaths_58b768d2 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/stackTracePaths-58b768d2.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/stackTracePaths-58b768d2.js"(exports) {
     "use strict";
     var isFunc2 = require_isFunc_f93803cb();
     var validate = require_validate_23297ec2();
@@ -9903,9 +9903,9 @@ var require_stackTracePaths_58b768d2 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/mod-31dfe732.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/mod-31dfe732.js
 var require_mod_31dfe732 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/mod-31dfe732.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/mod-31dfe732.js"(exports) {
     "use strict";
     var isNum = require_isNum_c7164b50();
     var toNum = require_toNum_eeb2e51e();
@@ -9944,9 +9944,9 @@ var require_mod_31dfe732 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/reduceObj-f41cbf8d.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/reduceObj-f41cbf8d.js
 var require_reduceObj_f41cbf8d = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/reduceObj-f41cbf8d.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/reduceObj-f41cbf8d.js"(exports) {
     "use strict";
     var isFunc2 = require_isFunc_f93803cb();
     var isObj2 = require_isObj_6b3aa807();
@@ -9955,9 +9955,9 @@ var require_reduceObj_f41cbf8d = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/sanitize-0a18302d.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/sanitize-0a18302d.js
 var require_sanitize_0a18302d = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/sanitize-0a18302d.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/sanitize-0a18302d.js"(exports) {
     "use strict";
     var isStr3 = require_isStr_8a57710e();
     var sanitize = (str) => isStr3.isStr(str) && str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") || str;
@@ -9965,9 +9965,9 @@ var require_sanitize_0a18302d = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/splitByKeys-d0160002.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/splitByKeys-d0160002.js
 var require_splitByKeys_d0160002 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/splitByKeys-d0160002.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/splitByKeys-d0160002.js"(exports) {
     "use strict";
     var log = require_log_37bbfac6();
     var isObj2 = require_isObj_6b3aa807();
@@ -10214,9 +10214,9 @@ var require_splitByKeys_d0160002 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/wait-8ca88995.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/wait-8ca88995.js
 var require_wait_8ca88995 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/wait-8ca88995.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/wait-8ca88995.js"(exports) {
     "use strict";
     var isObj2 = require_isObj_6b3aa807();
     var isFunc2 = require_isFunc_f93803cb();
@@ -10272,9 +10272,9 @@ var require_wait_8ca88995 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/joinRegex-431148e2.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/joinRegex-431148e2.js
 var require_joinRegex_431148e2 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/joinRegex-431148e2.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/joinRegex-431148e2.js"(exports) {
     "use strict";
     var isStr3 = require_isStr_8a57710e();
     var isArr = require_isArr_39234014();
@@ -10303,9 +10303,9 @@ var require_joinRegex_431148e2 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/getWordEndingAt-63d038a5.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/getWordEndingAt-63d038a5.js
 var require_getWordEndingAt_63d038a5 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/getWordEndingAt-63d038a5.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/getWordEndingAt-63d038a5.js"(exports) {
     "use strict";
     var isStr3 = require_isStr_8a57710e();
     var isFunc2 = require_isFunc_f93803cb();
@@ -10522,9 +10522,9 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/getURLParam-201ef5fe.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/getURLParam-201ef5fe.js
 var require_getURLParam_201ef5fe = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/getURLParam-201ef5fe.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/getURLParam-201ef5fe.js"(exports) {
     "use strict";
     var reduceObj = require_reduceObj_f41cbf8d();
     var isStr3 = require_isStr_8a57710e();
@@ -10590,9 +10590,9 @@ var require_getURLParam_201ef5fe = __commonJS({
   }
 });
 
-// node_modules/@keg-hub/jsutils/build/cjs/index.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/index.js
 var require_cjs2 = __commonJS({
-  "node_modules/@keg-hub/jsutils/build/cjs/index.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var intersect = require_intersect_77d7e821();
@@ -10832,30 +10832,58 @@ __export(global_exports, {
 module.exports = __toCommonJS(global_exports);
 var import_expect = __toESM(require_cjs());
 
-// src/test/run.js
-var import_jsutils2 = __toESM(require_cjs2());
+// src/test/runResult.ts
+var import_jsutils = __toESM(require_cjs2());
+var runResult = (item, {
+  id,
+  action,
+  failed,
+  passed,
+  testPath,
+  fullName
+}) => {
+  const result = {
+    id,
+    action,
+    testPath,
+    fullName,
+    type: item.type,
+    failedExpectations: [],
+    passedExpectations: [],
+    failed: Boolean(failed),
+    passed: Boolean(passed),
+    description: item.description,
+    timestamp: (/* @__PURE__ */ new Date()).getTime()
+  };
+  (0, import_jsutils.isObj)(failed) && result.failedExpectations.push(failed);
+  (0, import_jsutils.isObj)(passed) && result.passedExpectations.push(passed);
+  (0, import_jsutils.isObj)(item.action.ParkinMetaData) && (result.metaData = item.action.ParkinMetaData);
+  if (passed || failed)
+    result.status = passed ? "passed" /* passed */ : "failed" /* failed */;
+  return result;
+};
 
 // src/test/utils.ts
-var import_jsutils = __toESM(require_cjs2());
-var helperTypes = (0, import_jsutils.keyMap)([
+var import_jsutils2 = __toESM(require_cjs2());
+var hookTypes = (0, import_jsutils2.keyMap)([
   `beforeAll`,
   `beforeEach`,
   `afterAll`,
   `afterEach`
 ]);
 var globalTypes = {
-  ...(0, import_jsutils.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
-  ...helperTypes
+  ...(0, import_jsutils2.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
+  ...hookTypes
 };
 var Types = {
   ...globalTypes,
-  ...(0, import_jsutils.keyMap)([`root`])
+  ...(0, import_jsutils2.keyMap)([`root`])
 };
 var throwError = (error) => {
   throw new Error(error);
 };
-var validateHelper = (type, action) => {
-  !(0, import_jsutils.isFunc)(action) && throwError(
+var validateHook = (type, action) => {
+  !(0, import_jsutils2.isFunc)(action) && throwError(
     `The ${type} method requires a "function" as the first argument`
   );
 };
@@ -10864,13 +10892,13 @@ var validateRootRun = (root) => {
   !root.describes || !root.describes.length && throwError(`No tests have been registered to this ParkinTest instance`);
 };
 var validateItem = (type, description, action) => {
-  !(0, import_jsutils.isStr)(type) && throwError(`Test item type is required as a string`);
-  !(0, import_jsutils.isFunc)(action) && throwError(
+  !(0, import_jsutils2.isStr)(type) && throwError(`Test item type is required as a string`);
+  !(0, import_jsutils2.isFunc)(action) && throwError(
     `The ${type} method requires a "function" as the second argument`
   );
-  !(0, import_jsutils.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
+  !(0, import_jsutils2.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
 };
-var createItem = (type, metadata = import_jsutils.noOpObj, validate = true) => {
+var createItem = (type, metadata = import_jsutils2.noOpObj, validate = true) => {
   const { description, action } = metadata;
   validate && validateItem(type, description, action);
   return { ...metadata, type };
@@ -10890,7 +10918,7 @@ var createRoot = () => {
     Types.root,
     {
       describes: [],
-      ...Object.values(helperTypes).reduce((acc, type) => {
+      ...Object.values(hookTypes).reduce((acc, type) => {
         acc[type] = [];
         return acc;
       }, {})
@@ -10899,29 +10927,16 @@ var createRoot = () => {
   );
 };
 
-// src/test/run.js
-var runResult = (item, { id, fullName, action, failed, passed, testPath }) => {
-  const result = {
-    id,
-    action,
-    testPath,
-    fullName,
-    type: item.type,
-    failedExpectations: [],
-    passedExpectations: [],
-    failed: Boolean(failed),
-    passed: Boolean(passed),
-    description: item.description,
-    timestamp: (/* @__PURE__ */ new Date()).getTime()
-  };
-  (0, import_jsutils2.isObj)(failed) && result.failedExpectations.push(failed);
-  (0, import_jsutils2.isObj)(passed) && result.passedExpectations.push(passed);
-  if (passed || failed)
-    result.status = passed ? `passed` : `failed`;
-  return result;
-};
+// src/test/hooks.ts
 var loopHooks = async (args) => {
-  const { type, test, specId, suiteId, describe, root } = args;
+  const {
+    type,
+    test,
+    root,
+    specId,
+    suiteId,
+    describe
+  } = args;
   let hookIdx;
   const activeItem = root || describe;
   const fullName = root ? root.description : test ? `${describe == null ? void 0 : describe.description} > ${test == null ? void 0 : test.description} > ${type}` : `${describe == null ? void 0 : describe.description} > ${type}`;
@@ -10936,90 +10951,16 @@ var loopHooks = async (args) => {
     return runResult(activeItem, {
       fullName,
       action: type,
-      status: "failed",
       id: test ? specId : suiteId,
-      failed: { name: error.name, message: error.message },
+      status: "failed" /* failed */,
+      failed: {
+        fullName: error.name,
+        description: error.message,
+        status: "failed" /* failed */
+      },
       testPath: test ? `/${suiteId}/${specId}/${type}${hookIdx}` : `/${suiteId}/${type}${hookIdx}`
     });
   }
-};
-var loopTests = async (args) => {
-  const { suiteId, describe, testOnly, specDone, specStarted } = args;
-  let describeFailed = false;
-  const results = [];
-  for (let testIdx = 0; testIdx < describe.tests.length; testIdx++) {
-    const test = describe.tests[testIdx];
-    const specId = `spec${testIdx}`;
-    const testPath = `/${suiteId}/${specId}`;
-    const fullName = `${describe.description} > ${test.description}`;
-    let testResult = runResult(test, {
-      fullName,
-      testPath,
-      id: specId,
-      action: "start"
-    });
-    if (testOnly && !test.only || test.skip) {
-      specStarted({
-        ...testResult,
-        skipped: true,
-        action: "skipped",
-        status: "skipped"
-      });
-      continue;
-    } else
-      specStarted(testResult);
-    const beforeEachResult = await loopHooks({
-      test,
-      specId,
-      suiteId,
-      describe,
-      type: Types.beforeEach
-    });
-    if (beforeEachResult) {
-      describeFailed = true;
-      results.push(beforeEachResult);
-      specDone(beforeEachResult);
-      break;
-    }
-    try {
-      const result = await test.action();
-      testResult = runResult(test, {
-        fullName,
-        id: specId,
-        testPath,
-        action: Types.test,
-        passed: result || true
-      });
-    } catch (error) {
-      testResult = runResult(test, {
-        fullName,
-        id: specId,
-        action: Types.test,
-        testPath,
-        failed: { name: error.name, message: error.message }
-      });
-      describeFailed = true;
-    }
-    const afterEachResult = await loopHooks({
-      test,
-      specId,
-      suiteId,
-      describe,
-      type: Types.afterEach
-    });
-    if (afterEachResult) {
-      describeFailed = true;
-      results.push(afterEachResult);
-      specDone(afterEachResult);
-      break;
-    }
-    results.push(testResult);
-    specDone({ ...testResult, action: "end" });
-  }
-  return {
-    tests: results,
-    failed: describeFailed
-  };
 };
 var callBeforeHooks = async ({ root, suiteId, describe }) => {
   const beforeEachResult = await loopHooks({
@@ -11047,35 +10988,158 @@ var callAfterHooks = async ({ root, suiteId, describe }) => {
   });
   return afterEachResult || afterAllResult;
 };
+
+// src/test/runHelpers.ts
+var shouldSkipTest = ({ testOnly, test }) => {
+  return testOnly && !test.only || test.skip;
+};
+var buildTestArgs = ({
+  suiteId,
+  testIdx,
+  describe
+}) => {
+  const test = describe.tests[testIdx];
+  const specId = `spec${testIdx}`;
+  return {
+    test,
+    specId,
+    testPath: `/${suiteId}/${specId}`,
+    fullName: `${describe.description} > ${test.description}`
+  };
+};
+var shouldSkipDescribe = ({ describe, describeOnly, testOnly }) => {
+  return describe.skip || describeOnly && !describe.only && !describe.onlyChild || testOnly && !describe.onlyChild;
+};
+
+// src/test/run.ts
+var loopTests = async (args) => {
+  const {
+    suiteId,
+    describe,
+    testOnly,
+    specDone,
+    shouldAbort,
+    specStarted
+  } = args;
+  let describeFailed = false;
+  const results = [];
+  for (let testIdx = 0; testIdx < describe.tests.length; testIdx++) {
+    if (shouldAbort())
+      break;
+    const {
+      test,
+      specId,
+      testPath,
+      fullName
+    } = buildTestArgs({ suiteId, testIdx, describe });
+    let testResult = runResult(test, {
+      fullName,
+      testPath,
+      id: specId,
+      action: "start" /* start */
+    });
+    if (shouldSkipTest({ testOnly, test })) {
+      specStarted({
+        ...testResult,
+        skipped: true,
+        action: "skipped" /* skipped */,
+        status: "skipped" /* skipped */
+      });
+      continue;
+    } else
+      specStarted(testResult);
+    if (shouldAbort())
+      break;
+    const beforeEachResult = await loopHooks({
+      test,
+      specId,
+      suiteId,
+      describe,
+      type: Types.beforeEach
+    });
+    if (beforeEachResult) {
+      describeFailed = true;
+      results.push(beforeEachResult);
+      specDone(beforeEachResult);
+      break;
+    }
+    try {
+      const result = await test.action();
+      testResult = runResult(test, {
+        fullName,
+        id: specId,
+        testPath,
+        passed: result || true,
+        action: "test" /* test */
+      });
+    } catch (error) {
+      testResult = runResult(test, {
+        fullName,
+        id: specId,
+        testPath,
+        action: "test" /* test */,
+        failed: {
+          fullName: error.name,
+          description: error.message,
+          status: "failed" /* failed */
+        }
+      });
+      describeFailed = true;
+    }
+    if (shouldAbort())
+      break;
+    const afterEachResult = await loopHooks({
+      test,
+      specId,
+      suiteId,
+      describe,
+      type: Types.afterEach
+    });
+    if (afterEachResult) {
+      describeFailed = true;
+      results.push(afterEachResult);
+      specDone(afterEachResult);
+      break;
+    }
+    results.push(testResult);
+    specDone({
+      ...testResult,
+      action: "end" /* end */
+    });
+  }
+  return shouldAbort() ? { tests: [], failed: describeFailed } : { tests: results, failed: describeFailed };
+};
 var loopDescribes = async (args) => {
   const {
     root,
     testOnly,
     specDone,
     suiteDone,
+    shouldAbort,
     specStarted,
-    parentIdx = ``,
     suiteStarted,
-    describeOnly
+    describeOnly,
+    parentIdx = ``
   } = args;
   let describeFailed = false;
   const results = [];
   for (let idx = 0; idx < root.describes.length; idx++) {
+    if (shouldAbort())
+      break;
     const describe = root.describes[idx];
     const suiteId = `suite-${parentIdx}${idx}`;
     let describeResult = runResult(describe, {
       id: suiteId,
-      action: "start",
       testPath: `/${suiteId}`,
+      action: "start" /* start */,
       fullName: describe.description
     });
-    const shouldSkip = describe.skip || describeOnly && !describe.only && !describe.onlyChild || testOnly && !describe.onlyChild;
-    if (shouldSkip) {
+    if (shouldSkipDescribe({ describe, describeOnly, testOnly })) {
       suiteStarted({
         ...describeResult,
         skipped: true,
-        action: "skipped",
-        status: "skipped"
+        action: "skipped" /* skipped */,
+        status: "skipped" /* skipped */
       });
       continue;
     } else
@@ -11092,13 +11156,18 @@ var loopDescribes = async (args) => {
       results.push(describeResult);
       continue;
     }
+    if (shouldAbort())
+      break;
     const testResults = await loopTests({
       suiteId,
       describe,
       testOnly,
       specDone,
+      shouldAbort,
       specStarted
     });
+    if (shouldAbort())
+      break;
     const describesResults = describe.describes && describe.describes.length && await loopDescribes({
       ...args,
       root: describe,
@@ -11107,8 +11176,8 @@ var loopDescribes = async (args) => {
     describeResult = {
       ...describeResult,
       ...describesResults,
-      action: "end",
-      tests: testResults.tests
+      tests: testResults.tests,
+      action: "end" /* end */
     };
     if (testResults.failed || describesResults.failed) {
       describeFailed = true;
@@ -11127,23 +11196,42 @@ var loopDescribes = async (args) => {
       results.push(describeResult);
       continue;
     }
+    if (shouldAbort())
+      break;
     suiteDone(describeResult);
     results.push(describeResult);
   }
-  return { describes: results, failed: describeFailed };
+  return shouldAbort() ? { describes: [], failed: describeFailed } : { describes: results, failed: describeFailed };
 };
 var run = async (args) => {
-  validateRootRun(args.root);
+  const {
+    root,
+    onAbort,
+    shouldAbort
+  } = args;
+  validateRootRun(root);
   const beforeAllResult = await loopHooks({
-    root: args.root,
+    root,
     suiteId: Types.root,
     type: Types.beforeAll
   });
+  if (shouldAbort()) {
+    onAbort == null ? void 0 : onAbort();
+    const results = [];
+    results.aborted = true;
+    return results;
+  }
   if (beforeAllResult)
     return [beforeAllResult];
   const { describes } = await loopDescribes(args);
+  if (shouldAbort()) {
+    onAbort == null ? void 0 : onAbort();
+    const results = [];
+    results.aborted = true;
+    return results;
+  }
   const afterAllResult = await loopHooks({
-    root: args.root,
+    root,
     suiteId: Types.root,
     type: Types.afterAll
   });
@@ -11151,19 +11239,27 @@ var run = async (args) => {
   return describes;
 };
 
-// src/test/test.js
+// src/test/test.ts
 var import_jsutils3 = __toESM(require_cjs2());
 var ParkinTest = class {
   timeout = 6e3;
+  #autoClean = true;
+  #testOnly = false;
+  #abortRun = false;
+  #describeOnly = false;
+  #root = createRoot();
+  xit;
+  it;
+  #activeParent = void 0;
   #specDone = import_jsutils3.noOp;
   #suiteDone = import_jsutils3.noOp;
   #specStarted = import_jsutils3.noOp;
   #suiteStarted = import_jsutils3.noOp;
-  #activeParent = void 0;
-  #testOnly = false;
-  #describeOnly = false;
-  #autoClean = true;
-  #root = createRoot();
+  #onAbort = import_jsutils3.noOp;
+  afterAll = import_jsutils3.noOp;
+  afterEach = import_jsutils3.noOp;
+  beforeAll = import_jsutils3.noOp;
+  beforeEach = import_jsutils3.noOp;
   constructor(config = import_jsutils3.noOpObj) {
     this.#root.description = config.description || `root`;
     this.#addOnly();
@@ -11180,15 +11276,21 @@ var ParkinTest = class {
     this.#setConfig(config);
     const result = run({
       root: this.#root,
+      onAbort: this.#onAbort,
       testOnly: this.#testOnly,
       specDone: this.#specDone,
       suiteDone: this.#suiteDone,
       specStarted: this.#specStarted,
+      shouldAbort: this.#shouldAbort,
       describeOnly: this.#describeOnly,
       suiteStarted: this.#suiteStarted
     });
     this.#autoClean && this.clean();
     return result;
+  };
+  #shouldAbort = () => this.#abortRun;
+  abort = () => {
+    this.#abortRun = true;
   };
   /**
    * Resets the instance to it's initial state
@@ -11197,6 +11299,7 @@ var ParkinTest = class {
   clean = () => {
     this.timeout = 6e3;
     this.#autoClean = true;
+    this.#abortRun = false;
     this.#testOnly = false;
     this.#describeOnly = false;
     this.#activeParent = void 0;
@@ -11219,6 +11322,7 @@ var ParkinTest = class {
    */
   #setConfig = ({
     timeout,
+    onAbort,
     autoClean,
     specDone,
     suiteDone,
@@ -11227,6 +11331,8 @@ var ParkinTest = class {
   }) => {
     if (timeout)
       this.timeout = timeout;
+    if (onAbort)
+      this.#onAbort = onAbort;
     if (specDone)
       this.#specDone = specDone;
     if (suiteDone)
@@ -11285,9 +11391,9 @@ var ParkinTest = class {
    * Methods: beforeAll, beforeEach, afterAll, afterEach
    */
   #addHelpers = () => {
-    Object.values(helperTypes).map((type) => {
+    Object.values(hookTypes).map((type) => {
       this[type] = (action) => {
-        validateHelper(type, action);
+        validateHook(type, action);
         this.#activeParent[type].push(action);
       };
     });
@@ -11295,8 +11401,6 @@ var ParkinTest = class {
   /**
    * Method the wraps test and helper methods
    * Acts as a top level method for defining tests
-   * @param {string} description - Metadata about the describe
-   * @param {function} action - Function to call for the describe
    *
    * @returns {void}
    */
@@ -11315,8 +11419,6 @@ var ParkinTest = class {
   /**
    * Method that executes some test logic
    * Must be called within a Test#describe method
-   * @param {string} description - Metadata about the test
-   * @param {function} action - Function to call for the test
    *
    * @returns {void}
    */
@@ -11332,11 +11434,10 @@ var ParkinTest = class {
   /**
    * Called when a test method should be skipped
    * Must be called within a Test#describe method
-   * @param {string} description - Metadata about the test
    *
    * @returns {void}
    */
-  xtest = (description) => {
+  xtest = (description, action, timeout) => {
     if (!this.#activeParent || this.#activeParent.type === Types.root)
       throwError(
         `All ${Types.test} method calls must be called within a ${Types.describe} method`
