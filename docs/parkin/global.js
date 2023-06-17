@@ -3080,6 +3080,10 @@ var Steps = class {
 var import_jsutils13 = __toESM(require_cjs());
 var { HOOK_TYPES } = constants;
 var Hooks = class {
+  afterAll = import_jsutils13.noOp;
+  beforeAll = import_jsutils13.noOp;
+  afterEach = import_jsutils13.noOp;
+  beforeEach = import_jsutils13.noOp;
   /**
    * Allowed hook types
    * @memberof Hooks

@@ -3290,10 +3290,14 @@ var import_jsutils13, HOOK_TYPES, Hooks;
 var init_hooks = __esm({
   "src/hooks.ts"() {
     init_constants();
-    import_jsutils13 = __toESM(require_cjs());
     init_errors();
+    import_jsutils13 = __toESM(require_cjs());
     ({ HOOK_TYPES } = constants);
     Hooks = class {
+      afterAll = import_jsutils13.noOp;
+      beforeAll = import_jsutils13.noOp;
+      afterEach = import_jsutils13.noOp;
+      beforeEach = import_jsutils13.noOp;
       /**
        * Allowed hook types
        * @memberof Hooks
