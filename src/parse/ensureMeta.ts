@@ -1,7 +1,8 @@
 import type { TFeatureAst, TBlockAst } from '../types'
 
 import { EAstObject } from '../types'
-import { eitherArr, uuid } from '@keg-hub/jsutils'
+import { idFromLoc } from './idFromLoc'
+import { eitherArr } from '@keg-hub/jsutils'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 /**
@@ -45,10 +46,14 @@ const addReason = (
   const reasonArr = eitherArr<TBlockAst[]>(feature.reason, [feature.reason])
   reasonArr.push({
     index,
-    uuid: uuid(),
     content: reason,
     type: EAstObject.reason,
     whitespace: getStartWhiteSpace(line),
+    uuid: idFromLoc({
+      loc: 0,
+      parent: feature,
+      type: EAstObject.reason,
+    }),
   })
   feature.reason = reasonArr
 }
@@ -74,18 +79,24 @@ export const featureMeta = (
     const hasItem = regItem.regex.test(line)
     if (!metaAdded && hasItem) metaAdded = true
 
+    const type = regItem.key === EAstObject.desire
+      ? EAstObject.desire
+      : regItem.key === EAstObject.perspective
+        ? EAstObject.perspective
+        : EAstObject.block
+
     return hasItem
       ? regItem.key !== EAstObject.reason
         ? (feature[regItem.key] = {
+            type,
             index,
-            uuid: uuid(),
             whitespace: getStartWhiteSpace(line),
             content: getRXMatch(line, regItem.regex, 0),
-            type: regItem.key === EAstObject.desire
-              ? EAstObject.desire
-              : regItem.key === EAstObject.perspective
-                ? EAstObject.perspective
-                : EAstObject.block
+            uuid: idFromLoc({
+              type,
+              loc: 0,
+              parent: feature,
+            }),
           })
         : addReason(feature, getRXMatch(line, regItem.regex, 0), line, index)
       : hasItem
@@ -113,10 +124,14 @@ export const featureComment = (
 
   feature.comments.push({
     index,
-    uuid: uuid(),
     content: comment.trim(),
     type: EAstObject.comment,
     whitespace: getStartWhiteSpace(line),
+    uuid: idFromLoc({
+      parent: feature,
+      type: EAstObject.comment,
+      loc: feature.comments?.length || 0
+    }),
   })
 
   return true
@@ -136,10 +151,14 @@ export const featureEmptyLine = (
 
   feature.empty.push({
     index,
-    uuid: uuid(),
     content: line,
     whitespace: ``,
     type: EAstObject.empty,
+    uuid: idFromLoc({
+      parent: feature,
+      type: EAstObject.empty,
+      loc: feature.empty?.length || 0
+    }),
   })
 
   return true

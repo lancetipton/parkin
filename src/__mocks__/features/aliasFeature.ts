@@ -22,15 +22,15 @@ Feature: Alias Replace steps
 
 export const aliasWorldReplaceObj = {
   $alias: {
-    background: 'world path values',
-    comment: 'is a comment',
-    element: 'test-element',
+    background: `world path values`,
+    comment: `is a comment`,
+    element: `test-element`,
     firstScenario: `First Scenario Text`,
     status: `failed`,
-    url: 'https://lancetipton.github.io/parkin',
+    url: `https://lancetipton.github.io/parkin`,
     int: 500,
     float: 3.14,
-    word: 'PARKIN',
-    string: 'Stored in the world object',
+    word: `PARKIN`,
+    string: `Stored in the world object`,
   },
 }

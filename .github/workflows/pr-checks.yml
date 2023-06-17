@@ -6,6 +6,10 @@ on:
 jobs:
   repo-checks:
     name: Install and Cache
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Cancel Previous Workflows In Progress

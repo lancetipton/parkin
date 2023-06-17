@@ -65,15 +65,18 @@ Feature: Add to world
                   <h4 class="label definition-label" for="definition-text">Definitions</h4>
 
 <textarea class="form-control text-content" rows="14" id="definition-text" >
-Given("I have {int} as $world.number", (num, world) => {
+Given("I have {int} as $world.number", (num, ctx) => {
+  const { world } = ctx
   world.number = num
 })
 
-When("I add {int} to $world.number", (num, world) => {
+When("I add {int} to $world.number", (num, ctx) => {
+  const { world } = ctx
   world.number = world.number + num
 })
 
-Then("I expect $world.number to be {int}", (num, world) => {
+Then("I expect $world.number to be {int}", (num, ctx) => {
+  const { world } = ctx
   alert(`world.number (${world.number}) is equal to num (${num})? \n` + (world.number === num))
 })
 </textarea>

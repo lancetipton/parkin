@@ -1,15 +1,22 @@
+import type {
+  TType,
+  TTestObj,
+  THookTypes,
+  TTestAction,
+  TRootTestObj,
+  TGlobalTypes,
+  TTestHookMethod,
+  TDescribeAction,
+  TDescribeTestObj,
+} from '../types'
+
 import { keyMap, isFunc, isStr, noOpObj } from '@keg-hub/jsutils'
-
-// TODO: fix these types
-type TestObj = Record<any, any>
-type TestMethod = (...args:any[]) => any
-
 
 /**
  * @type {Object}
  * Key value pair of all helper method names for the ParkinTest Class
  */
-export const helperTypes:Record<string, string> = keyMap([
+export const hookTypes = keyMap<THookTypes>([
   `beforeAll`,
   `beforeEach`,
   `afterAll`,
@@ -20,16 +27,16 @@ export const helperTypes:Record<string, string> = keyMap([
  * @type {Object}
  * Key value pair of all methods added to the global scope
  */
-export const globalTypes:Record<string, string> = {
+export const globalTypes:TGlobalTypes = {
   ...keyMap([ `test`, `it`, `xtest`, `xit`, `describe` ]),
-  ...helperTypes,
+  ...hookTypes,
 }
 
 /**
  * @type {Object}
  * Key value pair of allowed Types for the ParkinTest Class
  */
-export const Types:Record<string, string> = {
+export const Types:TType = {
   ...globalTypes,
   ...keyMap([`root`]),
 }
@@ -40,7 +47,7 @@ export const Types:Record<string, string> = {
  *
  * @returns void
  */
-export const addToGlobal = (instance:TestObj) => {}
+export const addToGlobal = (instance:TTestObj) => {}
 
 /**
  * Throws an Error from the passed in error
@@ -57,9 +64,9 @@ export const throwError = (error:string) => {
  * @throws
  *
  */
-export const validateHelper = (
-  type:string,
-  action:TestMethod,
+export const validateHook = (
+  type:keyof typeof Types,
+  action:TTestHookMethod,
 ) => {
   !isFunc(action) &&
     throwError(
@@ -67,7 +74,7 @@ export const validateHelper = (
     )
 }
 
-export const validateRootRun = (root:TestObj) => {
+export const validateRootRun = (root:TRootTestObj) => {
   root.type !== Types.root &&
     throwError(`Invalid root type "${root.type}" set for root object`)
   !root.describes ||
@@ -83,7 +90,7 @@ export const validateRootRun = (root:TestObj) => {
 export const validateItem = (
   type:string,
   description:string,
-  action:TestMethod
+  action:TTestAction|TDescribeAction
 ) => {
   !isStr(type) && throwError(`Test item type is required as a string`)
   !isFunc(action) &&
@@ -98,14 +105,15 @@ export const validateItem = (
  * Creates an object with meta data of an item of the ParkinTest instance
  *
  */
-export const createItem = (
+export const createItem = <T=TTestObj>(
   type:string,
-  metadata:TestObj = noOpObj as TestObj,
+  metadata:Partial<TTestObj> = noOpObj as TTestObj,
   validate = true
 ) => {
   const { description, action } = metadata
   validate && validateItem(type, description, action)
-  return { ...metadata, type }
+
+  return { ...metadata, type } as T
 }
 
 /**
@@ -114,14 +122,14 @@ export const createItem = (
  */
 export const createDescribe = (
   description:string,
-  action:TestMethod
+  action:TDescribeAction
 ) => {
   const item = createItem(Types.describe, {
     ...createRoot(),
     action,
     tests: [],
     description,
-  }) as TestObj
+  }) as TDescribeTestObj
 
   item.disabled = () => (item.skip = true)
 
@@ -137,11 +145,11 @@ export const createRoot = () => {
     Types.root,
     {
       describes: [],
-      ...Object.values(helperTypes).reduce((acc, type) => {
+      ...Object.values(hookTypes).reduce((acc, type) => {
         acc[type] = []
         return acc
       }, {}),
     },
     false
-  ) as TestObj
+  ) as TRootTestObj
 }

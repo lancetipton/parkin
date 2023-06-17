@@ -78,10 +78,14 @@ const indexFromBlocks = ({
     return idx >= 0 ? idx : 0
   }
 
-  if(loc)
-    return loc === EBlockLoc.before ? parent.index - 1 : parent.index + 1
+  if(loc){
+    const found = loc === EBlockLoc.before ? parent.index - 1 : parent.index + 1
+    const tagCheck = parent?.tags?.index === found ? found - 1 : found
 
-  const blocks = type === EAstObject.empty? feature.empty : feature.comments
+    return tagCheck > 0 ? tagCheck : 0
+  }
+
+  const blocks = type === EAstObject.empty ? feature.empty : feature.comments
 
   if(blocks?.length)
     return blocks[blocks.length - 1].index + 1

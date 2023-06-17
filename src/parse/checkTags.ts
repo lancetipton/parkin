@@ -1,8 +1,7 @@
 import type { TTagsAst } from '../types'
 
 import { EAstObject } from '../types'
-import { uuid } from '@keg-hub/jsutils'
-import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
+import { strToId, getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 /**
  * Regular expressions for matching feature file keywords
@@ -25,12 +24,14 @@ const tagsFactory = (
     return acc
   }, [])
 
+  const joined = tokens.join(` `)
+
   return {
     index,
     tokens,
-    uuid: uuid(),
+    content: joined,
     type: EAstObject.tags,
-    content: tokens.join(` `),
+    uuid: strToId(joined, `tags-`),
     whitespace: getStartWhiteSpace(line),
   } as TTagsAst
 }

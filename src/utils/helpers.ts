@@ -1,5 +1,21 @@
 import type { TTokenOpts, EPartMatchTypes, TStepDef } from '../types'
-import { uuid, emptyObj } from '@keg-hub/jsutils'
+import { uuid, emptyObj, hashString } from '@keg-hub/jsutils'
+
+
+const cleanDefMatch = (match:string|RegExp) => {
+  let name = match.toString()
+  name[0] === '/' && (name = name.substring(1))
+  name[0] === '^' && (name = name.substring(1))
+  
+  name.charAt(name.length - 1) === '/' && (name = name.slice(0, -1))
+  name.charAt(name.length - 1) === '$' && (name = name.slice(0, -1))
+  
+  return name
+}
+
+export const strToId = (str:string, prefix:string=``, postfix:string=``) => {
+  return `${prefix}${hashString(cleanDefMatch(str))}${postfix}`
+}
 
 /*
  * Extracts keywords from a text string
@@ -23,14 +39,7 @@ export const getRXMatch = (
  *
  */
 export const sanitize = (def:TStepDef) => {
-  let name = def.match.toString()
-  name[0] === '/' && (name = name.substring(1))
-  name[0] === '^' && (name = name.substring(1))
-
-  name.charAt(name.length - 1) === '/' && (name = name.slice(0, -1))
-  name.charAt(name.length - 1) === '$' && (name = name.slice(0, -1))
-
-  return name.replace(/\(\?:([^\|]+)+\|+([^\)]+)?\)/, '$1')
+  return cleanDefMatch(def.match).replace(/\(\?:([^\|]+)+\|+([^\)]+)?\)/, '$1')
 }
 
 /**
@@ -45,13 +54,13 @@ export const validateDefinition = (
   definitions:TStepDef[]
 ) => {
   return definitions.reduce(
-    (validated, def) => {
+    (validated, def, idx) => {
       // Check if the checkDef already exists in the definitions array
       // By comparing the content of the existing definitions to it
       if (!validated || def.content === validated.content) return false
 
-      // If the uuid happens to match an existing definition, give it a new uuid
-      def.uuid === validated.uuid && (validated.uuid = uuid())
+      // Have to ensure no duplicate uuids, so use the index if there is a match 
+      def.uuid === validated.uuid && (validated.uuid = `${validated.uuid}-${idx}`)
 
       return validated
     },

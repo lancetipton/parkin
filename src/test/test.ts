@@ -1,3 +1,15 @@
+import type {
+  TTestAction,
+  TParkinTestCB,
+  TTestTestObj,
+  TTestHookMethod,
+  TDescribeAction,
+  TParkinTestAbort,
+  TParkinTestConfig,
+  TParkinTestFactory,
+  TParkinDescribeFactory,
+} from '../types'
+
 import { run } from './run'
 import { noOp, noOpObj, isStr, checkCall } from '@keg-hub/jsutils'
 import {
@@ -6,23 +18,34 @@ import {
   createItem,
   createDescribe,
   throwError,
-  helperTypes,
-  validateHelper,
+  hookTypes,
+  validateHook,
 } from './utils'
+
+type TTestSkipFactory = (description:string, action?:TTestAction, timeout?:number) => void
+
 
 export class ParkinTest {
   timeout = 6000
-  #specDone = noOp
-  #suiteDone = noOp
-  #specStarted = noOp
-  #suiteStarted = noOp
-  #activeParent = undefined
-  #testOnly = false
-  #describeOnly = false
   #autoClean = true
+  #testOnly = false
+  #abortRun = false
+  #describeOnly = false
   #root = createRoot()
+  xit:TTestSkipFactory
+  it:TParkinTestFactory
+  #activeParent = undefined
+  #specDone:TParkinTestCB = noOp
+  #suiteDone:TParkinTestCB = noOp
+  #specStarted:TParkinTestCB = noOp
+  #suiteStarted:TParkinTestCB = noOp
+  #onAbort:TParkinTestAbort = noOp
+  afterAll:TTestHookMethod = noOp
+  afterEach:TTestHookMethod = noOp
+  beforeAll:TTestHookMethod = noOp
+  beforeEach:TTestHookMethod = noOp
 
-  constructor(config = noOpObj) {
+  constructor(config:TParkinTestConfig = noOpObj) {
     this.#root.description = config.description || `root`
 
     this.#addOnly()
@@ -34,16 +57,19 @@ export class ParkinTest {
     this.#setConfig(config)
   }
 
-  run = (config = noOpObj) => {
+  run = (config:TParkinTestConfig = noOpObj) => {
+
     if (config.description) this.#root.description = config.description
 
     this.#setConfig(config)
     const result = run({
       root: this.#root,
+      onAbort: this.#onAbort,
       testOnly: this.#testOnly,
       specDone: this.#specDone,
       suiteDone: this.#suiteDone,
       specStarted: this.#specStarted,
+      shouldAbort: this.#shouldAbort,
       describeOnly: this.#describeOnly,
       suiteStarted: this.#suiteStarted,
     })
@@ -53,6 +79,12 @@ export class ParkinTest {
     return result
   }
 
+  #shouldAbort = () => this.#abortRun
+
+  abort = () => {
+    this.#abortRun = true
+  }
+
   /**
    * Resets the instance to it's initial state
    * Clears all previously loaded tests and describes
@@ -60,6 +92,7 @@ export class ParkinTest {
   clean = () => {
     this.timeout = 6000
     this.#autoClean = true
+    this.#abortRun = false
     this.#testOnly = false
     this.#describeOnly = false
 
@@ -79,24 +112,28 @@ export class ParkinTest {
   /**
    * Sets the test config from the passed in object
    */
-  setConfig = config => this.#setConfig(config || noOpObj)
+  setConfig = (config:TParkinTestConfig) => this.#setConfig(config || noOpObj)
 
   /**
    * Adds passed in framework hooks to the class instance
    */
   #setConfig = ({
     timeout,
+    onAbort,
     autoClean,
     specDone,
     suiteDone,
     specStarted,
     suiteStarted,
-  }) => {
+  }:TParkinTestConfig) => {
     if (timeout) this.timeout = timeout
+    if (onAbort) this.#onAbort = onAbort
+
     if (specDone) this.#specDone = specDone
     if (suiteDone) this.#suiteDone = suiteDone
     if (specStarted) this.#specStarted = specStarted
     if (suiteStarted) this.#suiteStarted = suiteStarted
+    
     if (autoClean === false) this.#autoClean = autoClean
   }
 
@@ -105,7 +142,8 @@ export class ParkinTest {
    * Ensures they are the only methods called when run
    */
   #addOnly = () => {
-    this.describe.only = (...args) => {
+
+    this.describe.only = (...args:[string, TDescribeAction]) => {
       this.describe(...args)
       // Get the last item just added to the this.#activeParent
       const item =
@@ -116,7 +154,7 @@ export class ParkinTest {
       checkCall(this.#activeParent.hasOnlyChild)
     }
 
-    this.test.only = (...args) => {
+    this.test.only = (...args:[description:string, action?:TTestAction, timeout?:number]) => {
       this.test(...args)
       // Get the last item just added to the this.#activeParent
       const item = this.#activeParent.tests[this.#activeParent.tests.length - 1]
@@ -132,7 +170,8 @@ export class ParkinTest {
    * Ensures they are skipped run method is called
    */
   #addSkip = () => {
-    this.describe.skip = (...args) => {
+
+    this.describe.skip = (...args:[string, TDescribeAction]) => {
       this.describe(...args)
       // Get the last item just added to the this.#activeParent
       const item =
@@ -140,7 +179,7 @@ export class ParkinTest {
       item.skip = true
     }
 
-    this.test.skip = (...args) => {
+    this.test.skip = (...args:[description:string, action?:TTestAction, timeout?:number]) => {
       this.test(...args)
       // Get the last item just added to the this.#activeParent
       const item = this.#activeParent.tests[this.#activeParent.tests.length - 1]
@@ -159,9 +198,9 @@ export class ParkinTest {
    * Methods: beforeAll, beforeEach, afterAll, afterEach
    */
   #addHelpers = () => {
-    Object.values(helperTypes).map(type => {
-      this[type] = action => {
-        validateHelper(type, action)
+    Object.values(hookTypes).map(type => {
+      this[type] = (action) => {
+        validateHook(type, action)
         this.#activeParent[type].push(action)
       }
     })
@@ -170,12 +209,13 @@ export class ParkinTest {
   /**
    * Method the wraps test and helper methods
    * Acts as a top level method for defining tests
-   * @param {string} description - Metadata about the describe
-   * @param {function} action - Function to call for the describe
    *
    * @returns {void}
    */
-  describe = (description, action) => {
+  describe = ((
+    description:string,
+    action:TDescribeAction
+  ) => {
     // Build the describe item and add defaults
     const item = createDescribe(description, action)
     this.#activeParent.describes.push(item)
@@ -197,36 +237,41 @@ export class ParkinTest {
     // Reset the last activeParent
     // Should end up with the #root being the final activeParent
     this.#activeParent = lastParent
-  }
+  }) as TParkinDescribeFactory
 
   /**
    * Method that executes some test logic
    * Must be called within a Test#describe method
-   * @param {string} description - Metadata about the test
-   * @param {function} action - Function to call for the test
    *
    * @returns {void}
    */
-  test = (description, action, timeout) => {
+  test = ((
+    description:string,
+    action:TTestAction,
+    timeout?:number
+  ) => {
     if (!this.#activeParent || this.#activeParent.type === Types.root)
       throwError(
         `All ${Types.test} method calls must be called within a ${Types.describe} method`
       )
 
-    const item = createItem(Types.test, { action, timeout, description })
+    const item = createItem<TTestTestObj>(Types.test, { action, timeout, description })
     item.disabled = () => (item.skip = true)
 
     this.#activeParent.tests.push(item)
-  }
+  }) as TParkinTestFactory
 
   /**
    * Called when a test method should be skipped
    * Must be called within a Test#describe method
-   * @param {string} description - Metadata about the test
    *
    * @returns {void}
    */
-  xtest = description => {
+  xtest = (
+    description:string,
+    action?:TTestAction,
+    timeout?:number
+  ) => {
     if (!this.#activeParent || this.#activeParent.type === Types.root)
       throwError(
         `All ${Types.test} method calls must be called within a ${Types.describe} method`
@@ -236,9 +281,10 @@ export class ParkinTest {
       throwError(
         `The ${Types.test} method requires a "string" as the first argument`
       )
-    const item = createItem(Types.test, { description, skip: true }, false)
+    const item = createItem<TTestTestObj>(Types.test, { description, skip: true }, false)
     item.disabled = () => (item.skip = true)
 
     this.#activeParent.tests.push(item)
   }
+
 }

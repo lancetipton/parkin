@@ -1,7 +1,10 @@
-import type { TStepAst, TStepParentAst, TBlockParentAst } from '../types'
+import type {
+  TStepAst,
+  TStepParentAst,
+} from '../types'
 
 import { EStepType } from '../types'
-import { uuid } from '@keg-hub/jsutils'
+import { idFromLoc } from './idFromLoc'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 const RX_STEP = /^\s*Step\s*(.*)$/
@@ -135,6 +138,7 @@ const checkDocString = (
  *
  */
 const stepFactory = (
+  parent:TStepParentAst,
   type:EStepType,
   stepText:string,
   lines:string[],
@@ -146,7 +150,11 @@ const stepFactory = (
     index,
     step: stepText,
     whitespace: getStartWhiteSpace(line),
-    uuid: uuid(),
+    uuid: idFromLoc({
+      type,
+      parent,
+      loc: parent?.steps?.length || 0
+    }),
   } as TStepAst
 
   // TODO: Need to add check if next line is empty of a comment
@@ -169,7 +177,7 @@ const stepFactory = (
  *
  */
 export const parseStep = (
-  parent:TBlockParentAst,
+  parent:TStepParentAst,
   lines:string[],
   line:string,
   index:number
@@ -186,6 +194,7 @@ export const parseStep = (
     hasItem &&
       stepParent.steps.push(
         stepFactory(
+          parent,
           regItems.type,
           getRXMatch(line, regItems.regex, 1),
           lines,

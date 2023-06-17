@@ -1,7 +1,7 @@
 import type { TFeatureAst, TRuleAst } from '../types'
 
 import { EAstObject } from '../types'
-import { uuid } from '@keg-hub/jsutils'
+import { idFromLoc } from './idFromLoc'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 /**
@@ -15,14 +15,20 @@ const RX_RULE = /^\s*Rule:(.*)$/
  * @function
  *
  */
-export const ruleFactory = (rule:string|false, index?:number) => {
+export const ruleFactory = (
+  rule:string|false,
+  feature?:TFeatureAst,
+  index?:number
+) => {
+  const type = EAstObject.rule
+  const loc = feature?.rules?.length || 0
+  
   return {
-    index,
+    type,
     rule,
+    index,
     scenarios: [],
-    type: EAstObject.rule,
-    // The feature name should always be unique, so use that as a re-usable id
-    ...(rule && { uuid: uuid() }),
+    ...(rule && feature && { uuid: idFromLoc({ loc, type, parent: feature })}),
   } as TRuleAst
 }
 
@@ -44,14 +50,19 @@ export const ensureRule = (
   // Get text after the "Rule:" key word
   let ruleText = getRXMatch(line, RX_RULE, 1)
 
-  // Check if the scenario text was already added, and add it if needed
-  // Otherwise create a new scenario with the scenario text
-  !rule.rule ? (rule.rule = ruleText) : (rule = ruleFactory(ruleText, index))
+  // The initial rule is created with out the rule text
+  // So check here if it should be added, or create a new rule
+  !rule.rule ? (rule.rule = ruleText) : (rule = ruleFactory(ruleText, feature, index))
 
   // Ensure the line index is added
   !rule.index && (rule.index = index)
-  // Add the uuid from the rule text if it doesn't exist
-  !rule.uuid && (rule.uuid = uuid())
+
+  !rule.uuid
+    && (rule.uuid = idFromLoc({
+        parent: feature,
+        type: rule.type,
+        loc: feature?.rules?.length || 0,
+      }))
 
   // Get the start whitespace, used when assembling the feature
   rule.whitespace = getStartWhiteSpace(line)

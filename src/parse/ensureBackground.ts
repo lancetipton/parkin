@@ -1,7 +1,13 @@
-import type { TFeatureAst, TRuleAst, TBackgroundAst } from '../types'
+import type {
+  TRuleAst,
+  TFeatureAst,
+  TBackgroundAst,
+  TBackgroundParentAst,
+} from '../types'
 
 import { EAstObject } from '../types'
-import { uuid, isStr, isBool } from '@keg-hub/jsutils'
+import { idFromLoc } from './idFromLoc'
+import { isStr, isBool } from '@keg-hub/jsutils'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 /**
@@ -17,13 +23,19 @@ const RX_BACKGROUND = /^\s*Background:(.*)$/
  * @private
  *
  */
-export const backgroundFactory = (background:string|false, index?:number) => {
+export const backgroundFactory = (
+  background:string|false,
+  parent?:TBackgroundParentAst,
+  index?:number
+) => {
+  const type = EAstObject.background
+
   return {
+    type,
     index,
     steps: [],
     background,
-    type: EAstObject.background,
-    ...(background && { uuid: uuid() }),
+    ...(background && parent && { uuid: idFromLoc({ loc: 0, type, parent })}),
   } as TBackgroundAst
 }
 
@@ -51,17 +63,19 @@ export const ensureBackground = (
   const parent = rule?.uuid ? rule : feature
   const backgroundText = isStr(existingBgText) ? existingBgText.trim() : ''
 
-  // Check if the background text was already added, and add it if needed
-  // Otherwise create a new background with the background text
+  // The initial background is created with out the background text
+  // So check here if it should be added, or create a new background
   isBool(background.background)
     ? (background.background = backgroundText)
-    : (background = backgroundFactory(backgroundText, index))
+    : (background = backgroundFactory(backgroundText, parent, index))
 
-  // Ensure the line index is added
   !background.index && (background.index = index)
-  // Add the uuid from the background text if it doesn't exist
-  !background.uuid &&
-    (background.uuid = uuid())
+  !background.uuid
+    && (background.uuid = idFromLoc({
+        parent,
+        loc: 0,
+        type: background.type
+      }))
 
   // Get the start whitespace, used when assembling the feature
   background.whitespace = getStartWhiteSpace(line)

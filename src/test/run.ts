@@ -1,114 +1,99 @@
-import { isObj } from '@keg-hub/jsutils'
+import type {
+  TRunResult,
+  TRootTestObj,
+  TParkinTestCB,
+  TDescribeTestObj,
+  TParkinTestAbort,
+} from '../types'
+
+import { runResult } from './runResult'
 import { Types, validateRootRun } from './utils'
+import { EResultStatus, EResultAction } from '../types'
+import {
+  loopHooks,
+  callAfterHooks,
+  callBeforeHooks,
+} from './hooks'
 
-/**
- * Builds a run result base on the passed in arguments
- * @param {Object} item - describe or test object
- * @param {Object} metadata - Metadata of the test run
- *
- * @returns {Object} - Built run result object
- */
-const runResult = (
-  item,
-  { id, fullName, action, failed, passed, testPath }
-) => {
-  const result = {
-    id,
-    action,
-    testPath,
-    fullName,
-    type: item.type,
-    failedExpectations: [],
-    passedExpectations: [],
-    failed: Boolean(failed),
-    passed: Boolean(passed),
-    description: item.description,
-    timestamp: new Date().getTime(),
-  }
+import {
+  buildTestArgs,
+  shouldSkipTest,
+  shouldSkipDescribe,
+} from './runHelpers'
 
-  isObj(failed) && result.failedExpectations.push(failed)
-  isObj(passed) && result.passedExpectations.push(passed)
-  if (passed || failed) result.status = passed ? `passed` : `failed`
-
-  return result
+type TLoopTests = {
+  suiteId:string
+  testOnly:boolean
+  specDone:TParkinTestCB
+  shouldAbort:() => boolean
+  specStarted:TParkinTestCB
+  describe:TDescribeTestObj
 }
 
-/**
- * Helper to loop over hooks and call them
- * @param {Object} args - Data for calling the passed in hook by type
- *
- * @returns {Object} - Built run result object if a hook fails
- */
-const loopHooks = async args => {
-  const { type, test, specId, suiteId, describe, root } = args
-
-  let hookIdx
-  const activeItem = root || describe
-  const fullName = root
-    ? root.description
-    : test
-      ? `${describe?.description} > ${test?.description} > ${type}`
-      : `${describe?.description} > ${type}`
-
-  try {
-    activeItem[type].length &&
-      (await Promise.all(
-        activeItem[type].map((fn, idx) => {
-          hookIdx = idx
-          return fn()
-        })
-      ))
-  }
-  catch (error) {
-    return runResult(activeItem, {
-      fullName,
-      action: type,
-      status: 'failed',
-      id: test ? specId : suiteId,
-      failed: { name: error.name, message: error.message },
-      testPath: test
-        ? `/${suiteId}/${specId}/${type}${hookIdx}`
-        : `/${suiteId}/${type}${hookIdx}`,
-    })
-  }
+type TRun = {
+  testOnly:boolean
+  describeOnly:boolean
+  specDone:TParkinTestCB
+  suiteDone:TParkinTestCB
+  onAbort:TParkinTestAbort
+  shouldAbort:() => boolean
+  specStarted:TParkinTestCB
+  suiteStarted:TParkinTestCB
+  root:TRootTestObj|TDescribeTestObj
+  parentIdx?:string|number
 }
+
+type TRunResults = TRunResult[] & { aborted?:boolean }
 
 /**
  * Helper to loop over tests and call their test method
- * @param {Object} args - Data for calling the passed in test method
  *
  * @returns {Object} - Built run result object of the test results
  */
-const loopTests = async args => {
-  const { suiteId, describe, testOnly, specDone, specStarted } = args
+const loopTests = async (args:TLoopTests) => {
+  const {
+    suiteId,
+    describe,
+    testOnly,
+    specDone,
+    shouldAbort,
+    specStarted
+  } = args
 
   let describeFailed = false
   const results = []
 
   // ------ describe - loop tests ------ //
   for (let testIdx = 0; testIdx < describe.tests.length; testIdx++) {
-    const test = describe.tests[testIdx]
-    const specId = `spec${testIdx}`
-    const testPath = `/${suiteId}/${specId}`
-    const fullName = `${describe.description} > ${test.description}`
+
+    if(shouldAbort()) break
+
+    const {
+      test,
+      specId,
+      testPath,
+      fullName,
+    } = buildTestArgs({ suiteId, testIdx, describe })
 
     let testResult = runResult(test, {
       fullName,
       testPath,
       id: specId,
-      action: 'start',
+      action: EResultAction.start,
     })
 
-    if ((testOnly && !test.only) || test.skip) {
+    if(shouldSkipTest({ testOnly, test })){
       specStarted({
         ...testResult,
         skipped: true,
-        action: 'skipped',
-        status: 'skipped',
+        action: EResultAction.skipped,
+        status: EResultStatus.skipped,
       })
       continue
     }
     else specStarted(testResult)
+
+    if(shouldAbort()) break
 
     const beforeEachResult = await loopHooks({
       test,
@@ -131,20 +116,26 @@ const loopTests = async args => {
         fullName,
         id: specId,
         testPath: testPath,
-        action: Types.test,
         passed: result || true,
+        action: EResultAction.test,
       })
     }
     catch (error) {
       testResult = runResult(test, {
         fullName,
         id: specId,
-        action: Types.test,
         testPath: testPath,
-        failed: { name: error.name, message: error.message },
+        action: EResultAction.test,
+        failed: {
+          fullName: error.name,
+          description: error.message,
+          status: EResultStatus.failed,
+        },
       })
       describeFailed = true
     }
+    
+    if(shouldAbort()) break
 
     const afterEachResult = await loopHooks({
       test,
@@ -161,61 +152,16 @@ const loopTests = async args => {
     }
 
     results.push(testResult)
-    specDone({ ...testResult, action: 'end' })
+    specDone({
+      ...testResult,
+      action: EResultAction.end
+    })
   }
 
-  return {
-    tests: results,
-    failed: describeFailed,
-  }
-}
+  return shouldAbort()
+    ? { tests: [], failed: describeFailed }
+    : { tests: results, failed: describeFailed }
 
-/**
- * Helper to call the before hooks from the root and current describe
- * @param {Object} args - Arguments needed to call the before hooks
- *
- * @returns {Object} - Built results if a hook throws an error
- */
-const callBeforeHooks = async ({ root, suiteId, describe }) => {
-  const beforeEachResult = await loopHooks({
-    root,
-    suiteId: Types.root,
-    type: Types.beforeEach,
-  })
-
-  const beforeAllResult =
-    !beforeEachResult &&
-    (await loopHooks({
-      suiteId,
-      describe,
-      type: Types.beforeAll,
-    }))
-
-  return beforeEachResult || beforeAllResult
-}
-
-/**
- * Helper to call the after hooks from the root and current describe
- * @param {Object} args - Arguments needed to call the after hooks
- *
- * @returns {Object} - Built results if a hook throws an error
- */
-const callAfterHooks = async ({ root, suiteId, describe }) => {
-  const afterEachResult = await loopHooks({
-    root,
-    suiteId: Types.root,
-    type: Types.afterEach,
-  })
-
-  const afterAllResult =
-    !afterEachResult &&
-    (await loopHooks({
-      suiteId,
-      describe,
-      type: Types.afterAll,
-    }))
-
-  return afterEachResult || afterAllResult
 }
 
 /**
@@ -224,43 +170,43 @@ const callAfterHooks = async ({ root, suiteId, describe }) => {
  *
  * @returns {Object} - Built run results of the test results
  */
-const loopDescribes = async args => {
+const loopDescribes = async (args:TRun) => {
   const {
     root,
     testOnly,
     specDone,
     suiteDone,
+    shouldAbort,
     specStarted,
-    parentIdx = ``,
     suiteStarted,
     describeOnly,
+    parentIdx = ``,
   } = args
 
   let describeFailed = false
-  const results = []
+  const results:TRunResults = []
 
   // ------ loop describes ------ //
   for (let idx = 0; idx < root.describes.length; idx++) {
+
+    if(shouldAbort()) break
+
     const describe = root.describes[idx]
     const suiteId = `suite-${parentIdx}${idx}`
     let describeResult = runResult(describe, {
       id: suiteId,
-      action: 'start',
       testPath: `/${suiteId}`,
+      action: EResultAction.start,
       fullName: describe.description,
     })
 
-    const shouldSkip =
-      describe.skip ||
-      (describeOnly && !describe.only && !describe.onlyChild) ||
-      (testOnly && !describe.onlyChild)
 
-    if (shouldSkip) {
+    if (shouldSkipDescribe({ describe, describeOnly, testOnly })) {
       suiteStarted({
         ...describeResult,
         skipped: true,
-        action: 'skipped',
-        status: 'skipped',
+        action: EResultAction.skipped,
+        status: EResultStatus.skipped,
       })
       continue
     }
@@ -271,6 +217,7 @@ const loopDescribes = async args => {
       suiteId,
       describe,
     })
+    
     if (beforeResult) {
       describeFailed = true
       describeResult = { ...describeResult, ...beforeResult }
@@ -279,13 +226,18 @@ const loopDescribes = async args => {
       continue
     }
 
+    if(shouldAbort()) break
+
     const testResults = await loopTests({
       suiteId,
       describe,
       testOnly,
       specDone,
+      shouldAbort,
       specStarted,
     })
+
+    if(shouldAbort()) break
 
     const describesResults =
       describe.describes &&
@@ -299,8 +251,8 @@ const loopDescribes = async args => {
     describeResult = {
       ...describeResult,
       ...describesResults,
-      action: 'end',
       tests: testResults.tests,
+      action: EResultAction.end,
     }
 
     if (testResults.failed || describesResults.failed) {
@@ -322,11 +274,16 @@ const loopDescribes = async args => {
       continue
     }
 
+    if(shouldAbort()) break
+
     suiteDone(describeResult)
     results.push(describeResult)
   }
 
-  return { describes: results, failed: describeFailed }
+  return shouldAbort()
+    ? { describes: [], failed: describeFailed }
+    : { describes: results, failed: describeFailed }
+
 }
 
 /**
@@ -335,22 +292,43 @@ const loopDescribes = async args => {
  *
  * @returns {Object} - Results of the test run
  */
-export const run = async args => {
-  validateRootRun(args.root)
+export const run = async (args:TRun):Promise<TRunResults> => {
+  
+  const {
+    root,
+    onAbort,
+    shouldAbort
+  } = args
+  
+  validateRootRun(root as TRootTestObj)
 
   const beforeAllResult = await loopHooks({
-    root: args.root,
+    root: root,
     suiteId: Types.root,
     type: Types.beforeAll,
   })
+
+  if(shouldAbort()){
+    onAbort?.()
+    const results:TRunResults = []
+    results.aborted = true
+    return results
+  }
 
   // If a before all throws an error, we don't want to run the rest of the tests, so just return
   if (beforeAllResult) return [beforeAllResult]
 
   const { describes } = await loopDescribes(args)
 
+  if(shouldAbort()){
+    onAbort?.()
+    const results:TRunResults = []
+    results.aborted = true
+    return results
+  }
+
   const afterAllResult = await loopHooks({
-    root: args.root,
+    root: root,
     suiteId: Types.root,
     type: Types.afterAll,
   })

@@ -1,8 +1,8 @@
 import type {
   TStepDef,
   TFindOpts,
-  TMatchResp,
-  TWorldConfig
+  TWorldConfig,
+  TNoExtMatchResp
 } from '../types'
 
 import {
@@ -328,6 +328,6 @@ export const matchExpression = (
   // Then assume the type does not match, so the step does not match.
   // Otherwise return the matched definition, and the converted variables
   return converted.length !== params.length
-    ? emptyObj as TMatchResp
-    : { definition, match: converted } as TMatchResp
+    ? emptyObj as TNoExtMatchResp
+    : { definition, match: converted } as TNoExtMatchResp
 }

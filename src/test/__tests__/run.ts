@@ -62,7 +62,7 @@ describe(`ParkinTest.run`, () => {
       `beforeEach1`,
       `testMethod1`,
       `afterEach1`,
-      'beforeAll1',
+      `beforeAll1`,
       `testMethod2`,
       `testMethod21`,
       `beforeAll2`,

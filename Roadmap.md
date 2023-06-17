@@ -49,7 +49,6 @@
 ## Parkin CLI
 
 ### Test
-* Add tests for `src/bin` folder code
 * Add more features and definitions for examples of using the CLI
 
 ### NPM Package

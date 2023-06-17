@@ -36,10 +36,10 @@ export const parseFeature = function (
   const lines = replaceText.split(RX_NEWLINE)
 
   let parseError = false
-  let rule = ruleFactory(false)
-  let scenario = scenarioFactory(false)
-  let background = backgroundFactory(false)
   let feature = featureFactory(false, text)
+  let rule = ruleFactory(false, feature)
+  let scenario = scenarioFactory(false, feature)
+  let background = backgroundFactory(false, feature)
   let activeParent:TBlockParentAst = feature
   let tagCache:TTagsAst = undefined
 

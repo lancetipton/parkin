@@ -19,13 +19,6 @@ jest.resetModules()
 jest.resetAllMocks()
 jest.clearAllMocks()
 
-const jsutils = require('@keg-hub/jsutils')
-jest.setMock('@keg-hub/jsutils', {
-  ...jsutils,
-  uuid: jest.fn(() => {
-    return testUUid
-  })
-})
 
 const worldObj = {}
 const { Parkin } = require('../parkin')
@@ -106,8 +99,8 @@ describe(`Parkin`, () => {
     const rulesScenario = parsed.rules[0].scenarios[0]
     const featScenario = parsed.scenarios[0]
 
-    expect(rulesScenario.steps?.length).toBe(0)
-    expect(rulesScenario.scenario).toBe(``)
+    expect(rulesScenario?.steps?.length).toBe(0)
+    expect(rulesScenario?.scenario).toBe(``)
 
     expect(featScenario.steps?.length).toBe(1)
     expect(featScenario.scenario).toBe(`Navigate the Goblog`)
@@ -117,12 +110,11 @@ describe(`Parkin`, () => {
     const PK = new Parkin(worldObj)
     const parsed = PK.parse.definition(definition)
 
-    const { method: givenMethod, uuid, ...givenDef } = parsed.Given[0]
+    const { method: givenMethod, ...givenDef } = parsed.Given[0]
     expect(typeof givenMethod).toBe('function')
-
     expect(givenDef).toEqual(parsedDefinition.Given[0])
 
-    const { method: thenMethod, uuid:_, ...thenDef } = parsed.Then[0]
+    const { method: thenMethod, ...thenDef } = parsed.Then[0]
     expect(typeof thenMethod).toBe('function')
     expect(thenDef).toEqual(parsedDefinition.Then[0])
   })
@@ -131,11 +123,11 @@ describe(`Parkin`, () => {
     const PK = new Parkin(worldObj)
     PK.parse.definition(definition)
 
-    const { method: givenMethod, uuid, ...givenDef } = PK.steps._given[0]
+    const { method: givenMethod, ...givenDef } = PK.steps._given[0]
     expect(givenDef).toEqual(parsedDefinition.Given[0])
     expect(typeof givenMethod).toBe('function')
 
-    const { method: thenMethod, uuid:_, ...thenDef } = PK.steps._then[0]
+    const { method: thenMethod, ...thenDef } = PK.steps._then[0]
     expect(typeof thenMethod).toBe('function')
     expect(thenDef).toEqual(parsedDefinition.Then[0])
   })
