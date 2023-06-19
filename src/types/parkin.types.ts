@@ -6,7 +6,8 @@ import type {
   IParkinSteps,
   EExpParmType,
   TRegisterStepMethod,
-  TRegisterStepsList
+  TRegisterStepsList,
+  TStepTable
 } from './steps.types'
 
 import type { parseFeature } from '../parse/parseFeature'
@@ -45,6 +46,8 @@ export type TParse = {
 
 export type TMatchRespExt = {
   world:TWorldConfig
+  doc?: any
+  table?: TStepTable
   [key:string]: any
 }
 

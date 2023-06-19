@@ -1,4 +1,5 @@
 import type {
+  TStepAst,
   TStepDef,
   TStepMeta,
   TStepDefs,
@@ -105,7 +106,7 @@ export class Steps {
    * @public
    *
    */
-  match = (text:string) => {
+  match = (text:string, step?:TStepAst) => {
     // Join all step types together when finding a match
     // Treat all step definition types as the same when matching to step text
     const list = this.list()
@@ -118,8 +119,11 @@ export class Steps {
 
     // Add the Step instance's world to the match arguments
     // Always added as the last argument
-    // TODO: add parsed doc strings and tables to ext Object
     const extObj:TMatchRespExt = { world: this._world }
+
+    // If the doc and table exist, add them to the extObj
+    step.doc && (extObj.doc = step.doc)
+    step.table && (extObj.table = step.table)
 
     found.match.push(extObj)
 
@@ -134,9 +138,9 @@ export class Steps {
    * @public
    *
    */
-  resolve = (text:string) => {
+  resolve = (text:string, step?:TStepAst) => {
     // Try to find a step definition match to the passed in text
-    const found = this.match(text)
+    const found = this.match(text, step)
 
     // If found, call the step function passing the match array as arguments
     // Otherwise throw a no match error

@@ -33,8 +33,8 @@ export type TStepAst = {
   type: EStepType
   whitespace: string
   definition?:string
-  table?: TStepTable
   doc?: any
+  table?: TStepTable
 }
 
 export enum EStepVariant {

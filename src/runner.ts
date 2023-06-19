@@ -90,7 +90,7 @@ const runStep = async (
   testMode:boolean
 ) => {
   const test = getTestMethod(ETestType.test, testMode)
-  const testMethod = async () => (await stepsInstance.resolve(step.step))
+  const testMethod = async () => (await stepsInstance.resolve(step.step, step))
   testMethod.ParkinMetaData = pickKeys(
     step,
     [ `uuid`, `step`, `index`, `type`, `definition`]

@@ -31,7 +31,7 @@ const resolveArgs = (
   world?:TWorldConfig,
   options?:TParseFeatureOpts
 ) => {
-  const isOpts = !options && !world?.$alias && exists(world.worldReplace)
+  const isOpts = !options && !world?.$alias && exists(world?.worldReplace)
 
   return {
     worldCfg: isOpts ? pWorld : world,
@@ -60,9 +60,9 @@ export const parseFeature = function (
 
   const features:TFeatureAst[] = []
 
-  const replaceText = opts.worldReplace !== false
-    ? replaceWorld((text || '').toString(), worldCfg)
-    : (text || '').toString()
+  const replaceText = opts?.worldReplace === false
+    ? (text || '').toString()
+    : replaceWorld((text || '').toString(), worldCfg)
 
   const lines = replaceText.split(RX_NEWLINE)
 
