@@ -34,17 +34,19 @@ import { argsParse } from '@keg-hub/args-parse'
     defs,
     { timeout: parsed.timeout }
   )
+
   // TODO: add reporting ???
   // Should figure out a way to reuse Jest || Jasmine reporters
   // Need to setup way to use Jest instead of PTE based on task option
   // Need to create separate export for parkin in /.bin folder
   // console.dir(results, {depth: null, colors: true})
   printResult(results as TRunResults, {
-    // failedOnly: true,
-    steps: false,
-    // features: false,
-    errorOnly: true,
-    stepParents: false,
+    failedOnly: true,
+    exitWithError:true,
+    // steps: false,
+    // features: true,
+    // errorOnly: true,
+    // stepParents: false,
   })
 
 })()

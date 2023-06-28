@@ -14,11 +14,11 @@ import type {
 import { EStepType } from './types'
 import { matcher } from './matcher'
 import { constants } from './constants'
+import { replaceWorld } from './utils/worldReplace'
 import { validateDefinition } from './utils/helpers'
 import { throwNoMatchingStep } from './utils/errors'
 import { isArr, capitalize, isStr, ensureArr } from '@keg-hub/jsutils'
 import { joinAllDefs, registerFromParse, registerFromCall } from './definitions'
-
 
 const { STEP_TYPES } = constants
 
@@ -113,7 +113,11 @@ export class Steps {
     const list = this.list()
 
     // Call the matcher to find a matching step definition
-    const found = matcher(list, text, this._world)
+    const found = matcher(
+      list,
+      replaceWorld(text, this._world),
+      this._world
+    )
 
     // If no matching step definition exists, then return false
     if (!found.match || !found.definition) return false
