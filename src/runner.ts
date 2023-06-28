@@ -87,10 +87,17 @@ const resolveFeatures = (
 const runStep = async (
   stepsInstance:Steps,
   step:TStepAst,
+  options:TParkinRunOpts,
   testMode:boolean
 ) => {
   const test = getTestMethod(ETestType.test, testMode)
-  const testMethod = async () => (await stepsInstance.resolve(step.step, step))
+  const testMethod = async () => {
+    return await stepsInstance.resolve(
+      step.step,
+      step,
+      options?.testOptions?.[step?.uuid]
+    )
+  }
   testMethod.ParkinMetaData = pickKeys(
     step,
     [ `uuid`, `step`, `index`, `type`, `definition`]
@@ -115,6 +122,7 @@ const loopSteps = (
   parent:TStepParentAst,
   title:string,
   stepsInstance:Steps,
+  options:TParkinRunOpts,
   testMode:boolean
 ) => {
   const describe = getTestMethod(ETestType.describe, testMode)
@@ -124,7 +132,7 @@ const loopSteps = (
     // Map over the steps and call them
     // Store the returned promise in the responses array
     const responses = parent.steps.map(step =>
-      runStep(stepsInstance, step, testMode)
+      runStep(stepsInstance, step, options, testMode)
     )
 
     // Ensure we resolve all promises inside the describe block
@@ -155,6 +163,7 @@ const runScenario = (
   stepsInstance:Steps,
   scenario:TScenarioAst,
   background:TBackgroundAst,
+  options:TParkinRunOpts,
   testMode:boolean
 ) => {
   const responses = []
@@ -162,7 +171,7 @@ const runScenario = (
   // If there's a background, run the background steps first
   background &&
     responses.push(
-      ...runBackground(stepsInstance, scenario.scenario, background, testMode)
+      ...runBackground(stepsInstance, scenario.scenario, background, options, testMode)
     )
 
   // Next run the scenario steps once the background completes
@@ -171,6 +180,7 @@ const runScenario = (
       scenario,
       buildTitle(scenario.scenario, `Scenario`),
       stepsInstance,
+      options,
       testMode
     )
   )
@@ -191,6 +201,7 @@ const runBackground = (
   stepsInstance:Steps,
   title:string,
   background:TBackgroundAst,
+  options:TParkinRunOpts,
   testMode:boolean
 ) => {
   // If there's a background, run the background steps first
@@ -198,6 +209,7 @@ const runBackground = (
     background,
     buildTitle(title, `Background`),
     stepsInstance,
+    options,
     testMode
   )
 }
@@ -217,6 +229,7 @@ const runRule = (
   stepsInstance:Steps,
   rule:TRuleAst,
   background:TBackgroundAst,
+  options:TParkinRunOpts,
   testMode:boolean
 ) => {
   // Map over the rule scenarios and call their steps
@@ -227,13 +240,13 @@ const runRule = (
     background &&
       responses.push(
         ...responses.concat(
-          runBackground(stepsInstance, rule.rule, background, testMode)
+          runBackground(stepsInstance, rule.rule, background, options, testMode)
         )
       )
 
     responses.push(
       ...rule.scenarios.map(scenario =>
-        runScenario(stepsInstance, scenario, rule.background, testMode)
+        runScenario(stepsInstance, scenario, rule.background, options, testMode)
       )
     )
 
@@ -338,6 +351,7 @@ export class Runner {
               this.steps,
               rule,
               feature.background,
+              options,
               testMode
             ))
 
@@ -351,6 +365,7 @@ export class Runner {
               this.steps,
               scenario,
               feature.background,
+              options,
               testMode
             ))
 

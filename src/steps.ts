@@ -8,6 +8,7 @@ import type {
   TWorldConfig,
   TStepDefMethod,
   TMatchRespExt,
+  TStepResolveOpts,
 } from './types'
 
 import { EStepType } from './types'
@@ -106,7 +107,7 @@ export class Steps {
    * @public
    *
    */
-  match = (text:string, step?:TStepAst) => {
+  match = (text:string, step?:TStepAst, options?:TStepResolveOpts) => {
     // Join all step types together when finding a match
     // Treat all step definition types as the same when matching to step text
     const list = this.list()
@@ -124,6 +125,7 @@ export class Steps {
     // If the doc and table exist, add them to the extObj
     step.doc && (extObj.doc = step.doc)
     step.table && (extObj.table = step.table)
+    options && (extObj.options = options)
 
     found.match.push(extObj)
 
@@ -138,9 +140,9 @@ export class Steps {
    * @public
    *
    */
-  resolve = (text:string, step?:TStepAst) => {
+  resolve = (text:string, step?:TStepAst, options?:TStepResolveOpts) => {
     // Try to find a step definition match to the passed in text
-    const found = this.match(text, step)
+    const found = this.match(text, step, options)
 
     // If found, call the step function passing the match array as arguments
     // Otherwise throw a no match error

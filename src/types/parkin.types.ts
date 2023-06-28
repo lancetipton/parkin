@@ -48,6 +48,7 @@ export type TMatchRespExt = {
   world:TWorldConfig
   doc?: any
   table?: TStepTable
+  options?:Record<string, any>
   [key:string]: any
 }
 
