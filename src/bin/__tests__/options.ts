@@ -14,6 +14,7 @@ const allowOpts = [
   `exclude`,
   `include`,
   `timeout`,
+  `config`,
 ]
 
 const allowedTypes = [
