@@ -225,3 +225,28 @@ export type TGlobalTypes = THookTypes & {
 export type TType = TGlobalTypes & {
   root: `root`
 }
+
+
+export type TRunResults = TRunResult[] & { aborted?:boolean }
+
+export type TLoopTests = {
+  suiteId:string
+  testOnly:boolean
+  specDone:TParkinTestCB
+  shouldAbort:() => boolean
+  specStarted:TParkinTestCB
+  describe:TDescribeTestObj
+}
+
+export type TRun = {
+  testOnly:boolean
+  describeOnly:boolean
+  specDone:TParkinTestCB
+  suiteDone:TParkinTestCB
+  onAbort:TParkinTestAbort
+  shouldAbort:() => boolean
+  specStarted:TParkinTestCB
+  suiteStarted:TParkinTestCB
+  root:TRootTestObj|TDescribeTestObj
+  parentIdx?:string|number
+}

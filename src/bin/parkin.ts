@@ -1,6 +1,7 @@
 #! /usr/bin/env node --no-warnings
 import './globals'
 
+import type { TRunResults } from '../types'
 import type { TParkinOpts } from '../types/bin.types'
 
 import { setRoot } from './paths'
@@ -10,9 +11,9 @@ import { getDefs } from './getDefs'
 import { getWorld } from './getWorld'
 import { runTests } from './runTests'
 import { getConfig } from './getConfig'
+import { printResult } from './printResult'
 import { getFeatures } from './getFeatures'
 import { argsParse } from '@keg-hub/args-parse'
-
 
 ;(async () => {
 
@@ -33,11 +34,17 @@ import { argsParse } from '@keg-hub/args-parse'
     defs,
     { timeout: parsed.timeout }
   )
-
   // TODO: add reporting ???
   // Should figure out a way to reuse Jest || Jasmine reporters
   // Need to setup way to use Jest instead of PTE based on task option
   // Need to create separate export for parkin in /.bin folder
-  console.dir(results, {depth: null, colors: true})
+  // console.dir(results, {depth: null, colors: true})
+  printResult(results as TRunResults, {
+    // failedOnly: true,
+    steps: false,
+    // features: false,
+    errorOnly: true,
+    stepParents: false,
+  })
 
 })()

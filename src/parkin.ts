@@ -54,26 +54,37 @@ const { STEP_TYPES } = constants
  */
 export class Parkin {
   #isInit = false
+  #world:TWorldConfig
+
   steps:Steps
   hooks:Hooks
   parse:TParse
   runner:Runner
   run:TParkinRun
   matcher:Matcher
-  world:TWorldConfig
   assemble:TAssemble
   paramTypes:TParamTypes
-  Given:TRegisterStepMethod
-  When:TRegisterStepMethod
-  Then:TRegisterStepMethod
   And:TRegisterStepMethod
   But:TRegisterStepMethod
+  When:TRegisterStepMethod
+  Then:TRegisterStepMethod
+  Given:TRegisterStepMethod
 
   constructor(
     world?:TWorldConfig,
     steps?:TRegisterOrAddStep
   ) {
     isObj(world) && this.init(world, steps)
+  }
+
+  get world(){
+    return this.#world
+  }
+
+  set world(update:TWorldConfig){
+    this.#world = update
+    this.steps._world = update
+    this.runner._world = update
   }
 
   init = (
@@ -92,10 +103,11 @@ export class Parkin {
 
     // Set isInit, so we can't re-initialized
     this.#isInit = true
+
+    this.steps = new Steps(world)
+    this.hooks = new Hooks(world, this)
+    this.runner = new Runner(this.steps, this.hooks, world)
     this.world = world
-    this.steps = new Steps(this.world)
-    this.hooks = new Hooks(this.world, this)
-    this.runner = new Runner(this.steps, this.hooks, this.world)
 
     /**
      * Runs the step definition methods matching the steps of a feature

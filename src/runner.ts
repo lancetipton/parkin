@@ -14,6 +14,7 @@ import type {
 
 import { parseFeature } from './parse'
 import { ETestType, EHookType } from './types'
+import { PromiseTimeout } from './utils/promiseTimeout'
 import { filterFeatures } from './utils/filterFeatures'
 import { getTestMethod, skipTestsOnFail } from './utils/testMethods'
 import {
@@ -92,11 +93,22 @@ const runStep = async (
 ) => {
   const test = getTestMethod(ETestType.test, testMode)
   const testMethod = async () => {
-    return await stepsInstance.resolve(
+    const stepOpts = options?.testOptions?.[step?.uuid]
+    const stepTimeout = stepOpts?.timeout || options?.timeout
+    const resolved = stepsInstance.resolve(
       step.step,
       step,
-      options?.testOptions?.[step?.uuid]
+      stepOpts
     )
+    /**
+     * If there's a timeout set || it's  greater than 0 use the PromiseTimeout
+     * Otherwise just return the resolved, with NO timeout
+     * **IMPORTANT** - This is a timeout for Parkin Runner Only
+     * The `test` method from the `test` framework could have it's own timeout method
+     */
+    return stepTimeout
+      ? PromiseTimeout(resolved, stepTimeout, `Step`)
+      : resolved
   }
   testMethod.ParkinMetaData = pickKeys(
     step,

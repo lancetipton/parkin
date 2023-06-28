@@ -39,7 +39,7 @@ type TRegisterArgs = [
  */
 export class Steps {
 
-  private _world:TWorldConfig
+  _world:TWorldConfig
 
   /**
    * Allowed step definition types

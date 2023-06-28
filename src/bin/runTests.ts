@@ -1,5 +1,10 @@
 #! /usr/bin/env node
-import type { TWorldConfig, TParkinTestConfig, TRegisterStepsList } from '../types'
+import type {
+  TRunResults,
+  TWorldConfig,
+  TParkinTestConfig,
+  TRegisterStepsList
+} from '../types'
 
 import { promises as fs } from 'fs'
 import { getParkin, getPTE } from './instance'
@@ -19,16 +24,16 @@ export const runTests = async (
     const PTE = getPTE()
 
     const content = await fs.readFile(feature, { encoding: `utf8` })
-    const featureAst = PK.parse.feature(content)
+    const featureAst = PK.parse.feature(content, { worldReplace: false })
 
     await PK.run(featureAst)
 
     const responses = await PTE.run({
       description: `Parkin > ${feature}`,
       ...testConfig,
-    })
+    }) as TRunResults
 
     return acc.concat(responses)
-  }, Promise.resolve([]))
+  }, Promise.resolve([] as TRunResults))
 }
 
