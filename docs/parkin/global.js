@@ -3024,8 +3024,8 @@ var Steps = class {
     if (!found.match || !found.definition)
       return false;
     const extObj = { world: this._world };
-    step.doc && (extObj.doc = step.doc);
-    step.table && (extObj.table = step.table);
+    (step == null ? void 0 : step.doc) && (extObj.doc = step == null ? void 0 : step.doc);
+    (step == null ? void 0 : step.table) && (extObj.table = step == null ? void 0 : step.table);
     options && (extObj.options = options);
     found.match.push(extObj);
     return found;

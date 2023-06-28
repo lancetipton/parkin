@@ -123,8 +123,8 @@ export class Steps {
     const extObj:TMatchRespExt = { world: this._world }
 
     // If the doc and table exist, add them to the extObj
-    step.doc && (extObj.doc = step.doc)
-    step.table && (extObj.table = step.table)
+    step?.doc && (extObj.doc = step?.doc)
+    step?.table && (extObj.table = step?.table)
     options && (extObj.options = options)
 
     found.match.push(extObj)
