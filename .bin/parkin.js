@@ -430,8 +430,8 @@ var require_deepEqual_adba847a = __commonJS({
 var require_exists_c79204b1 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js"(exports) {
     "use strict";
-    var exists8 = (value) => value === value && value !== void 0 && value !== null;
-    exports.exists = exists8;
+    var exists9 = (value) => value === value && value !== void 0 && value !== null;
+    exports.exists = exists9;
   }
 });
 
@@ -571,7 +571,7 @@ var require_not_16fa9c85 = __commonJS({
     var toBool = require_toBool_deb350e4();
     var isColl = require_isColl_5757310a();
     var deepEqual = require_deepEqual_adba847a();
-    var exists8 = require_exists_c79204b1();
+    var exists9 = require_exists_c79204b1();
     var isStr9 = require_isStr_8a57710e();
     var isNum2 = require_isNum_c7164b50();
     var isInt = require_isInt_94ce4199();
@@ -615,7 +615,7 @@ var require_not_16fa9c85 = __commonJS({
     not.deepEqual = not(deepEqual.deepEqual);
     not.emptyColl = not(deepEqual.isEmptyColl);
     not.dom = not(hasDomAccess);
-    not.exists = not(exists8.exists);
+    not.exists = not(exists9.exists);
     not.empty = not(isValidDate.isEmpty);
     not.same = not(isValidDate.isSame);
     not.validDate = not(isValidDate.isValidDate);
@@ -706,8 +706,8 @@ var require_noOps_c9732e8e = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/noOps-c9732e8e.js"(exports) {
     "use strict";
     var deepFreeze2 = require_deepFreeze_d73ccc57();
-    var noOpObj8 = Object.freeze({});
-    var emptyObj10 = noOpObj8;
+    var noOpObj7 = Object.freeze({});
+    var emptyObj11 = noOpObj7;
     var noPropObj = deepFreeze2.deepFreeze({
       content: {}
     });
@@ -715,9 +715,9 @@ var require_noOps_c9732e8e = __commonJS({
     var noOpArr = noPropArr2;
     var emptyArr7 = noPropArr2;
     exports.emptyArr = emptyArr7;
-    exports.emptyObj = emptyObj10;
+    exports.emptyObj = emptyObj11;
     exports.noOpArr = noOpArr;
-    exports.noOpObj = noOpObj8;
+    exports.noOpObj = noOpObj7;
     exports.noPropArr = noPropArr2;
     exports.noPropObj = noPropObj;
   }
@@ -735,7 +735,7 @@ var require_intersect_77d7e821 = __commonJS({
     var not = require_not_16fa9c85();
     var isNonNegative = require_isNonNegative_9959647c();
     var noOps = require_noOps_c9732e8e();
-    var exists8 = require_exists_c79204b1();
+    var exists9 = require_exists_c79204b1();
     var buildElementCountMap = (arr) => {
       const counts = /* @__PURE__ */ new Map();
       for (let i2 = 0; i2 < arr.length; i2++) {
@@ -800,7 +800,7 @@ var require_intersect_77d7e821 = __commonJS({
     var flatten = (arr, result, opts) => {
       for (let i2 = 0; i2 < arr.length; i2++) {
         const value = arr[i2];
-        isArr7.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists8.exists(value) || opts.truthy && !value ? result : result.push(value);
+        isArr7.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists9.exists(value) || opts.truthy && !value ? result : result.push(value);
       }
       if (!opts.mutate)
         return result;
@@ -883,7 +883,7 @@ var require_intersect_77d7e821 = __commonJS({
       });
       return unique;
     };
-    var flatUnion2 = (...args) => {
+    var flatUnion3 = (...args) => {
       const last = args.pop();
       const opts = {
         exists: true
@@ -912,7 +912,7 @@ var require_intersect_77d7e821 = __commonJS({
     exports.findMin = findMin;
     exports.flatArr = flatArr2;
     exports.flatMap = flatMap;
-    exports.flatUnion = flatUnion2;
+    exports.flatUnion = flatUnion3;
     exports.intersect = intersect;
     exports.omitRange = omitRange;
     exports.randomArr = randomArr;
@@ -927,8 +927,8 @@ var require_ensureArr_ae68c041 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/ensureArr-ae68c041.js"(exports) {
     "use strict";
     var isArr7 = require_isArr_39234014();
-    var ensureArr5 = (val) => isArr7.isArr(val) ? val : [val];
-    exports.ensureArr = ensureArr5;
+    var ensureArr6 = (val) => isArr7.isArr(val) ? val : [val];
+    exports.ensureArr = ensureArr6;
   }
 });
 
@@ -983,22 +983,22 @@ var require_set_c0a98b21 = __commonJS({
 var require_get_00626335 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js"(exports) {
     "use strict";
-    var exists8 = require_exists_c79204b1();
+    var exists9 = require_exists_c79204b1();
     var isArr7 = require_isArr_39234014();
     var isStr9 = require_isStr_8a57710e();
     var get4 = (obj, path3, fallback) => {
       const isPathArr = isArr7.isArr(path3);
       if (!isStr9.isStr(path3) && !isPathArr)
-        return exists8.exists(fallback) ? fallback : void 0;
+        return exists9.exists(fallback) ? fallback : void 0;
       const parts = isPathArr ? path3 : path3.split(".");
       const result = parts.reduce((obj2, prop) => {
         const type = typeof obj2;
-        if (!exists8.exists(obj2) || type !== "object" && type !== "function")
+        if (!exists9.exists(obj2) || type !== "object" && type !== "function")
           return void 0;
         prop = prop.startsWith("[") ? prop.replace(/\D/g, "") : prop;
         return obj2[prop];
       }, obj);
-      return exists8.exists(result) ? result : fallback;
+      return exists9.exists(result) ? result : fallback;
     };
     exports.get = get4;
   }
@@ -1076,7 +1076,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
     var isColl = require_isColl_5757310a();
     var isFunc5 = require_isFunc_f93803cb();
     var isArr7 = require_isArr_39234014();
-    var exists8 = require_exists_c79204b1();
+    var exists9 = require_exists_c79204b1();
     var validate = require_validate_23297ec2();
     var set = require_set_c0a98b21();
     var deepClone = require_deepClone_ae664a21();
@@ -1114,7 +1114,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
       }
       return null;
     };
-    var mapFind = (coll, mapper, testFunc = exists8.exists) => {
+    var mapFind = (coll, mapper, testFunc = exists9.exists) => {
       const [valid] = validate.validate({
         coll,
         mapper,
@@ -1547,9 +1547,9 @@ var require_splitByKeys_d0160002 = __commonJS({
     var isStr9 = require_isStr_8a57710e();
     var strToType = require_strToType_00c4481f();
     var pipeline = require_pipeline_e65bdaae();
-    var exists8 = require_exists_c79204b1();
+    var exists9 = require_exists_c79204b1();
     var toStr3 = require_toStr_8e499966();
-    var ensureArr5 = require_ensureArr_ae68c041();
+    var ensureArr6 = require_ensureArr_ae68c041();
     var cloneJson = (obj) => {
       try {
         return JSON.parse(JSON.stringify(obj));
@@ -1751,9 +1751,9 @@ var require_splitByKeys_d0160002 = __commonJS({
           ...obj
         }];
       const intersect = [{}, {}];
-      const compareKeys = ensureArr5.ensureArr(keys);
+      const compareKeys = ensureArr6.ensureArr(keys);
       return isObj7.isObj(obj) ? reduceObj.reduceObj(obj, (key, _, updated) => {
-        exists8.exists(compareKeys.find((k) => exists8.exists(k) && toStr3.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
+        exists9.exists(compareKeys.find((k) => exists9.exists(k) && toStr3.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
         return updated;
       }, intersect) : intersect;
     };
@@ -2161,7 +2161,7 @@ var require_cjs = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var intersect = require_intersect_77d7e821();
-    var ensureArr5 = require_ensureArr_ae68c041();
+    var ensureArr6 = require_ensureArr_ae68c041();
     var isArr7 = require_isArr_39234014();
     var isBool2 = require_isBool_aa6af74e();
     var toBool = require_toBool_deb350e4();
@@ -2177,7 +2177,7 @@ var require_cjs = __commonJS({
     var noOps = require_noOps_c9732e8e();
     var isValidDate = require_isValidDate_813b9419();
     var strToType = require_strToType_00c4481f();
-    var exists8 = require_exists_c79204b1();
+    var exists9 = require_exists_c79204b1();
     var log = require_log_37bbfac6();
     var pipeline = require_pipeline_e65bdaae();
     var stackTracePaths = require_stackTracePaths_58b768d2();
@@ -2229,7 +2229,7 @@ var require_cjs = __commonJS({
     exports.randomizeArr = intersect.randomizeArr;
     exports.uniqArr = intersect.uniqArr;
     exports.uniqArrByReference = intersect.uniqArrByReference;
-    exports.ensureArr = ensureArr5.ensureArr;
+    exports.ensureArr = ensureArr6.ensureArr;
     exports.isArr = isArr7.isArr;
     exports.isBool = isBool2.isBool;
     exports.convertToStrBool = toBool.convertToStrBool;
@@ -2270,7 +2270,7 @@ var require_cjs = __commonJS({
     exports.isValidDate = isValidDate.isValidDate;
     exports.typeOf = isValidDate.typeOf;
     exports.strToType = strToType.strToType;
-    exports.exists = exists8.exists;
+    exports.exists = exists9.exists;
     exports.logData = log.logData;
     exports.resetLogs = log.resetLogs;
     exports.setLogs = log.setLogs;
@@ -3225,12 +3225,15 @@ var init_steps = __esm({
        * @public
        *
        */
-      match = (text) => {
+      match = (text, step, options2) => {
         const list = this.list();
         const found = matcher(list, text, this._world);
         if (!found.match || !found.definition)
           return false;
         const extObj = { world: this._world };
+        step.doc && (extObj.doc = step.doc);
+        step.table && (extObj.table = step.table);
+        options2 && (extObj.options = options2);
         found.match.push(extObj);
         return found;
       };
@@ -3242,8 +3245,8 @@ var init_steps = __esm({
        * @public
        *
        */
-      resolve = (text) => {
-        const found = this.match(text);
+      resolve = (text, step, options2) => {
+        const found = this.match(text, step, options2);
         return found ? found.definition.method(...found.match) : throwNoMatchingStep(
           `Matching definition could not be found for step: "${text}"`
         );
@@ -3858,7 +3861,7 @@ var init_ensureMeta = __esm({
 });
 
 // src/parse/parseFeature.ts
-var import_jsutils18, RX_NEWLINE, parseFeature;
+var import_jsutils18, RX_NEWLINE, defWorld, resolveArgs, parseFeature;
 var init_parseFeature = __esm({
   "src/parse/parseFeature.ts"() {
     init_types();
@@ -3873,10 +3876,22 @@ var init_parseFeature = __esm({
     init_ensureBackground();
     init_ensureMeta();
     RX_NEWLINE = /\r?\n/g;
-    parseFeature = function(text, world) {
-      world = world || this && this.world || import_jsutils18.noOpObj;
+    defWorld = { $alias: {} };
+    resolveArgs = (pWorld, world, options2) => {
+      const isOpts = !options2 && !(world == null ? void 0 : world.$alias) && (0, import_jsutils18.exists)(world == null ? void 0 : world.worldReplace);
+      return {
+        worldCfg: isOpts ? pWorld : world,
+        opts: isOpts ? world : options2 || import_jsutils18.emptyObj
+      };
+    };
+    parseFeature = function(text, world, options2) {
+      const { opts, worldCfg } = resolveArgs(
+        this ? this.world : defWorld,
+        world,
+        options2
+      );
       const features = [];
-      const replaceText = replaceWorld((text || "").toString(), world);
+      const replaceText = (opts == null ? void 0 : opts.worldReplace) === false ? (text || "").toString() : replaceWorld((text || "").toString(), worldCfg);
       const lines = replaceText.split(RX_NEWLINE);
       let parseError2 = false;
       let feature = featureFactory(false, text);
@@ -4136,21 +4151,28 @@ var init_runner = __esm({
         []
       ) : throwMissingFeatureText();
     };
-    runStep = async (stepsInstance, step, testMode) => {
+    runStep = async (stepsInstance, step, options2, testMode) => {
       const test = getTestMethod("test" /* test */, testMode);
-      const testMethod = async () => await stepsInstance.resolve(step.step);
+      const testMethod = async () => {
+        var _a;
+        return await stepsInstance.resolve(
+          step.step,
+          step,
+          (_a = options2 == null ? void 0 : options2.testOptions) == null ? void 0 : _a[step == null ? void 0 : step.uuid]
+        );
+      };
       testMethod.ParkinMetaData = (0, import_jsutils21.pickKeys)(
         step,
         [`uuid`, `step`, `index`, `type`, `definition`]
       );
       test(`${(0, import_jsutils21.capitalize)(step.type)} ${step.step}`, testMethod);
     };
-    loopSteps = (parent, title, stepsInstance, testMode) => {
+    loopSteps = (parent, title, stepsInstance, options2, testMode) => {
       const describe2 = getTestMethod("describe" /* describe */, testMode);
       let responses = [];
       const describeMethod = () => {
         const responses2 = parent.steps.map(
-          (step) => runStep(stepsInstance, step, testMode)
+          (step) => runStep(stepsInstance, step, options2, testMode)
         );
         Promise.all(responses2);
       };
@@ -4161,39 +4183,41 @@ var init_runner = __esm({
       describe2(title, describeMethod);
       return responses;
     };
-    runScenario = (stepsInstance, scenario, background, testMode) => {
+    runScenario = (stepsInstance, scenario, background, options2, testMode) => {
       const responses = [];
       background && responses.push(
-        ...runBackground(stepsInstance, scenario.scenario, background, testMode)
+        ...runBackground(stepsInstance, scenario.scenario, background, options2, testMode)
       );
       return responses.concat(
         loopSteps(
           scenario,
           buildTitle(scenario.scenario, `Scenario`),
           stepsInstance,
+          options2,
           testMode
         )
       );
     };
-    runBackground = (stepsInstance, title, background, testMode) => {
+    runBackground = (stepsInstance, title, background, options2, testMode) => {
       return loopSteps(
         background,
         buildTitle(title, `Background`),
         stepsInstance,
+        options2,
         testMode
       );
     };
-    runRule = (stepsInstance, rule, background, testMode) => {
+    runRule = (stepsInstance, rule, background, options2, testMode) => {
       let responses = [];
       const describeMethod = () => {
         background && responses.push(
           ...responses.concat(
-            runBackground(stepsInstance, rule.rule, background, testMode)
+            runBackground(stepsInstance, rule.rule, background, options2, testMode)
           )
         );
         responses.push(
           ...rule.scenarios.map(
-            (scenario) => runScenario(stepsInstance, scenario, rule.background, testMode)
+            (scenario) => runScenario(stepsInstance, scenario, rule.background, options2, testMode)
           )
         );
         Promise.all(responses);
@@ -4260,6 +4284,7 @@ var init_runner = __esm({
                   this.steps,
                   rule,
                   feature.background,
+                  options2,
                   testMode
                 ));
                 return acc;
@@ -4271,6 +4296,7 @@ var init_runner = __esm({
                   this.steps,
                   scenario,
                   feature.background,
+                  options2,
                   testMode
                 ));
                 return acc;
@@ -14348,37 +14374,50 @@ var init_options = __esm({
     options = {
       features: {
         type: `array`,
-        alias: [`files`, `file`, `fl`, `feature`, `feat`, `ft`]
+        alias: [`files`, `file`, `fl`, `feature`, `feat`, `ft`],
+        description: `Path to a folder that contains the feature files to be run`
       },
       defs: {
         type: `array`,
-        alias: [`definitions`, `dfs`, `df`, `steps`, `step`, `st`]
+        alias: [`definitions`, `dfs`, `df`, `steps`, `step`, `st`],
+        description: `Path to a folder that contains the step definitions for the feature files`
       },
       world: {
-        alias: [`wld`, `wd`]
+        alias: [`wld`, `wd`],
+        description: `Path to the world file to be loaded`
       },
       rootDir: {
-        alias: [`root`, `rt`]
+        alias: [`root`, `rt`],
+        description: `Root directory the parkin test executor will be run from`
       },
       ext: {
         alias: [`ex`]
       },
       exts: {
         type: `array`,
-        alias: [`exs`]
+        alias: [`exs`],
+        description: `Array of file extensions of files that search for and loaded`
       },
       exclude: {
         type: `array`,
-        alias: [`exc`, `skip`, `ignore`]
+        alias: [`exc`, `skip`, `ignore`],
+        description: `Blacklist of files or folders to NOT include in the test run`
       },
       include: {
         type: `array`,
-        alias: [`in`, `only`]
+        alias: [`in`, `only`],
+        description: `Whitelist of files or folders to include in the test run`
       },
       timeout: {
         default: 5e3,
         type: `number`,
-        alias: [`time`]
+        alias: [`t`, `time`],
+        description: `Global test timeout`
+      },
+      config: {
+        alias: [`c`],
+        example: `--config ./parkin.ts`,
+        description: `Path to parkin config file. The default export must be a parkin config Object`
       }
     };
   }
@@ -14475,8 +14514,8 @@ var init_helpers3 = __esm({
         return extensions.includes(fileExt);
       });
     };
-    fullLoc = (loc) => {
-      const root = getRoot() || cwd;
+    fullLoc = (loc, rootDir) => {
+      const root = rootDir || getRoot() || cwd;
       return loc.startsWith(`/`) ? loc : loc.startsWith(`~/`) ? import_path3.default.join(homeDir, loc.replace(`~/`, ``)) : import_path3.default.join(root, loc);
     };
   }
@@ -14564,12 +14603,56 @@ var init_runTests = __esm({
   }
 });
 
+// src/bin/getConfig.ts
+var import_jsutils36, mergeConfig, getConfig;
+var init_getConfig = __esm({
+  "src/bin/getConfig.ts"() {
+    init_helpers3();
+    import_jsutils36 = __toESM(require_cjs());
+    mergeConfig = (base, override) => {
+      const {
+        defs: bDefs,
+        exts: bExts,
+        config: bConfig,
+        exclude: bExclude,
+        include: bInclude,
+        features: bFeatures,
+        ...baseRest
+      } = base;
+      const {
+        defs,
+        exts,
+        config,
+        exclude,
+        include,
+        features,
+        ...ovRest
+      } = override;
+      return {
+        ...baseRest,
+        ...ovRest,
+        defs: (0, import_jsutils36.flatUnion)((0, import_jsutils36.ensureArr)(bDefs), (0, import_jsutils36.ensureArr)(defs)),
+        exts: (0, import_jsutils36.flatUnion)((0, import_jsutils36.ensureArr)(bExts), (0, import_jsutils36.ensureArr)(exts)),
+        exclude: (0, import_jsutils36.flatUnion)((0, import_jsutils36.ensureArr)(bExclude), (0, import_jsutils36.ensureArr)(exclude)),
+        include: (0, import_jsutils36.flatUnion)((0, import_jsutils36.ensureArr)(bInclude), (0, import_jsutils36.ensureArr)(include)),
+        features: (0, import_jsutils36.flatUnion)((0, import_jsutils36.ensureArr)(bFeatures), (0, import_jsutils36.ensureArr)(features))
+      };
+    };
+    getConfig = (opts) => {
+      return !opts.config ? opts : mergeConfig(
+        require(fullLoc(opts.config, opts.rootDir)),
+        opts
+      );
+    };
+  }
+});
+
 // src/bin/getFeatures.ts
-var import_jsutils36, filterFeatures2, featureFromArg, getFeatures;
+var import_jsutils37, filterFeatures2, featureFromArg, getFeatures;
 var init_getFeatures = __esm({
   "src/bin/getFeatures.ts"() {
     init_paths();
-    import_jsutils36 = __toESM(require_cjs());
+    import_jsutils37 = __toESM(require_cjs());
     init_helpers3();
     filterFeatures2 = async (loc, opts) => {
       return await locsByTypes(loc, {
@@ -14587,9 +14670,9 @@ var init_getFeatures = __esm({
       });
     };
     getFeatures = async (opts, args) => {
-      let optsFiles = (0, import_jsutils36.ensureArr)(opts.features || []);
+      let optsFiles = (0, import_jsutils37.ensureArr)(opts.features || []);
       const featureArgs = featureFromArg(args);
-      const options2 = featureArgs.length ? { ...opts, include: (0, import_jsutils36.flatArr)([...(opts == null ? void 0 : opts.include) || import_jsutils36.emptyArr, ...featureArgs]) } : opts;
+      const options2 = featureArgs.length ? { ...opts, include: (0, import_jsutils37.flatArr)([...(opts == null ? void 0 : opts.include) || import_jsutils37.emptyArr, ...featureArgs]) } : opts;
       const filesArr = optsFiles.length || !args.length ? optsFiles : featureArgs;
       if (!filesArr.length) {
         const root = __RootDir || cwd;
@@ -14618,11 +14701,13 @@ var init_parkin2 = __esm({
     init_getDefs();
     init_getWorld();
     init_runTests();
+    init_getConfig();
     init_getFeatures();
     import_args_parse = require("@keg-hub/args-parse");
     (async () => {
       const args = process.argv.slice(2);
-      const parsed = await (0, import_args_parse.argsParse)({ args, task: { options } });
+      const opts = await (0, import_args_parse.argsParse)({ args, task: { options } });
+      const parsed = getConfig(opts);
       parsed.rootDir && setRoot(parsed.rootDir);
       const world = await getWorld(parsed);
       initPK(world);

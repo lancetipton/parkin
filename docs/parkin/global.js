@@ -294,8 +294,8 @@ var require_deepEqual_adba847a = __commonJS({
 var require_exists_c79204b1 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js"(exports) {
     "use strict";
-    var exists8 = (value) => value === value && value !== void 0 && value !== null;
-    exports.exists = exists8;
+    var exists9 = (value) => value === value && value !== void 0 && value !== null;
+    exports.exists = exists9;
   }
 });
 
@@ -435,7 +435,7 @@ var require_not_16fa9c85 = __commonJS({
     var toBool = require_toBool_deb350e4();
     var isColl = require_isColl_5757310a();
     var deepEqual = require_deepEqual_adba847a();
-    var exists8 = require_exists_c79204b1();
+    var exists9 = require_exists_c79204b1();
     var isStr6 = require_isStr_8a57710e();
     var isNum2 = require_isNum_c7164b50();
     var isInt = require_isInt_94ce4199();
@@ -479,7 +479,7 @@ var require_not_16fa9c85 = __commonJS({
     not.deepEqual = not(deepEqual.deepEqual);
     not.emptyColl = not(deepEqual.isEmptyColl);
     not.dom = not(hasDomAccess);
-    not.exists = not(exists8.exists);
+    not.exists = not(exists9.exists);
     not.empty = not(isValidDate.isEmpty);
     not.same = not(isValidDate.isSame);
     not.validDate = not(isValidDate.isValidDate);
@@ -570,8 +570,8 @@ var require_noOps_c9732e8e = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/noOps-c9732e8e.js"(exports) {
     "use strict";
     var deepFreeze2 = require_deepFreeze_d73ccc57();
-    var noOpObj6 = Object.freeze({});
-    var emptyObj10 = noOpObj6;
+    var noOpObj5 = Object.freeze({});
+    var emptyObj11 = noOpObj5;
     var noPropObj = deepFreeze2.deepFreeze({
       content: {}
     });
@@ -579,9 +579,9 @@ var require_noOps_c9732e8e = __commonJS({
     var noOpArr = noPropArr2;
     var emptyArr5 = noPropArr2;
     exports.emptyArr = emptyArr5;
-    exports.emptyObj = emptyObj10;
+    exports.emptyObj = emptyObj11;
     exports.noOpArr = noOpArr;
-    exports.noOpObj = noOpObj6;
+    exports.noOpObj = noOpObj5;
     exports.noPropArr = noPropArr2;
     exports.noPropObj = noPropObj;
   }
@@ -599,7 +599,7 @@ var require_intersect_77d7e821 = __commonJS({
     var not = require_not_16fa9c85();
     var isNonNegative = require_isNonNegative_9959647c();
     var noOps = require_noOps_c9732e8e();
-    var exists8 = require_exists_c79204b1();
+    var exists9 = require_exists_c79204b1();
     var buildElementCountMap = (arr) => {
       const counts = /* @__PURE__ */ new Map();
       for (let i = 0; i < arr.length; i++) {
@@ -664,7 +664,7 @@ var require_intersect_77d7e821 = __commonJS({
     var flatten = (arr, result, opts) => {
       for (let i = 0; i < arr.length; i++) {
         const value = arr[i];
-        isArr7.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists8.exists(value) || opts.truthy && !value ? result : result.push(value);
+        isArr7.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists9.exists(value) || opts.truthy && !value ? result : result.push(value);
       }
       if (!opts.mutate)
         return result;
@@ -847,22 +847,22 @@ var require_set_c0a98b21 = __commonJS({
 var require_get_00626335 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js"(exports) {
     "use strict";
-    var exists8 = require_exists_c79204b1();
+    var exists9 = require_exists_c79204b1();
     var isArr7 = require_isArr_39234014();
     var isStr6 = require_isStr_8a57710e();
     var get4 = (obj, path, fallback) => {
       const isPathArr = isArr7.isArr(path);
       if (!isStr6.isStr(path) && !isPathArr)
-        return exists8.exists(fallback) ? fallback : void 0;
+        return exists9.exists(fallback) ? fallback : void 0;
       const parts = isPathArr ? path : path.split(".");
       const result = parts.reduce((obj2, prop) => {
         const type = typeof obj2;
-        if (!exists8.exists(obj2) || type !== "object" && type !== "function")
+        if (!exists9.exists(obj2) || type !== "object" && type !== "function")
           return void 0;
         prop = prop.startsWith("[") ? prop.replace(/\D/g, "") : prop;
         return obj2[prop];
       }, obj);
-      return exists8.exists(result) ? result : fallback;
+      return exists9.exists(result) ? result : fallback;
     };
     exports.get = get4;
   }
@@ -940,7 +940,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
     var isColl = require_isColl_5757310a();
     var isFunc4 = require_isFunc_f93803cb();
     var isArr7 = require_isArr_39234014();
-    var exists8 = require_exists_c79204b1();
+    var exists9 = require_exists_c79204b1();
     var validate = require_validate_23297ec2();
     var set = require_set_c0a98b21();
     var deepClone = require_deepClone_ae664a21();
@@ -978,7 +978,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
       }
       return null;
     };
-    var mapFind = (coll, mapper, testFunc = exists8.exists) => {
+    var mapFind = (coll, mapper, testFunc = exists9.exists) => {
       const [valid] = validate.validate({
         coll,
         mapper,
@@ -1411,7 +1411,7 @@ var require_splitByKeys_d0160002 = __commonJS({
     var isStr6 = require_isStr_8a57710e();
     var strToType = require_strToType_00c4481f();
     var pipeline = require_pipeline_e65bdaae();
-    var exists8 = require_exists_c79204b1();
+    var exists9 = require_exists_c79204b1();
     var toStr3 = require_toStr_8e499966();
     var ensureArr3 = require_ensureArr_ae68c041();
     var cloneJson = (obj) => {
@@ -1617,7 +1617,7 @@ var require_splitByKeys_d0160002 = __commonJS({
       const intersect = [{}, {}];
       const compareKeys = ensureArr3.ensureArr(keys);
       return isObj6.isObj(obj) ? reduceObj.reduceObj(obj, (key, _, updated) => {
-        exists8.exists(compareKeys.find((k) => exists8.exists(k) && toStr3.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
+        exists9.exists(compareKeys.find((k) => exists9.exists(k) && toStr3.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
         return updated;
       }, intersect) : intersect;
     };
@@ -2041,7 +2041,7 @@ var require_cjs = __commonJS({
     var noOps = require_noOps_c9732e8e();
     var isValidDate = require_isValidDate_813b9419();
     var strToType = require_strToType_00c4481f();
-    var exists8 = require_exists_c79204b1();
+    var exists9 = require_exists_c79204b1();
     var log = require_log_37bbfac6();
     var pipeline = require_pipeline_e65bdaae();
     var stackTracePaths = require_stackTracePaths_58b768d2();
@@ -2134,7 +2134,7 @@ var require_cjs = __commonJS({
     exports.isValidDate = isValidDate.isValidDate;
     exports.typeOf = isValidDate.typeOf;
     exports.strToType = strToType.strToType;
-    exports.exists = exists8.exists;
+    exports.exists = exists9.exists;
     exports.logData = log.logData;
     exports.resetLogs = log.resetLogs;
     exports.setLogs = log.setLogs;
@@ -3018,12 +3018,15 @@ var Steps = class {
    * @public
    *
    */
-  match = (text) => {
+  match = (text, step, options) => {
     const list = this.list();
     const found = matcher(list, text, this._world);
     if (!found.match || !found.definition)
       return false;
     const extObj = { world: this._world };
+    step.doc && (extObj.doc = step.doc);
+    step.table && (extObj.table = step.table);
+    options && (extObj.options = options);
     found.match.push(extObj);
     return found;
   };
@@ -3035,8 +3038,8 @@ var Steps = class {
    * @public
    *
    */
-  resolve = (text) => {
-    const found = this.match(text);
+  resolve = (text, step, options) => {
+    const found = this.match(text, step, options);
     return found ? found.definition.method(...found.match) : throwNoMatchingStep(
       `Matching definition could not be found for step: "${text}"`
     );
@@ -3568,10 +3571,22 @@ var featureEmptyLine = (feature, line, index) => {
 
 // src/parse/parseFeature.ts
 var RX_NEWLINE = /\r?\n/g;
-var parseFeature = function(text, world) {
-  world = world || this && this.world || import_jsutils18.noOpObj;
+var defWorld = { $alias: {} };
+var resolveArgs = (pWorld, world, options) => {
+  const isOpts = !options && !(world == null ? void 0 : world.$alias) && (0, import_jsutils18.exists)(world == null ? void 0 : world.worldReplace);
+  return {
+    worldCfg: isOpts ? pWorld : world,
+    opts: isOpts ? world : options || import_jsutils18.emptyObj
+  };
+};
+var parseFeature = function(text, world, options) {
+  const { opts, worldCfg } = resolveArgs(
+    this ? this.world : defWorld,
+    world,
+    options
+  );
   const features = [];
-  const replaceText = replaceWorld((text || "").toString(), world);
+  const replaceText = (opts == null ? void 0 : opts.worldReplace) === false ? (text || "").toString() : replaceWorld((text || "").toString(), worldCfg);
   const lines = replaceText.split(RX_NEWLINE);
   let parseError2 = false;
   let feature = featureFactory(false, text);
@@ -3794,21 +3809,28 @@ var resolveFeatures = (data, $world) => {
     []
   ) : throwMissingFeatureText();
 };
-var runStep = async (stepsInstance, step, testMode) => {
+var runStep = async (stepsInstance, step, options, testMode) => {
   const test = getTestMethod("test" /* test */, testMode);
-  const testMethod = async () => await stepsInstance.resolve(step.step);
+  const testMethod = async () => {
+    var _a;
+    return await stepsInstance.resolve(
+      step.step,
+      step,
+      (_a = options == null ? void 0 : options.testOptions) == null ? void 0 : _a[step == null ? void 0 : step.uuid]
+    );
+  };
   testMethod.ParkinMetaData = (0, import_jsutils21.pickKeys)(
     step,
     [`uuid`, `step`, `index`, `type`, `definition`]
   );
   test(`${(0, import_jsutils21.capitalize)(step.type)} ${step.step}`, testMethod);
 };
-var loopSteps = (parent, title, stepsInstance, testMode) => {
+var loopSteps = (parent, title, stepsInstance, options, testMode) => {
   const describe2 = getTestMethod("describe" /* describe */, testMode);
   let responses = [];
   const describeMethod = () => {
     const responses2 = parent.steps.map(
-      (step) => runStep(stepsInstance, step, testMode)
+      (step) => runStep(stepsInstance, step, options, testMode)
     );
     Promise.all(responses2);
   };
@@ -3819,39 +3841,41 @@ var loopSteps = (parent, title, stepsInstance, testMode) => {
   describe2(title, describeMethod);
   return responses;
 };
-var runScenario = (stepsInstance, scenario, background, testMode) => {
+var runScenario = (stepsInstance, scenario, background, options, testMode) => {
   const responses = [];
   background && responses.push(
-    ...runBackground(stepsInstance, scenario.scenario, background, testMode)
+    ...runBackground(stepsInstance, scenario.scenario, background, options, testMode)
   );
   return responses.concat(
     loopSteps(
       scenario,
       buildTitle(scenario.scenario, `Scenario`),
       stepsInstance,
+      options,
       testMode
     )
   );
 };
-var runBackground = (stepsInstance, title, background, testMode) => {
+var runBackground = (stepsInstance, title, background, options, testMode) => {
   return loopSteps(
     background,
     buildTitle(title, `Background`),
     stepsInstance,
+    options,
     testMode
   );
 };
-var runRule = (stepsInstance, rule, background, testMode) => {
+var runRule = (stepsInstance, rule, background, options, testMode) => {
   let responses = [];
   const describeMethod = () => {
     background && responses.push(
       ...responses.concat(
-        runBackground(stepsInstance, rule.rule, background, testMode)
+        runBackground(stepsInstance, rule.rule, background, options, testMode)
       )
     );
     responses.push(
       ...rule.scenarios.map(
-        (scenario) => runScenario(stepsInstance, scenario, rule.background, testMode)
+        (scenario) => runScenario(stepsInstance, scenario, rule.background, options, testMode)
       )
     );
     Promise.all(responses);
@@ -3918,6 +3942,7 @@ var Runner = class {
               this.steps,
               rule,
               feature.background,
+              options,
               testMode
             ));
             return acc;
@@ -3929,6 +3954,7 @@ var Runner = class {
               this.steps,
               scenario,
               feature.background,
+              options,
               testMode
             ));
             return acc;
