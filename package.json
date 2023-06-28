@@ -43,7 +43,7 @@
     "node": ">= 16.0.0"
   },
   "scripts": {
-    "prebuild": "pnpm format && pnpm test",
+    "prebuild": "pnpm format && pnpm test && pnpm parkin",
     "build": "pnpm build:es && pnpm build:copy && pnpm build:cli",
     "build:es": "node --enable-source-maps -r esbuild-register configs/build.config.ts",
     "build:copy": "rimraf docs/parkin && cp -R build/cjs docs/parkin",

@@ -1,9 +1,8 @@
 import type {
-  TRunResult,
+  TRun,
+  TLoopTests,
+  TRunResults,
   TRootTestObj,
-  TParkinTestCB,
-  TDescribeTestObj,
-  TParkinTestAbort,
 } from '../types'
 
 import { runResult } from './runResult'
@@ -21,29 +20,6 @@ import {
   shouldSkipDescribe,
 } from './runHelpers'
 
-type TLoopTests = {
-  suiteId:string
-  testOnly:boolean
-  specDone:TParkinTestCB
-  shouldAbort:() => boolean
-  specStarted:TParkinTestCB
-  describe:TDescribeTestObj
-}
-
-type TRun = {
-  testOnly:boolean
-  describeOnly:boolean
-  specDone:TParkinTestCB
-  suiteDone:TParkinTestCB
-  onAbort:TParkinTestAbort
-  shouldAbort:() => boolean
-  specStarted:TParkinTestCB
-  suiteStarted:TParkinTestCB
-  root:TRootTestObj|TDescribeTestObj
-  parentIdx?:string|number
-}
-
-type TRunResults = TRunResult[] & { aborted?:boolean }
 
 /**
  * Helper to loop over tests and call their test method

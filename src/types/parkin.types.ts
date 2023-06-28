@@ -112,6 +112,7 @@ export type TParkinRunStepOptsMap = {
 
 export type TParkinRunOpts = {
   name?:string
+  timeout?:number
   tags?: string|string[]
   testOptions?:TParkinRunStepOptsMap
 }
