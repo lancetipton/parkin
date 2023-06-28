@@ -60,10 +60,10 @@ export const aliasReplace = (text:string, world:TWorldConfig) => {
         cleaned.indexOf(ALIAS_REF_AT_RUNTIME) === 0
           ? cleaned.replace(ALIAS_REF_AT_RUNTIME, `$${ALIAS_REF}`)
           : attemptReplace(
-            match,
-            world,
-            cleaned.replace(RX_ALIAS_REPLACE, `${ALIAS_WORLD_KEY}.`)
-          )
+              match,
+              world,
+              cleaned.replace(RX_ALIAS_REPLACE, `${ALIAS_WORLD_KEY}.`)
+            )
 
       return replaced
     })

@@ -143,8 +143,8 @@ describe(`Parkin`, () => {
     expect(PK.steps[`_${givenStep.type}`][0].method).not.toHaveBeenCalled()
     expect(PK.steps[`_${whenStep.type}`][2].method).not.toHaveBeenCalled()
 
-    PK.steps.resolve(givenStep.step)
-    PK.steps.resolve(whenStep.step)
+    PK.steps.resolve(givenStep.step, givenStep)
+    PK.steps.resolve(whenStep.step, whenStep)
 
     expect(PK.steps[`_${givenStep.type}`][0].method).toHaveBeenCalled()
     expect(PK.steps[`_${whenStep.type}`][2].method).toHaveBeenCalled()

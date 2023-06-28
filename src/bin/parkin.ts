@@ -9,6 +9,7 @@ import { options } from './options'
 import { getDefs } from './getDefs'
 import { getWorld } from './getWorld'
 import { runTests } from './runTests'
+import { getConfig } from './getConfig'
 import { getFeatures } from './getFeatures'
 import { argsParse } from '@keg-hub/args-parse'
 
@@ -16,7 +17,8 @@ import { argsParse } from '@keg-hub/args-parse'
 ;(async () => {
 
   const args = process.argv.slice(2) as string[] 
-  const parsed = await argsParse({ args, task: { options }}) as TParkinOpts
+  const opts = await argsParse({ args, task: { options }}) as TParkinOpts
+  const parsed = getConfig(opts)
 
   parsed.rootDir && setRoot(parsed.rootDir)
   const world = await getWorld(parsed)

@@ -95,3 +95,7 @@ export type TBlockType = EAstObject.block
   | EAstObject.desire
   | EAstObject.reason
   | EAstObject.perspective
+
+export type TParseFeatureOpts = {
+  worldReplace?:boolean
+}

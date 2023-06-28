@@ -1,9 +1,15 @@
-import type { TTagsAst, TWorldConfig, TBlockParentAst, TFeatureAst } from '../types'
+import type {
+  TTagsAst,
+  TFeatureAst,
+  TWorldConfig,
+  TBlockParentAst,
+  TParseFeatureOpts,
+} from '../types'
 
 import { EAstObject } from '../types'
 import { parseStep } from './parseStep'
 import { checkTags } from './checkTags'
-import { noOpObj } from '@keg-hub/jsutils'
+import { emptyObj, exists } from '@keg-hub/jsutils'
 import { setActiveParent } from './setActiveParent'
 import { replaceWorld } from '../utils/worldReplace'
 import { ruleFactory, ensureRule } from './ensureRule'
@@ -18,6 +24,23 @@ import { featureEmptyLine, featureComment, featureMeta } from './ensureMeta'
  */
 const RX_NEWLINE = /\r?\n/g
 
+const defWorld = { $alias: {} }
+
+const resolveArgs = (
+  pWorld:TWorldConfig,
+  world?:TWorldConfig,
+  options?:TParseFeatureOpts
+) => {
+  const isOpts = !options
+    && !world?.$alias
+    && exists(world?.worldReplace)
+  
+  return {
+    worldCfg: isOpts ? pWorld : world,
+    opts: isOpts ? world : (options || emptyObj as TParseFeatureOpts),
+  }
+}
+
 /**
  * Parses a feature files text content into an object
  * @function
@@ -27,12 +50,22 @@ const RX_NEWLINE = /\r?\n/g
  */
 export const parseFeature = function (
   text:string,
-  world:TWorldConfig
+  world?:TWorldConfig,
+  options?:TParseFeatureOpts
 ):TFeatureAst[] {
-  world = world || (this && this.world) || noOpObj
+
+  const { opts, worldCfg } = resolveArgs(
+    this ? this.world : defWorld,
+    world,
+    options
+  )
+
   const features:TFeatureAst[] = []
 
-  const replaceText = replaceWorld((text || '').toString(), world)
+  const replaceText = opts?.worldReplace === false
+    ? (text || '').toString()
+    : replaceWorld((text || '').toString(), worldCfg)
+
   const lines = replaceText.split(RX_NEWLINE)
 
   let parseError = false
@@ -47,7 +80,7 @@ export const parseFeature = function (
    * Loop over each line of text, and compose the line with corresponding regex to find a match
    */
   return lines.reduce((featuresGroup, line, index) => {
-    
+
     if(parseError) return featuresGroup
 
     /*

@@ -1,6 +1,6 @@
 import type { TWorldConfig } from './world.types'
-import type { TMatchResp } from './parkin.types'
 import type { EStepType } from './helpers.types'
+import type { TMatchResp } from './parkin.types'
 
 export type TStepAction = (...args:any[]) => any
 export type TRegisterStepMethod = (step:string, action:TStepAction) => any
@@ -33,8 +33,8 @@ export type TStepAst = {
   type: EStepType
   whitespace: string
   definition?:string
-  table?: TStepTable
   doc?: any
+  table?: TStepTable
 }
 
 export enum EStepVariant {
@@ -139,4 +139,8 @@ export type TStepDoc = {
   whiteSpace:string
   type:`quote`|`tick`
   content: string[]
+}
+
+export type TStepResolveOpts = {
+  [K:string]:any
 }

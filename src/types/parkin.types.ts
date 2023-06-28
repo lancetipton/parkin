@@ -6,7 +6,8 @@ import type {
   IParkinSteps,
   EExpParmType,
   TRegisterStepMethod,
-  TRegisterStepsList
+  TRegisterStepsList,
+  TStepTable
 } from './steps.types'
 
 import type { parseFeature } from '../parse/parseFeature'
@@ -45,6 +46,9 @@ export type TParse = {
 
 export type TMatchRespExt = {
   world:TWorldConfig
+  doc?: any
+  table?: TStepTable
+  options?:Record<string, any>
   [key:string]: any
 }
 
@@ -102,9 +106,14 @@ export interface IMatcher {
   expressionFind: (definition:TStepDef, step:string) => TExpFindResp
 }
 
+export type TParkinRunStepOptsMap = {
+  [K:string]:Record<any, any>
+}
+
 export type TParkinRunOpts = {
   name?:string
   tags?: string|string[]
+  testOptions?:TParkinRunStepOptsMap
 }
 
 export type TParkinRun = (
