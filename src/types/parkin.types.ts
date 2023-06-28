@@ -105,9 +105,14 @@ export interface IMatcher {
   expressionFind: (definition:TStepDef, step:string) => TExpFindResp
 }
 
+export type TParkinRunStepOptsMap = {
+  [K:string]:Record<any, any>
+}
+
 export type TParkinRunOpts = {
   name?:string
   tags?: string|string[]
+  testOptions?:TParkinRunStepOptsMap
 }
 
 export type TParkinRun = (

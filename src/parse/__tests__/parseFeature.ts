@@ -1,4 +1,9 @@
-import { featureRulesScenarios, rulesFeature, backgroundFeature } from '../../__mocks__'
+import {
+  rulesFeature,
+  worldFeature,
+  backgroundFeature,
+  featureRulesScenarios,
+} from '../../__mocks__'
 
 jest.resetModules()
 jest.resetAllMocks()
@@ -188,4 +193,16 @@ describe(`parseFeature`, () => {
       expect(thenStep.index).not.toBe(undefined)
     })
   })
+  
+  
+  describe(`options.worldReplace`, () => {
+    it(`should not replace world refs when worldReplace is false`, () => {
+      const feature = parseFeature(worldFeature, { worldReplace: false })[0]
+      expect(feature.scenarios[0].scenario).toBe(`$world.feature.scenario.first`)
+      expect(feature.comments[0].content).toBe(`# This $world.feature.comment from the world object`)
+      expect(feature.background.steps[1].step).toBe(`"$world.feature.background.then" should be replaced`)
+      expect(feature.scenarios[0].steps[3].step).toBe(`this features status should be "$:world.feature.status"`)
+    })
+  })
+
 })

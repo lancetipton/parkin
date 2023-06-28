@@ -37,8 +37,8 @@ export const locsByTypes = async (
  * Resolve the full path to a location similar to path.resolve
  * But can use custom root path values
  */
-export const fullLoc = (loc:string) => {
-  const root = getRoot() || cwd
+export const fullLoc = (loc:string, rootDir?:string) => {
+  const root = rootDir || getRoot() || cwd
 
   return loc.startsWith(`/`)
     ? loc

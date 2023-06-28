@@ -31,11 +31,13 @@ const resolveArgs = (
   world?:TWorldConfig,
   options?:TParseFeatureOpts
 ) => {
-  const isOpts = !options && !world?.$alias && exists(world?.worldReplace)
-
+  const isOpts = !options
+    && !world?.$alias
+    && exists(world?.worldReplace)
+  
   return {
     worldCfg: isOpts ? pWorld : world,
-    opts: isOpts ? (options || emptyObj as TParseFeatureOpts) : world,
+    opts: isOpts ? world : (options || emptyObj as TParseFeatureOpts),
   }
 }
 
