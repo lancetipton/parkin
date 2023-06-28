@@ -3030,8 +3030,54 @@ var matcher = (definitions, text, $world, opts = import_jsutils9.emptyObj) => {
   return import_jsutils9.emptyObj;
 };
 
+// src/utils/worldReplace.ts
+var import_jsutils10 = __toESM(require_cjs());
+var {
+  ALIAS_REF: ALIAS_REF2,
+  WORLD_REF,
+  ALIAS_WORLD_KEY: ALIAS_WORLD_KEY2,
+  WORLD_AT_RUNTIME,
+  ALIAS_REF_AT_RUNTIME
+} = constants;
+var attemptReplace = (match, world, location) => {
+  const replaceWith = (0, import_jsutils10.get)(world, location);
+  return (0, import_jsutils10.isFunc)(replaceWith) ? replaceWith(world, location) : (0, import_jsutils10.exists)(replaceWith) ? replaceWith : match;
+};
+var aliasReplace = (text, world) => {
+  let currentMatch;
+  try {
+    return text.replace(RX_ALIAS_MATCH, (match) => {
+      currentMatch = match;
+      const cleaned = match.trim();
+      const replaced = cleaned.indexOf(ALIAS_REF_AT_RUNTIME) === 0 ? cleaned.replace(ALIAS_REF_AT_RUNTIME, `$${ALIAS_REF2}`) : attemptReplace(
+        match,
+        world,
+        cleaned.replace(RX_ALIAS_REPLACE, `${ALIAS_WORLD_KEY2}.`)
+      );
+      return replaced;
+    });
+  } catch (err) {
+    throwAliasReplace(err, currentMatch);
+  }
+};
+var worldReplace = (text, world) => {
+  let currentMatch;
+  try {
+    return text.replace(RX_WORLD_MATCH, (match) => {
+      currentMatch = match;
+      const cleaned = match.trim();
+      return cleaned.indexOf(WORLD_AT_RUNTIME) === 0 ? cleaned.replace(WORLD_AT_RUNTIME, WORLD_REF) : attemptReplace(match, world, cleaned.replace(RX_WORLD_REPLACE, ""));
+    });
+  } catch (err) {
+    throwWorldReplace(err, currentMatch);
+  }
+};
+var replaceWorld = (text, world) => {
+  return worldReplace(aliasReplace(text, world), world);
+};
+
 // src/steps.ts
-var import_jsutils12 = __toESM(require_cjs());
+var import_jsutils13 = __toESM(require_cjs());
 
 // src/definitions/joinAllDefs.ts
 var joinAllDefs = (instance) => {
@@ -3042,18 +3088,18 @@ var joinAllDefs = (instance) => {
 };
 
 // src/definitions/registerFromCall.ts
-var import_jsutils10 = __toESM(require_cjs());
+var import_jsutils11 = __toESM(require_cjs());
 var { REGEX_VARIANT: REGEX_VARIANT2, EXPRESSION_VARIANT } = constants;
 var getContent = (def) => {
   const match = def.variant === REGEX_VARIANT2 ? def.match.toString() : `"${def.match}"`;
-  return `${(0, import_jsutils10.capitalize)(def.type)}(${match}, ${def.method.toString()})`;
+  return `${(0, import_jsutils11.capitalize)(def.type)}(${match}, ${def.method.toString()})`;
 };
 var stringToRegex = (str) => {
   const main = str.match(/\/(.+)\/.*/)[1];
   const options = str.match(/\/.+\/(.*)/)[1];
   return new RegExp(main, options);
 };
-var registerFromCall = function(internalType, type, match, method, meta = import_jsutils10.noOpObj) {
+var registerFromCall = function(internalType, type, match, method, meta = import_jsutils11.noOpObj) {
   const variant = match.toString().indexOf("/") === 0 ? REGEX_VARIANT2 : EXPRESSION_VARIANT;
   const formattedMatch = variant === REGEX_VARIANT2 ? stringToRegex(match.toString()) : match.toString();
   const definition = {
@@ -3083,14 +3129,14 @@ var tempRegister = (parent, type, container) => {
 };
 
 // src/definitions/registerFromParse.ts
-var import_jsutils11 = __toESM(require_cjs());
+var import_jsutils12 = __toESM(require_cjs());
 var registerFromParse = function(definitions) {
-  const DEF_TYPES = this.types.map((type) => (0, import_jsutils11.capitalize)(type));
+  const DEF_TYPES = this.types.map((type) => (0, import_jsutils12.capitalize)(type));
   const container = DEF_TYPES.reduce((built, type) => {
     built[type] = [];
     return built;
   }, {});
-  (0, import_jsutils11.eitherArr)(definitions, [definitions]).map((definition) => {
+  (0, import_jsutils12.eitherArr)(definitions, [definitions]).map((definition) => {
     Function(`return (global, require, module, ${DEF_TYPES.join(",")}) => {
           return (function(global) { ${definition} }).call(global, global)
         }`)()(
@@ -3123,7 +3169,7 @@ var Steps = class {
     this.types.map((type) => {
       const internalType = `_${type}`;
       this[internalType] = [];
-      this[(0, import_jsutils12.capitalize)(type)] = (match, method, meta) => {
+      this[(0, import_jsutils13.capitalize)(type)] = (match, method, meta) => {
         return self.register(internalType, type, match, method, meta);
       };
     });
@@ -3162,7 +3208,11 @@ var Steps = class {
    */
   match = (text, step, options) => {
     const list = this.list();
-    const found = matcher(list, text, this._world);
+    const found = matcher(
+      list,
+      replaceWorld(text, this._world),
+      this._world
+    );
     if (!found.match || !found.definition)
       return false;
     const extObj = { world: this._world };
@@ -3194,12 +3244,12 @@ var Steps = class {
    *
    */
   register = (...args) => {
-    return (0, import_jsutils12.isStr)(args[0]) ? registerFromCall.apply(this, args) : registerFromParse.apply(this, args);
+    return (0, import_jsutils13.isStr)(args[0]) ? registerFromCall.apply(this, args) : registerFromParse.apply(this, args);
   };
   add = (...defs) => {
     const definitions = this.list();
     defs.forEach((def) => {
-      const defsObj = (0, import_jsutils12.isArr)(def) || (def == null ? void 0 : def.match) && (def == null ? void 0 : def.uuid) ? (0, import_jsutils12.ensureArr)(def) : def;
+      const defsObj = (0, import_jsutils13.isArr)(def) || (def == null ? void 0 : def.match) && (def == null ? void 0 : def.uuid) ? (0, import_jsutils13.ensureArr)(def) : def;
       Object.values(defsObj).map((def2) => {
         if (!def2.type)
           return console.warn(`A definition type is required when adding a definition`, def2);
@@ -3222,13 +3272,13 @@ var Steps = class {
 };
 
 // src/hooks.ts
-var import_jsutils13 = __toESM(require_cjs());
+var import_jsutils14 = __toESM(require_cjs());
 var { HOOK_TYPES } = constants;
 var Hooks = class {
-  afterAll = import_jsutils13.noOp;
-  beforeAll = import_jsutils13.noOp;
-  afterEach = import_jsutils13.noOp;
-  beforeEach = import_jsutils13.noOp;
+  afterAll = import_jsutils14.noOp;
+  beforeAll = import_jsutils14.noOp;
+  afterEach = import_jsutils14.noOp;
+  beforeEach = import_jsutils14.noOp;
   /**
    * Allowed hook types
    * @memberof Hooks
@@ -3248,7 +3298,7 @@ var Hooks = class {
     this.instance = instance;
     this.types.map((type) => {
       this[type] = (clientHookFn) => {
-        if (!(0, import_jsutils13.isFunc)(clientHookFn))
+        if (!(0, import_jsutils14.isFunc)(clientHookFn))
           return;
         this._registeredHooks[type] = this._registeredHooks[type] || [];
         this._registeredHooks[type].push(clientHookFn);
@@ -3259,7 +3309,7 @@ var Hooks = class {
    * Gets the registered hook callback method based on the passed in type
    */
   getRegistered = (type) => {
-    const foundHooks = this.types.includes(type) ? this._registeredHooks[type] || import_jsutils13.noPropArr : throwInvalidHookType(HOOK_TYPES.join(", "), type);
+    const foundHooks = this.types.includes(type) ? this._registeredHooks[type] || import_jsutils14.noPropArr : throwInvalidHookType(HOOK_TYPES.join(", "), type);
     if (!foundHooks)
       return;
     return foundHooks.length ? async () => {
@@ -3267,7 +3317,7 @@ var Hooks = class {
         await toResolve;
         return await hook(this.instance);
       }, Promise.resolve());
-    } : import_jsutils13.noOp;
+    } : import_jsutils14.noOp;
   };
 };
 
@@ -3422,52 +3472,6 @@ var RX_EXAMPLE = /^\s*Example:(.*)$/;
 var RX_BACKGROUND = /^\s*Background:(.*)$/;
 var setActiveParent = (activeParent, feature, rule, scenario, background, line) => {
   return RX_SCENARIO.test(line) || RX_EXAMPLE.test(line) ? scenario : RX_FEATURE.test(line) ? feature : RX_RULE.test(line) ? rule : RX_BACKGROUND.test(line) ? background : activeParent;
-};
-
-// src/utils/worldReplace.ts
-var import_jsutils14 = __toESM(require_cjs());
-var {
-  ALIAS_REF: ALIAS_REF2,
-  WORLD_REF,
-  ALIAS_WORLD_KEY: ALIAS_WORLD_KEY2,
-  WORLD_AT_RUNTIME,
-  ALIAS_REF_AT_RUNTIME
-} = constants;
-var attemptReplace = (match, world, location) => {
-  const replaceWith = (0, import_jsutils14.get)(world, location);
-  return (0, import_jsutils14.isFunc)(replaceWith) ? replaceWith(world, location) : (0, import_jsutils14.exists)(replaceWith) ? replaceWith : match;
-};
-var aliasReplace = (text, world) => {
-  let currentMatch;
-  try {
-    return text.replace(RX_ALIAS_MATCH, (match) => {
-      currentMatch = match;
-      const cleaned = match.trim();
-      const replaced = cleaned.indexOf(ALIAS_REF_AT_RUNTIME) === 0 ? cleaned.replace(ALIAS_REF_AT_RUNTIME, `$${ALIAS_REF2}`) : attemptReplace(
-        match,
-        world,
-        cleaned.replace(RX_ALIAS_REPLACE, `${ALIAS_WORLD_KEY2}.`)
-      );
-      return replaced;
-    });
-  } catch (err) {
-    throwAliasReplace(err, currentMatch);
-  }
-};
-var worldReplace = (text, world) => {
-  let currentMatch;
-  try {
-    return text.replace(RX_WORLD_MATCH, (match) => {
-      currentMatch = match;
-      const cleaned = match.trim();
-      return cleaned.indexOf(WORLD_AT_RUNTIME) === 0 ? cleaned.replace(WORLD_AT_RUNTIME, WORLD_REF) : attemptReplace(match, world, cleaned.replace(RX_WORLD_REPLACE, ""));
-    });
-  } catch (err) {
-    throwWorldReplace(err, currentMatch);
-  }
-};
-var replaceWorld = (text, world) => {
-  return worldReplace(aliasReplace(text, world), world);
 };
 
 // src/parse/ensureRule.ts
@@ -3776,6 +3780,16 @@ var parseDefinition = function(text) {
   return registered;
 };
 
+// src/utils/promiseTimeout.ts
+var PromiseTimeout = async (promise, timeout = 5e3, name) => {
+  const method = name ? `${name} method` : `method`;
+  let timer;
+  const timePromise = new Promise((res, rej) => {
+    timer = setTimeout(() => rej(`The ${method} timed out after ${timeout} ms.`), timeout);
+  });
+  return await Promise.race([promise, timePromise]).finally(() => clearTimeout(timer));
+};
+
 // src/utils/filterFeatures.ts
 var import_jsutils19 = __toESM(require_cjs());
 var parseFeatureTags = (tags) => {
@@ -3955,11 +3969,14 @@ var runStep = async (stepsInstance, step, options, testMode) => {
   const test = getTestMethod("test" /* test */, testMode);
   const testMethod = async () => {
     var _a;
-    return await stepsInstance.resolve(
+    const stepOpts = (_a = options == null ? void 0 : options.testOptions) == null ? void 0 : _a[step == null ? void 0 : step.uuid];
+    const stepTimeout = (stepOpts == null ? void 0 : stepOpts.timeout) || (options == null ? void 0 : options.timeout);
+    const resolved = stepsInstance.resolve(
       step.step,
       step,
-      (_a = options == null ? void 0 : options.testOptions) == null ? void 0 : _a[step == null ? void 0 : step.uuid]
+      stepOpts
     );
+    return stepTimeout ? PromiseTimeout(resolved, stepTimeout, `Step`) : resolved;
   };
   testMethod.ParkinMetaData = (0, import_jsutils21.pickKeys)(
     step,
@@ -4665,22 +4682,30 @@ var import_jsutils29 = __toESM(require_cjs());
 var { STEP_TYPES: STEP_TYPES2 } = constants;
 var Parkin = class {
   #isInit = false;
+  #world;
   steps;
   hooks;
   parse;
   runner;
   run;
   matcher;
-  world;
   assemble;
   paramTypes;
-  Given;
-  When;
-  Then;
   And;
   But;
+  When;
+  Then;
+  Given;
   constructor(world, steps) {
     (0, import_jsutils29.isObj)(world) && this.init(world, steps);
+  }
+  get world() {
+    return this.#world;
+  }
+  set world(update) {
+    this.#world = update;
+    this.steps._world = update;
+    this.runner._world = update;
   }
   init = (world = import_jsutils29.noOpObj, steps, warn = true) => {
     if (this.#isInit) {
@@ -4690,10 +4715,10 @@ var Parkin = class {
     if (!(0, import_jsutils29.isObj)(world.$alias))
       world.$alias = {};
     this.#isInit = true;
+    this.steps = new Steps(world);
+    this.hooks = new Hooks(world, this);
+    this.runner = new Runner(this.steps, this.hooks, world);
     this.world = world;
-    this.steps = new Steps(this.world);
-    this.hooks = new Hooks(this.world, this);
-    this.runner = new Runner(this.steps, this.hooks, this.world);
     this.run = this.runner.run;
     this.parse = {
       feature: parseFeature.bind(this),
