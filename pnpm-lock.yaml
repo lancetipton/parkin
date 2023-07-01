@@ -63,6 +63,9 @@ devDependencies:
   jest:
     specifier: 29.5.0
     version: 29.5.0(@types/node@20.3.3)
+  jest-jasmine2:
+    specifier: 29.5.0
+    version: 29.5.0
   prettier:
     specifier: 2.8.8
     version: 2.8.8
@@ -3299,6 +3302,31 @@ packages:
       walker: 1.0.8
     optionalDependencies:
       fsevents: 2.3.2
+    dev: true
+
+  /jest-jasmine2@29.5.0:
+    resolution: {integrity: sha512-51mNRQeeDQQXNDGTyiiXY1mfLesZhCPhun8LhusC38XeMeZJBmowvEEYvqpLxFJAbup53r+gFScoXQCVGUXPIQ==}
+    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    dependencies:
+      '@jest/environment': 29.5.0
+      '@jest/expect': 29.5.0
+      '@jest/source-map': 29.4.3
+      '@jest/test-result': 29.5.0
+      '@jest/types': 29.5.0
+      '@types/node': 20.3.3
+      chalk: 4.1.2
+      co: 4.6.0
+      is-generator-fn: 2.1.0
+      jest-each: 29.5.0
+      jest-matcher-utils: 29.5.0
+      jest-message-util: 29.5.0
+      jest-runtime: 29.5.0
+      jest-snapshot: 29.5.0
+      jest-util: 29.5.0
+      p-limit: 3.1.0
+      pretty-format: 29.5.0
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /jest-leak-detector@29.5.0:
