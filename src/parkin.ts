@@ -1,3 +1,4 @@
+import type { TFindInFeature } from './utils/findInFeature'
 import type {
   TParse,
   TAssemble,
@@ -16,6 +17,7 @@ import { Hooks } from './hooks'
 import { Runner } from './runner'
 import { assemble } from './assemble'
 import { constants } from './constants'
+import { findInFeature } from './utils/findInFeature'
 import { Matcher, registerParamType } from './matcher'
 import { parseFeature, parseDefinition } from './parse'
 import { isObj, capitalize, noOpObj, eitherArr } from '@keg-hub/jsutils'
@@ -261,6 +263,11 @@ export class Parkin {
 
     return this.parse.feature(assembled, this.world)[0]
   }
+
+  /**
+   * Finds an item in a features from the items uuid ( id )
+   */
+  find = findInFeature
 
 }
 
