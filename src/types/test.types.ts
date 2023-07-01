@@ -78,7 +78,7 @@ export type TRunResultActionMeta = TRunResultFeatureMeta
 
 export type TRunResultTestMeta = Omit<Partial<TRunResult>, `passed`|`failed`> & {
   failed?:Partial<TRunResult>
-  passed?:Partial<TRunResult>
+  passed?:Partial<TRunResult>|boolean
 }
 
 export type TRunResult = {

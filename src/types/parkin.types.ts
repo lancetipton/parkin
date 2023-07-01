@@ -107,6 +107,7 @@ export interface IMatcher {
 }
 
 export type TParkinRunStepOptsMap = {
+  shared:Record<any, any>
   [K:string]:Record<any, any>
 }
 
@@ -114,7 +115,7 @@ export type TParkinRunOpts = {
   name?:string
   timeout?:number
   tags?: string|string[]
-  testOptions?:TParkinRunStepOptsMap
+  steps?:TParkinRunStepOptsMap
 }
 
 export type TParkinRun = (

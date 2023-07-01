@@ -184,26 +184,25 @@ export const parseStep = (
 ) => {
   const stepParent = parent as TStepParentAst
 
-  return RegStepItems.reduce((added, regItems) => {
+  return RegStepItems.reduce((added:TStepAst, regItems) => {
     // If the line was already added, just return
     if (added) return added
 
     // Check if the line is a step tag
-    const hasItem = regItems.regex.test(line)
-    // If if is, add the extracted line to the steps of the current scenario
-    hasItem &&
-      stepParent.steps.push(
-        stepFactory(
-          parent,
-          regItems.type,
-          getRXMatch(line, regItems.regex, 1),
-          lines,
-          line,
-          index
-        )
-      )
+    const hasStep = regItems.regex.test(line)
+    if(!hasStep) return added
 
-    // Return if the line was added to the steps
-    return hasItem
-  }, false)
+    const step = stepFactory(
+      parent,
+      regItems.type,
+      getRXMatch(line, regItems.regex, 1),
+      lines,
+      line,
+      index
+    )
+    
+    stepParent.steps.push(step)
+
+    return step
+  }, undefined)
 }

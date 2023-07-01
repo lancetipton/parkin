@@ -6,7 +6,6 @@ import type {
   TParseFeatureOpts,
 } from '../types'
 
-import { EAstObject } from '../types'
 import { parseStep } from './parseStep'
 import { checkTags } from './checkTags'
 import { emptyObj, exists } from '@keg-hub/jsutils'
@@ -123,8 +122,17 @@ export const parseFeature = function (
 
     // Check for stepTags before check for the next active parent
     // This way We don't add a step to the wrong parent
-    if ((`steps` in activeParent) && parseStep(activeParent, lines, line, index))
-      return featuresGroup
+    if ((`steps` in activeParent)){
+      const step = parseStep(activeParent, lines, line, index)
+      if(step){
+        if(tagCache){
+          step.tags = tagCache
+          tagCache = undefined
+        }
+
+        return featuresGroup
+      }
+    }
 
     /*
      * Get the currently active parent based on the next line to be parsed
@@ -144,9 +152,7 @@ export const parseFeature = function (
      * After the next active parent has been set
      */
     if(tagCache){
-      // background can not have tags, so add them to the feature instead
-      const tagParent = activeParent.type === EAstObject.background ? feature : activeParent
-      tagParent.tags = tagCache
+      activeParent.tags = tagCache
       tagCache = undefined
     }
     // Check for tags after the next active parent has been set

@@ -14,7 +14,6 @@ import type {
 
 import { parseFeature } from './parse'
 import { ETestType, EHookType } from './types'
-import { PromiseTimeout } from './utils/promiseTimeout'
 import { filterFeatures } from './utils/filterFeatures'
 import { getTestMethod, skipTestsOnFail } from './utils/testMethods'
 import {
@@ -34,6 +33,24 @@ import {
 type TRunTestMode = {
   PARKIN_TEST_MODE?: boolean
 } & ((...args:any) => any)
+
+
+const getStepOpts = (
+  step:TStepAst,
+  options:TParkinRunOpts,
+) => {
+  const shared = options?.steps?.shared
+  const single = options?.steps?.[step?.uuid]
+  
+  return {
+    ...shared,
+    ...single,
+    timeout: single?.timeout
+      || shared?.timeout
+      || options?.timeout
+      || 30000
+  }
+}
 
 /**
  * Builds the title for the current suite and spec being run
@@ -92,31 +109,21 @@ const runStep = async (
   testMode:boolean
 ) => {
   const test = getTestMethod(ETestType.test, testMode)
+  const opts = getStepOpts(step, options)
+
   const testMethod = async () => {
-    const stepOpts = options?.testOptions?.[step?.uuid]
-    const stepTimeout = stepOpts?.timeout || options?.timeout
-    const resolved = stepsInstance.resolve(
+    return await stepsInstance.resolve(
       step.step,
       step,
-      stepOpts
+      opts
     )
-    /**
-     * If there's a timeout set || it's  greater than 0 use the PromiseTimeout
-     * Otherwise just return the resolved, with NO timeout
-     * **IMPORTANT** - This is a timeout for Parkin Runner Only
-     * The `test` method from the `test` framework could have it's own timeout method
-     */
-    return stepTimeout
-      ? PromiseTimeout(resolved, stepTimeout, `Step`)
-      : resolved
   }
   testMethod.ParkinMetaData = pickKeys(
     step,
     [ `uuid`, `step`, `index`, `type`, `definition`]
   )
-  
 
-  test(`${capitalize(step.type)} ${step.step}`, testMethod)
+  test(`${capitalize(step.type)} ${step.step}`, testMethod, opts.timeout)
 }
 
 /**

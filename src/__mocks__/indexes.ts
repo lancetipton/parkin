@@ -155,6 +155,7 @@ Feature: Mock Indexed Feature
   Given Some text
   @scenario_tag1 @scenario_tag2
   Scenario: scenario 45
+    @step_tag1 @step_tag2
   Given Some other text`
 
 export const mockFeatToIdx:TFeatureAst = {
@@ -229,8 +230,8 @@ export const mockFeatToIdx:TFeatureAst = {
         index: 9,
         uuid: `435`,
         type: EAstObject.tags,
-        content: "rule_tag1 rule_tag2",
-        tokens: ["rule_tag1", "rule_tag2"],
+        content: `rule_tag1 rule_tag2`,
+        tokens: [`rule_tag1`, `rule_tag2`],
       },
       scenarios: [
         {
@@ -243,7 +244,7 @@ export const mockFeatToIdx:TFeatureAst = {
             uuid: `433`,
             type: EAstObject.tags,
             content: `scenario_tag1 scenario_tag2`,
-            tokens: ["scenario_tag1", "scenario_tag2"],
+            tokens: [`scenario_tag1`, `scenario_tag2`],
           },
           steps: [
             {
@@ -283,16 +284,23 @@ export const mockFeatToIdx:TFeatureAst = {
         index: 16,
         uuid: `433`,
         type: EAstObject.tags,
-        content: "scenario_tag1 scenario_tag2",
-        tokens: ["scenario_tag1", "scenario_tag2"],
+        content: `scenario_tag1 scenario_tag2`,
+        tokens: [`scenario_tag1`, `scenario_tag2`],
       },
       steps: [
         {
-          index: 18,
+          index: 19,
           uuid: `9876`,
           step: `Some other text`,
           whitespace: `  `,
           type: EStepType.given,
+          tags: {
+            index: 18,
+            uuid: `433`,
+            type: EAstObject.tags,
+            content: `@step_tag1 @step_tag2`,
+            tokens: [`@step_tag1`, `@step_tag2`],
+          },
         },
       ],
     },

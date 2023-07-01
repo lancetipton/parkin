@@ -3,11 +3,13 @@ import type {
   TLoopTests,
   TRunResults,
   TRootTestObj,
+  TRunResult,
 } from '../types'
 
 import { runResult } from './runResult'
 import { Types, validateRootRun } from './utils'
 import { EResultStatus, EResultAction } from '../types'
+import { PromiseTimeout } from '../utils/promiseTimeout'
 import {
   loopHooks,
   callAfterHooks,
@@ -87,7 +89,22 @@ const loopTests = async (args:TLoopTests) => {
 
     // ------ execute test ------ //
     try {
-      const result = await test.action()
+
+      const promise = test.action()
+      /**
+       * If there is a timeout, Use the PromiseTimeout to race it against the test action
+       * If the timeout wins, it will reject the promise
+       * Which then gets picked up in the catch below
+       */
+      const result = test.timeout
+        ? await PromiseTimeout<TRunResult>({
+            promise,
+            timeout: test.timeout,
+            name: test.description,
+            error: `Test failed, the timeout ${test.timeout}ms was exceeded`
+          })
+        : await promise
+
       testResult = runResult(test, {
         fullName,
         id: specId,
