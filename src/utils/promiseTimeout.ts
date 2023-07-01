@@ -1,16 +1,39 @@
 
-export const PromiseTimeout = async <T=any>(
-  promise:Promise<T>,
-  timeout:number=5000,
+export type TPromiseTimeout<T> = {
   name?:string
-) => {
+  error?:string
+  timeout:number
+  promise:Promise<T>
+}
+
+
+class TimeoutError extends Error {
+  constructor(message:string, name?:string) {
+    super(message)
+    this.name = name || this.constructor.name
+    Error.captureStackTrace(this, this.constructor)
+  }
+}
+
+
+export const PromiseTimeout = async <T=any>({
+  name,
+  error,
+  promise,
+  timeout=5000,
+}:TPromiseTimeout<T>):Promise<T> => {
   const method = name ? `${name} method` : `method`
 
   let timer:NodeJS.Timeout
   const timePromise = new Promise((res, rej) => {
-    timer = setTimeout(() => rej(`The ${method} timed out after ${timeout} ms.`), timeout)
+    timer = setTimeout(() => rej(
+      new TimeoutError(
+        error || `The ${method} timed out after ${timeout} ms.`,
+        `TimeoutError`
+      )
+    ), timeout)
   })
 
-  return await Promise.race([promise, timePromise])
+  return await Promise.race([promise, timePromise] as [Promise<T>, Promise<any>])
     .finally(() => clearTimeout(timer))
 }

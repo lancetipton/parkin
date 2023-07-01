@@ -10,9 +10,9 @@ import { EAstObject } from '../../types'
 
 const { findIndex } = require('../findIndex')
 
-describe('findIndex', () => {
+describe(`findIndex`, () => {
 
-  it('should the correct index for a comment', () => {
+  it(`should the correct index for a comment`, () => {
     expect(
       findIndex({
         feature,
@@ -23,7 +23,7 @@ describe('findIndex', () => {
     ).toBe(3)
   })
 
-  it('should the correct index for a tags of a feature', () => {
+  it(`should the correct index for a tags of a feature`, () => {
     expect(
       findIndex({
         feature,
@@ -34,7 +34,7 @@ describe('findIndex', () => {
     ).toBe(0)
   })
 
-  it('should the correct index for a tags of a feature rule', () => {
+  it(`should the correct index for a tags of a feature rule`, () => {
     expect(
       findIndex({
         feature,
@@ -46,7 +46,7 @@ describe('findIndex', () => {
   })
 
 
-  it('should the correct index for an empty line of a feature', () => {
+  it(`should the correct index for an empty line of a feature`, () => {
     expect(
       findIndex({
         feature,
@@ -65,7 +65,7 @@ describe('findIndex', () => {
     ).toBe(8)
   })
 
-  it('should the correct index for a rule of a feature', () => {
+  it(`should the correct index for a rule of a feature`, () => {
     expect(
       findIndex({
         feature,
@@ -75,18 +75,18 @@ describe('findIndex', () => {
     ).toBe(14)
   })
 
-  it('should the correct index for a scenario of a feature', () => {
+  it(`should the correct index for a scenario of a feature`, () => {
     expect(
       findIndex({
         feature,
         type:EAstObject.scenario,
         parent: feature,
       })
-    ).toBe(19)
+    ).toBe(20)
   })
 
 
-  it('should the correct index for a scenario of a rule', () => {
+  it(`should the correct index for a scenario of a rule`, () => {
     expect(
       findIndex({
         feature,
@@ -97,7 +97,7 @@ describe('findIndex', () => {
   })
 
 
-  it('should the correct index for a background of a feature', () => {
+  it(`should the correct index for a background of a feature`, () => {
     expect(
       findIndex({
         feature,
@@ -108,7 +108,7 @@ describe('findIndex', () => {
   })
 
 
-  it('should the correct index for a background of a rule', () => {
+  it(`should the correct index for a background of a rule`, () => {
     expect(
       findIndex({
         feature,
@@ -118,7 +118,7 @@ describe('findIndex', () => {
     ).toBe(16)
   })
 
-  it('should return undefined for invalid type', () => {
+  it(`should return undefined for invalid type`, () => {
     expect(
       findIndex({
         feature,

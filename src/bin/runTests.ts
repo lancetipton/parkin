@@ -3,7 +3,8 @@ import type {
   TRunResults,
   TWorldConfig,
   TParkinTestConfig,
-  TRegisterStepsList
+  TRegisterStepsList,
+  TParkinRunOpts
 } from '../types'
 
 import { promises as fs } from 'fs'
@@ -14,7 +15,8 @@ export const runTests = async (
   features:string[],
   world:TWorldConfig,
   steps:TRegisterStepsList,
-  testConfig:TParkinTestConfig
+  testConfig:TParkinTestConfig,
+  runOpts:TParkinRunOpts
 ) => {
 
   return await features.reduce(async (resolve, feature) => {
@@ -26,7 +28,7 @@ export const runTests = async (
     const content = await fs.readFile(feature, { encoding: `utf8` })
     const featureAst = PK.parse.feature(content, { worldReplace: false })
 
-    await PK.run(featureAst)
+    await PK.run(featureAst, runOpts)
 
     const responses = await PTE.run({
       description: `Parkin > ${feature}`,

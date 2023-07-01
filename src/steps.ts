@@ -112,6 +112,11 @@ export class Steps {
     // Treat all step definition types as the same when matching to step text
     const list = this.list()
 
+    // TODO: when adding refs to other features / steps to run
+    // Here would be a good place to start
+    // Could parse the text, looking for a $ref to other steps to run
+    // If found, then run those steps instead
+
     // Call the matcher to find a matching step definition
     const found = matcher(
       list,
@@ -124,7 +129,7 @@ export class Steps {
 
     // Add the Step instance's world to the match arguments
     // Always added as the last argument
-    const extObj:TMatchRespExt = { world: this._world }
+    const extObj:TMatchRespExt = { step, world: this._world }
 
     // If the doc and table exist, add them to the extObj
     step?.doc && (extObj.doc = step?.doc)

@@ -3,28 +3,17 @@ import type {
   TFeatureAst,
   TScenarioAst,
   TParkinRunOpts,
+  TBackgroundAst,
 } from '../types'
 
+import { parseTags } from './hasTag'
 import {
-  isArr,
   isStr,
-  emptyObj,
+  exists,
   emptyArr,
   eitherArr,
 } from '@keg-hub/jsutils'
 
-/**
- * @param {string} tags
- * @return {Array<string>?} A match of all words starting with '@', the tag indicator.
- * Returns false if input is invalid.
- */
-const parseFeatureTags = (tags?:string|string[]) => {
-  return isStr(tags)
-    ? tags.match(/[@]\w*/g)
-    : isArr<string>(tags)
-      ? tags
-      : emptyArr
-}
 
 type TFilterMatch = {
   name?:string,
@@ -37,20 +26,18 @@ type TFilterMatch = {
 
 type TFilterChild = {
   tags?:string[]
-  nameKey: `scenario`|`rule`
-  children: (TRuleAst | TScenarioAst)[]
+  nameKey: `background`|`scenario`|`rule`
+  children: (TBackgroundAst|TRuleAst | TScenarioAst)[]
   options:{
     name?:string,
     tags?:string[]
   }
 }
 
+const emptyOpts = { tags: {}, steps: {} } as TParkinRunOpts
+
 /**
- * @param {string?} name - name of test item to check
- * @param {string[]} tags - Tags related to the test item
- * @param {TParkinRunOpts} filterOptions - Define how the steps are run
- *
- * @return {Boolean} - true if feature matches the filter options
+ * Checks for a match between name and filter tags
  */
 const filterMatch = ({
   name,
@@ -69,15 +56,12 @@ const filterMatch = ({
   return nameMatch && tagMatch
 }
 
-
-const getFilterOpts = (filterOptions:TParkinRunOpts = emptyObj) => {
-  const {
-    name,
-    tags: filterTags
-  } = filterOptions
+const getFilterOpts = (opts:TParkinRunOpts=emptyOpts) => {
+  const { name } = opts
+  const filterTags = opts.tags?.filter
 
   const tags = isStr(filterTags)
-    ? parseFeatureTags(filterTags)
+    ? parseTags(filterTags)
     : eitherArr(filterTags, [])
 
   return { name, tags }
@@ -101,7 +85,13 @@ const filterChild = ({
 }
 
 /**
- * Filters features and scenarios based on the passed in filterOptions
+ * Filters features, rules, background, and scenarios based on the passed in filterOptions
+ * If tags exist, and they match, then the item is included
+ * If no tags exists, or the tags don't match, then they are not included
+ * If a features has a matching tag, then the entire feature is included
+ * To filter on rules, background or scenarios, the feature must not include the matching tag
+ *  - Instead the tag should be included on the rule, background or scenario
+ *  - And the feature should not has ANY tags
  * @function
  * @private
  * @param {Array} features - Features to be run
@@ -111,7 +101,7 @@ const filterChild = ({
  */
 export const filterFeatures = (
   features:TFeatureAst[],
-  filterOptions:TParkinRunOpts = emptyObj
+  filterOptions:TParkinRunOpts=emptyOpts
 ) => {
 
   const options = getFilterOpts(filterOptions)
@@ -132,8 +122,17 @@ export const filterFeatures = (
       return filtered
     }
 
-    const { rules, scenarios, ...rest} = feature
-    const copy = { ...rest, rules: [], scenarios: [] }
+    const { rules, scenarios, background, ...rest} = feature
+    const copy = { ...rest, rules: [], scenarios: [] } as Partial<TFeatureAst>
+
+    // check for matching background, where background inherit their parent feature's tags
+    const matchingBackground = exists(background)
+      && filterChild({
+        options,
+        nameKey: `background`,
+        children: [background],
+        tags: feature?.tags?.tokens,
+      }) as TBackgroundAst[]
 
     // check for matching rules, where rules inherit their parent feature's tags
     const matchingRules = filterChild({
@@ -141,7 +140,7 @@ export const filterFeatures = (
       nameKey: `rule`,
       children: rules,
       tags: feature?.tags?.tokens,
-    })
+    }) as TRuleAst[]
 
     // check for matching scenarios, where scenarios inherit their parent feature's tags
     const matchingScenarios = filterChild({
@@ -149,12 +148,15 @@ export const filterFeatures = (
       nameKey: `scenario`,
       children: scenarios,
       tags: feature?.tags?.tokens,
-    })
+    }) as TScenarioAst[]
 
+
+    const hasBackgroundMatch = Boolean(matchingBackground.length)
     const hasRuleMatch = Boolean(matchingRules.length)
     const hasScenarioMatch = Boolean(matchingScenarios.length)
 
-    if(hasRuleMatch || hasScenarioMatch){
+    if(hasBackgroundMatch || hasRuleMatch || hasScenarioMatch){
+      hasBackgroundMatch && (copy.background = matchingBackground[0])
       hasRuleMatch && (copy.rules = matchingRules)
       hasScenarioMatch && (copy.scenarios = matchingScenarios)
 

@@ -3,11 +3,11 @@ import type { TBlockAst } from '../../types'
 import { mockFeatToIdx } from '../../__mocks__'
 const { featureToIndexes } = require('../featureToIndexes')
 
-describe("featureToIndexes", () => {
+describe(`featureToIndexes`, () => {
 
-  it("should index all ast and parent blocks of the feature", () => {
-    const indexes = featureToIndexes(mockFeatToIdx)
+  const indexes = featureToIndexes(mockFeatToIdx)
 
+  it(`should index feature global properties`, () => {
     expect(indexes[mockFeatToIdx.index]).toBeDefined()
     expect(indexes[mockFeatToIdx.index]).toEqual({
       parent: mockFeatToIdx,
@@ -31,7 +31,9 @@ describe("featureToIndexes", () => {
       parent: mockFeatToIdx,
       ast: mockFeatToIdx.comments[0],
     })
-    
+  })
+
+  it(`should index feature story properties`, () => {
     expect(indexes[mockFeatToIdx.desire.index]).toBeDefined()
     expect(indexes[mockFeatToIdx.desire.index]).toEqual({
       parent: mockFeatToIdx,
@@ -49,7 +51,9 @@ describe("featureToIndexes", () => {
       parent: mockFeatToIdx,
       ast: mockFeatToIdx.reason,
     })
-    
+  })
+
+  it(`should index feature.background and its steps`, () => {
     expect(indexes[mockFeatToIdx.background.index]).toBeDefined()
     expect(indexes[mockFeatToIdx.background.index]).toEqual({
       parent: mockFeatToIdx,
@@ -61,7 +65,9 @@ describe("featureToIndexes", () => {
       parent: mockFeatToIdx.background,
       ast: mockFeatToIdx.background.steps[0],
     })
-    
+  })
+
+  it(`should feature.rules and their properties`, () => {
     expect(indexes[mockFeatToIdx.rules[0].index]).toBeDefined()
     expect(indexes[mockFeatToIdx.rules[0].index]).toEqual({
       parent: mockFeatToIdx,
@@ -72,24 +78,6 @@ describe("featureToIndexes", () => {
     expect(indexes[mockFeatToIdx.rules[0].tags.index]).toEqual({
       parent: mockFeatToIdx.rules[0],
       ast: mockFeatToIdx.rules[0].tags,
-    })
-    
-    expect(indexes[mockFeatToIdx.scenarios[0].index]).toBeDefined()
-    expect(indexes[mockFeatToIdx.scenarios[0].index]).toEqual({
-      parent: mockFeatToIdx,
-      ast: mockFeatToIdx.scenarios[0],
-    })
-    
-    expect(indexes[mockFeatToIdx.scenarios[0].tags.index]).toBeDefined()
-    expect(indexes[mockFeatToIdx.scenarios[0].tags.index]).toEqual({
-      parent: mockFeatToIdx.scenarios[0],
-      ast: mockFeatToIdx.scenarios[0].tags,
-    })
-    
-    expect(indexes[mockFeatToIdx.scenarios[0].steps[0].index]).toBeDefined()
-    expect(indexes[mockFeatToIdx.scenarios[0].steps[0].index]).toEqual({
-      parent: mockFeatToIdx.scenarios[0],
-      ast: mockFeatToIdx.scenarios[0].steps[0],
     })
     
     expect(indexes[mockFeatToIdx.rules[0].background.index]).toBeDefined()
@@ -103,7 +91,9 @@ describe("featureToIndexes", () => {
       parent: mockFeatToIdx.rules[0].background,
       ast: mockFeatToIdx.rules[0].background.steps[0],
     })
-    
+  })
+
+  it(`should feature.rule[].scenarios`, () => {
     expect(indexes[mockFeatToIdx.rules[0].scenarios[0].index]).toBeDefined()
     expect(indexes[mockFeatToIdx.rules[0].scenarios[0].index]).toEqual({
       parent: mockFeatToIdx.rules[0],
@@ -120,6 +110,31 @@ describe("featureToIndexes", () => {
     expect(indexes[mockFeatToIdx.rules[0].scenarios[0].steps[0].index]).toEqual({
       parent: mockFeatToIdx.rules[0].scenarios[0],
       ast: mockFeatToIdx.rules[0].scenarios[0].steps[0],
+    })
+  })
+
+  it(`should feature.scenarios and their properties`, () => {
+    expect(indexes[mockFeatToIdx.scenarios[0].index]).toBeDefined()
+    expect(indexes[mockFeatToIdx.scenarios[0].index]).toEqual({
+      parent: mockFeatToIdx,
+      ast: mockFeatToIdx.scenarios[0],
+    })
+    
+    expect(indexes[mockFeatToIdx.scenarios[0].tags.index]).toBeDefined()
+    expect(indexes[mockFeatToIdx.scenarios[0].tags.index]).toEqual({
+      parent: mockFeatToIdx.scenarios[0],
+      ast: mockFeatToIdx.scenarios[0].tags,
+    })
+
+    expect(indexes[mockFeatToIdx.scenarios[0].steps[0].tags.index]).toBeDefined()
+    expect(indexes[mockFeatToIdx.scenarios[0].steps[0].tags.index]).toEqual({
+      parent: mockFeatToIdx.scenarios[0].steps[0],
+      ast: mockFeatToIdx.scenarios[0].steps[0].tags,
+    })
+
+    expect(indexes[mockFeatToIdx.scenarios[0].steps[0].index]).toEqual({
+      parent: mockFeatToIdx.scenarios[0],
+      ast: mockFeatToIdx.scenarios[0].steps[0],
     })
   })
 

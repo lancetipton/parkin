@@ -2,6 +2,7 @@ import {
   rulesFeature,
   worldFeature,
   backgroundFeature,
+  bgStepTagsFeature,
   featureRulesScenarios,
 } from '../../__mocks__'
 
@@ -63,6 +64,41 @@ describe(`parseFeature`, () => {
       expect(rs1.tags.index < rs1.index).toBe(true)
       expect(rs1.tags.tokens).toEqual([`@example-tag`, `@extra-example-tag`])
       expect(rs1.tags.whitespace).toBe(rs1.whitespace)
+
+    })
+
+    it(`should parse background and step tags`, () => {
+      const { background } = parseFeature(bgStepTagsFeature)[0]
+
+      expect(background.tags.content).toBe(`@bg-tag @bg-tag-2`)
+      expect(background.steps[0].tags).toBe(undefined)
+      expect(background.steps[1]?.tags?.content).toBe(`@bg-step-tag @bg-step-tag-2`)
+    })
+
+    it(`should parse scenario step tags`, () => {
+      const { scenarios } = parseFeature(bgStepTagsFeature)[0]
+
+      expect(scenarios[0].tags).toBe(undefined)
+      expect(scenarios[0].steps[0]?.tags?.content).toBe(`@sc1-step-tag @sc1-step-tag-2`)
+      expect(scenarios[0].steps[1]?.tags).toBe(undefined)
+
+      expect(scenarios[1]?.tags?.content).toBe(`@sc2-tag @sc2-tag-2`)
+      expect(scenarios[1].steps[0]?.tags?.content).toBe(`@sc2-step-tag @sc2-step-tag-2`)
+      expect(scenarios[1].steps[1]?.tags).toBe(undefined)
+
+      expect(scenarios[2]?.tags?.content).toBe(`@sc3-tag @sc3-tag-2`)
+      expect(scenarios[2].steps[0]?.tags?.content).toBe(`@sc3-step-tag @sc3-step-tag-2`)
+      expect(scenarios[2].steps[1]?.tags?.content).toBe(`@sc3-step2-tag @sc3-step2-tag-2`)
+    })
+
+    it(`should add the tags to the correct step`, () => {
+      const { scenarios } = parseFeature(bgStepTagsFeature)[0]
+
+      expect(scenarios[3]?.tags?.content).toBe(`@sc4-tag @sc4-tag-2`)
+      expect(scenarios[3].steps[0]?.tags?.content).toBe(`@sc4-step-tag @sc4-step-tag-2`)
+      expect(scenarios[3].steps[1]?.tags?.content).toBe(undefined)
+      expect(scenarios[3].steps[2]?.tags?.content).toBe(`@sc4-step3-tag @sc4-step3-tag-2`)
+      expect(scenarios[3].steps[3]?.tags?.content).toBe(undefined)
 
     })
 
@@ -193,8 +229,7 @@ describe(`parseFeature`, () => {
       expect(thenStep.index).not.toBe(undefined)
     })
   })
-  
-  
+
   describe(`options.worldReplace`, () => {
     it(`should not replace world refs when worldReplace is false`, () => {
       const feature = parseFeature(worldFeature, { worldReplace: false })[0]
@@ -204,5 +239,7 @@ describe(`parseFeature`, () => {
       expect(feature.scenarios[0].steps[3].step).toBe(`this features status should be "$:world.feature.status"`)
     })
   })
+
+  
 
 })

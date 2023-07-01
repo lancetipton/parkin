@@ -26,10 +26,10 @@ export type TIndexAstAst<T, P> = {
 }
 
 export type TIndexRuleAst = TIndexAstAst<TRuleAst, TFeatureAst>
-export type TIndexTagsAst = TIndexAstAst<TTagsAst, TBlockParentAst>
 export type TIndexStepAst = TIndexAstAst<TStepAst, TStepParentAst>
 export type TIndexFeatureAst = TIndexAstAst<TFeatureAst, TFeatureAst>
 export type TIndexBlockAst = TIndexAstAst<TBlockAst, TBlockParentAst>
+export type TIndexTagsAst = TIndexAstAst<TTagsAst, TBlockParentAst|TStepAst>
 export type TIndexScenarioAst = TIndexAstAst<TScenarioAst, TScenarioParentAst>
 export type TIndexBackgroundAst = TIndexAstAst<TBackgroundAst, TBackgroundParentAst>
 

@@ -7,7 +7,8 @@ import type {
   EExpParmType,
   TRegisterStepMethod,
   TRegisterStepsList,
-  TStepTable
+  TStepTable,
+  TStepAst
 } from './steps.types'
 
 import type { parseFeature } from '../parse/parseFeature'
@@ -47,6 +48,7 @@ export type TParse = {
 export type TMatchRespExt = {
   world:TWorldConfig
   doc?: any
+  step:TStepAst
   table?: TStepTable
   options?:Record<string, any>
   [key:string]: any
@@ -107,14 +109,18 @@ export interface IMatcher {
 }
 
 export type TParkinRunStepOptsMap = {
+  shared:Record<any, any>
   [K:string]:Record<any, any>
 }
 
 export type TParkinRunOpts = {
   name?:string
   timeout?:number
-  tags?: string|string[]
-  testOptions?:TParkinRunStepOptsMap
+  steps?:TParkinRunStepOptsMap
+  tags?: {
+    filter?: string|string[]
+    disabled?: string|string[]
+  }
 }
 
 export type TParkinRun = (

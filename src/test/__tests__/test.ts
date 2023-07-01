@@ -1,4 +1,8 @@
-const runMock = jest.fn()
+const runMock = jest.fn(async () => {
+  return new Promise((res) => {
+    setTimeout(() => res(true), 50)
+  })
+})
 jest.setMock(`../run`, { run: runMock })
 
 const { ParkinTest } = require('../test')
@@ -139,10 +143,10 @@ describe(`ParkinTest`, () => {
       expect(item.only).toBe(true)
     })
 
-    it(`Should set the private #describeOnly property to true`, () => {
-      const PTE = new ParkinTest()
+    it(`Should set the private #describeOnly property to true`, async () => {
+      const PTE = new ParkinTest({ autoClean: false })
       PTE.describe.only(`Test describe`, () => {})
-      PTE.run()
+      await PTE.run()
       const runProps = runMock.mock.calls[0][0]
       expect(runProps.describeOnly).toBe(true)
     })
@@ -245,12 +249,12 @@ describe(`ParkinTest`, () => {
       expect(testObj.only).toBe(true)
     })
 
-    it(`Should set the private #testOnly property to true`, () => {
-      const PTE = new ParkinTest()
+    it(`Should set the private #testOnly property to true`, async () => {
+      const PTE = new ParkinTest({ autoClean: false })
       PTE.describe(`Test describe`, () => {
         PTE.test.only(`test method`, () => {})
       })
-      PTE.run()
+      await PTE.run()
       const runProps = runMock.mock.calls[0][0]
       expect(runProps.testOnly).toBe(true)
     })
@@ -510,7 +514,7 @@ describe(`ParkinTest`, () => {
       expect(cleanRoot.afterAll.length).toBe(0)
     })
 
-    it(`should reset #testOnly, #describeOnly and timeout`, () => {
+    it(`should reset #testOnly, #describeOnly and timeout`, async () => {
       const PTE = new ParkinTest()
 
       PTE.describe.only(`Test describe`, () => {
@@ -522,16 +526,71 @@ describe(`ParkinTest`, () => {
       PTE.describe(`Test describe`, () => {
         PTE.test.only(`test method`, () => {})
       })
-      PTE.run()
+      await PTE.run({ autoClean: false })
       const runProps = runMock.mock.calls[0][0]
       expect(runProps.testOnly).toBe(true)
       expect(runProps.describeOnly).toBe(true)
 
       PTE.clean()
-      PTE.run()
+      await PTE.run()
       const cleanRunProps = runMock.mock.calls[1][0]
       expect(cleanRunProps.testOnly).toBe(false)
       expect(cleanRunProps.describeOnly).toBe(false)
     })
   })
+  
+  describe(`Test.run`, () => {
+    beforeEach(() => {
+      runMock.mockClear()
+    })
+
+    it(`should call run module and clean method`, async () => {
+      const PTE = new ParkinTest()
+      PTE.clean = jest.fn()
+
+      await PTE.run()
+
+      expect(runMock).toHaveBeenCalled()
+      expect(PTE.clean).toHaveBeenCalled()
+    })
+
+    it(`should allow overriding the existing config and description`, async () => {
+      const PTE = new ParkinTest({
+          timeout: 8543,
+          description: `Should be overridden`,
+      })
+      
+      PTE.clean = jest.fn()
+      await PTE.run({
+        timeout: 3000,
+        autoClean: false,
+        description: `Override description`,
+      })
+
+      const runProps = runMock.mock.calls[0][0]
+      expect(runProps.root.description).toBe(`Override description`)
+      expect(PTE.timeout).toBe(3000)
+      expect(PTE.clean).not.toHaveBeenCalled()
+    })
+    
+  })
+
+  it(`should fail when the global timeout finishes before the the run module`, async () => {
+    const PTE = new ParkinTest({ timeout: 10 })
+    let caught:boolean = false
+
+    try {
+      await PTE.run()
+    }
+    catch(err){
+      caught = true
+      expect(err.name).toBe(`TimeoutError`)
+      expect(err.message).toBe(`Test Execution failed, the global timeout 10ms was exceeded`)
+    }
+
+    if(!caught)
+      throw new Error(`PTE.run should have thrown a timeout error, but it did not`)
+
+  })
+
 })

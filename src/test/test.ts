@@ -8,9 +8,11 @@ import type {
   TParkinTestConfig,
   TParkinTestFactory,
   TParkinDescribeFactory,
+  TRunResults,
 } from '../types'
 
 import { run } from './run'
+import { PromiseTimeout } from '../utils/promiseTimeout'
 import { noOp, noOpObj, isStr, checkCall } from '@keg-hub/jsutils'
 import {
   Types,
@@ -26,7 +28,8 @@ type TTestSkipFactory = (description:string, action?:TTestAction, timeout?:numbe
 
 
 export class ParkinTest {
-  timeout = 6000
+  // Default global test timeout is 1hr
+  timeout = 3600000
   #autoClean = true
   #testOnly = false
   #abortRun = false
@@ -62,7 +65,7 @@ export class ParkinTest {
     if (config.description) this.#root.description = config.description
 
     this.#setConfig(config)
-    const result = run({
+    const promise = run({
       root: this.#root,
       onAbort: this.#onAbort,
       testOnly: this.#testOnly,
@@ -73,6 +76,15 @@ export class ParkinTest {
       describeOnly: this.#describeOnly,
       suiteStarted: this.#suiteStarted,
     })
+
+    const result = this.timeout
+      ? PromiseTimeout<TRunResults>({
+          promise,
+          timeout: this.timeout,
+          name: this.#root.description,
+          error: `Test Execution failed, the global timeout ${this.timeout}ms was exceeded`
+        })
+      : promise
 
     this.#autoClean && this.clean()
 
@@ -90,7 +102,7 @@ export class ParkinTest {
    * Clears all previously loaded tests and describes
    */
   clean = () => {
-    this.timeout = 6000
+    this.timeout = 3600000
     this.#autoClean = true
     this.#abortRun = false
     this.#testOnly = false

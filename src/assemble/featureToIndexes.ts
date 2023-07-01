@@ -25,7 +25,11 @@ const indexSteps = (
   parent:TStepParentAst,
   offset:number[]
 ) => {
-  steps.forEach(step => addToIndexes(feature, indexes, {ast: step, parent}, offset))
+  steps.forEach(step => {
+    addToIndexes(feature, indexes, {ast: step, parent}, offset)
+
+    step.tags && indexTags(feature, indexes, step, offset)
+  })
 } 
 
 const indexScenario = (

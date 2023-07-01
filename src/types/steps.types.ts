@@ -1,6 +1,7 @@
 import type { TWorldConfig } from './world.types'
 import type { EStepType } from './helpers.types'
 import type { TMatchResp } from './parkin.types'
+import {TTagsAst} from './features.types'
 
 export type TStepAction = (...args:any[]) => any
 export type TRegisterStepMethod = (step:string, action:TStepAction) => any
@@ -27,13 +28,15 @@ export interface IParkinSteps {
 }
 
 export type TStepAst = {
+  doc?: any
   uuid: string
   step: string
   index: number
   type: EStepType
+  tags?: TTagsAst
+  disabled?:boolean
   whitespace: string
   definition?:string
-  doc?: any
   table?: TStepTable
 }
 

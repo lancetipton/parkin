@@ -85,7 +85,7 @@ export type TAstType = TBlockParentAst | TStepAst | TTagsAst | TBlockAst
 
 export type TStepParentAst = TBackgroundAst | TScenarioAst
 export type TScenarioParentAst = TRuleAst | TFeatureAst
-export type TTagsParentAst = TScenarioParentAst | TStepParentAst
+export type TTagsParentAst = TScenarioParentAst | TStepParentAst | TStepAst
 export type TBackgroundParentAst = TFeatureAst | TRuleAst
 export type TParentAst = TFeatureAst | TRuleAst | TBackgroundAst | TScenarioAst
 

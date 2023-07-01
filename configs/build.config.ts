@@ -3,7 +3,7 @@ import * as esbuild from 'esbuild'
 import { fileURLToPath } from 'node:url'
 import { dtsPlugin } from 'esbuild-plugin-d.ts'
 import { typecheckPlugin } from '@jgoz/esbuild-plugin-typecheck'
-import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
+import { nodeModulesPolyfillPlugin } from 'esbuild-plugins-node-modules-polyfill'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const rootDir = path.join(dirname, `..`)
@@ -32,7 +32,7 @@ const cjsBuild = async () => {
     sourcemap: true,
     platform: "node",
     target: ["node16"],
-    plugins: [NodeModulesPolyfillPlugin()]
+    plugins: [nodeModulesPolyfillPlugin()]
   })
   .catch(() => process.exit(1))
 }
@@ -55,7 +55,7 @@ const esmBuild = async () => {
     target: ["esnext"],
     define: { global: "window" },
     plugins: [
-      NodeModulesPolyfillPlugin(),
+      nodeModulesPolyfillPlugin(),
       typecheckPlugin(),
       dtsPlugin(),
     ]

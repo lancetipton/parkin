@@ -1,1 +1,1 @@
-require('jsdom').jsdom
+// Stub setup file

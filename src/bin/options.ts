@@ -46,5 +46,23 @@ export const options = {
     alias: [`c`],
     example:`--config ./parkin.ts`,
     description: `Path to parkin config file. The default export must be a parkin config Object`,
+  },
+  filter: {
+    alias: [`f`],
+    type: `array`,
+    example:`--filter @feature-tag,@other-feature-tag`,
+    description: `Filter which feature, rules, scenarios, or backgrounds are run based on matching tags`,
+  },
+  disabled: {
+    alias: [`d`],
+    type: `array`,
+    example:`--disabled @rule-tag,@step-tag`,
+    description: `Disable a tests from running based on matching tags`,
+  },
+  name: {
+    alias: [`n`],
+    type: `string`,
+    example:`--name my-feature`,
+    description: `Specify a name of a specific feature to run. All other features will be skipped`,
   }
 }
