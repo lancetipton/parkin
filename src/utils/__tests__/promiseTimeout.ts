@@ -13,7 +13,7 @@ describe(`PromiseTimeout`, () => {
       res(true)
     }, 500))
     
-    return PromiseTimeout({promise, timeout})
+    PromiseTimeout({promise, timeout})
       .then(() => expect(testFn).toHaveBeenCalled())
       .finally(() => done())
   })
@@ -26,7 +26,7 @@ describe(`PromiseTimeout`, () => {
       res(true)
     }, 1000))
     
-    return PromiseTimeout({promise, timeout})
+    PromiseTimeout({promise, timeout})
       .catch((err) => {
         expect(testFn).not.toHaveBeenCalled()
         expect(err.name).toBe(`TimeoutError`)

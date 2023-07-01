@@ -5,6 +5,7 @@ module.exports = {
   maxWorkers: 1,
   preset: "es-jest",
   rootDir: ROOT_DIR,
+  testRunner: 'jest-jasmine2',
   testMatch: [
     '<rootDir>/src/**/__tests__/*.{js,jsx,ts,tsx}',
   ],
