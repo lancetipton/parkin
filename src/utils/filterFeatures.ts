@@ -3,6 +3,7 @@ import type {
   TFeatureAst,
   TScenarioAst,
   TParkinRunOpts,
+  TBackgroundAst,
 } from '../types'
 
 import {
@@ -11,6 +12,7 @@ import {
   emptyObj,
   emptyArr,
   eitherArr,
+  exists,
 } from '@keg-hub/jsutils'
 
 /**
@@ -37,8 +39,8 @@ type TFilterMatch = {
 
 type TFilterChild = {
   tags?:string[]
-  nameKey: `scenario`|`rule`
-  children: (TRuleAst | TScenarioAst)[]
+  nameKey: `background`|`scenario`|`rule`
+  children: (TBackgroundAst|TRuleAst | TScenarioAst)[]
   options:{
     name?:string,
     tags?:string[]
@@ -101,7 +103,13 @@ const filterChild = ({
 }
 
 /**
- * Filters features and scenarios based on the passed in filterOptions
+ * Filters features, rules, background, and scenarios based on the passed in filterOptions
+ * If tags exist, and they match, then the item is included
+ * If no tags exists, or the tags don't match, then they are not included
+ * If a features has a matching tag, then the entire feature is included
+ * To filter on rules, background or scenarios, the feature must not include the matching tag
+ *  - Instead the tag should be included on the rule, background or scenario
+ *  - And the feature should not has ANY tags
  * @function
  * @private
  * @param {Array} features - Features to be run
@@ -132,8 +140,17 @@ export const filterFeatures = (
       return filtered
     }
 
-    const { rules, scenarios, ...rest} = feature
-    const copy = { ...rest, rules: [], scenarios: [] }
+    const { rules, scenarios, background, ...rest} = feature
+    const copy = { ...rest, rules: [], scenarios: [] } as Partial<TFeatureAst>
+
+    // check for matching background, where background inherit their parent feature's tags
+    const matchingBackground = exists(background)
+      && filterChild({
+        options,
+        nameKey: `background`,
+        children: [background],
+        tags: feature?.tags?.tokens,
+      }) as TBackgroundAst[]
 
     // check for matching rules, where rules inherit their parent feature's tags
     const matchingRules = filterChild({
@@ -141,7 +158,7 @@ export const filterFeatures = (
       nameKey: `rule`,
       children: rules,
       tags: feature?.tags?.tokens,
-    })
+    }) as TRuleAst[]
 
     // check for matching scenarios, where scenarios inherit their parent feature's tags
     const matchingScenarios = filterChild({
@@ -149,12 +166,15 @@ export const filterFeatures = (
       nameKey: `scenario`,
       children: scenarios,
       tags: feature?.tags?.tokens,
-    })
+    }) as TScenarioAst[]
 
+
+    const hasBackgroundMatch = Boolean(matchingBackground.length)
     const hasRuleMatch = Boolean(matchingRules.length)
     const hasScenarioMatch = Boolean(matchingScenarios.length)
 
-    if(hasRuleMatch || hasScenarioMatch){
+    if(hasBackgroundMatch || hasRuleMatch || hasScenarioMatch){
+      hasBackgroundMatch && (copy.background = matchingBackground[0])
       hasRuleMatch && (copy.rules = matchingRules)
       hasScenarioMatch && (copy.scenarios = matchingScenarios)
 
