@@ -6,27 +6,14 @@ import type {
   TBackgroundAst,
 } from '../types'
 
+import { parseTags } from './hasTag'
 import {
-  isArr,
   isStr,
-  emptyObj,
+  exists,
   emptyArr,
   eitherArr,
-  exists,
 } from '@keg-hub/jsutils'
 
-/**
- * @param {string} tags
- * @return {Array<string>?} A match of all words starting with '@', the tag indicator.
- * Returns false if input is invalid.
- */
-const parseFeatureTags = (tags?:string|string[]) => {
-  return isStr(tags)
-    ? tags.match(/[@]\w*/g)
-    : isArr<string>(tags)
-      ? tags
-      : emptyArr
-}
 
 type TFilterMatch = {
   name?:string,
@@ -47,12 +34,10 @@ type TFilterChild = {
   }
 }
 
+const emptyOpts = { tags: {}, steps: {} } as TParkinRunOpts
+
 /**
- * @param {string?} name - name of test item to check
- * @param {string[]} tags - Tags related to the test item
- * @param {TParkinRunOpts} filterOptions - Define how the steps are run
- *
- * @return {Boolean} - true if feature matches the filter options
+ * Checks for a match between name and filter tags
  */
 const filterMatch = ({
   name,
@@ -71,15 +56,12 @@ const filterMatch = ({
   return nameMatch && tagMatch
 }
 
-
-const getFilterOpts = (filterOptions:TParkinRunOpts = emptyObj) => {
-  const {
-    name,
-    tags: filterTags
-  } = filterOptions
+const getFilterOpts = (opts:TParkinRunOpts=emptyOpts) => {
+  const { name } = opts
+  const filterTags = opts.tags?.filter
 
   const tags = isStr(filterTags)
-    ? parseFeatureTags(filterTags)
+    ? parseTags(filterTags)
     : eitherArr(filterTags, [])
 
   return { name, tags }
@@ -119,7 +101,7 @@ const filterChild = ({
  */
 export const filterFeatures = (
   features:TFeatureAst[],
-  filterOptions:TParkinRunOpts = emptyObj
+  filterOptions:TParkinRunOpts=emptyOpts
 ) => {
 
   const options = getFilterOpts(filterOptions)

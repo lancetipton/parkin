@@ -64,33 +64,33 @@ describe(`Runner`, () => {
   })
 
   it(`should filter features on tags`, () => {
-    let features = PK.runner.getFeatures(feature, { tags: [`@random-tag`] })
+    let features = PK.runner.getFeatures(feature, { tags: {filter: [`@random-tag`]} })
     expect(features).toHaveLength(0)
 
-    features = PK.runner.getFeatures(feature, { tags: [`@search`] })
+    features = PK.runner.getFeatures(feature, { tags: {filter: [`@search`]} })
     expect(features).toHaveLength(1)
 
-    features = PK.runner.getFeatures(feature, { tags: `@google` })
+    features = PK.runner.getFeatures(feature, { tags: {filter: `@google`} })
     expect(features).toHaveLength(1)
 
-    features = PK.runner.getFeatures(feature, { tags: `@google and @search` })
+    features = PK.runner.getFeatures(feature, { tags: {filter: `@google and @search`} })
     expect(features).toHaveLength(1)
 
-    features = PK.runner.getFeatures(feature, { tags: `@google,@search` })
+    features = PK.runner.getFeatures(feature, { tags: {filter: `@google,@search`} })
     expect(features).toHaveLength(1)
   })
 
 
   it(`should filter feature.scenarios on tags`, () => {
     let features = PK.runner.getFeatures(featureWithPropertyTags, {
-      tags: `@scenario`,
+      tags: {filter: `@scenario`},
     })
     expect(features).toHaveLength(1)
     // Filters out the other scenario, has 2 by default
     expect(features[0].scenarios).toHaveLength(1)
     
     features = PK.runner.getFeatures(featureWithPropertyTags, {
-      tags: `@rule`,
+      tags: {filter: `@rule`},
     })
     expect(features).toHaveLength(1)
     expect(features[0].scenarios).toHaveLength(0)
@@ -99,13 +99,13 @@ describe(`Runner`, () => {
 
   it(`should filter feature.rules on tags`, () => {
     let features = PK.runner.getFeatures(featureWithPropertyTags, {
-      tags: `@rule`,
+      tags: {filter: `@rule`},
     })
     expect(features).toHaveLength(1)
     expect(features[0].rules).toHaveLength(1)
     
     features = PK.runner.getFeatures(featureWithPropertyTags, {
-      tags: `@scenario`,
+      tags: {filter: `@scenario`},
     })
     expect(features).toHaveLength(1)
     expect(features[0].rules).toHaveLength(0)
@@ -113,14 +113,14 @@ describe(`Runner`, () => {
 
   it(`should filter feature.background on tags`, () => {
     let features = PK.runner.getFeatures(featureWithPropertyTags, {
-      tags: `@background`,
+      tags: {filter: `@background`},
     })
 
     expect(features).toHaveLength(1)
     expect(features[0].background?.background).not.toBe(undefined)
     
     features = PK.runner.getFeatures(featureWithOutBackgroundTags, {
-      tags: `@scenario`,
+      tags: {filter: `@scenario`},
     })
     expect(features).toHaveLength(0)
     expect(features[0]?.background?.background).toBe(undefined)
@@ -143,7 +143,7 @@ describe(`Runner`, () => {
   })
 
   it(`should return false if filters result in no tests`, async () => {
-    const testsRan = await PK.run(feature, { tags: `@non-existent-tag` })
+    const testsRan = await PK.run(feature, { tags: {filter: `@non-existent-tag`} })
     expect(testsRan).toEqual(false)
   })
 

@@ -11,6 +11,7 @@ import { getDefs } from './getDefs'
 import { getWorld } from './getWorld'
 import { runTests } from './runTests'
 import { getConfig } from './getConfig'
+import { pickKeys } from '@keg-hub/jsutils'
 import { printResult } from './printResult'
 import { getFeatures } from './getFeatures'
 import { argsParse } from '@keg-hub/args-parse'
@@ -32,7 +33,12 @@ import { argsParse } from '@keg-hub/args-parse'
     features,
     world,
     defs,
-    { timeout: parsed.timeout }
+    { timeout: parsed.timeout },
+    {
+      name: parsed.name,
+      timeout: parsed.timeout,
+      tags: pickKeys(parsed,[`disabled`, `filter`]) 
+    },
   )
 
   // TODO: add reporting ???

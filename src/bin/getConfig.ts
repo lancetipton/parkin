@@ -7,9 +7,11 @@ const mergeConfig = (base:Partial<TParkinOpts>, override:Partial<TParkinOpts>) =
   const {
     defs:bDefs,
     exts:bExts,
+    filter:bFilter,
     config:bConfig,
     exclude:bExclude,
     include:bInclude,
+    disabled:bDisabled,
     features:bFeatures,
     ...baseRest
   } = base
@@ -18,9 +20,11 @@ const mergeConfig = (base:Partial<TParkinOpts>, override:Partial<TParkinOpts>) =
     defs,
     exts,
     config,
+    filter,
     exclude,
     include,
     features,
+    disabled,
     ...ovRest
   } = override
 
@@ -29,9 +33,11 @@ const mergeConfig = (base:Partial<TParkinOpts>, override:Partial<TParkinOpts>) =
     ...ovRest,
     defs:flatUnion(ensureArr(bDefs), ensureArr(defs)),
     exts:flatUnion(ensureArr(bExts), ensureArr(exts)),
+    filter:flatUnion(ensureArr(filter), ensureArr(bFilter)),
     exclude:flatUnion(ensureArr(bExclude), ensureArr(exclude)),
     include:flatUnion(ensureArr(bInclude), ensureArr(include)),
     features:flatUnion(ensureArr(bFeatures), ensureArr(features)),
+    disabled:flatUnion(ensureArr(disabled), ensureArr(bDisabled)),
   }
 }
 

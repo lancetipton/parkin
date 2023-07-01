@@ -15,6 +15,9 @@ const allowOpts = [
   `include`,
   `timeout`,
   `config`,
+  `disabled`,
+  `filter`,
+  `name`
 ]
 
 const allowedTypes = [

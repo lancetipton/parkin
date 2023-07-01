@@ -12,6 +12,7 @@ import type {
   TParkinRunFeaturesInput
 } from './types'
 
+import {hasTag} from './utils/hasTag'
 import { parseFeature } from './parse'
 import { ETestType, EHookType } from './types'
 import { filterFeatures } from './utils/filterFeatures'
@@ -35,9 +36,11 @@ type TRunTestMode = {
 } & ((...args:any) => any)
 
 
+const emptyOpts = { tags: {}, steps: {} } as TParkinRunOpts
+
 const getStepOpts = (
   step:TStepAst,
-  options:TParkinRunOpts,
+  options:TParkinRunOpts=emptyOpts,
 ) => {
   const shared = options?.steps?.shared
   const single = options?.steps?.[step?.uuid]
@@ -105,23 +108,26 @@ const resolveFeatures = (
 const runStep = async (
   stepsInstance:Steps,
   step:TStepAst,
-  options:TParkinRunOpts,
+  options:TParkinRunOpts=emptyOpts,
   testMode:boolean
 ) => {
   const test = getTestMethod(ETestType.test, testMode)
   const opts = getStepOpts(step, options)
+  const disabled = hasTag(step?.tags?.tokens, options.tags.disabled)
 
   const testMethod = async () => {
+    if(disabled) return
+
     return await stepsInstance.resolve(
       step.step,
       step,
       opts
     )
   }
-  testMethod.ParkinMetaData = pickKeys(
-    step,
-    [ `uuid`, `step`, `index`, `type`, `definition`]
-  )
+  testMethod.ParkinMetaData = {
+    disabled,
+    ...pickKeys(step, [ `uuid`, `step`, `index`, `tags`, `type`, `definition`])
+  }
 
   test(`${capitalize(step.type)} ${step.step}`, testMethod, opts.timeout)
 }
@@ -141,13 +147,15 @@ const loopSteps = (
   parent:TStepParentAst,
   title:string,
   stepsInstance:Steps,
-  options:TParkinRunOpts,
+  options:TParkinRunOpts=emptyOpts,
   testMode:boolean
 ) => {
   const describe = getTestMethod(ETestType.describe, testMode)
+  const disabled = hasTag(parent?.tags?.tokens, options.tags.disabled)
 
   let responses = []
   const describeMethod = () => {
+    if(disabled) return
     // Map over the steps and call them
     // Store the returned promise in the responses array
     const responses = parent.steps.map(step =>
@@ -157,10 +165,10 @@ const loopSteps = (
     // Ensure we resolve all promises inside the describe block
     Promise.all(responses)
   }
-  describeMethod.ParkinMetaData = pickKeys(
-    parent,
-    [`index`, `uuid`, `tags`, `type`, `background`, `scenario`]
-  )
+  describeMethod.ParkinMetaData = {
+    disabled,
+    ...pickKeys(parent, [`index`, `uuid`, `tags`, `type`, `background`, `scenario`])
+  }
 
   describe(title, describeMethod)
 
@@ -182,7 +190,7 @@ const runScenario = (
   stepsInstance:Steps,
   scenario:TScenarioAst,
   background:TBackgroundAst,
-  options:TParkinRunOpts,
+  options:TParkinRunOpts=emptyOpts,
   testMode:boolean
 ) => {
   const responses = []
@@ -220,7 +228,7 @@ const runBackground = (
   stepsInstance:Steps,
   title:string,
   background:TBackgroundAst,
-  options:TParkinRunOpts,
+  options:TParkinRunOpts=emptyOpts,
   testMode:boolean
 ) => {
   // If there's a background, run the background steps first
@@ -248,14 +256,17 @@ const runRule = (
   stepsInstance:Steps,
   rule:TRuleAst,
   background:TBackgroundAst,
-  options:TParkinRunOpts,
+  options:TParkinRunOpts=emptyOpts,
   testMode:boolean
 ) => {
   // Map over the rule scenarios and call their steps
   // Store the returned promise in the responses array
   let responses = []
-  
+  const disabled = hasTag(rule?.tags?.tokens, options.tags.disabled)
+
   const describeMethod = () => {
+    if(disabled) return
+
     background &&
       responses.push(
         ...responses.concat(
@@ -272,10 +283,13 @@ const runRule = (
     // Ensure we resolve all promises inside the describe block
     Promise.all(responses)
   }
-  describeMethod.ParkinMetaData = pickKeys(
-    rule,
-    [`index`, `uuid`, `tags`, `type`, `rule`]
-  )
+  describeMethod.ParkinMetaData = {
+    disabled,
+    ...pickKeys(
+      rule,
+      [`index`, `uuid`, `tags`, `type`, `rule`]
+    )
+  }
 
   describe(`Rule > ${rule.rule}`, describeMethod)
 
@@ -314,7 +328,7 @@ export class Runner {
    */
   getFeatures = (
     data:TParkinRunFeaturesInput,
-    options:TParkinRunOpts
+    options:TParkinRunOpts=emptyOpts
   ) => {
     const features = resolveFeatures(data, this._world)
     return filterFeatures(features, options)
@@ -333,7 +347,7 @@ export class Runner {
    */
   run = async (
     data:TParkinRunFeaturesInput,
-    options:TParkinRunOpts=emptyObj
+    options:TParkinRunOpts=emptyOpts
   ) => {
     // Set if were running tests for Parkin, or external tests
     // Only used for testing purposes
@@ -357,13 +371,18 @@ export class Runner {
     // Using promises to resolve each feature / scenario / step
     const promises = await features.map(async feature => {
       let responses = []
+      const disabled = hasTag(feature?.tags?.tokens, options.tags.disabled)
 
-      beforeAll(this.hooks.getRegistered(EHookType.beforeAll))
-      afterAll(this.hooks.getRegistered(EHookType.afterAll))
-      beforeEach(this.hooks.getRegistered(EHookType.beforeEach))
-      afterEach(this.hooks.getRegistered(EHookType.afterEach))
+      if(!disabled){
+        beforeAll(this.hooks.getRegistered(EHookType.beforeAll))
+        afterAll(this.hooks.getRegistered(EHookType.afterAll))
+        beforeEach(this.hooks.getRegistered(EHookType.beforeEach))
+        afterEach(this.hooks.getRegistered(EHookType.afterEach))
+      }
 
       const describeMethod = () => {
+        if(disabled) return
+
         responses.push(
           ...feature.rules.reduce((acc:any[], rule:TRuleAst) => {
             acc.push(runRule(
@@ -395,10 +414,13 @@ export class Runner {
         // Ensure we resolve all promises inside the describe block
         Promise.all(responses)
       }
-      describeMethod.ParkinMetaData = pickKeys(
-        feature,
-        [`index`, `uuid`, `tags`, `feature`, `type`, `errors`]
-      )
+      describeMethod.ParkinMetaData = {
+        disabled,
+        ...pickKeys(
+          feature,
+          [`index`, `uuid`, `tags`, `feature`, `type`, `errors`]
+        )
+      }
     
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
