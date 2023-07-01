@@ -29,9 +29,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/validate-23297ec2.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/validate-23297ec2.js
 var require_validate_23297ec2 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/validate-23297ec2.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/validate-23297ec2.js"(exports) {
     "use strict";
     var OPTIONS = {
       SHOULD_LOG: true,
@@ -119,45 +119,45 @@ var require_validate_23297ec2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isArr-39234014.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isArr-39234014.js
 var require_isArr_39234014 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isArr-39234014.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isArr-39234014.js"(exports) {
     "use strict";
     var isArr7 = (value) => Array.isArray(value);
     exports.isArr = isArr7;
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isObj-6b3aa807.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isObj-6b3aa807.js
 var require_isObj_6b3aa807 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isObj-6b3aa807.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isObj-6b3aa807.js"(exports) {
     "use strict";
     var isObj6 = (obj) => typeof obj === "object" && !Array.isArray(obj) && obj !== null;
     exports.isObj = isObj6;
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isFunc-f93803cb.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isFunc-f93803cb.js
 var require_isFunc_f93803cb = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isFunc-f93803cb.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isFunc-f93803cb.js"(exports) {
     "use strict";
     var isFunc4 = (func) => typeof func === "function";
     exports.isFunc = isFunc4;
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isStr-8a57710e.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isStr-8a57710e.js
 var require_isStr_8a57710e = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isStr-8a57710e.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isStr-8a57710e.js"(exports) {
     "use strict";
-    var isStr6 = (str) => typeof str === "string";
-    exports.isStr = isStr6;
+    var isStr7 = (str) => typeof str === "string";
+    exports.isStr = isStr7;
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isNum-c7164b50.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isNum-c7164b50.js
 var require_isNum_c7164b50 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isNum-c7164b50.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isNum-c7164b50.js"(exports) {
     "use strict";
     var equalsNaN2 = (val) => typeof val === "number" && val != val;
     var isNum2 = (val) => typeof val === "number" && !equalsNaN2(val);
@@ -166,16 +166,16 @@ var require_isNum_c7164b50 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isValidDate-813b9419.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isValidDate-813b9419.js
 var require_isValidDate_813b9419 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isValidDate-813b9419.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isValidDate-813b9419.js"(exports) {
     "use strict";
     var isObj6 = require_isObj_6b3aa807();
     var isArr7 = require_isArr_39234014();
-    var isStr6 = require_isStr_8a57710e();
+    var isStr7 = require_isStr_8a57710e();
     var isNum2 = require_isNum_c7164b50();
     var typeOf = (val) => Object.prototype.toString.call(val).slice(8, -1);
-    var isEmpty = (val) => isObj6.isObj(val) ? Object.keys(val).length === 0 : isArr7.isArr(val) ? val.length === 0 : isStr6.isStr(val) ? val.trim().length === 0 : isNum2.isNum(val) ? val < 1 : false;
+    var isEmpty = (val) => isObj6.isObj(val) ? Object.keys(val).length === 0 : isArr7.isArr(val) ? val.length === 0 : isStr7.isStr(val) ? val.trim().length === 0 : isNum2.isNum(val) ? val < 1 : false;
     var isSame = (val1, val2) => val1 === val2 ? val1 !== 0 || 1 / val1 === 1 / val2 : val1 !== val1 && val2 !== val2;
     var isValidDate = (date) => !isNaN((date instanceof Date && date || new Date(date)).getTime());
     exports.isEmpty = isEmpty;
@@ -185,28 +185,28 @@ var require_isValidDate_813b9419 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isBool-aa6af74e.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isBool-aa6af74e.js
 var require_isBool_aa6af74e = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isBool-aa6af74e.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isBool-aa6af74e.js"(exports) {
     "use strict";
     var isBool2 = (val) => typeof val === "boolean";
     exports.isBool = isBool2;
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/toStr-8e499966.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/toStr-8e499966.js
 var require_toStr_8e499966 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/toStr-8e499966.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/toStr-8e499966.js"(exports) {
     "use strict";
-    var isStr6 = require_isStr_8a57710e();
-    var toStr3 = (val) => val === null || val === void 0 ? "" : isStr6.isStr(val) ? val : JSON.stringify(val);
+    var isStr7 = require_isStr_8a57710e();
+    var toStr3 = (val) => val === null || val === void 0 ? "" : isStr7.isStr(val) ? val : JSON.stringify(val);
     exports.toStr = toStr3;
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/toBool-deb350e4.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/toBool-deb350e4.js
 var require_toBool_deb350e4 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/toBool-deb350e4.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/toBool-deb350e4.js"(exports) {
     "use strict";
     var toStr3 = require_toStr_8e499966();
     var isBool2 = require_isBool_aa6af74e();
@@ -219,18 +219,18 @@ var require_toBool_deb350e4 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isColl-5757310a.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isColl-5757310a.js
 var require_isColl_5757310a = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isColl-5757310a.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isColl-5757310a.js"(exports) {
     "use strict";
     var isColl = (val) => typeof val === "object" && val !== null;
     exports.isColl = isColl;
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/deepEqual-adba847a.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/deepEqual-adba847a.js
 var require_deepEqual_adba847a = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/deepEqual-adba847a.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/deepEqual-adba847a.js"(exports) {
     "use strict";
     var isColl = require_isColl_5757310a();
     var isArr7 = require_isArr_39234014();
@@ -290,18 +290,18 @@ var require_deepEqual_adba847a = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js
 var require_exists_c79204b1 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js"(exports) {
     "use strict";
-    var exists9 = (value) => value === value && value !== void 0 && value !== null;
-    exports.exists = exists9;
+    var exists10 = (value) => value === value && value !== void 0 && value !== null;
+    exports.exists = exists10;
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isInt-94ce4199.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isInt-94ce4199.js
 var require_isInt_94ce4199 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isInt-94ce4199.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isInt-94ce4199.js"(exports) {
     "use strict";
     var isNum2 = require_isNum_c7164b50();
     var isNegative = (x) => isNum2.isNum(x) && x < 0;
@@ -315,17 +315,17 @@ var require_isInt_94ce4199 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/jsonEqual-7e69ef6a.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/jsonEqual-7e69ef6a.js
 var require_jsonEqual_7e69ef6a = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/jsonEqual-7e69ef6a.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/jsonEqual-7e69ef6a.js"(exports) {
     "use strict";
-    var isStr6 = require_isStr_8a57710e();
+    var isStr7 = require_isStr_8a57710e();
     var isNum2 = require_isNum_c7164b50();
     var isArr7 = require_isArr_39234014();
     var isObj6 = require_isObj_6b3aa807();
     var toBool = require_toBool_deb350e4();
     var hasOwn = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
-    var isEntry = (maybeEntry) => isArr7.isArr(maybeEntry) && maybeEntry.length === 2 && (isNum2.isNum(maybeEntry[0]) || isStr6.isStr(maybeEntry[0]));
+    var isEntry = (maybeEntry) => isArr7.isArr(maybeEntry) && maybeEntry.length === 2 && (isNum2.isNum(maybeEntry[0]) || isStr7.isStr(maybeEntry[0]));
     var isArrMap = (obj) => {
       if (!isObj6.isObj(obj))
         return false;
@@ -346,15 +346,15 @@ var require_jsonEqual_7e69ef6a = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isQuoted-eb6994da.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isQuoted-eb6994da.js
 var require_isQuoted_eb6994da = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isQuoted-eb6994da.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isQuoted-eb6994da.js"(exports) {
     "use strict";
-    var isStr6 = require_isStr_8a57710e();
+    var isStr7 = require_isStr_8a57710e();
     var isLowerCase = (str) => str === str.toLowerCase();
     var isUpperCase = (str) => str === str.toUpperCase();
     var isEmail = (str) => {
-      if (!str || !isStr6.isStr(str))
+      if (!str || !isStr7.isStr(str))
         return false;
       const regex2 = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
       return Boolean(regex2.test(str));
@@ -364,23 +364,23 @@ var require_isQuoted_eb6994da = __commonJS({
       ipv6: /^((?=.*::)(?!.*::.+::)(::)?([\dA-F]{1,4}:(:|\b)|){5}|([\dA-F]{1,4}:){6})((([\dA-F]{1,4}((?!\3)::|:\b|$))|(?!\2\3)){2}|(((2[0-4]|1\d|[1-9])?\d|25[0-5])\.?\b){4})$/i
     };
     var isIp = (str) => {
-      if (!str || !isStr6.isStr(str))
+      if (!str || !isStr7.isStr(str))
         return false;
       const isIp42 = Boolean(regex.ipv4.test(str));
       return isIp42 || Boolean(regex.ipv6.test(str));
     };
     var isIp4 = (str) => {
-      if (!str || !isStr6.isStr(str))
+      if (!str || !isStr7.isStr(str))
         return false;
       return Boolean(regex.ipv4.test(str));
     };
     var isIp6 = (str) => {
-      if (!str || !isStr6.isStr(str))
+      if (!str || !isStr7.isStr(str))
         return false;
       return Boolean(regex.ipv6.test(str));
     };
     var isPhone = (str) => {
-      if (!str || !isStr6.isStr(str))
+      if (!str || !isStr7.isStr(str))
         return false;
       const regex2 = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
       return Boolean(regex2.test(str)) && str.replace(/\D/g, "").length < 11;
@@ -390,14 +390,14 @@ var require_isQuoted_eb6994da = __commonJS({
       return Boolean(regex2.test(str));
     };
     var isUuid = (str) => {
-      if (!str || !isStr6.isStr(str))
+      if (!str || !isStr7.isStr(str))
         return false;
       const regex2 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
       return Boolean(regex2.test(str));
     };
     var quoteSymbols = ['"', "'"];
     var isQuoted2 = (str, quotes = quoteSymbols) => {
-      return isStr6.isStr(str) && quotes.some((quote) => str.startsWith(quote) && str.endsWith(quote));
+      return isStr7.isStr(str) && quotes.some((quote) => str.startsWith(quote) && str.endsWith(quote));
     };
     exports.isEmail = isEmail;
     exports.isIp = isIp;
@@ -412,9 +412,9 @@ var require_isQuoted_eb6994da = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isValidUrl-a77135f0.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isValidUrl-a77135f0.js
 var require_isValidUrl_a77135f0 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isValidUrl-a77135f0.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isValidUrl-a77135f0.js"(exports) {
     "use strict";
     var isValidUrl = (str) => {
       var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/;
@@ -424,9 +424,9 @@ var require_isValidUrl_a77135f0 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/not-16fa9c85.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/not-16fa9c85.js
 var require_not_16fa9c85 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/not-16fa9c85.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/not-16fa9c85.js"(exports) {
     "use strict";
     var isArr7 = require_isArr_39234014();
     var isValidDate = require_isValidDate_813b9419();
@@ -435,15 +435,15 @@ var require_not_16fa9c85 = __commonJS({
     var toBool = require_toBool_deb350e4();
     var isColl = require_isColl_5757310a();
     var deepEqual = require_deepEqual_adba847a();
-    var exists9 = require_exists_c79204b1();
-    var isStr6 = require_isStr_8a57710e();
+    var exists10 = require_exists_c79204b1();
+    var isStr7 = require_isStr_8a57710e();
     var isNum2 = require_isNum_c7164b50();
     var isInt = require_isInt_94ce4199();
     var jsonEqual = require_jsonEqual_7e69ef6a();
     var isObj6 = require_isObj_6b3aa807();
     var isQuoted2 = require_isQuoted_eb6994da();
     var isValidUrl = require_isValidUrl_a77135f0();
-    var isOrderable = (x) => isStr6.isStr(x) || isNum2.isNum(x) || isBool2.isBool(x);
+    var isOrderable = (x) => isStr7.isStr(x) || isNum2.isNum(x) || isBool2.isBool(x);
     var identity = (x) => x;
     var match = (matchArg, ...args) => {
       if (!args.length)
@@ -479,7 +479,7 @@ var require_not_16fa9c85 = __commonJS({
     not.deepEqual = not(deepEqual.deepEqual);
     not.emptyColl = not(deepEqual.isEmptyColl);
     not.dom = not(hasDomAccess);
-    not.exists = not(exists9.exists);
+    not.exists = not(exists10.exists);
     not.empty = not(isValidDate.isEmpty);
     not.same = not(isValidDate.isSame);
     not.validDate = not(isValidDate.isValidDate);
@@ -503,7 +503,7 @@ var require_not_16fa9c85 = __commonJS({
     not.lowerCase = not(isQuoted2.isLowerCase);
     not.phone = not(isQuoted2.isPhone);
     not.quoted = not(isQuoted2.isQuoted);
-    not.str = not(isStr6.isStr);
+    not.str = not(isStr7.isStr);
     not.upperCase = not(isQuoted2.isUpperCase);
     not.url = not(isQuoted2.isUrl);
     not.uuid = not(isQuoted2.isUuid);
@@ -517,11 +517,11 @@ var require_not_16fa9c85 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/compareTo-d69e4abf.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/compareTo-d69e4abf.js
 var require_compareTo_d69e4abf = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/compareTo-d69e4abf.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/compareTo-d69e4abf.js"(exports) {
     "use strict";
-    var isStr6 = require_isStr_8a57710e();
+    var isStr7 = require_isStr_8a57710e();
     var not = require_not_16fa9c85();
     var validate = require_validate_23297ec2();
     var compareTo = (x, y) => {
@@ -533,25 +533,15 @@ var require_compareTo_d69e4abf = __commonJS({
       });
       if (!valid)
         return null;
-      return isStr6.isStr(x) ? x.localeCompare(y) : x - y;
+      return isStr7.isStr(x) ? x.localeCompare(y) : x - y;
     };
     exports.compareTo = compareTo;
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isNonNegative-9959647c.js
-var require_isNonNegative_9959647c = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/isNonNegative-9959647c.js"(exports) {
-    "use strict";
-    var isNum2 = require_isNum_c7164b50();
-    var isNonNegative = (val) => isNum2.isNum(val) && val >= 0;
-    exports.isNonNegative = isNonNegative;
-  }
-});
-
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/deepFreeze-d73ccc57.js
-var require_deepFreeze_d73ccc57 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/deepFreeze-d73ccc57.js"(exports) {
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/noOps-b5f3c7e4.js
+var require_noOps_b5f3c7e4 = __commonJS({
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/noOps-b5f3c7e4.js"(exports) {
     "use strict";
     var isFunc4 = require_isFunc_f93803cb();
     var deepFreeze2 = (obj) => {
@@ -561,25 +551,17 @@ var require_deepFreeze_d73ccc57 = __commonJS({
       });
       return obj;
     };
-    exports.deepFreeze = deepFreeze2;
-  }
-});
-
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/noOps-c9732e8e.js
-var require_noOps_c9732e8e = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/noOps-c9732e8e.js"(exports) {
-    "use strict";
-    var deepFreeze2 = require_deepFreeze_d73ccc57();
     var noOpObj5 = Object.freeze({});
-    var emptyObj11 = noOpObj5;
-    var noPropObj = deepFreeze2.deepFreeze({
+    var emptyObj10 = noOpObj5;
+    var noPropObj = deepFreeze2({
       content: {}
     });
-    var noPropArr2 = deepFreeze2.deepFreeze([]);
+    var noPropArr2 = deepFreeze2([]);
     var noOpArr = noPropArr2;
-    var emptyArr5 = noPropArr2;
-    exports.emptyArr = emptyArr5;
-    exports.emptyObj = emptyObj11;
+    var emptyArr6 = noPropArr2;
+    exports.deepFreeze = deepFreeze2;
+    exports.emptyArr = emptyArr6;
+    exports.emptyObj = emptyObj10;
     exports.noOpArr = noOpArr;
     exports.noOpObj = noOpObj5;
     exports.noPropArr = noPropArr2;
@@ -587,9 +569,19 @@ var require_noOps_c9732e8e = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/intersect-77d7e821.js
-var require_intersect_77d7e821 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/intersect-77d7e821.js"(exports) {
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isNonNegative-9959647c.js
+var require_isNonNegative_9959647c = __commonJS({
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isNonNegative-9959647c.js"(exports) {
+    "use strict";
+    var isNum2 = require_isNum_c7164b50();
+    var isNonNegative = (val) => isNum2.isNum(val) && val >= 0;
+    exports.isNonNegative = isNonNegative;
+  }
+});
+
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/intersect-6fe7b944.js
+var require_intersect_6fe7b944 = __commonJS({
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/intersect-6fe7b944.js"(exports) {
     "use strict";
     var validate = require_validate_23297ec2();
     var isArr7 = require_isArr_39234014();
@@ -597,9 +589,9 @@ var require_intersect_77d7e821 = __commonJS({
     var isFunc4 = require_isFunc_f93803cb();
     var compareTo = require_compareTo_d69e4abf();
     var not = require_not_16fa9c85();
+    var noOps = require_noOps_b5f3c7e4();
     var isNonNegative = require_isNonNegative_9959647c();
-    var noOps = require_noOps_c9732e8e();
-    var exists9 = require_exists_c79204b1();
+    var exists10 = require_exists_c79204b1();
     var buildElementCountMap = (arr) => {
       const counts = /* @__PURE__ */ new Map();
       for (let i = 0; i < arr.length; i++) {
@@ -660,11 +652,11 @@ var require_intersect_77d7e821 = __commonJS({
     var cloneArr = (arr) => Array.from([
       ...isArr7.isArr(arr) && arr || isObj6.isObj(arr) && Object.entries(arr) || []
     ]);
-    var eitherArr6 = (a, b) => isArr7.isArr(a) ? a : b;
+    var eitherArr7 = (a, b) => isArr7.isArr(a) ? a : b;
     var flatten = (arr, result, opts) => {
       for (let i = 0; i < arr.length; i++) {
         const value = arr[i];
-        isArr7.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists9.exists(value) || opts.truthy && !value ? result : result.push(value);
+        isArr7.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists10.exists(value) || opts.truthy && !value ? result : result.push(value);
       }
       if (!opts.mutate)
         return result;
@@ -770,7 +762,7 @@ var require_intersect_77d7e821 = __commonJS({
     exports.areSetEqual = areSetEqual;
     exports.buildElementCountMap = buildElementCountMap;
     exports.cloneArr = cloneArr;
-    exports.eitherArr = eitherArr6;
+    exports.eitherArr = eitherArr7;
     exports.findExtrema = findExtrema;
     exports.findMax = findMax;
     exports.findMin = findMin;
@@ -786,9 +778,9 @@ var require_intersect_77d7e821 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/ensureArr-ae68c041.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/ensureArr-ae68c041.js
 var require_ensureArr_ae68c041 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/ensureArr-ae68c041.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/ensureArr-ae68c041.js"(exports) {
     "use strict";
     var isArr7 = require_isArr_39234014();
     var ensureArr3 = (val) => isArr7.isArr(val) ? val : [val];
@@ -796,18 +788,18 @@ var require_ensureArr_ae68c041 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/softFalsy-3d7ead1c.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/softFalsy-3d7ead1c.js
 var require_softFalsy_3d7ead1c = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/softFalsy-3d7ead1c.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/softFalsy-3d7ead1c.js"(exports) {
     "use strict";
     var softFalsy = (val) => Boolean(val || val === "" || val === 0);
     exports.softFalsy = softFalsy;
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/set-c0a98b21.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/set-c0a98b21.js
 var require_set_c0a98b21 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/set-c0a98b21.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/set-c0a98b21.js"(exports) {
     "use strict";
     var isFunc4 = require_isFunc_f93803cb();
     var isArr7 = require_isArr_39234014();
@@ -843,34 +835,34 @@ var require_set_c0a98b21 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js
 var require_get_00626335 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js"(exports) {
     "use strict";
-    var exists9 = require_exists_c79204b1();
+    var exists10 = require_exists_c79204b1();
     var isArr7 = require_isArr_39234014();
-    var isStr6 = require_isStr_8a57710e();
+    var isStr7 = require_isStr_8a57710e();
     var get4 = (obj, path, fallback) => {
       const isPathArr = isArr7.isArr(path);
-      if (!isStr6.isStr(path) && !isPathArr)
-        return exists9.exists(fallback) ? fallback : void 0;
+      if (!isStr7.isStr(path) && !isPathArr)
+        return exists10.exists(fallback) ? fallback : void 0;
       const parts = isPathArr ? path : path.split(".");
       const result = parts.reduce((obj2, prop) => {
         const type = typeof obj2;
-        if (!exists9.exists(obj2) || type !== "object" && type !== "function")
+        if (!exists10.exists(obj2) || type !== "object" && type !== "function")
           return void 0;
         prop = prop.startsWith("[") ? prop.replace(/\D/g, "") : prop;
         return obj2[prop];
       }, obj);
-      return exists9.exists(result) ? result : fallback;
+      return exists10.exists(result) ? result : fallback;
     };
     exports.get = get4;
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/deepClone-ae664a21.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/deepClone-ae664a21.js
 var require_deepClone_ae664a21 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/deepClone-ae664a21.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/deepClone-ae664a21.js"(exports) {
     "use strict";
     var isFunc4 = require_isFunc_f93803cb();
     var get4 = require_get_00626335();
@@ -932,21 +924,21 @@ var require_deepClone_ae664a21 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/shallowEqual-eaf2262d.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/shallowEqual-eaf2262d.js
 var require_shallowEqual_eaf2262d = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/shallowEqual-eaf2262d.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/shallowEqual-eaf2262d.js"(exports) {
     "use strict";
     var isObj6 = require_isObj_6b3aa807();
     var isColl = require_isColl_5757310a();
     var isFunc4 = require_isFunc_f93803cb();
     var isArr7 = require_isArr_39234014();
-    var exists9 = require_exists_c79204b1();
+    var exists10 = require_exists_c79204b1();
     var validate = require_validate_23297ec2();
     var set = require_set_c0a98b21();
     var deepClone = require_deepClone_ae664a21();
     var isNum2 = require_isNum_c7164b50();
     var get4 = require_get_00626335();
-    var isStr6 = require_isStr_8a57710e();
+    var isStr7 = require_isStr_8a57710e();
     var cleanColl = (coll, recursive = true) => {
       return isColl.isColl(coll) ? Object.keys(coll).reduce((cleaned, key) => {
         const value = coll[key];
@@ -978,7 +970,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
       }
       return null;
     };
-    var mapFind = (coll, mapper, testFunc = exists9.exists) => {
+    var mapFind = (coll, mapper, testFunc = exists10.exists) => {
       const [valid] = validate.validate({
         coll,
         mapper,
@@ -1011,7 +1003,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
       return arr;
     };
     var shallowEqual = (col1, col2, path) => {
-      if (path && (isArr7.isArr(path) || isStr6.isStr(path))) {
+      if (path && (isArr7.isArr(path) || isStr7.isStr(path))) {
         col1 = get4.get(col1, path);
         col2 = get4.get(col2, path);
       }
@@ -1036,9 +1028,9 @@ var require_shallowEqual_eaf2262d = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/either-81805472.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/either-81805472.js
 var require_either_81805472 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/either-81805472.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/either-81805472.js"(exports) {
     "use strict";
     var softFalsy = require_softFalsy_3d7ead1c();
     var isFunc4 = require_isFunc_f93803cb();
@@ -1047,9 +1039,9 @@ var require_either_81805472 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/toNum-eeb2e51e.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/toNum-eeb2e51e.js
 var require_toNum_eeb2e51e = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/toNum-eeb2e51e.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/toNum-eeb2e51e.js"(exports) {
     "use strict";
     var isNum2 = require_isNum_c7164b50();
     var toStr3 = require_toStr_8e499966();
@@ -1060,16 +1052,16 @@ var require_toNum_eeb2e51e = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/strToType-00c4481f.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/strToType-00c4481f.js
 var require_strToType_00c4481f = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/strToType-00c4481f.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/strToType-00c4481f.js"(exports) {
     "use strict";
-    var isStr6 = require_isStr_8a57710e();
+    var isStr7 = require_isStr_8a57710e();
     var isNum2 = require_isNum_c7164b50();
     var toNum = require_toNum_eeb2e51e();
     var toBool = require_toBool_deb350e4();
     var strToType = (val) => {
-      return !val || !isStr6.isStr(val) ? val : toBool.isStrBool(val) ? toBool.toBool(val) : isNum2.isNum(val) ? toNum.toNum(val) : (() => {
+      return !val || !isStr7.isStr(val) ? val : toBool.isStrBool(val) ? toBool.toBool(val) : isNum2.isNum(val) ? toNum.toNum(val) : (() => {
         try {
           return JSON.parse(val);
         } catch (e) {
@@ -1081,9 +1073,9 @@ var require_strToType_00c4481f = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/log-37bbfac6.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/log-37bbfac6.js
 var require_log_37bbfac6 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/log-37bbfac6.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/log-37bbfac6.js"(exports) {
     "use strict";
     var SHOW_LOGS;
     var METH_DEF = "dir";
@@ -1119,9 +1111,9 @@ var require_log_37bbfac6 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/pipeline-e65bdaae.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/pipeline-e65bdaae.js
 var require_pipeline_e65bdaae = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/pipeline-e65bdaae.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/pipeline-e65bdaae.js"(exports) {
     "use strict";
     var isArr7 = require_isArr_39234014();
     var isFunc4 = require_isFunc_f93803cb();
@@ -1144,9 +1136,9 @@ var require_pipeline_e65bdaae = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/stackTracePaths-58b768d2.js
-var require_stackTracePaths_58b768d2 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/stackTracePaths-58b768d2.js"(exports) {
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/stackTracePaths-a7780a09.js
+var require_stackTracePaths_a7780a09 = __commonJS({
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/stackTracePaths-a7780a09.js"(exports) {
     "use strict";
     var isFunc4 = require_isFunc_f93803cb();
     var validate = require_validate_23297ec2();
@@ -1154,7 +1146,8 @@ var require_stackTracePaths_58b768d2 = __commonJS({
     var jsonEqual = require_jsonEqual_7e69ef6a();
     var isArr7 = require_isArr_39234014();
     var deepClone = require_deepClone_ae664a21();
-    var isStr6 = require_isStr_8a57710e();
+    var noOps = require_noOps_b5f3c7e4();
+    var isStr7 = require_isStr_8a57710e();
     var isObj6 = require_isObj_6b3aa807();
     var isValidDate = require_isValidDate_813b9419();
     var checkCall3 = (method, ...params) => {
@@ -1286,8 +1279,8 @@ var require_stackTracePaths_58b768d2 = __commonJS({
         typeof cb === "function" && cb();
       };
     };
-    var limbo = (promise) => {
-      return !promise || !isFunc4.isFunc(promise.then) ? [new Error(`A promise or thenable is required as the first argument!`), null] : promise.then((data) => [null, data]).catch((err) => [err, void 0]);
+    var limbo = (promise, asObject = false) => {
+      return !promise || !isFunc4.isFunc(promise.then) ? [new Error(`A promise or thenable is required as the first argument!`), asObject ? noOps.emptyObj : void 0] : promise.then((data) => [null, data]).catch((err) => [err, asObject ? noOps.emptyObj : void 0]);
     };
     var limboify = (cb, ...args) => {
       return limbo(new Promise((res, rej) => cb(...args, (err, success) => err ? rej(err) : res(success || true))));
@@ -1296,7 +1289,7 @@ var require_stackTracePaths_58b768d2 = __commonJS({
     var noOp4 = () => {
     };
     var parseErrorMessage = (exception) => {
-      return isStr6.isStr(exception) && !isValidDate.isEmpty(exception) ? exception : isObj6.isObj(exception) ? exception.message : null;
+      return isStr7.isStr(exception) && !isValidDate.isEmpty(exception) ? exception : isObj6.isObj(exception) ? exception.message : null;
     };
     var defFilters = [`node:internal`, `node_modules/jest`];
     var stackTracePaths = (filter = defFilters) => {
@@ -1332,9 +1325,9 @@ var require_stackTracePaths_58b768d2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/mod-31dfe732.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/mod-31dfe732.js
 var require_mod_31dfe732 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/mod-31dfe732.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/mod-31dfe732.js"(exports) {
     "use strict";
     var isNum2 = require_isNum_c7164b50();
     var toNum = require_toNum_eeb2e51e();
@@ -1373,9 +1366,9 @@ var require_mod_31dfe732 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/reduceObj-f41cbf8d.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/reduceObj-f41cbf8d.js
 var require_reduceObj_f41cbf8d = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/reduceObj-f41cbf8d.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/reduceObj-f41cbf8d.js"(exports) {
     "use strict";
     var isFunc4 = require_isFunc_f93803cb();
     var isObj6 = require_isObj_6b3aa807();
@@ -1384,19 +1377,19 @@ var require_reduceObj_f41cbf8d = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/sanitize-0a18302d.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/sanitize-0a18302d.js
 var require_sanitize_0a18302d = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/sanitize-0a18302d.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/sanitize-0a18302d.js"(exports) {
     "use strict";
-    var isStr6 = require_isStr_8a57710e();
-    var sanitize2 = (str) => isStr6.isStr(str) && str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") || str;
+    var isStr7 = require_isStr_8a57710e();
+    var sanitize2 = (str) => isStr7.isStr(str) && str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") || str;
     exports.sanitize = sanitize2;
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/splitByKeys-d0160002.js
-var require_splitByKeys_d0160002 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/splitByKeys-d0160002.js"(exports) {
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/transformKeys-574f796c.js
+var require_transformKeys_574f796c = __commonJS({
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/transformKeys-574f796c.js"(exports) {
     "use strict";
     var log = require_log_37bbfac6();
     var isObj6 = require_isObj_6b3aa807();
@@ -1408,12 +1401,13 @@ var require_splitByKeys_d0160002 = __commonJS({
     var jsonEqual = require_jsonEqual_7e69ef6a();
     var reduceObj = require_reduceObj_f41cbf8d();
     var sanitize2 = require_sanitize_0a18302d();
-    var isStr6 = require_isStr_8a57710e();
+    var isStr7 = require_isStr_8a57710e();
     var strToType = require_strToType_00c4481f();
     var pipeline = require_pipeline_e65bdaae();
-    var exists9 = require_exists_c79204b1();
+    var exists10 = require_exists_c79204b1();
     var toStr3 = require_toStr_8e499966();
     var ensureArr3 = require_ensureArr_ae68c041();
+    var noOps = require_noOps_b5f3c7e4();
     var cloneJson = (obj) => {
       try {
         return JSON.parse(JSON.stringify(obj));
@@ -1501,7 +1495,7 @@ var require_splitByKeys_d0160002 = __commonJS({
     }, {}) || {};
     var sanitizeCopy = (obj) => JSON.parse(sanitize2.sanitize(JSON.stringify(obj)));
     var trimStringFields = (object) => Object.entries(object).reduce((cleaned, [key, value]) => {
-      cleaned[key] = isStr6.isStr(value) ? value.trim() : value;
+      cleaned[key] = isStr7.isStr(value) ? value.trim() : value;
       return cleaned;
     }, object);
     var toObj = (val, divider, split) => {
@@ -1510,7 +1504,7 @@ var require_splitByKeys_d0160002 = __commonJS({
           obj[key] = val[key];
           return obj;
         }, {});
-      if (!isStr6.isStr(val))
+      if (!isStr7.isStr(val))
         return {};
       divider = divider || "=";
       split = split || "&";
@@ -1521,7 +1515,7 @@ var require_splitByKeys_d0160002 = __commonJS({
       }, {});
     };
     var keyMap = (arr, toUpperCase) => isArr7.isArr(arr) && arr.reduce((obj, key) => {
-      if (!isStr6.isStr(key))
+      if (!isStr7.isStr(key))
         return obj;
       const use = toUpperCase && key.toUpperCase() || key;
       obj[use] = use;
@@ -1617,9 +1611,19 @@ var require_splitByKeys_d0160002 = __commonJS({
       const intersect = [{}, {}];
       const compareKeys = ensureArr3.ensureArr(keys);
       return isObj6.isObj(obj) ? reduceObj.reduceObj(obj, (key, _, updated) => {
-        exists9.exists(compareKeys.find((k) => exists9.exists(k) && toStr3.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
+        exists10.exists(compareKeys.find((k) => exists10.exists(k) && toStr3.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
         return updated;
       }, intersect) : intersect;
+    };
+    var transformKeys = (obj = noOps.emptyObj, keyMap2 = noOps.emptyObj, opts = noOps.emptyObj) => {
+      const {
+        strict = false
+      } = opts;
+      return Object.entries(obj).reduce((acc, [key, value]) => {
+        const ref = keyMap2[key] || (!strict ? key : void 0);
+        ref && (acc[ref] = value);
+        return acc;
+      }, {});
     };
     exports.applyToCloneOf = applyToCloneOf;
     exports.clearObj = clearObj;
@@ -1639,13 +1643,14 @@ var require_splitByKeys_d0160002 = __commonJS({
     exports.someEntry = someEntry;
     exports.splitByKeys = splitByKeys;
     exports.toObj = toObj;
+    exports.transformKeys = transformKeys;
     exports.trimStringFields = trimStringFields;
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/wait-8ca88995.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/wait-8ca88995.js
 var require_wait_8ca88995 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/wait-8ca88995.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/wait-8ca88995.js"(exports) {
     "use strict";
     var isObj6 = require_isObj_6b3aa807();
     var isFunc4 = require_isFunc_f93803cb();
@@ -1701,21 +1706,21 @@ var require_wait_8ca88995 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/joinRegex-431148e2.js
-var require_joinRegex_431148e2 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/joinRegex-431148e2.js"(exports) {
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/joinRegex-5320d139.js
+var require_joinRegex_5320d139 = __commonJS({
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/joinRegex-5320d139.js"(exports) {
     "use strict";
-    var isStr6 = require_isStr_8a57710e();
+    var isStr7 = require_isStr_8a57710e();
     var isArr7 = require_isArr_39234014();
     require_validate_23297ec2();
-    require_noOps_c9732e8e();
+    require_noOps_b5f3c7e4();
     var not = require_not_16fa9c85();
-    var getRegexSource = (maybeRx) => not.isRegex(maybeRx) ? maybeRx.source : isStr6.isStr(maybeRx) ? maybeRx : null;
+    var getRegexSource = (maybeRx) => not.isRegex(maybeRx) ? maybeRx.source : isStr7.isStr(maybeRx) ? maybeRx : null;
     var parseArgs = (args) => {
       if (isArr7.isArr(args[0]))
         return [args[0], args[1]];
       const last = args[args.length - 1];
-      const options = isStr6.isStr(last) ? last : void 0;
+      const options = isStr7.isStr(last) ? last : void 0;
       const expressions = options ? args.splice(0, args.length - 1) : args;
       return [expressions, options];
     };
@@ -1732,11 +1737,11 @@ var require_joinRegex_431148e2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/getWordEndingAt-63d038a5.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/getWordEndingAt-63d038a5.js
 var require_getWordEndingAt_63d038a5 = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/getWordEndingAt-63d038a5.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/getWordEndingAt-63d038a5.js"(exports) {
     "use strict";
-    var isStr6 = require_isStr_8a57710e();
+    var isStr7 = require_isStr_8a57710e();
     var isFunc4 = require_isFunc_f93803cb();
     var isQuoted2 = require_isQuoted_eb6994da();
     var toStr$1 = require_toStr_8e499966();
@@ -1752,7 +1757,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return built.replace(/([^:\/]|^)\/{2,}/g, "$1/");
     };
     var mapString = (str, charMapper) => {
-      if (!isStr6.isStr(str))
+      if (!isStr7.isStr(str))
         return str;
       if (!isFunc4.isFunc(charMapper))
         return str;
@@ -1763,7 +1768,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return result;
     };
     var delimitString = (str, delimiter, delimiters = ["-", "_", " "]) => {
-      if (!isStr6.isStr(str))
+      if (!isStr7.isStr(str))
         return str;
       const isDelimiter = (c) => delimiters.some((del) => del === c);
       let prevChar = "_";
@@ -1785,7 +1790,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return underscored.toLowerCase();
     };
     var capitalize7 = (str, lowercaseTail = true) => {
-      if (!isStr6.isStr(str) || !str[0])
+      if (!isStr7.isStr(str) || !str[0])
         return str;
       const tail = lowercaseTail ? str.slice(1).toLowerCase() : str.slice(1);
       return `${str[0].toUpperCase()}${tail}`;
@@ -1811,11 +1816,11 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return camelCasedSplit.length > 1 ? camelCasedSplit.join("") : path;
     };
     var containsStr = (str, substring, fromIndex2) => {
-      str = !isStr6.isStr(str) && toStr$1.toStr(str) || str;
-      substring = !isStr6.isStr(substring) && toStr$1.toStr(substring) || substring;
+      str = !isStr7.isStr(str) && toStr$1.toStr(str) || str;
+      substring = !isStr7.isStr(substring) && toStr$1.toStr(substring) || substring;
       return str.indexOf(substring, fromIndex2) !== -1;
     };
-    var eitherStr = (str1, str2) => isStr6.isStr(str1) && str1 || str2;
+    var eitherStr = (str1, str2) => isStr7.isStr(str1) && str1 || str2;
     var uppercasePattern = /[A-Z]/g;
     var msPattern = /^ms-/;
     var hyphenCache = {};
@@ -1827,7 +1832,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return hyphenCache[rule] = msPattern.test(hRule) ? "-" + hRule : hRule;
     };
     var hashString2 = (str, maxLength) => {
-      if (!isStr6.isStr(str) || str.length == 0)
+      if (!isStr7.isStr(str) || str.length == 0)
         return 0;
       str = str.split("").reverse().join("");
       let hash = 0;
@@ -1857,14 +1862,14 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return str[str.length - 1] === "s" ? str.slice(0, str.length - 1) : str;
     };
     var styleCase = (str) => {
-      if (!isStr6.isStr(str))
+      if (!isStr7.isStr(str))
         return str;
       const cased = camelCase(str);
       return `${cased[0].toLowerCase()}${cased.slice(1)}`;
     };
-    var trainCase = (str) => isStr6.isStr(str) && str.split(/(?=[A-Z])|[\s_-]/gm).join("-").toLowerCase() || str;
+    var trainCase = (str) => isStr7.isStr(str) && str.split(/(?=[A-Z])|[\s_-]/gm).join("-").toLowerCase() || str;
     var wordCaps = (str) => {
-      if (!isStr6.isStr(str))
+      if (!isStr7.isStr(str))
         return str;
       let cleaned = cleanStr(str);
       return cleaned.split(" ").map((word) => word && capitalize7(word) || "").join(" ");
@@ -1872,8 +1877,8 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
     var spaceJoin = (original, toAdd) => {
       toAdd = isArr7.isArr(toAdd) ? toAdd : [toAdd];
       return toAdd.reduce((joined, item) => {
-        return isStr6.isStr(item) ? `${joined ? joined + " " : ""}${item}`.trim() : joined;
-      }, isStr6.isStr(original) ? original : "");
+        return isStr7.isStr(item) ? `${joined ? joined + " " : ""}${item}`.trim() : joined;
+      }, isStr7.isStr(original) ? original : "");
     };
     var templateRx = (tempStr, data, fallback = "", rx) => {
       const orgRx = template.regex;
@@ -1885,7 +1890,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
     var template = (tempStr, data, fallback = "") => {
       data = isColl.isColl(data) && data || {};
       const regex = template.regex || /\${(.*?)\}/g;
-      return isStr6.isStr(tempStr) ? tempStr.replace(regex, (match, exact) => {
+      return isStr7.isStr(tempStr) ? tempStr.replace(regex, (match, exact) => {
         const path = (exact || match.substr(2, match.length - 3)).trim();
         const replaceWith = get4.get(data, path, fallback);
         return isFunc4.isFunc(replaceWith) ? replaceWith(data, path, fallback) : replaceWith;
@@ -1900,7 +1905,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return regex.test(fileName) || windowsRegex.test(fileName) || periodRegex.test(fileName) ? false : true;
     };
     var reverseStr = (str) => {
-      if (!isStr6.isStr(str))
+      if (!isStr7.isStr(str))
         return void 0;
       let reversed = "";
       for (let char of str) {
@@ -1951,12 +1956,12 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/getURLParam-201ef5fe.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/getURLParam-201ef5fe.js
 var require_getURLParam_201ef5fe = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/getURLParam-201ef5fe.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/getURLParam-201ef5fe.js"(exports) {
     "use strict";
     var reduceObj = require_reduceObj_f41cbf8d();
-    var isStr6 = require_isStr_8a57710e();
+    var isStr7 = require_isStr_8a57710e();
     var isNum2 = require_isNum_c7164b50();
     var isBool2 = require_isBool_aa6af74e();
     var isColl = require_isColl_5757310a();
@@ -1992,7 +1997,7 @@ var require_getURLParam_201ef5fe = __commonJS({
       return reduceObj.reduceObj(obj, (key, value, urlStr) => {
         if (!value)
           return urlStr;
-        const useVal = isStr6.isStr(value) || isNum2.isNum(value) || isBool2.isBool(value) ? value : isColl.isColl(value) ? isArr7.isArr(value) ? value.join(",") : JSON.stringify(value) : null;
+        const useVal = isStr7.isStr(value) || isNum2.isNum(value) || isBool2.isBool(value) ? value : isColl.isColl(value) ? isArr7.isArr(value) ? value.join(",") : JSON.stringify(value) : null;
         if (!useVal)
           return urlStr;
         urlStr = !firstSet ? `?${encodeURIComponent(key)}=${encodeURIComponent(useVal)}` : `${urlStr}&${encodeURIComponent(key)}=${encodeURIComponent(useVal)}`;
@@ -2005,13 +2010,13 @@ var require_getURLParam_201ef5fe = __commonJS({
       const [valid] = validate.validate({
         paramKey
       }, {
-        paramKey: isStr6.isStr
+        paramKey: isStr7.isStr
       });
       if (!valid)
         return null;
       const doc = typeof document !== "undefined" ? document : null;
       const search = doc === null || doc === void 0 ? void 0 : (_doc$location = doc.location) === null || _doc$location === void 0 ? void 0 : _doc$location.search;
-      return isStr6.isStr(search) ? (_queryToObj$paramKey = (_queryToObj = queryToObj(search)) === null || _queryToObj === void 0 ? void 0 : _queryToObj[paramKey]) !== null && _queryToObj$paramKey !== void 0 ? _queryToObj$paramKey : null : null;
+      return isStr7.isStr(search) ? (_queryToObj$paramKey = (_queryToObj = queryToObj(search)) === null || _queryToObj === void 0 ? void 0 : _queryToObj[paramKey]) !== null && _queryToObj$paramKey !== void 0 ? _queryToObj$paramKey : null : null;
     };
     exports.getURLParam = getURLParam;
     exports.objToQuery = objToQuery;
@@ -2019,12 +2024,12 @@ var require_getURLParam_201ef5fe = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/index.js
+// node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/index.js
 var require_cjs = __commonJS({
-  "node_modules/.pnpm/@keg-hub+jsutils@9.5.2/node_modules/@keg-hub/jsutils/build/cjs/index.js"(exports) {
+  "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var intersect = require_intersect_77d7e821();
+    var intersect = require_intersect_6fe7b944();
     var ensureArr3 = require_ensureArr_ae68c041();
     var isArr7 = require_isArr_39234014();
     var isBool2 = require_isBool_aa6af74e();
@@ -2038,13 +2043,13 @@ var require_cjs = __commonJS({
     var deepClone = require_deepClone_ae664a21();
     var not = require_not_16fa9c85();
     var either = require_either_81805472();
-    var noOps = require_noOps_c9732e8e();
+    var noOps = require_noOps_b5f3c7e4();
     var isValidDate = require_isValidDate_813b9419();
     var strToType = require_strToType_00c4481f();
-    var exists9 = require_exists_c79204b1();
+    var exists10 = require_exists_c79204b1();
     var log = require_log_37bbfac6();
     var pipeline = require_pipeline_e65bdaae();
-    var stackTracePaths = require_stackTracePaths_58b768d2();
+    var stackTracePaths = require_stackTracePaths_a7780a09();
     var compareTo = require_compareTo_d69e4abf();
     var isFunc4 = require_isFunc_f93803cb();
     var isNonNegative = require_isNonNegative_9959647c();
@@ -2052,16 +2057,15 @@ var require_cjs = __commonJS({
     var isNum2 = require_isNum_c7164b50();
     var toNum = require_toNum_eeb2e51e();
     var mod = require_mod_31dfe732();
-    var splitByKeys = require_splitByKeys_d0160002();
-    var deepFreeze2 = require_deepFreeze_d73ccc57();
+    var transformKeys = require_transformKeys_574f796c();
     var jsonEqual = require_jsonEqual_7e69ef6a();
     var isObj6 = require_isObj_6b3aa807();
     var reduceObj = require_reduceObj_f41cbf8d();
     var wait = require_wait_8ca88995();
-    var joinRegex4 = require_joinRegex_431148e2();
+    var joinRegex4 = require_joinRegex_5320d139();
     var getWordEndingAt2 = require_getWordEndingAt_63d038a5();
     var isQuoted2 = require_isQuoted_eb6994da();
-    var isStr6 = require_isStr_8a57710e();
+    var isStr7 = require_isStr_8a57710e();
     var sanitize2 = require_sanitize_0a18302d();
     var toStr3 = require_toStr_8e499966();
     var validate = require_validate_23297ec2();
@@ -2123,6 +2127,7 @@ var require_cjs = __commonJS({
     exports.match = not.match;
     exports.not = not.not;
     exports.either = either.either;
+    exports.deepFreeze = noOps.deepFreeze;
     exports.emptyArr = noOps.emptyArr;
     exports.emptyObj = noOps.emptyObj;
     exports.noOpArr = noOps.noOpArr;
@@ -2134,7 +2139,7 @@ var require_cjs = __commonJS({
     exports.isValidDate = isValidDate.isValidDate;
     exports.typeOf = isValidDate.typeOf;
     exports.strToType = strToType.strToType;
-    exports.exists = exists9.exists;
+    exports.exists = exists10.exists;
     exports.logData = log.logData;
     exports.resetLogs = log.resetLogs;
     exports.setLogs = log.setLogs;
@@ -2173,26 +2178,26 @@ var require_cjs = __commonJS({
     exports.nth = mod.nth;
     exports.toFloat = mod.toFloat;
     exports.toInt = mod.toInt;
-    exports.applyToCloneOf = splitByKeys.applyToCloneOf;
-    exports.clearObj = splitByKeys.clearObj;
-    exports.cloneJson = splitByKeys.cloneJson;
-    exports.deepMerge = splitByKeys.deepMerge;
-    exports.eitherObj = splitByKeys.eitherObj;
-    exports.everyEntry = splitByKeys.everyEntry;
-    exports.filterObj = splitByKeys.filterObj;
-    exports.hashObj = splitByKeys.hashObj;
-    exports.keyMap = splitByKeys.keyMap;
-    exports.mapEntries = splitByKeys.mapEntries;
-    exports.mapKeys = splitByKeys.mapKeys;
-    exports.mapObj = splitByKeys.mapObj;
-    exports.omitKeys = splitByKeys.omitKeys;
-    exports.pickKeys = splitByKeys.pickKeys;
-    exports.sanitizeCopy = splitByKeys.sanitizeCopy;
-    exports.someEntry = splitByKeys.someEntry;
-    exports.splitByKeys = splitByKeys.splitByKeys;
-    exports.toObj = splitByKeys.toObj;
-    exports.trimStringFields = splitByKeys.trimStringFields;
-    exports.deepFreeze = deepFreeze2.deepFreeze;
+    exports.applyToCloneOf = transformKeys.applyToCloneOf;
+    exports.clearObj = transformKeys.clearObj;
+    exports.cloneJson = transformKeys.cloneJson;
+    exports.deepMerge = transformKeys.deepMerge;
+    exports.eitherObj = transformKeys.eitherObj;
+    exports.everyEntry = transformKeys.everyEntry;
+    exports.filterObj = transformKeys.filterObj;
+    exports.hashObj = transformKeys.hashObj;
+    exports.keyMap = transformKeys.keyMap;
+    exports.mapEntries = transformKeys.mapEntries;
+    exports.mapKeys = transformKeys.mapKeys;
+    exports.mapObj = transformKeys.mapObj;
+    exports.omitKeys = transformKeys.omitKeys;
+    exports.pickKeys = transformKeys.pickKeys;
+    exports.sanitizeCopy = transformKeys.sanitizeCopy;
+    exports.someEntry = transformKeys.someEntry;
+    exports.splitByKeys = transformKeys.splitByKeys;
+    exports.toObj = transformKeys.toObj;
+    exports.transformKeys = transformKeys.transformKeys;
+    exports.trimStringFields = transformKeys.trimStringFields;
     exports.hasOwn = jsonEqual.hasOwn;
     exports.isArrMap = jsonEqual.isArrMap;
     exports.isEntry = jsonEqual.isEntry;
@@ -2241,7 +2246,7 @@ var require_cjs = __commonJS({
     exports.isUpperCase = isQuoted2.isUpperCase;
     exports.isUrl = isQuoted2.isUrl;
     exports.isUuid = isQuoted2.isUuid;
-    exports.isStr = isStr6.isStr;
+    exports.isStr = isStr7.isStr;
     exports.sanitize = sanitize2.sanitize;
     exports.toStr = toStr3.toStr;
     exports.validate = validate.validate;
@@ -3073,7 +3078,7 @@ var Steps = class {
     );
     if (!found.match || !found.definition)
       return false;
-    const extObj = { world: this._world };
+    const extObj = { step, world: this._world };
     (step == null ? void 0 : step.doc) && (extObj.doc = step == null ? void 0 : step.doc);
     (step == null ? void 0 : step.table) && (extObj.table = step == null ? void 0 : step.table);
     options && (extObj.options = options);
@@ -3179,6 +3184,17 @@ var Hooks = class {
   };
 };
 
+// src/utils/hasTag.ts
+var import_jsutils15 = __toESM(require_cjs());
+var parseTags = (tags) => {
+  return (0, import_jsutils15.isStr)(tags) ? tags.match(/[@]\w*/g) : (0, import_jsutils15.isArr)(tags) ? tags : import_jsutils15.emptyArr;
+};
+var hasTag = (itemTags = import_jsutils15.emptyArr, compareTags = import_jsutils15.emptyArr) => {
+  const iTags = (0, import_jsutils15.isStr)(itemTags) ? parseTags(itemTags) : (0, import_jsutils15.eitherArr)(itemTags, []);
+  const cTags = (0, import_jsutils15.isStr)(compareTags) ? parseTags(compareTags) : (0, import_jsutils15.eitherArr)(compareTags, []);
+  return Boolean(cTags.find((cTag) => itemTags.includes(cTag)));
+};
+
 // src/parse/idFromLoc.ts
 var idFromLoc = (props) => {
   const {
@@ -3207,7 +3223,7 @@ var RegStepItems = [
   { regex: RX_THEN, type: "then" /* then */ },
   { regex: RX_AND, type: "and" /* and */ },
   { regex: RX_BUT, type: "but" /* but */ },
-  { regex: RX_ASTERISK, type: "*" /* * */ }
+  { regex: RX_ASTERISK, type: EStepType[`*`] }
 ];
 var checkDataTable = (step, lines, line, index) => {
   if (!RX_DATA_TABLE.test(line))
@@ -3277,19 +3293,20 @@ var parseStep = (parent, lines, line, index) => {
   return RegStepItems.reduce((added, regItems) => {
     if (added)
       return added;
-    const hasItem = regItems.regex.test(line);
-    hasItem && stepParent.steps.push(
-      stepFactory(
-        parent,
-        regItems.type,
-        getRXMatch(line, regItems.regex, 1),
-        lines,
-        line,
-        index
-      )
+    const hasStep = regItems.regex.test(line);
+    if (!hasStep)
+      return added;
+    const step = stepFactory(
+      parent,
+      regItems.type,
+      getRXMatch(line, regItems.regex, 1),
+      lines,
+      line,
+      index
     );
-    return hasItem;
-  }, false);
+    stepParent.steps.push(step);
+    return step;
+  }, void 0);
 };
 
 // src/parse/checkTags.ts
@@ -3320,7 +3337,7 @@ var checkTags = (line, index) => {
 };
 
 // src/parse/parseFeature.ts
-var import_jsutils18 = __toESM(require_cjs());
+var import_jsutils19 = __toESM(require_cjs());
 
 // src/parse/setActiveParent.ts
 var RX_FEATURE = /^\s*Feature:(.*)$/;
@@ -3416,7 +3433,7 @@ var ensureFeature = (featuresGroup, feature, line, content, index) => {
 };
 
 // src/parse/ensureScenario.ts
-var import_jsutils15 = __toESM(require_cjs());
+var import_jsutils16 = __toESM(require_cjs());
 var RX_SCENARIO2 = /^\s*Scenario:(.*)$/;
 var RX_EXAMPLE2 = /^\s*Example:(.*)$/;
 var scenarioFactory = (scenario, parent, index) => {
@@ -3438,7 +3455,7 @@ var ensureScenario = (feature, rule, scenario, line, index) => {
   if (!hasScenario && !hasExample)
     return scenario;
   const scenarioText = hasScenario ? getRXMatch(line, RX_SCENARIO2, 1) : getRXMatch(line, RX_EXAMPLE2, 1);
-  !(0, import_jsutils15.exists)(scenario.scenario) ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText, void 0, index);
+  !(0, import_jsutils16.exists)(scenario.scenario) ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText, void 0, index);
   !scenario.index && (scenario.index = index);
   scenario.whitespace = getStartWhiteSpace(line);
   if (!hasScenario)
@@ -3454,7 +3471,7 @@ var ensureScenario = (feature, rule, scenario, line, index) => {
 };
 
 // src/parse/ensureBackground.ts
-var import_jsutils16 = __toESM(require_cjs());
+var import_jsutils17 = __toESM(require_cjs());
 var RX_BACKGROUND2 = /^\s*Background:(.*)$/;
 var backgroundFactory = (background, parent, index) => {
   const type = "background" /* background */;
@@ -3471,8 +3488,8 @@ var ensureBackground = (feature, rule, background, line, index) => {
     return background;
   const existingBgText = getRXMatch(line, RX_BACKGROUND2, 1);
   const parent = (rule == null ? void 0 : rule.uuid) ? rule : feature;
-  const backgroundText = (0, import_jsutils16.isStr)(existingBgText) ? existingBgText.trim() : "";
-  (0, import_jsutils16.isBool)(background.background) ? background.background = backgroundText : background = backgroundFactory(backgroundText, parent, index);
+  const backgroundText = (0, import_jsutils17.isStr)(existingBgText) ? existingBgText.trim() : "";
+  (0, import_jsutils17.isBool)(background.background) ? background.background = backgroundText : background = backgroundFactory(backgroundText, parent, index);
   !background.index && (background.index = index);
   !background.uuid && (background.uuid = idFromLoc({
     parent,
@@ -3485,7 +3502,7 @@ var ensureBackground = (feature, rule, background, line, index) => {
 };
 
 // src/parse/ensureMeta.ts
-var import_jsutils17 = __toESM(require_cjs());
+var import_jsutils18 = __toESM(require_cjs());
 var RX_AS = /^\s*As (.*)$/;
 var RX_COMMENT = /^\s*#(.*)$/;
 var RX_I_WANT = /^\s*I want (.*)$/;
@@ -3500,7 +3517,7 @@ var featureMetaItems = [
 var addReason = (feature, reason, line, index) => {
   if (!reason)
     return;
-  const reasonArr = (0, import_jsutils17.eitherArr)(feature.reason, [feature.reason]);
+  const reasonArr = (0, import_jsutils18.eitherArr)(feature.reason, [feature.reason]);
   reasonArr.push({
     index,
     content: reason,
@@ -3577,10 +3594,10 @@ var featureEmptyLine = (feature, line, index) => {
 var RX_NEWLINE = /\r?\n/g;
 var defWorld = { $alias: {} };
 var resolveArgs = (pWorld, world, options) => {
-  const isOpts = !options && !(world == null ? void 0 : world.$alias) && (0, import_jsutils18.exists)(world == null ? void 0 : world.worldReplace);
+  const isOpts = !options && !(world == null ? void 0 : world.$alias) && (0, import_jsutils19.exists)(world == null ? void 0 : world.worldReplace);
   return {
     worldCfg: isOpts ? pWorld : world,
-    opts: isOpts ? world : options || import_jsutils18.emptyObj
+    opts: isOpts ? world : options || import_jsutils19.emptyObj
   };
 };
 var parseFeature = function(text, world, options) {
@@ -3612,8 +3629,16 @@ var parseFeature = function(text, world, options) {
     rule = ensureRule(feature, rule, line, index);
     scenario = ensureScenario(feature, rule, scenario, line, index);
     background = ensureBackground(feature, rule, background, line, index);
-    if (`steps` in activeParent && parseStep(activeParent, lines, line, index))
-      return featuresGroup;
+    if (`steps` in activeParent) {
+      const step = parseStep(activeParent, lines, line, index);
+      if (step) {
+        if (tagCache) {
+          step.tags = tagCache;
+          tagCache = void 0;
+        }
+        return featuresGroup;
+      }
+    }
     activeParent = setActiveParent(
       activeParent,
       feature,
@@ -3623,8 +3648,7 @@ var parseFeature = function(text, world, options) {
       line
     );
     if (tagCache) {
-      const tagParent = activeParent.type === "background" /* background */ ? feature : activeParent;
-      tagParent.tags = tagCache;
+      activeParent.tags = tagCache;
       tagCache = void 0;
     } else
       tagCache = checkTags(line, index);
@@ -3638,21 +3662,9 @@ var parseDefinition = function(text) {
   return registered;
 };
 
-// src/utils/promiseTimeout.ts
-var PromiseTimeout = async (promise, timeout = 5e3, name) => {
-  const method = name ? `${name} method` : `method`;
-  let timer;
-  const timePromise = new Promise((res, rej) => {
-    timer = setTimeout(() => rej(`The ${method} timed out after ${timeout} ms.`), timeout);
-  });
-  return await Promise.race([promise, timePromise]).finally(() => clearTimeout(timer));
-};
-
 // src/utils/filterFeatures.ts
-var import_jsutils19 = __toESM(require_cjs());
-var parseFeatureTags = (tags) => {
-  return (0, import_jsutils19.isStr)(tags) ? tags.match(/[@]\w*/g) : (0, import_jsutils19.isArr)(tags) ? tags : import_jsutils19.emptyArr;
-};
+var import_jsutils20 = __toESM(require_cjs());
+var emptyOpts = { tags: {}, steps: {} };
 var filterMatch = ({
   name,
   tags,
@@ -3666,19 +3678,18 @@ var filterMatch = ({
   const tagMatch = !filterTags.length || tags.length && filterTags.every((clientTag) => tags.includes(clientTag));
   return nameMatch && tagMatch;
 };
-var getFilterOpts = (filterOptions = import_jsutils19.emptyObj) => {
-  const {
-    name,
-    tags: filterTags
-  } = filterOptions;
-  const tags = (0, import_jsutils19.isStr)(filterTags) ? parseFeatureTags(filterTags) : (0, import_jsutils19.eitherArr)(filterTags, []);
+var getFilterOpts = (opts = emptyOpts) => {
+  var _a;
+  const { name } = opts;
+  const filterTags = (_a = opts.tags) == null ? void 0 : _a.filter;
+  const tags = (0, import_jsutils20.isStr)(filterTags) ? parseTags(filterTags) : (0, import_jsutils20.eitherArr)(filterTags, []);
   return { name, tags };
 };
 var filterChild = ({
   options,
   nameKey,
   children,
-  tags = import_jsutils19.emptyArr
+  tags = import_jsutils20.emptyArr
 }) => {
   return children.filter(
     (child) => {
@@ -3686,18 +3697,18 @@ var filterChild = ({
       return filterMatch({
         options,
         name: child[nameKey],
-        tags: [...((_a = child == null ? void 0 : child.tags) == null ? void 0 : _a.tokens) || import_jsutils19.emptyArr, ...tags]
+        tags: [...((_a = child == null ? void 0 : child.tags) == null ? void 0 : _a.tokens) || import_jsutils20.emptyArr, ...tags]
       });
     }
   );
 };
-var filterFeatures = (features, filterOptions = import_jsutils19.emptyObj) => {
+var filterFeatures = (features, filterOptions = emptyOpts) => {
   var _a;
   const options = getFilterOpts(filterOptions);
   if (!((_a = options == null ? void 0 : options.tags) == null ? void 0 : _a.length) && !(options == null ? void 0 : options.name))
     return features;
   return features.reduce((filtered, feature) => {
-    var _a2, _b, _c;
+    var _a2, _b, _c, _d;
     const isMatchingFeature = filterMatch({
       options,
       name: feature.feature,
@@ -3707,23 +3718,31 @@ var filterFeatures = (features, filterOptions = import_jsutils19.emptyObj) => {
       filtered.push(feature);
       return filtered;
     }
-    const { rules, scenarios, ...rest } = feature;
+    const { rules, scenarios, background, ...rest } = feature;
     const copy = { ...rest, rules: [], scenarios: [] };
+    const matchingBackground = (0, import_jsutils20.exists)(background) && filterChild({
+      options,
+      nameKey: `background`,
+      children: [background],
+      tags: (_b = feature == null ? void 0 : feature.tags) == null ? void 0 : _b.tokens
+    });
     const matchingRules = filterChild({
       options,
       nameKey: `rule`,
       children: rules,
-      tags: (_b = feature == null ? void 0 : feature.tags) == null ? void 0 : _b.tokens
+      tags: (_c = feature == null ? void 0 : feature.tags) == null ? void 0 : _c.tokens
     });
     const matchingScenarios = filterChild({
       options,
       nameKey: `scenario`,
       children: scenarios,
-      tags: (_c = feature == null ? void 0 : feature.tags) == null ? void 0 : _c.tokens
+      tags: (_d = feature == null ? void 0 : feature.tags) == null ? void 0 : _d.tokens
     });
+    const hasBackgroundMatch = Boolean(matchingBackground.length);
     const hasRuleMatch = Boolean(matchingRules.length);
     const hasScenarioMatch = Boolean(matchingScenarios.length);
-    if (hasRuleMatch || hasScenarioMatch) {
+    if (hasBackgroundMatch || hasRuleMatch || hasScenarioMatch) {
+      hasBackgroundMatch && (copy.background = matchingBackground[0]);
       hasRuleMatch && (copy.rules = matchingRules);
       hasScenarioMatch && (copy.scenarios = matchingScenarios);
       filtered.push(copy);
@@ -3733,11 +3752,11 @@ var filterFeatures = (features, filterOptions = import_jsutils19.emptyObj) => {
 };
 
 // src/utils/testMethods.ts
-var import_jsutils20 = __toESM(require_cjs());
+var import_jsutils21 = __toESM(require_cjs());
 var { SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV } = constants;
 var logResultToTerminal = (result) => {
   const timestamp = (/* @__PURE__ */ new Date()).getTime();
-  (0, import_jsutils20.get)(process, `env.${LOG_JEST_SPEC_ENV}`) && process.stdout.write(
+  (0, import_jsutils21.get)(process, `env.${LOG_JEST_SPEC_ENV}`) && process.stdout.write(
     [
       SPEC_RESULT_LOG,
       JSON.stringify({ ...result, timestamp }),
@@ -3746,7 +3765,7 @@ var logResultToTerminal = (result) => {
   );
 };
 var getSuiteData = (suite) => {
-  const description = (0, import_jsutils20.get)(suite, `description`);
+  const description = (0, import_jsutils21.get)(suite, `description`);
   const type = !description ? `Feature` : description.startsWith(`Scenario >`) ? `Scenario` : description.startsWith(`Background >`) ? `Background` : description.startsWith(`Rule >`) ? `Rule` : `Feature`;
   return {
     type: type.toLowerCase(),
@@ -3757,7 +3776,7 @@ var getSuiteData = (suite) => {
   };
 };
 var getTestMethod = (type, testMode) => {
-  return testMode ? import_jsutils20.noOp : globalThis[type] || testMethodFill(type);
+  return testMode ? import_jsutils21.noOp : globalThis[type] || testMethodFill(type);
 };
 var buildReporter = (jasmineEnv) => {
   const suites = [];
@@ -3813,52 +3832,68 @@ var skipTestsOnFail = (testMode) => {
 };
 
 // src/runner.ts
-var import_jsutils21 = __toESM(require_cjs());
+var import_jsutils22 = __toESM(require_cjs());
+var emptyOpts2 = { tags: {}, steps: {} };
+var getStepOpts = (step, options = emptyOpts2) => {
+  var _a, _b;
+  const shared = (_a = options == null ? void 0 : options.steps) == null ? void 0 : _a.shared;
+  const single = (_b = options == null ? void 0 : options.steps) == null ? void 0 : _b[step == null ? void 0 : step.uuid];
+  return {
+    ...shared,
+    ...single,
+    timeout: (single == null ? void 0 : single.timeout) || (shared == null ? void 0 : shared.timeout) || (options == null ? void 0 : options.timeout) || 3e4
+  };
+};
 var buildTitle = (text, type) => {
-  return `${(0, import_jsutils21.capitalize)(type)} > ${text}`;
+  return `${(0, import_jsutils22.capitalize)(type)} > ${text}`;
 };
 var resolveFeatures = (data, $world) => {
-  return (0, import_jsutils21.isStr)(data) ? parseFeature(data, $world) : (0, import_jsutils21.isObj)(data) ? [data] : (0, import_jsutils21.isArr)(data) ? data.reduce(
+  return (0, import_jsutils22.isStr)(data) ? parseFeature(data, $world) : (0, import_jsutils22.isObj)(data) ? [data] : (0, import_jsutils22.isArr)(data) ? data.reduce(
     (features, feature) => features.concat(resolveFeatures(feature, $world)),
     []
   ) : throwMissingFeatureText();
 };
-var runStep = async (stepsInstance, step, options, testMode) => {
+var runStep = async (stepsInstance, step, options = emptyOpts2, testMode) => {
+  var _a;
   const test = getTestMethod("test" /* test */, testMode);
+  const opts = getStepOpts(step, options);
+  const disabled = hasTag((_a = step == null ? void 0 : step.tags) == null ? void 0 : _a.tokens, options.tags.disabled);
   const testMethod = async () => {
-    var _a;
-    const stepOpts = (_a = options == null ? void 0 : options.testOptions) == null ? void 0 : _a[step == null ? void 0 : step.uuid];
-    const stepTimeout = (stepOpts == null ? void 0 : stepOpts.timeout) || (options == null ? void 0 : options.timeout);
-    const resolved = stepsInstance.resolve(
+    if (disabled)
+      return;
+    return await stepsInstance.resolve(
       step.step,
       step,
-      stepOpts
+      opts
     );
-    return stepTimeout ? PromiseTimeout(resolved, stepTimeout, `Step`) : resolved;
   };
-  testMethod.ParkinMetaData = (0, import_jsutils21.pickKeys)(
-    step,
-    [`uuid`, `step`, `index`, `type`, `definition`]
-  );
-  test(`${(0, import_jsutils21.capitalize)(step.type)} ${step.step}`, testMethod);
+  testMethod.ParkinMetaData = {
+    disabled,
+    ...(0, import_jsutils22.pickKeys)(step, [`uuid`, `step`, `index`, `tags`, `type`, `definition`])
+  };
+  test(`${(0, import_jsutils22.capitalize)(step.type)} ${step.step}`, testMethod, opts.timeout);
 };
-var loopSteps = (parent, title, stepsInstance, options, testMode) => {
+var loopSteps = (parent, title, stepsInstance, options = emptyOpts2, testMode) => {
+  var _a;
   const describe2 = getTestMethod("describe" /* describe */, testMode);
+  const disabled = hasTag((_a = parent == null ? void 0 : parent.tags) == null ? void 0 : _a.tokens, options.tags.disabled);
   let responses = [];
   const describeMethod = () => {
+    if (disabled)
+      return;
     const responses2 = parent.steps.map(
       (step) => runStep(stepsInstance, step, options, testMode)
     );
     Promise.all(responses2);
   };
-  describeMethod.ParkinMetaData = (0, import_jsutils21.pickKeys)(
-    parent,
-    [`index`, `uuid`, `tags`, `type`, `background`, `scenario`]
-  );
+  describeMethod.ParkinMetaData = {
+    disabled,
+    ...(0, import_jsutils22.pickKeys)(parent, [`index`, `uuid`, `tags`, `type`, `background`, `scenario`])
+  };
   describe2(title, describeMethod);
   return responses;
 };
-var runScenario = (stepsInstance, scenario, background, options, testMode) => {
+var runScenario = (stepsInstance, scenario, background, options = emptyOpts2, testMode) => {
   const responses = [];
   background && responses.push(
     ...runBackground(stepsInstance, scenario.scenario, background, options, testMode)
@@ -3873,7 +3908,7 @@ var runScenario = (stepsInstance, scenario, background, options, testMode) => {
     )
   );
 };
-var runBackground = (stepsInstance, title, background, options, testMode) => {
+var runBackground = (stepsInstance, title, background, options = emptyOpts2, testMode) => {
   return loopSteps(
     background,
     buildTitle(title, `Background`),
@@ -3882,9 +3917,13 @@ var runBackground = (stepsInstance, title, background, options, testMode) => {
     testMode
   );
 };
-var runRule = (stepsInstance, rule, background, options, testMode) => {
+var runRule = (stepsInstance, rule, background, options = emptyOpts2, testMode) => {
+  var _a;
   let responses = [];
+  const disabled = hasTag((_a = rule == null ? void 0 : rule.tags) == null ? void 0 : _a.tokens, options.tags.disabled);
   const describeMethod = () => {
+    if (disabled)
+      return;
     background && responses.push(
       ...responses.concat(
         runBackground(stepsInstance, rule.rule, background, options, testMode)
@@ -3897,10 +3936,13 @@ var runRule = (stepsInstance, rule, background, options, testMode) => {
     );
     Promise.all(responses);
   };
-  describeMethod.ParkinMetaData = (0, import_jsutils21.pickKeys)(
-    rule,
-    [`index`, `uuid`, `tags`, `type`, `rule`]
-  );
+  describeMethod.ParkinMetaData = {
+    disabled,
+    ...(0, import_jsutils22.pickKeys)(
+      rule,
+      [`index`, `uuid`, `tags`, `type`, `rule`]
+    )
+  };
   describe(`Rule > ${rule.rule}`, describeMethod);
   return responses;
 };
@@ -3920,7 +3962,7 @@ var Runner = class {
    * @param {TParkinRunFeaturesInput} data - Feature data as a string or parsed Feature model
    * @param {TParkinRunOpts} options - Define how the steps are run
    */
-  getFeatures = (data, options) => {
+  getFeatures = (data, options = emptyOpts2) => {
     const features = resolveFeatures(data, this._world);
     return filterFeatures(features, options);
   };
@@ -3935,7 +3977,7 @@ var Runner = class {
    *
    * @returns {boolean} - whether any tests ran
    */
-  run = async (data, options = import_jsutils21.emptyObj) => {
+  run = async (data, options = emptyOpts2) => {
     const testMode = this.run.PARKIN_TEST_MODE;
     skipTestsOnFail(testMode);
     const describe2 = getTestMethod("describe" /* describe */, testMode);
@@ -3947,12 +3989,18 @@ var Runner = class {
     if (!features.length)
       return false;
     const promises = await features.map(async (feature) => {
+      var _a;
       let responses = [];
-      beforeAll(this.hooks.getRegistered("beforeAll" /* beforeAll */));
-      afterAll(this.hooks.getRegistered("afterAll" /* afterAll */));
-      beforeEach(this.hooks.getRegistered("beforeEach" /* beforeEach */));
-      afterEach(this.hooks.getRegistered("afterEach" /* afterEach */));
+      const disabled = hasTag((_a = feature == null ? void 0 : feature.tags) == null ? void 0 : _a.tokens, options.tags.disabled);
+      if (!disabled) {
+        beforeAll(this.hooks.getRegistered("beforeAll" /* beforeAll */));
+        afterAll(this.hooks.getRegistered("afterAll" /* afterAll */));
+        beforeEach(this.hooks.getRegistered("beforeEach" /* beforeEach */));
+        afterEach(this.hooks.getRegistered("afterEach" /* afterEach */));
+      }
       const describeMethod = () => {
+        if (disabled)
+          return;
         responses.push(
           ...feature.rules.reduce((acc, rule) => {
             acc.push(runRule(
@@ -3979,10 +4027,13 @@ var Runner = class {
         );
         Promise.all(responses);
       };
-      describeMethod.ParkinMetaData = (0, import_jsutils21.pickKeys)(
-        feature,
-        [`index`, `uuid`, `tags`, `feature`, `type`, `errors`]
-      );
+      describeMethod.ParkinMetaData = {
+        disabled,
+        ...(0, import_jsutils22.pickKeys)(
+          feature,
+          [`index`, `uuid`, `tags`, `feature`, `type`, `errors`]
+        )
+      };
       describe2(buildTitle(feature.feature, `Feature`), describeMethod);
       return responses;
     });
@@ -3992,17 +4043,17 @@ var Runner = class {
 };
 
 // src/assemble/helpers.ts
-var import_jsutils22 = __toESM(require_cjs());
+var import_jsutils23 = __toESM(require_cjs());
 var formatAssembled = (assembled) => {
-  return Array.from(assembled, (line) => (0, import_jsutils22.exists)(line) ? `${line.trimEnd()}
+  return Array.from(assembled, (line) => (0, import_jsutils23.exists)(line) ? `${line.trimEnd()}
 ` : "\n").join("").trimEnd().concat(` `, `
 `);
 };
 var addContent = (assembled, content, index) => {
-  !(0, import_jsutils22.exists)(index) || index === false ? assembled.push(content) : (0, import_jsutils22.exists)(assembled[index]) ? assembled.splice(index, 0, content) : assembled[index] = content;
+  !(0, import_jsutils23.exists)(index) || index === false ? assembled.push(content) : (0, import_jsutils23.exists)(assembled[index]) ? assembled.splice(index, 0, content) : assembled[index] = content;
 };
 var getWhiteSpace = (ast, parent, def = ``) => {
-  return (0, import_jsutils22.exists)(ast.whitespace) ? ast.whitespace : (0, import_jsutils22.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent == null ? void 0 : parent.whitespace}${def}` : def;
+  return (0, import_jsutils23.exists)(ast.whitespace) ? ast.whitespace : (0, import_jsutils23.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent == null ? void 0 : parent.whitespace}${def}` : def;
 };
 var getTextContent = (ast, parent, type, def = ``) => {
   const content = ast[ast.type] || ``;
@@ -4012,7 +4063,7 @@ var getTextContent = (ast, parent, type, def = ``) => {
 };
 
 // src/assemble/assembleParts.ts
-var import_jsutils23 = __toESM(require_cjs());
+var import_jsutils24 = __toESM(require_cjs());
 var assembleFeature = (assembled, { ast, parent }) => {
   const feature = ast;
   addContent(
@@ -4026,9 +4077,9 @@ var assembleStep = (assembled, { ast, parent }) => {
   const whitespace = getWhiteSpace(
     step,
     parent,
-    (0, import_jsutils23.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent == null ? void 0 : parent.whitespace}  ` : `    `
+    (0, import_jsutils24.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent == null ? void 0 : parent.whitespace}  ` : `    `
   );
-  const type = step.type !== "step" /* step */ ? (0, import_jsutils23.capitalize)(step.type) : `Step`;
+  const type = step.type !== "step" /* step */ ? (0, import_jsutils24.capitalize)(step.type) : `Step`;
   addContent(
     assembled,
     `${whitespace}${type} ${step.step || ``}`,
@@ -4090,7 +4141,7 @@ var fromIndex = (indexes) => {
       case "then" /* then */:
       case "and" /* and */:
       case "but" /* but */:
-      case "*" /* * */:
+      case EStepType[`*`]:
       case "step" /* step */: {
         assembleStep(assembled2, item);
         break;
@@ -4131,7 +4182,7 @@ var fromIndex = (indexes) => {
 };
 
 // src/assemble/formatters.ts
-var import_jsutils24 = __toESM(require_cjs());
+var import_jsutils25 = __toESM(require_cjs());
 var ensureBackgroundFirst = (parent, opts) => {
   if (!opts.backgroundAfterParent)
     return parent;
@@ -4152,11 +4203,11 @@ var addEmptyLine = (feature, idx, opts) => {
   featureEmptyLine(feature, ``, idx + 1);
   return feature;
 };
-var formatStory = (feature, opts = import_jsutils24.emptyObj) => {
+var formatStory = (feature, opts = import_jsutils25.emptyObj) => {
   const { desire, perspective, reason } = feature;
   let lastIdx = feature.index;
   if (reason)
-    (0, import_jsutils24.isArr)(reason) ? (0, import_jsutils24.ensureArr)(reason).forEach((res) => lastIdx = res.index > lastIdx ? res.index : lastIdx) : lastIdx = reason.index;
+    (0, import_jsutils25.isArr)(reason) ? (0, import_jsutils25.ensureArr)(reason).forEach((res) => lastIdx = res.index > lastIdx ? res.index : lastIdx) : lastIdx = reason.index;
   else if (desire)
     lastIdx = desire.index;
   else if (perspective)
@@ -4164,7 +4215,7 @@ var formatStory = (feature, opts = import_jsutils24.emptyObj) => {
   addEmptyLine(feature, lastIdx, opts);
   return feature;
 };
-var formatOptions = (feature, opts = import_jsutils24.emptyObj) => {
+var formatOptions = (feature, opts = import_jsutils25.emptyObj) => {
   const keys = [];
   const {
     removeEmpty,
@@ -4174,7 +4225,7 @@ var formatOptions = (feature, opts = import_jsutils24.emptyObj) => {
   } = opts;
   removeEmpty && keys.push(`empty`);
   removeComments && keys.push(`comments`);
-  const updated = (0, import_jsutils24.omitKeys)(feature, keys);
+  const updated = (0, import_jsutils25.omitKeys)(feature, keys);
   if (emptyAfterStory || emptyAfterFeature)
     !emptyAfterStory ? addEmptyLine(updated, updated.index, opts) : formatStory(updated, opts);
   return updated;
@@ -4223,7 +4274,7 @@ var formatRules = (feature, opts) => {
   }, []);
   return { ...feature, rules };
 };
-var formatFeature = (feature, opts = import_jsutils24.emptyObj) => {
+var formatFeature = (feature, opts = import_jsutils25.emptyObj) => {
   let updated = formatOptions(feature, opts);
   updated = formatBackground(updated, updated, opts);
   updated = formatRules(updated, opts);
@@ -4232,10 +4283,10 @@ var formatFeature = (feature, opts = import_jsutils24.emptyObj) => {
 };
 
 // src/assemble/featureToIndexes.ts
-var import_jsutils27 = __toESM(require_cjs());
+var import_jsutils28 = __toESM(require_cjs());
 
 // src/assemble/findIndex.ts
-var import_jsutils25 = __toESM(require_cjs());
+var import_jsutils26 = __toESM(require_cjs());
 var AstTypeMap = {
   ...EAstObject,
   ["step" /* step */]: "steps" /* steps */,
@@ -4244,7 +4295,7 @@ var AstTypeMap = {
   ["then" /* then */]: "steps" /* steps */,
   ["and" /* and */]: "steps" /* steps */,
   ["but" /* but */]: "steps" /* steps */,
-  ["*" /* * */]: "steps" /* steps */,
+  [EStepType[`*`]]: "steps" /* steps */,
   ["rule" /* rule */]: "rules" /* rules */,
   ["comment" /* comment */]: "comments" /* comments */,
   ["scenario" /* scenario */]: "scenarios" /* scenarios */
@@ -4257,17 +4308,17 @@ var checkBlocks = (blocks, idx) => {
 var validateIndex = (feature, index) => {
   return checkBlocks(
     [
-      ...feature.empty || import_jsutils25.emptyArr,
-      ...feature.comments || import_jsutils25.emptyArr
+      ...feature.empty || import_jsutils26.emptyArr,
+      ...feature.comments || import_jsutils26.emptyArr
     ],
     index
   );
 };
 var validObj = (child) => {
-  return (0, import_jsutils25.isObj)(child) && (0, import_jsutils25.isNum)(child == null ? void 0 : child.index);
+  return (0, import_jsutils26.isObj)(child) && (0, import_jsutils26.isNum)(child == null ? void 0 : child.index);
 };
 var validArr = (childArr) => {
-  return (0, import_jsutils25.isArr)(childArr) && (childArr == null ? void 0 : childArr.length);
+  return (0, import_jsutils26.isArr)(childArr) && (childArr == null ? void 0 : childArr.length);
 };
 var indexFromBlocks = ({
   loc,
@@ -4315,7 +4366,7 @@ var indexFromStory = (feature) => {
 var indexFromBackground = (parent, feature) => {
   if (validObj(parent == null ? void 0 : parent.background)) {
     const idx = indexFromSteps(parent.background);
-    if ((0, import_jsutils25.exists)(idx))
+    if ((0, import_jsutils26.exists)(idx))
       return idx;
   }
   return parent === feature ? indexFromStory(feature) : parent.index + 1;
@@ -4383,21 +4434,21 @@ var findIndex = (props) => {
 };
 
 // src/assemble/addToIndexes.ts
-var import_jsutils26 = __toESM(require_cjs());
+var import_jsutils27 = __toESM(require_cjs());
 var addToIndexes = (feature, indexes, item, offset) => {
-  const index = (0, import_jsutils26.exists)(item.ast.index) ? item.ast.index : findIndex({
+  const index = (0, import_jsutils27.exists)(item.ast.index) ? item.ast.index : findIndex({
     feature,
     parent: item.parent,
     type: item.ast.type
   });
   const preAmount = offset.reduce((acc, val, idx) => {
-    return idx <= index && (0, import_jsutils26.exists)(val) ? acc + val : acc;
+    return idx <= index && (0, import_jsutils27.exists)(val) ? acc + val : acc;
   }, 0);
   if (!indexes[index] && !preAmount) {
     indexes[index] = item;
     return indexes;
   }
-  offset[index] = (0, import_jsutils26.exists)(offset[index]) ? offset[index] + 1 : 1;
+  offset[index] = (0, import_jsutils27.exists)(offset[index]) ? offset[index] + 1 : 1;
   const newIdx = index + preAmount + 1;
   item.ast.index = index;
   const updatedLen = indexes.length + 1;
@@ -4407,7 +4458,10 @@ var addToIndexes = (feature, indexes, item, offset) => {
 
 // src/assemble/featureToIndexes.ts
 var indexSteps = (feature, indexes, steps, parent, offset) => {
-  steps.forEach((step) => addToIndexes(feature, indexes, { ast: step, parent }, offset));
+  steps.forEach((step) => {
+    addToIndexes(feature, indexes, { ast: step, parent }, offset);
+    step.tags && indexTags(feature, indexes, step, offset);
+  });
 };
 var indexScenario = (feature, indexes, scenarios, parent, offset) => {
   scenarios.forEach((scenario) => {
@@ -4425,7 +4479,7 @@ var indexRules = (feature, indexes, rules, parent, offset) => {
   });
 };
 var indexReason = (feature, indexes, reason, parent, offset) => {
-  (0, import_jsutils27.isArr)(reason) ? reason.forEach((reason2) => addToIndexes(feature, indexes, { ast: reason2, parent }, offset)) : addToIndexes(feature, indexes, { ast: reason, parent }, offset);
+  (0, import_jsutils28.isArr)(reason) ? reason.forEach((reason2) => addToIndexes(feature, indexes, { ast: reason2, parent }, offset)) : addToIndexes(feature, indexes, { ast: reason, parent }, offset);
 };
 var indexBackground = (feature, indexes, background, parent, offset) => {
   addToIndexes(feature, indexes, { ast: background, parent }, offset);
@@ -4517,10 +4571,10 @@ var featureToIndexes = (feature) => {
 };
 
 // src/assemble/feature.ts
-var import_jsutils28 = __toESM(require_cjs());
-var assembleFeature2 = (toAssemble, opts = import_jsutils28.emptyObj) => {
-  return (0, import_jsutils28.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
-    !(0, import_jsutils28.isObj)(feature) && throwFeatureNotAnObj(feature);
+var import_jsutils29 = __toESM(require_cjs());
+var assembleFeature2 = (toAssemble, opts = import_jsutils29.emptyObj) => {
+  return (0, import_jsutils29.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
+    !(0, import_jsutils29.isObj)(feature) && throwFeatureNotAnObj(feature);
     const updated = formatFeature(feature, opts);
     const indexes = featureToIndexes(updated);
     return fromIndex(indexes);
@@ -4536,7 +4590,7 @@ var assemble = {
 };
 
 // src/parkin.ts
-var import_jsutils29 = __toESM(require_cjs());
+var import_jsutils30 = __toESM(require_cjs());
 var { STEP_TYPES: STEP_TYPES2 } = constants;
 var Parkin = class {
   #isInit = false;
@@ -4555,7 +4609,7 @@ var Parkin = class {
   Then;
   Given;
   constructor(world, steps) {
-    (0, import_jsutils29.isObj)(world) && this.init(world, steps);
+    (0, import_jsutils30.isObj)(world) && this.init(world, steps);
   }
   get world() {
     return this.#world;
@@ -4565,12 +4619,12 @@ var Parkin = class {
     this.steps._world = update;
     this.runner._world = update;
   }
-  init = (world = import_jsutils29.noOpObj, steps, warn = true) => {
+  init = (world = import_jsutils30.noOpObj, steps, warn = true) => {
     if (this.#isInit) {
       warn && console.warn(`This instance of parkin has already been initialized!`);
       return;
     }
-    if (!(0, import_jsutils29.isObj)(world.$alias))
+    if (!(0, import_jsutils30.isObj)(world.$alias))
       world.$alias = {};
     this.#isInit = true;
     this.steps = new Steps(world);
@@ -4585,9 +4639,9 @@ var Parkin = class {
     this.assemble = assemble;
     this.paramTypes = { register: registerParamType };
     this.matcher = new Matcher(this);
-    (0, import_jsutils29.isObj)(steps) && this.registerSteps(steps);
+    (0, import_jsutils30.isObj)(steps) && this.registerSteps(steps);
     this.steps.types.map((type) => {
-      this[(0, import_jsutils29.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
+      this[(0, import_jsutils30.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
     });
   };
   /**
@@ -4616,7 +4670,7 @@ var Parkin = class {
     if (doRegister)
       return Object.entries(steps).forEach(([type, typedSteps]) => {
         STEP_TYPES2.includes(type) && Object.entries(typedSteps).forEach(([matcher2, content]) => {
-          this.steps[(0, import_jsutils29.capitalize)(type)](matcher2, ...(0, import_jsutils29.eitherArr)(content, [content]));
+          this.steps[(0, import_jsutils30.capitalize)(type)](matcher2, ...(0, import_jsutils30.eitherArr)(content, [content]));
         });
       });
     else
