@@ -1,7 +1,7 @@
 import type { TFeatureAst, TBlockAst } from '../types'
 
 import { EAstObject } from '../types'
-import { idFromLoc } from './idFromLoc'
+import { idFromIdx } from './idFromIdx'
 import { eitherArr } from '@keg-hub/jsutils'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
@@ -49,8 +49,8 @@ const addReason = (
     content: reason,
     type: EAstObject.reason,
     whitespace: getStartWhiteSpace(line),
-    uuid: idFromLoc({
-      loc: 0,
+    uuid: idFromIdx({
+      index: 0,
       parent: feature,
       type: EAstObject.reason,
     }),
@@ -92,9 +92,9 @@ export const featureMeta = (
             index,
             whitespace: getStartWhiteSpace(line),
             content: getRXMatch(line, regItem.regex, 0),
-            uuid: idFromLoc({
+            uuid: idFromIdx({
               type,
-              loc: 0,
+              index: 0,
               parent: feature,
             }),
           })
@@ -127,10 +127,10 @@ export const featureComment = (
     content: comment.trim(),
     type: EAstObject.comment,
     whitespace: getStartWhiteSpace(line),
-    uuid: idFromLoc({
+    uuid: idFromIdx({
       parent: feature,
       type: EAstObject.comment,
-      loc: feature.comments?.length || 0
+      index: feature.comments?.length || 0
     }),
   })
 
@@ -154,10 +154,10 @@ export const featureEmptyLine = (
     content: line,
     whitespace: ``,
     type: EAstObject.empty,
-    uuid: idFromLoc({
+    uuid: idFromIdx({
       parent: feature,
       type: EAstObject.empty,
-      loc: feature.empty?.length || 0
+      index: feature.empty?.length || 0
     }),
   })
 

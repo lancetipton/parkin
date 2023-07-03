@@ -5,7 +5,7 @@ import type {
   TScenarioParentAst
 } from '../types'
 
-import { idFromLoc } from './idFromLoc'
+import { idFromIdx } from './idFromIdx'
 import { exists } from '@keg-hub/jsutils'
 import { EAstObject, EFeatureTypes } from '../types'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
@@ -35,7 +35,7 @@ export const scenarioFactory = (
     index,
     scenario,
     steps: [],
-    ...(scenario && parent && { uuid: idFromLoc({ loc, type, parent })}),
+    ...(scenario && parent && { uuid: idFromIdx({ index: loc, type, parent })}),
   } as TScenarioAst
 }
 
@@ -89,10 +89,10 @@ export const ensureScenario = (
 
   // Add the uuid from the scenario text if it doesn't exist
   !scenario.uuid
-    && (scenario.uuid = idFromLoc({
+    && (scenario.uuid = idFromIdx({
         parent,
         type: scenario.type,
-        loc: parent?.scenarios?.length || 0,
+        index: parent?.scenarios?.length || 0,
       }))
 
   !parent.scenarios.includes(scenario)

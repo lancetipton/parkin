@@ -1,7 +1,7 @@
 import type { TFeatureAst, TRuleAst } from '../types'
 
 import { EAstObject } from '../types'
-import { idFromLoc } from './idFromLoc'
+import { idFromIdx } from './idFromIdx'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 /**
@@ -28,7 +28,7 @@ export const ruleFactory = (
     rule,
     index,
     scenarios: [],
-    ...(rule && feature && { uuid: idFromLoc({ loc, type, parent: feature })}),
+    ...(rule && feature && { uuid: idFromIdx({ index: loc, type, parent: feature })}),
   } as TRuleAst
 }
 
@@ -58,10 +58,10 @@ export const ensureRule = (
   !rule.index && (rule.index = index)
 
   !rule.uuid
-    && (rule.uuid = idFromLoc({
+    && (rule.uuid = idFromIdx({
         parent: feature,
         type: rule.type,
-        loc: feature?.rules?.length || 0,
+        index: feature?.rules?.length || 0,
       }))
 
   // Get the start whitespace, used when assembling the feature

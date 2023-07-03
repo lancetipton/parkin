@@ -1,3 +1,4 @@
+import type { TIdFromLoc } from './parse/idFromIdx'
 import type { TFindInFeature } from './utils/findInFeature'
 import type {
   TParse,
@@ -17,6 +18,7 @@ import { Hooks } from './hooks'
 import { Runner } from './runner'
 import { assemble } from './assemble'
 import { constants } from './constants'
+import { idFromIdx } from './parse/idFromIdx'
 import { findInFeature } from './utils/findInFeature'
 import { Matcher, registerParamType } from './matcher'
 import { parseFeature, parseDefinition } from './parse'
@@ -268,6 +270,11 @@ export class Parkin {
    * Finds an item in a features from the items uuid ( id )
    */
   find = findInFeature
+
+  /**
+   * Generates an id from the passed in options
+   */
+  generateId = idFromIdx
 
 }
 

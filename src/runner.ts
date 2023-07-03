@@ -51,7 +51,7 @@ const getStepOpts = (
     timeout: single?.timeout
       || shared?.timeout
       || options?.timeout
-      || 30000
+      || 15000
   }
 }
 
@@ -307,11 +307,11 @@ const runRule = (
  * @returns {Object} Instance of the Runner class
  */
 export class Runner {
-  
+
   steps:Steps
   hooks:Hooks
   _world:TWorldConfig
-  
+
   constructor(steps:Steps, hooks:Hooks, world:TWorldConfig) {
     !steps && throwMissingSteps()
     !hooks && throwMissingHooks(hooks)
@@ -347,8 +347,10 @@ export class Runner {
    */
   run = async (
     data:TParkinRunFeaturesInput,
-    options:TParkinRunOpts=emptyOpts
+    opts?:TParkinRunOpts
   ) => {
+    const options = {...emptyOpts, ...opts}
+    
     // Set if were running tests for Parkin, or external tests
     // Only used for testing purposes
     const testMode = (this.run as TRunTestMode).PARKIN_TEST_MODE
@@ -371,7 +373,7 @@ export class Runner {
     // Using promises to resolve each feature / scenario / step
     const promises = await features.map(async feature => {
       let responses = []
-      const disabled = hasTag(feature?.tags?.tokens, options.tags.disabled)
+      const disabled = hasTag(feature?.tags?.tokens, options?.tags?.disabled)
 
       if(!disabled){
         beforeAll(this.hooks.getRegistered(EHookType.beforeAll))

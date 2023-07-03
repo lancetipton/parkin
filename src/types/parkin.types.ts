@@ -113,14 +113,16 @@ export type TParkinRunStepOptsMap = {
   [K:string]:Record<any, any>
 }
 
+export type TParkinRunTags = {
+  filter?: string|string[]
+  disabled?: string|string[]
+}
+
 export type TParkinRunOpts = {
   name?:string
   timeout?:number
+  tags?: TParkinRunTags
   steps?:TParkinRunStepOptsMap
-  tags?: {
-    filter?: string|string[]
-    disabled?: string|string[]
-  }
 }
 
 export type TParkinRun = (

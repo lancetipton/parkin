@@ -4,7 +4,7 @@ import type {
 } from '../types'
 
 import { EStepType } from '../types'
-import { idFromLoc } from './idFromLoc'
+import { idFromIdx } from './idFromIdx'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 const RX_STEP = /^\s*Step\s*(.*)$/
@@ -110,7 +110,7 @@ const checkDocString = (
   step.doc = {
     index,
     whiteSpace,
-    type: docMatch === `"""` ? 'quote' : 'tick',
+    type: docMatch === `"""` ? `quote` : `tick`,
     // Split the passed in lines on the matching doc-string identifier
     // Then pull the second element from the array
     // Which is the content between the opening and closing doc-string identifiers
@@ -150,10 +150,10 @@ const stepFactory = (
     index,
     step: stepText,
     whitespace: getStartWhiteSpace(line),
-    uuid: idFromLoc({
+    uuid: idFromIdx({
       type,
       parent,
-      loc: parent?.steps?.length || 0
+      index: parent?.steps?.length || 0
     }),
   } as TStepAst
 
