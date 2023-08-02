@@ -34,4 +34,7 @@ export const StepTypes = [
   EAstObject.then,
   EAstObject.and,
   EAstObject.but,
+  EAstObject[`*`],
+  EAstObject.step,
+  EAstObject.steps,
 ]

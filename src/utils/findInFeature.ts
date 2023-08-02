@@ -1,6 +1,6 @@
 
+import { TFeatureAst, EAstObject, TParentAst, TStepAst } from "../types"
 import { get } from "@keg-hub/jsutils"
-import { TFeatureAst, EAstObject } from "../types"
 import { ParentTypes, StepTypes } from '../constants'
 
 type TFindIdInFeature = {id:string, uuid?:never}
@@ -14,11 +14,12 @@ export type TFindInFeature = TFindWithID & {
 /**
  * Finds an item in a features from the items uuid ( id )
  */
-export const findInFeature = (props:TFindInFeature) => {
-  const { id, feature } = props
-  if(!id) return
+export const findInFeature = <T extends TParentAst|TStepAst=any>(props:TFindInFeature):T => {
+  const { id, uuid, feature } = props
+  const ref = id || uuid
+  if(!ref) return
 
-  const loc = id.split(`.`).reduce((acc, part) => {
+  const loc = ref?.toLowerCase?.().split(`.`).reduce((acc, part) => {
     if(part.startsWith(EAstObject.feature)) return acc
 
     const child = ParentTypes.includes(part as EAstObject)
@@ -36,7 +37,5 @@ export const findInFeature = (props:TFindInFeature) => {
     return acc
   }, [] as string[])
 
-  const item = get(feature, loc)
-
-  return item.uuid === id && item
+  return get(feature, loc)
 }
