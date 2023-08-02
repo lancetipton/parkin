@@ -132,8 +132,8 @@ var require_isArr_39234014 = __commonJS({
 var require_isObj_6b3aa807 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isObj-6b3aa807.js"(exports) {
     "use strict";
-    var isObj2 = (obj) => typeof obj === "object" && !Array.isArray(obj) && obj !== null;
-    exports.isObj = isObj2;
+    var isObj3 = (obj) => typeof obj === "object" && !Array.isArray(obj) && obj !== null;
+    exports.isObj = isObj3;
   }
 });
 
@@ -150,8 +150,8 @@ var require_isFunc_f93803cb = __commonJS({
 var require_isStr_8a57710e = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isStr-8a57710e.js"(exports) {
     "use strict";
-    var isStr3 = (str) => typeof str === "string";
-    exports.isStr = isStr3;
+    var isStr4 = (str) => typeof str === "string";
+    exports.isStr = isStr4;
   }
 });
 
@@ -160,9 +160,9 @@ var require_isNum_c7164b50 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isNum-c7164b50.js"(exports) {
     "use strict";
     var equalsNaN = (val) => typeof val === "number" && val != val;
-    var isNum = (val) => typeof val === "number" && !equalsNaN(val);
+    var isNum2 = (val) => typeof val === "number" && !equalsNaN(val);
     exports.equalsNaN = equalsNaN;
-    exports.isNum = isNum;
+    exports.isNum = isNum2;
   }
 });
 
@@ -170,12 +170,12 @@ var require_isNum_c7164b50 = __commonJS({
 var require_isValidDate_813b9419 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isValidDate-813b9419.js"(exports) {
     "use strict";
-    var isObj2 = require_isObj_6b3aa807();
+    var isObj3 = require_isObj_6b3aa807();
     var isArr = require_isArr_39234014();
-    var isStr3 = require_isStr_8a57710e();
-    var isNum = require_isNum_c7164b50();
+    var isStr4 = require_isStr_8a57710e();
+    var isNum2 = require_isNum_c7164b50();
     var typeOf = (val) => Object.prototype.toString.call(val).slice(8, -1);
-    var isEmpty = (val) => isObj2.isObj(val) ? Object.keys(val).length === 0 : isArr.isArr(val) ? val.length === 0 : isStr3.isStr(val) ? val.trim().length === 0 : isNum.isNum(val) ? val < 1 : false;
+    var isEmpty = (val) => isObj3.isObj(val) ? Object.keys(val).length === 0 : isArr.isArr(val) ? val.length === 0 : isStr4.isStr(val) ? val.trim().length === 0 : isNum2.isNum(val) ? val < 1 : false;
     var isSame = (val1, val2) => val1 === val2 ? val1 !== 0 || 1 / val1 === 1 / val2 : val1 !== val1 && val2 !== val2;
     var isValidDate = (date) => !isNaN((date instanceof Date && date || new Date(date)).getTime());
     exports.isEmpty = isEmpty;
@@ -198,8 +198,8 @@ var require_isBool_aa6af74e = __commonJS({
 var require_toStr_8e499966 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/toStr-8e499966.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
-    var toStr2 = (val) => val === null || val === void 0 ? "" : isStr3.isStr(val) ? val : JSON.stringify(val);
+    var isStr4 = require_isStr_8a57710e();
+    var toStr2 = (val) => val === null || val === void 0 ? "" : isStr4.isStr(val) ? val : JSON.stringify(val);
     exports.toStr = toStr2;
   }
 });
@@ -294,8 +294,8 @@ var require_deepEqual_adba847a = __commonJS({
 var require_exists_c79204b1 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/exists-c79204b1.js"(exports) {
     "use strict";
-    var exists = (value) => value === value && value !== void 0 && value !== null;
-    exports.exists = exists;
+    var exists2 = (value) => value === value && value !== void 0 && value !== null;
+    exports.exists = exists2;
   }
 });
 
@@ -303,11 +303,11 @@ var require_exists_c79204b1 = __commonJS({
 var require_isInt_94ce4199 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isInt-94ce4199.js"(exports) {
     "use strict";
-    var isNum = require_isNum_c7164b50();
-    var isNegative = (x) => isNum.isNum(x) && x < 0;
-    var isPositive = (x) => isNum.isNum(x) && x > 0;
-    var isFloat = (val) => isNum.isNum(val) && val % 1 !== 0;
-    var isInt = (val) => isNum.isNum(val) && val % 1 === 0;
+    var isNum2 = require_isNum_c7164b50();
+    var isNegative = (x) => isNum2.isNum(x) && x < 0;
+    var isPositive = (x) => isNum2.isNum(x) && x > 0;
+    var isFloat = (val) => isNum2.isNum(val) && val % 1 !== 0;
+    var isInt = (val) => isNum2.isNum(val) && val % 1 === 0;
     exports.isFloat = isFloat;
     exports.isInt = isInt;
     exports.isNegative = isNegative;
@@ -319,15 +319,15 @@ var require_isInt_94ce4199 = __commonJS({
 var require_jsonEqual_7e69ef6a = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/jsonEqual-7e69ef6a.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
-    var isNum = require_isNum_c7164b50();
+    var isStr4 = require_isStr_8a57710e();
+    var isNum2 = require_isNum_c7164b50();
     var isArr = require_isArr_39234014();
-    var isObj2 = require_isObj_6b3aa807();
+    var isObj3 = require_isObj_6b3aa807();
     var toBool = require_toBool_deb350e4();
     var hasOwn = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
-    var isEntry = (maybeEntry) => isArr.isArr(maybeEntry) && maybeEntry.length === 2 && (isNum.isNum(maybeEntry[0]) || isStr3.isStr(maybeEntry[0]));
+    var isEntry = (maybeEntry) => isArr.isArr(maybeEntry) && maybeEntry.length === 2 && (isNum2.isNum(maybeEntry[0]) || isStr4.isStr(maybeEntry[0]));
     var isArrMap = (obj) => {
-      if (!isObj2.isObj(obj))
+      if (!isObj3.isObj(obj))
         return false;
       const values = Object.values(obj);
       return toBool.toBool(values.length && values.every(isArr.isArr));
@@ -350,11 +350,11 @@ var require_jsonEqual_7e69ef6a = __commonJS({
 var require_isQuoted_eb6994da = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isQuoted-eb6994da.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var isLowerCase = (str) => str === str.toLowerCase();
     var isUpperCase = (str) => str === str.toUpperCase();
     var isEmail = (str) => {
-      if (!str || !isStr3.isStr(str))
+      if (!str || !isStr4.isStr(str))
         return false;
       const regex2 = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
       return Boolean(regex2.test(str));
@@ -364,23 +364,23 @@ var require_isQuoted_eb6994da = __commonJS({
       ipv6: /^((?=.*::)(?!.*::.+::)(::)?([\dA-F]{1,4}:(:|\b)|){5}|([\dA-F]{1,4}:){6})((([\dA-F]{1,4}((?!\3)::|:\b|$))|(?!\2\3)){2}|(((2[0-4]|1\d|[1-9])?\d|25[0-5])\.?\b){4})$/i
     };
     var isIp = (str) => {
-      if (!str || !isStr3.isStr(str))
+      if (!str || !isStr4.isStr(str))
         return false;
       const isIp42 = Boolean(regex.ipv4.test(str));
       return isIp42 || Boolean(regex.ipv6.test(str));
     };
     var isIp4 = (str) => {
-      if (!str || !isStr3.isStr(str))
+      if (!str || !isStr4.isStr(str))
         return false;
       return Boolean(regex.ipv4.test(str));
     };
     var isIp6 = (str) => {
-      if (!str || !isStr3.isStr(str))
+      if (!str || !isStr4.isStr(str))
         return false;
       return Boolean(regex.ipv6.test(str));
     };
     var isPhone = (str) => {
-      if (!str || !isStr3.isStr(str))
+      if (!str || !isStr4.isStr(str))
         return false;
       const regex2 = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
       return Boolean(regex2.test(str)) && str.replace(/\D/g, "").length < 11;
@@ -390,14 +390,14 @@ var require_isQuoted_eb6994da = __commonJS({
       return Boolean(regex2.test(str));
     };
     var isUuid = (str) => {
-      if (!str || !isStr3.isStr(str))
+      if (!str || !isStr4.isStr(str))
         return false;
       const regex2 = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
       return Boolean(regex2.test(str));
     };
     var quoteSymbols = ['"', "'"];
     var isQuoted = (str, quotes = quoteSymbols) => {
-      return isStr3.isStr(str) && quotes.some((quote) => str.startsWith(quote) && str.endsWith(quote));
+      return isStr4.isStr(str) && quotes.some((quote) => str.startsWith(quote) && str.endsWith(quote));
     };
     exports.isEmail = isEmail;
     exports.isIp = isIp;
@@ -435,15 +435,15 @@ var require_not_16fa9c85 = __commonJS({
     var toBool = require_toBool_deb350e4();
     var isColl = require_isColl_5757310a();
     var deepEqual = require_deepEqual_adba847a();
-    var exists = require_exists_c79204b1();
-    var isStr3 = require_isStr_8a57710e();
-    var isNum = require_isNum_c7164b50();
+    var exists2 = require_exists_c79204b1();
+    var isStr4 = require_isStr_8a57710e();
+    var isNum2 = require_isNum_c7164b50();
     var isInt = require_isInt_94ce4199();
     var jsonEqual = require_jsonEqual_7e69ef6a();
-    var isObj2 = require_isObj_6b3aa807();
+    var isObj3 = require_isObj_6b3aa807();
     var isQuoted = require_isQuoted_eb6994da();
     var isValidUrl = require_isValidUrl_a77135f0();
-    var isOrderable = (x) => isStr3.isStr(x) || isNum.isNum(x) || isBool.isBool(x);
+    var isOrderable = (x) => isStr4.isStr(x) || isNum2.isNum(x) || isBool.isBool(x);
     var identity = (x) => x;
     var match = (matchArg, ...args) => {
       if (!args.length)
@@ -479,23 +479,23 @@ var require_not_16fa9c85 = __commonJS({
     not.deepEqual = not(deepEqual.deepEqual);
     not.emptyColl = not(deepEqual.isEmptyColl);
     not.dom = not(hasDomAccess);
-    not.exists = not(exists.exists);
+    not.exists = not(exists2.exists);
     not.empty = not(isValidDate.isEmpty);
     not.same = not(isValidDate.isSame);
     not.validDate = not(isValidDate.isValidDate);
     not.func = not(isFunc2.isFunc);
     not.identity = not(identity);
     not.orderable = not(isOrderable);
-    not.equalsNaN = not(isNum.equalsNaN);
+    not.equalsNaN = not(isNum2.equalsNaN);
     not.float = not(isInt.isFloat);
     not.int = not(isInt.isInt);
-    not.num = not(isNum.isNum);
+    not.num = not(isNum2.isNum);
     not.negative = not(isInt.isNegative);
     not.positive = not(isInt.isPositive);
     not.hasOwn = not(jsonEqual.hasOwn);
     not.entry = not(jsonEqual.isEntry);
     not.arrMap = not(jsonEqual.isArrMap);
-    not.obj = not(isObj2.isObj);
+    not.obj = not(isObj3.isObj);
     not.jsonEqual = not(jsonEqual.jsonEqual);
     not.regex = not(isRegex);
     not.email = not(isQuoted.isEmail);
@@ -503,7 +503,7 @@ var require_not_16fa9c85 = __commonJS({
     not.lowerCase = not(isQuoted.isLowerCase);
     not.phone = not(isQuoted.isPhone);
     not.quoted = not(isQuoted.isQuoted);
-    not.str = not(isStr3.isStr);
+    not.str = not(isStr4.isStr);
     not.upperCase = not(isQuoted.isUpperCase);
     not.url = not(isQuoted.isUrl);
     not.uuid = not(isQuoted.isUuid);
@@ -521,7 +521,7 @@ var require_not_16fa9c85 = __commonJS({
 var require_compareTo_d69e4abf = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/compareTo-d69e4abf.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var not = require_not_16fa9c85();
     var validate = require_validate_23297ec2();
     var compareTo = (x, y) => {
@@ -533,7 +533,7 @@ var require_compareTo_d69e4abf = __commonJS({
       });
       if (!valid)
         return null;
-      return isStr3.isStr(x) ? x.localeCompare(y) : x - y;
+      return isStr4.isStr(x) ? x.localeCompare(y) : x - y;
     };
     exports.compareTo = compareTo;
   }
@@ -573,8 +573,8 @@ var require_noOps_b5f3c7e4 = __commonJS({
 var require_isNonNegative_9959647c = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/isNonNegative-9959647c.js"(exports) {
     "use strict";
-    var isNum = require_isNum_c7164b50();
-    var isNonNegative = (val) => isNum.isNum(val) && val >= 0;
+    var isNum2 = require_isNum_c7164b50();
+    var isNonNegative = (val) => isNum2.isNum(val) && val >= 0;
     exports.isNonNegative = isNonNegative;
   }
 });
@@ -585,13 +585,13 @@ var require_intersect_6fe7b944 = __commonJS({
     "use strict";
     var validate = require_validate_23297ec2();
     var isArr = require_isArr_39234014();
-    var isObj2 = require_isObj_6b3aa807();
+    var isObj3 = require_isObj_6b3aa807();
     var isFunc2 = require_isFunc_f93803cb();
     var compareTo = require_compareTo_d69e4abf();
     var not = require_not_16fa9c85();
     var noOps = require_noOps_b5f3c7e4();
     var isNonNegative = require_isNonNegative_9959647c();
-    var exists = require_exists_c79204b1();
+    var exists2 = require_exists_c79204b1();
     var buildElementCountMap = (arr) => {
       const counts = /* @__PURE__ */ new Map();
       for (let i = 0; i < arr.length; i++) {
@@ -650,20 +650,20 @@ var require_intersect_6fe7b944 = __commonJS({
       return true;
     };
     var cloneArr = (arr) => Array.from([
-      ...isArr.isArr(arr) && arr || isObj2.isObj(arr) && Object.entries(arr) || []
+      ...isArr.isArr(arr) && arr || isObj3.isObj(arr) && Object.entries(arr) || []
     ]);
     var eitherArr = (a, b) => isArr.isArr(a) ? a : b;
     var flatten = (arr, result, opts) => {
       for (let i = 0; i < arr.length; i++) {
         const value = arr[i];
-        isArr.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists.exists(value) || opts.truthy && !value ? result : result.push(value);
+        isArr.isArr(value) ? flatten(value, result, opts) : opts.exists && !exists2.exists(value) || opts.truthy && !value ? result : result.push(value);
       }
       if (!opts.mutate)
         return result;
       Object.assign(arr, result).splice(result.length);
       return arr;
     };
-    var flatArr = (arr, opts) => flatten(arr, [], isObj2.isObj(opts) ? opts : noOps.noOpObj);
+    var flatArr = (arr, opts) => flatten(arr, [], isObj3.isObj(opts) ? opts : noOps.noOpObj);
     var flatMap = (arr, mapFn) => {
       const [inputIsValid] = validate.validate({
         arr,
@@ -839,22 +839,22 @@ var require_set_c0a98b21 = __commonJS({
 var require_get_00626335 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/get-00626335.js"(exports) {
     "use strict";
-    var exists = require_exists_c79204b1();
+    var exists2 = require_exists_c79204b1();
     var isArr = require_isArr_39234014();
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var get = (obj, path, fallback) => {
       const isPathArr = isArr.isArr(path);
-      if (!isStr3.isStr(path) && !isPathArr)
-        return exists.exists(fallback) ? fallback : void 0;
+      if (!isStr4.isStr(path) && !isPathArr)
+        return exists2.exists(fallback) ? fallback : void 0;
       const parts = isPathArr ? path : path.split(".");
       const result = parts.reduce((obj2, prop) => {
         const type = typeof obj2;
-        if (!exists.exists(obj2) || type !== "object" && type !== "function")
+        if (!exists2.exists(obj2) || type !== "object" && type !== "function")
           return void 0;
         prop = prop.startsWith("[") ? prop.replace(/\D/g, "") : prop;
         return obj2[prop];
       }, obj);
-      return exists.exists(result) ? result : fallback;
+      return exists2.exists(result) ? result : fallback;
     };
     exports.get = get;
   }
@@ -928,17 +928,17 @@ var require_deepClone_ae664a21 = __commonJS({
 var require_shallowEqual_eaf2262d = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/shallowEqual-eaf2262d.js"(exports) {
     "use strict";
-    var isObj2 = require_isObj_6b3aa807();
+    var isObj3 = require_isObj_6b3aa807();
     var isColl = require_isColl_5757310a();
     var isFunc2 = require_isFunc_f93803cb();
     var isArr = require_isArr_39234014();
-    var exists = require_exists_c79204b1();
+    var exists2 = require_exists_c79204b1();
     var validate = require_validate_23297ec2();
     var set = require_set_c0a98b21();
     var deepClone = require_deepClone_ae664a21();
-    var isNum = require_isNum_c7164b50();
+    var isNum2 = require_isNum_c7164b50();
     var get = require_get_00626335();
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var cleanColl = (coll, recursive = true) => {
       return isColl.isColl(coll) ? Object.keys(coll).reduce((cleaned, key) => {
         const value = coll[key];
@@ -946,7 +946,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
           return cleaned;
         cleaned[key] = recursive && isColl.isColl(value) ? cleanColl(value) : value;
         return cleaned;
-      }, isObj2.isObj(coll) && {} || []) : console.error(`cleanColl requires a collection as the first argument`) || coll;
+      }, isObj3.isObj(coll) && {} || []) : console.error(`cleanColl requires a collection as the first argument`) || coll;
     };
     var mapColl = (coll, cb) => isFunc2.isFunc(cb) && isColl.isColl(coll) ? Object.keys(coll).map((key) => cb(key, coll[key], coll)) : isArr.isArr(coll) ? [] : {};
     var mapFindArr = (arr, mapper, testFunc) => {
@@ -970,7 +970,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
       }
       return null;
     };
-    var mapFind = (coll, mapper, testFunc = exists.exists) => {
+    var mapFind = (coll, mapper, testFunc = exists2.exists) => {
       const [valid] = validate.validate({
         coll,
         mapper,
@@ -981,7 +981,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
       });
       if (!valid)
         return void 0;
-      return isObj2.isObj(coll) ? mapFindObj(coll, mapper, testFunc) : mapFindArr(coll, mapper, testFunc);
+      return isObj3.isObj(coll) ? mapFindObj(coll, mapper, testFunc) : mapFindArr(coll, mapper, testFunc);
     };
     var reduceColl = (coll, cb, reduce) => isFunc2.isFunc(cb) && isColl.isColl(coll) ? Object.keys(coll).reduce((data, key) => cb(key, coll[key], coll, data), reduce) : isArr.isArr(coll) ? [] : {};
     var unset = (obj, path) => {
@@ -991,7 +991,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
     var repeat = (element, times, cloneDeep = false) => {
       if (!times || times <= 0)
         return [];
-      if (!isNum.isNum(times)) {
+      if (!isNum2.isNum(times)) {
         console.error("Times argument must be a number");
         return [];
       }
@@ -1003,7 +1003,7 @@ var require_shallowEqual_eaf2262d = __commonJS({
       return arr;
     };
     var shallowEqual = (col1, col2, path) => {
-      if (path && (isArr.isArr(path) || isStr3.isStr(path))) {
+      if (path && (isArr.isArr(path) || isStr4.isStr(path))) {
         col1 = get.get(col1, path);
         col2 = get.get(col2, path);
       }
@@ -1043,10 +1043,10 @@ var require_either_81805472 = __commonJS({
 var require_toNum_eeb2e51e = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/toNum-eeb2e51e.js"(exports) {
     "use strict";
-    var isNum = require_isNum_c7164b50();
+    var isNum2 = require_isNum_c7164b50();
     var toStr2 = require_toStr_8e499966();
     var getNums = (val) => toStr2.toStr(val).replace(/([^.\d])/gm, "");
-    var toNum = (val) => isNum.isNum(val) ? val : val && !isNum.equalsNaN(val) && Number(getNums(val)) || 0;
+    var toNum = (val) => isNum2.isNum(val) ? val : val && !isNum2.equalsNaN(val) && Number(getNums(val)) || 0;
     exports.getNums = getNums;
     exports.toNum = toNum;
   }
@@ -1056,12 +1056,12 @@ var require_toNum_eeb2e51e = __commonJS({
 var require_strToType_00c4481f = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/strToType-00c4481f.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
-    var isNum = require_isNum_c7164b50();
+    var isStr4 = require_isStr_8a57710e();
+    var isNum2 = require_isNum_c7164b50();
     var toNum = require_toNum_eeb2e51e();
     var toBool = require_toBool_deb350e4();
     var strToType = (val) => {
-      return !val || !isStr3.isStr(val) ? val : toBool.isStrBool(val) ? toBool.toBool(val) : isNum.isNum(val) ? toNum.toNum(val) : (() => {
+      return !val || !isStr4.isStr(val) ? val : toBool.isStrBool(val) ? toBool.toBool(val) : isNum2.isNum(val) ? toNum.toNum(val) : (() => {
         try {
           return JSON.parse(val);
         } catch (e) {
@@ -1142,13 +1142,13 @@ var require_stackTracePaths_a7780a09 = __commonJS({
     "use strict";
     var isFunc2 = require_isFunc_f93803cb();
     var validate = require_validate_23297ec2();
-    var isNum = require_isNum_c7164b50();
+    var isNum2 = require_isNum_c7164b50();
     var jsonEqual = require_jsonEqual_7e69ef6a();
     var isArr = require_isArr_39234014();
     var deepClone = require_deepClone_ae664a21();
     var noOps = require_noOps_b5f3c7e4();
-    var isStr3 = require_isStr_8a57710e();
-    var isObj2 = require_isObj_6b3aa807();
+    var isStr4 = require_isStr_8a57710e();
+    var isObj3 = require_isObj_6b3aa807();
     var isValidDate = require_isValidDate_813b9419();
     var checkCall2 = (method, ...params) => {
       return isFunc2.isFunc(method) ? method(...params) : void 0;
@@ -1185,7 +1185,7 @@ var require_stackTracePaths_a7780a09 = __commonJS({
       const num = params.shift();
       const bindTo = params.shift();
       const cb = params.pop();
-      if (!isNum.isNum(num) || !isFunc2.isFunc(cb))
+      if (!isNum2.isNum(num) || !isFunc2.isFunc(cb))
         return [];
       const doItAmount = new Array(num);
       const responses = [];
@@ -1206,7 +1206,7 @@ var require_stackTracePaths_a7780a09 = __commonJS({
         if (jsonEqual.hasOwn(cache, key))
           return cache[key];
         const result = func.apply(this, arguments);
-        isNum.isNum(limit) && Object.keys(cache).length < limit ? cache[key] = result : memorized.cache = {
+        isNum2.isNum(limit) && Object.keys(cache).length < limit ? cache[key] = result : memorized.cache = {
           [key]: result
         };
         return result;
@@ -1265,7 +1265,7 @@ var require_stackTracePaths_a7780a09 = __commonJS({
     };
     var throttleLast = (func, cb, wait = 100) => {
       let throttleTimeout;
-      if (isNum.isNum(cb)) {
+      if (isNum2.isNum(cb)) {
         wait = cb;
         cb = void 0;
       }
@@ -1289,7 +1289,7 @@ var require_stackTracePaths_a7780a09 = __commonJS({
     var noOp2 = () => {
     };
     var parseErrorMessage = (exception) => {
-      return isStr3.isStr(exception) && !isValidDate.isEmpty(exception) ? exception : isObj2.isObj(exception) ? exception.message : null;
+      return isStr4.isStr(exception) && !isValidDate.isEmpty(exception) ? exception : isObj3.isObj(exception) ? exception.message : null;
     };
     var defFilters = [`node:internal`, `node_modules/jest`];
     var stackTracePaths = (filter = defFilters) => {
@@ -1329,15 +1329,15 @@ var require_stackTracePaths_a7780a09 = __commonJS({
 var require_mod_31dfe732 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/mod-31dfe732.js"(exports) {
     "use strict";
-    var isNum = require_isNum_c7164b50();
+    var isNum2 = require_isNum_c7164b50();
     var toNum = require_toNum_eeb2e51e();
     var nth = (num) => {
-      if (!isNum.isNum(num)) {
+      if (!isNum2.isNum(num)) {
         num = toNum.getNums(num);
         if (!num)
           return "";
         num = toNum.toNum(num);
-        if (isNum.equalsNaN(num))
+        if (isNum2.equalsNaN(num))
           return "";
       }
       const mod2 = num % 100;
@@ -1354,8 +1354,8 @@ var require_mod_31dfe732 = __commonJS({
           return "th";
       }
     };
-    var toFloat = (val) => val && !isNum.equalsNaN(val) && parseFloat(isNum.isNum(val) && val || toNum.getNums(val)) || 0;
-    var toInt = (val) => val && !isNum.equalsNaN(val) && parseInt(isNum.isNum(val) && val || toNum.getNums(val)) || 0;
+    var toFloat = (val) => val && !isNum2.equalsNaN(val) && parseFloat(isNum2.isNum(val) && val || toNum.getNums(val)) || 0;
+    var toInt = (val) => val && !isNum2.equalsNaN(val) && parseInt(isNum2.isNum(val) && val || toNum.getNums(val)) || 0;
     var mod = (num, divisor) => {
       return (num % divisor + divisor) % divisor;
     };
@@ -1371,8 +1371,8 @@ var require_reduceObj_f41cbf8d = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/reduceObj-f41cbf8d.js"(exports) {
     "use strict";
     var isFunc2 = require_isFunc_f93803cb();
-    var isObj2 = require_isObj_6b3aa807();
-    var reduceObj = (obj, cb, start = {}) => isObj2.isObj(obj) && isFunc2.isFunc(cb) && Object.entries(obj).reduce((data, [key, value]) => cb(key, value, data), start) || start;
+    var isObj3 = require_isObj_6b3aa807();
+    var reduceObj = (obj, cb, start = {}) => isObj3.isObj(obj) && isFunc2.isFunc(cb) && Object.entries(obj).reduce((data, [key, value]) => cb(key, value, data), start) || start;
     exports.reduceObj = reduceObj;
   }
 });
@@ -1381,8 +1381,8 @@ var require_reduceObj_f41cbf8d = __commonJS({
 var require_sanitize_0a18302d = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/sanitize-0a18302d.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
-    var sanitize = (str) => isStr3.isStr(str) && str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") || str;
+    var isStr4 = require_isStr_8a57710e();
+    var sanitize = (str) => isStr4.isStr(str) && str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") || str;
     exports.sanitize = sanitize;
   }
 });
@@ -1392,7 +1392,7 @@ var require_transformKeys_574f796c = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/transformKeys-574f796c.js"(exports) {
     "use strict";
     var log = require_log_37bbfac6();
-    var isObj2 = require_isObj_6b3aa807();
+    var isObj3 = require_isObj_6b3aa807();
     var isFunc2 = require_isFunc_f93803cb();
     var deepClone = require_deepClone_ae664a21();
     var isArr = require_isArr_39234014();
@@ -1401,10 +1401,10 @@ var require_transformKeys_574f796c = __commonJS({
     var jsonEqual = require_jsonEqual_7e69ef6a();
     var reduceObj = require_reduceObj_f41cbf8d();
     var sanitize = require_sanitize_0a18302d();
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var strToType = require_strToType_00c4481f();
     var pipeline = require_pipeline_e65bdaae();
-    var exists = require_exists_c79204b1();
+    var exists2 = require_exists_c79204b1();
     var toStr2 = require_toStr_8e499966();
     var ensureArr = require_ensureArr_ae68c041();
     var noOps = require_noOps_b5f3c7e4();
@@ -1426,11 +1426,11 @@ var require_transformKeys_574f796c = __commonJS({
         delete obj[key];
       });
     };
-    var eitherObj = (obj1, obj2) => isObj2.isObj(obj1) && obj1 || obj2;
+    var eitherObj = (obj1, obj2) => isObj3.isObj(obj1) && obj1 || obj2;
     var deepMerge = (...sources) => {
       return sources.reduce((merged, source) => {
         const srcCopy = deepClone.deepClone(source);
-        return isArr.isArr(srcCopy) ? [...isArr.isArr(merged) && merged || [], ...srcCopy] : isObj2.isObj(srcCopy) ? Object.entries(srcCopy).reduce((joined, [key, value]) => ({
+        return isArr.isArr(srcCopy) ? [...isArr.isArr(merged) && merged || [], ...srcCopy] : isObj3.isObj(srcCopy) ? Object.entries(srcCopy).reduce((joined, [key, value]) => ({
           ...joined,
           [key]: isFunc2.isFunc(value) ? deepClone.cloneFunc(value) : isColl.isColl(value) && key in joined ? deepMerge(joined[key], value) : deepClone.deepClone(value)
         }), merged) : merged;
@@ -1440,7 +1440,7 @@ var require_transformKeys_574f796c = __commonJS({
       let error;
       if (!obj)
         error = "object (Argument 1) in applyToCloneOf, must be defined!";
-      if (!isObj2.isObj(obj))
+      if (!isObj3.isObj(obj))
         error = "object (Argument 1) in applyToCloneOf, must be an object!";
       if (!mutatorCb)
         error = "mutator (Argument 2) in applyToCloneOf, must be defined!";
@@ -1455,7 +1455,7 @@ var require_transformKeys_574f796c = __commonJS({
       return clone;
     };
     var mapEntries = (obj, cb) => {
-      if (!isArr.isArr(obj) && !isObj2.isObj(obj)) {
+      if (!isArr.isArr(obj) && !isObj3.isObj(obj)) {
         console.error(obj, `Expected array or object for obj. Found ${typeof obj}`);
         return obj;
       }
@@ -1475,27 +1475,27 @@ var require_transformKeys_574f796c = __commonJS({
       }, initialValue);
     };
     var mapKeys = (obj, keyMapper) => {
-      if (!isObj2.isObj(obj) || !isFunc2.isFunc(keyMapper))
+      if (!isObj3.isObj(obj) || !isFunc2.isFunc(keyMapper))
         return obj;
       return mapEntries(obj, (key, value) => [keyMapper(key), value]);
     };
     var mapObj = (obj, cb) => {
-      if (!isObj2.isObj(obj))
+      if (!isObj3.isObj(obj))
         return [];
       const entries = Object.entries(obj);
       return isFunc2.isFunc(cb) ? entries.map(([key, value]) => cb(key, value)) : entries;
     };
-    var omitKeys = (obj = {}, keys = []) => isObj2.isObj(obj) && reduceObj.reduceObj(obj, (key, _, updated) => {
+    var omitKeys = (obj = {}, keys = []) => isObj3.isObj(obj) && reduceObj.reduceObj(obj, (key, _, updated) => {
       keys.indexOf(key) === -1 && (updated[key] = obj[key]);
       return updated;
     }, {}) || {};
-    var pickKeys = (obj = {}, keys = []) => isObj2.isObj(obj) && keys.reduce((updated, key) => {
+    var pickKeys = (obj = {}, keys = []) => isObj3.isObj(obj) && keys.reduce((updated, key) => {
       key in obj && (updated[key] = obj[key]);
       return updated;
     }, {}) || {};
     var sanitizeCopy = (obj) => JSON.parse(sanitize.sanitize(JSON.stringify(obj)));
     var trimStringFields = (object) => Object.entries(object).reduce((cleaned, [key, value]) => {
-      cleaned[key] = isStr3.isStr(value) ? value.trim() : value;
+      cleaned[key] = isStr4.isStr(value) ? value.trim() : value;
       return cleaned;
     }, object);
     var toObj = (val, divider, split) => {
@@ -1504,7 +1504,7 @@ var require_transformKeys_574f796c = __commonJS({
           obj[key] = val[key];
           return obj;
         }, {});
-      if (!isStr3.isStr(val))
+      if (!isStr4.isStr(val))
         return {};
       divider = divider || "=";
       split = split || "&";
@@ -1515,14 +1515,14 @@ var require_transformKeys_574f796c = __commonJS({
       }, {});
     };
     var keyMap2 = (arr, toUpperCase) => isArr.isArr(arr) && arr.reduce((obj, key) => {
-      if (!isStr3.isStr(key))
+      if (!isStr4.isStr(key))
         return obj;
       const use = toUpperCase && key.toUpperCase() || key;
       obj[use] = use;
       return obj;
     }, {}) || {};
     var everyEntry = (obj, predicate, logError = true) => {
-      if (!isObj2.isObj(obj)) {
+      if (!isObj3.isObj(obj)) {
         logError && console.error(`First argument ${obj} must be an object.`);
         return false;
       }
@@ -1533,7 +1533,7 @@ var require_transformKeys_574f796c = __commonJS({
       return pipeline.pipeline(obj, Object.entries, (entries) => entries.every(([key, value]) => predicate(key, value)));
     };
     var someEntry = (obj, predicate, logError = true) => {
-      if (!isObj2.isObj(obj)) {
+      if (!isObj3.isObj(obj)) {
         logError && console.error(`First argument ${obj} must be an object.`);
         return false;
       }
@@ -1544,7 +1544,7 @@ var require_transformKeys_574f796c = __commonJS({
       return pipeline.pipeline(obj, Object.entries, (entries) => entries.some(([key, value]) => predicate(key, value)));
     };
     var filterObj = (obj, predicate, logError = true) => {
-      if (!isObj2.isObj(obj)) {
+      if (!isObj3.isObj(obj)) {
         logError && console.error(`First argument ${obj} must be an object.`);
         return obj;
       }
@@ -1610,8 +1610,8 @@ var require_transformKeys_574f796c = __commonJS({
         }];
       const intersect = [{}, {}];
       const compareKeys = ensureArr.ensureArr(keys);
-      return isObj2.isObj(obj) ? reduceObj.reduceObj(obj, (key, _, updated) => {
-        exists.exists(compareKeys.find((k) => exists.exists(k) && toStr2.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
+      return isObj3.isObj(obj) ? reduceObj.reduceObj(obj, (key, _, updated) => {
+        exists2.exists(compareKeys.find((k) => exists2.exists(k) && toStr2.toStr(k) === key)) ? updated[0][key] = obj[key] : updated[1][key] = obj[key];
         return updated;
       }, intersect) : intersect;
     };
@@ -1652,7 +1652,7 @@ var require_transformKeys_574f796c = __commonJS({
 var require_wait_8ca88995 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/wait-8ca88995.js"(exports) {
     "use strict";
-    var isObj2 = require_isObj_6b3aa807();
+    var isObj3 = require_isObj_6b3aa807();
     var isFunc2 = require_isFunc_f93803cb();
     var promisify = (method) => {
       if (!isFunc2.isFunc(method))
@@ -1692,7 +1692,7 @@ var require_wait_8ca88995 = __commonJS({
       return object;
     };
     var promisifyAll = (object) => {
-      if (!isObj2.isObj(object))
+      if (!isObj3.isObj(object))
         return object;
       addAsync(object);
       const proto = Object.getPrototypeOf(object);
@@ -1710,17 +1710,17 @@ var require_wait_8ca88995 = __commonJS({
 var require_joinRegex_5320d139 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/joinRegex-5320d139.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var isArr = require_isArr_39234014();
     require_validate_23297ec2();
     require_noOps_b5f3c7e4();
     var not = require_not_16fa9c85();
-    var getRegexSource = (maybeRx) => not.isRegex(maybeRx) ? maybeRx.source : isStr3.isStr(maybeRx) ? maybeRx : null;
+    var getRegexSource = (maybeRx) => not.isRegex(maybeRx) ? maybeRx.source : isStr4.isStr(maybeRx) ? maybeRx : null;
     var parseArgs = (args) => {
       if (isArr.isArr(args[0]))
         return [args[0], args[1]];
       const last = args[args.length - 1];
-      const options = isStr3.isStr(last) ? last : void 0;
+      const options = isStr4.isStr(last) ? last : void 0;
       const expressions = options ? args.splice(0, args.length - 1) : args;
       return [expressions, options];
     };
@@ -1741,7 +1741,7 @@ var require_joinRegex_5320d139 = __commonJS({
 var require_getWordEndingAt_63d038a5 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/getWordEndingAt-63d038a5.js"(exports) {
     "use strict";
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var isFunc2 = require_isFunc_f93803cb();
     var isQuoted = require_isQuoted_eb6994da();
     var toStr$1 = require_toStr_8e499966();
@@ -1757,7 +1757,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return built.replace(/([^:\/]|^)\/{2,}/g, "$1/");
     };
     var mapString = (str, charMapper) => {
-      if (!isStr3.isStr(str))
+      if (!isStr4.isStr(str))
         return str;
       if (!isFunc2.isFunc(charMapper))
         return str;
@@ -1768,7 +1768,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return result;
     };
     var delimitString = (str, delimiter, delimiters = ["-", "_", " "]) => {
-      if (!isStr3.isStr(str))
+      if (!isStr4.isStr(str))
         return str;
       const isDelimiter = (c) => delimiters.some((del) => del === c);
       let prevChar = "_";
@@ -1790,7 +1790,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return underscored.toLowerCase();
     };
     var capitalize = (str, lowercaseTail = true) => {
-      if (!isStr3.isStr(str) || !str[0])
+      if (!isStr4.isStr(str) || !str[0])
         return str;
       const tail = lowercaseTail ? str.slice(1).toLowerCase() : str.slice(1);
       return `${str[0].toUpperCase()}${tail}`;
@@ -1816,11 +1816,11 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return camelCasedSplit.length > 1 ? camelCasedSplit.join("") : path;
     };
     var containsStr = (str, substring, fromIndex) => {
-      str = !isStr3.isStr(str) && toStr$1.toStr(str) || str;
-      substring = !isStr3.isStr(substring) && toStr$1.toStr(substring) || substring;
+      str = !isStr4.isStr(str) && toStr$1.toStr(str) || str;
+      substring = !isStr4.isStr(substring) && toStr$1.toStr(substring) || substring;
       return str.indexOf(substring, fromIndex) !== -1;
     };
-    var eitherStr = (str1, str2) => isStr3.isStr(str1) && str1 || str2;
+    var eitherStr = (str1, str2) => isStr4.isStr(str1) && str1 || str2;
     var uppercasePattern = /[A-Z]/g;
     var msPattern = /^ms-/;
     var hyphenCache = {};
@@ -1832,7 +1832,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return hyphenCache[rule] = msPattern.test(hRule) ? "-" + hRule : hRule;
     };
     var hashString = (str, maxLength) => {
-      if (!isStr3.isStr(str) || str.length == 0)
+      if (!isStr4.isStr(str) || str.length == 0)
         return 0;
       str = str.split("").reverse().join("");
       let hash = 0;
@@ -1862,14 +1862,14 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return str[str.length - 1] === "s" ? str.slice(0, str.length - 1) : str;
     };
     var styleCase = (str) => {
-      if (!isStr3.isStr(str))
+      if (!isStr4.isStr(str))
         return str;
       const cased = camelCase(str);
       return `${cased[0].toLowerCase()}${cased.slice(1)}`;
     };
-    var trainCase = (str) => isStr3.isStr(str) && str.split(/(?=[A-Z])|[\s_-]/gm).join("-").toLowerCase() || str;
+    var trainCase = (str) => isStr4.isStr(str) && str.split(/(?=[A-Z])|[\s_-]/gm).join("-").toLowerCase() || str;
     var wordCaps = (str) => {
-      if (!isStr3.isStr(str))
+      if (!isStr4.isStr(str))
         return str;
       let cleaned = cleanStr(str);
       return cleaned.split(" ").map((word) => word && capitalize(word) || "").join(" ");
@@ -1877,8 +1877,8 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
     var spaceJoin = (original, toAdd) => {
       toAdd = isArr.isArr(toAdd) ? toAdd : [toAdd];
       return toAdd.reduce((joined, item) => {
-        return isStr3.isStr(item) ? `${joined ? joined + " " : ""}${item}`.trim() : joined;
-      }, isStr3.isStr(original) ? original : "");
+        return isStr4.isStr(item) ? `${joined ? joined + " " : ""}${item}`.trim() : joined;
+      }, isStr4.isStr(original) ? original : "");
     };
     var templateRx = (tempStr, data, fallback = "", rx) => {
       const orgRx = template.regex;
@@ -1890,7 +1890,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
     var template = (tempStr, data, fallback = "") => {
       data = isColl.isColl(data) && data || {};
       const regex = template.regex || /\${(.*?)\}/g;
-      return isStr3.isStr(tempStr) ? tempStr.replace(regex, (match, exact) => {
+      return isStr4.isStr(tempStr) ? tempStr.replace(regex, (match, exact) => {
         const path = (exact || match.substr(2, match.length - 3)).trim();
         const replaceWith = get.get(data, path, fallback);
         return isFunc2.isFunc(replaceWith) ? replaceWith(data, path, fallback) : replaceWith;
@@ -1905,7 +1905,7 @@ var require_getWordEndingAt_63d038a5 = __commonJS({
       return regex.test(fileName) || windowsRegex.test(fileName) || periodRegex.test(fileName) ? false : true;
     };
     var reverseStr = (str) => {
-      if (!isStr3.isStr(str))
+      if (!isStr4.isStr(str))
         return void 0;
       let reversed = "";
       for (let char of str) {
@@ -1961,8 +1961,8 @@ var require_getURLParam_201ef5fe = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/getURLParam-201ef5fe.js"(exports) {
     "use strict";
     var reduceObj = require_reduceObj_f41cbf8d();
-    var isStr3 = require_isStr_8a57710e();
-    var isNum = require_isNum_c7164b50();
+    var isStr4 = require_isStr_8a57710e();
+    var isNum2 = require_isNum_c7164b50();
     var isBool = require_isBool_aa6af74e();
     var isColl = require_isColl_5757310a();
     var isArr = require_isArr_39234014();
@@ -1997,7 +1997,7 @@ var require_getURLParam_201ef5fe = __commonJS({
       return reduceObj.reduceObj(obj, (key, value, urlStr) => {
         if (!value)
           return urlStr;
-        const useVal = isStr3.isStr(value) || isNum.isNum(value) || isBool.isBool(value) ? value : isColl.isColl(value) ? isArr.isArr(value) ? value.join(",") : JSON.stringify(value) : null;
+        const useVal = isStr4.isStr(value) || isNum2.isNum(value) || isBool.isBool(value) ? value : isColl.isColl(value) ? isArr.isArr(value) ? value.join(",") : JSON.stringify(value) : null;
         if (!useVal)
           return urlStr;
         urlStr = !firstSet ? `?${encodeURIComponent(key)}=${encodeURIComponent(useVal)}` : `${urlStr}&${encodeURIComponent(key)}=${encodeURIComponent(useVal)}`;
@@ -2010,13 +2010,13 @@ var require_getURLParam_201ef5fe = __commonJS({
       const [valid] = validate.validate({
         paramKey
       }, {
-        paramKey: isStr3.isStr
+        paramKey: isStr4.isStr
       });
       if (!valid)
         return null;
       const doc = typeof document !== "undefined" ? document : null;
       const search = doc === null || doc === void 0 ? void 0 : (_doc$location = doc.location) === null || _doc$location === void 0 ? void 0 : _doc$location.search;
-      return isStr3.isStr(search) ? (_queryToObj$paramKey = (_queryToObj = queryToObj(search)) === null || _queryToObj === void 0 ? void 0 : _queryToObj[paramKey]) !== null && _queryToObj$paramKey !== void 0 ? _queryToObj$paramKey : null : null;
+      return isStr4.isStr(search) ? (_queryToObj$paramKey = (_queryToObj = queryToObj(search)) === null || _queryToObj === void 0 ? void 0 : _queryToObj[paramKey]) !== null && _queryToObj$paramKey !== void 0 ? _queryToObj$paramKey : null : null;
     };
     exports.getURLParam = getURLParam;
     exports.objToQuery = objToQuery;
@@ -2046,7 +2046,7 @@ var require_cjs = __commonJS({
     var noOps = require_noOps_b5f3c7e4();
     var isValidDate = require_isValidDate_813b9419();
     var strToType = require_strToType_00c4481f();
-    var exists = require_exists_c79204b1();
+    var exists2 = require_exists_c79204b1();
     var log = require_log_37bbfac6();
     var pipeline = require_pipeline_e65bdaae();
     var stackTracePaths = require_stackTracePaths_a7780a09();
@@ -2054,18 +2054,18 @@ var require_cjs = __commonJS({
     var isFunc2 = require_isFunc_f93803cb();
     var isNonNegative = require_isNonNegative_9959647c();
     var isInt = require_isInt_94ce4199();
-    var isNum = require_isNum_c7164b50();
+    var isNum2 = require_isNum_c7164b50();
     var toNum = require_toNum_eeb2e51e();
     var mod = require_mod_31dfe732();
     var transformKeys = require_transformKeys_574f796c();
     var jsonEqual = require_jsonEqual_7e69ef6a();
-    var isObj2 = require_isObj_6b3aa807();
+    var isObj3 = require_isObj_6b3aa807();
     var reduceObj = require_reduceObj_f41cbf8d();
     var wait = require_wait_8ca88995();
     var joinRegex = require_joinRegex_5320d139();
     var getWordEndingAt = require_getWordEndingAt_63d038a5();
     var isQuoted = require_isQuoted_eb6994da();
-    var isStr3 = require_isStr_8a57710e();
+    var isStr4 = require_isStr_8a57710e();
     var sanitize = require_sanitize_0a18302d();
     var toStr2 = require_toStr_8e499966();
     var validate = require_validate_23297ec2();
@@ -2139,7 +2139,7 @@ var require_cjs = __commonJS({
     exports.isValidDate = isValidDate.isValidDate;
     exports.typeOf = isValidDate.typeOf;
     exports.strToType = strToType.strToType;
-    exports.exists = exists.exists;
+    exports.exists = exists2.exists;
     exports.logData = log.logData;
     exports.resetLogs = log.resetLogs;
     exports.setLogs = log.setLogs;
@@ -2170,8 +2170,8 @@ var require_cjs = __commonJS({
     exports.isInt = isInt.isInt;
     exports.isNegative = isInt.isNegative;
     exports.isPositive = isInt.isPositive;
-    exports.equalsNaN = isNum.equalsNaN;
-    exports.isNum = isNum.isNum;
+    exports.equalsNaN = isNum2.equalsNaN;
+    exports.isNum = isNum2.isNum;
     exports.getNums = toNum.getNums;
     exports.toNum = toNum.toNum;
     exports.mod = mod.mod;
@@ -2202,7 +2202,7 @@ var require_cjs = __commonJS({
     exports.isArrMap = jsonEqual.isArrMap;
     exports.isEntry = jsonEqual.isEntry;
     exports.jsonEqual = jsonEqual.jsonEqual;
-    exports.isObj = isObj2.isObj;
+    exports.isObj = isObj3.isObj;
     exports.reduceObj = reduceObj.reduceObj;
     exports.promisify = wait.promisify;
     exports.promisifyAll = wait.promisifyAll;
@@ -2246,7 +2246,7 @@ var require_cjs = __commonJS({
     exports.isUpperCase = isQuoted.isUpperCase;
     exports.isUrl = isQuoted.isUrl;
     exports.isUuid = isQuoted.isUuid;
-    exports.isStr = isStr3.isStr;
+    exports.isStr = isStr4.isStr;
     exports.sanitize = sanitize.sanitize;
     exports.toStr = toStr2.toStr;
     exports.validate = validate.validate;
@@ -2275,6 +2275,7 @@ var runResult = (item, {
   testPath,
   fullName
 }) => {
+  var _a;
   const result = {
     id,
     action,
@@ -2290,33 +2291,66 @@ var runResult = (item, {
   };
   (0, import_jsutils.isObj)(failed) && result.failedExpectations.push(failed);
   (0, import_jsutils.isObj)(passed) && result.passedExpectations.push(passed);
-  (0, import_jsutils.isObj)(item.action.ParkinMetaData) && (result.metaData = item.action.ParkinMetaData);
+  (0, import_jsutils.isObj)(item.action.ParkinMetaData) ? result.metaData = item.action.ParkinMetaData : (0, import_jsutils.isObj)(item.action.metaData) && (result.metaData = item.action.metaData);
   if (passed || failed)
-    result.status = passed ? "passed" /* passed */ : "failed" /* failed */;
+    result.status = passed ? "passed" /* passed */ : ((_a = result == null ? void 0 : result.metaData) == null ? void 0 : _a.warnOnFailed) ? "warning" /* warning */ : "failed" /* failed */;
   return result;
 };
 
-// src/test/utils.ts
+// src/utils/errors.ts
 var import_jsutils2 = __toESM(require_cjs());
-var hookTypes = (0, import_jsutils2.keyMap)([
+var resolveErrMsg = (error, maybe) => {
+  var _a;
+  return (0, import_jsutils2.isStr)(error) ? [error, maybe] : [(_a = error || maybe) == null ? void 0 : _a.message, error || maybe];
+};
+var replaceStackMsg = (err, msg) => {
+  const split = err.stack.split(`
+`);
+  split[0] = msg;
+  return split.join(`
+`);
+};
+var ParkinError = class extends Error {
+  name = `ParkinError`;
+  constructor(msg, error, replaceStack = true) {
+    const [message, err] = resolveErrMsg(msg, error);
+    const { stackTraceLimit } = Error;
+    if (err && replaceStack) {
+      Error.stackTraceLimit = 0;
+    }
+    const opts = err && message !== (err == null ? void 0 : err.message) ? { cause: err == null ? void 0 : err.message } : void 0;
+    super(message, opts);
+    Error.stackTraceLimit = stackTraceLimit;
+    this.name = this.constructor.name;
+    if (replaceStack) {
+      if (err == null ? void 0 : err.stack)
+        this.stack = replaceStackMsg(err, message);
+      err && Error.captureStackTrace(err, this.constructor);
+    }
+  }
+};
+
+// src/test/utils.ts
+var import_jsutils3 = __toESM(require_cjs());
+var hookTypes = (0, import_jsutils3.keyMap)([
   `beforeAll`,
   `beforeEach`,
   `afterAll`,
   `afterEach`
 ]);
 var globalTypes = {
-  ...(0, import_jsutils2.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
+  ...(0, import_jsutils3.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
   ...hookTypes
 };
 var Types = {
   ...globalTypes,
-  ...(0, import_jsutils2.keyMap)([`root`])
+  ...(0, import_jsutils3.keyMap)([`root`])
 };
 var throwError = (error) => {
-  throw new Error(error);
+  throw new ParkinError(error);
 };
 var validateHook = (type, action) => {
-  !(0, import_jsutils2.isFunc)(action) && throwError(
+  !(0, import_jsutils3.isFunc)(action) && throwError(
     `The ${type} method requires a "function" as the first argument`
   );
 };
@@ -2325,13 +2359,13 @@ var validateRootRun = (root) => {
   !root.describes || !root.describes.length && throwError(`No tests have been registered to this ParkinTest instance`);
 };
 var validateItem = (type, description, action) => {
-  !(0, import_jsutils2.isStr)(type) && throwError(`Test item type is required as a string`);
-  !(0, import_jsutils2.isFunc)(action) && throwError(
+  !(0, import_jsutils3.isStr)(type) && throwError(`Test item type is required as a string`);
+  !(0, import_jsutils3.isFunc)(action) && throwError(
     `The ${type} method requires a "function" as the second argument`
   );
-  !(0, import_jsutils2.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
+  !(0, import_jsutils3.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
 };
-var createItem = (type, metadata = import_jsutils2.noOpObj, validate = true) => {
+var createItem = (type, metadata = import_jsutils3.noOpObj, validate = true) => {
   const { description, action } = metadata;
   validate && validateItem(type, description, action);
   return { ...metadata, type };
@@ -2414,7 +2448,8 @@ var loopHooks = async (args) => {
       id: test ? specId : suiteId,
       status: "failed" /* failed */,
       failed: {
-        fullName: error.name,
+        error,
+        fullName,
         description: error.message,
         status: "failed" /* failed */
       },
@@ -2459,7 +2494,7 @@ var buildTestArgs = ({
   describe
 }) => {
   const test = describe.tests[testIdx];
-  const specId = `spec${testIdx}`;
+  const specId = `spec-${testIdx}`;
   return {
     test,
     specId,
@@ -2545,7 +2580,8 @@ var loopTests = async (args) => {
         testPath,
         action: "test" /* test */,
         failed: {
-          fullName: error.name,
+          error,
+          fullName,
           description: error.message,
           status: "failed" /* failed */
         }
@@ -2706,7 +2742,7 @@ var run = async (args) => {
 };
 
 // src/test/test.ts
-var import_jsutils3 = __toESM(require_cjs());
+var import_jsutils4 = __toESM(require_cjs());
 var ParkinTest = class {
   // Default global test timeout is 1hr
   timeout = 36e5;
@@ -2718,16 +2754,16 @@ var ParkinTest = class {
   xit;
   it;
   #activeParent = void 0;
-  #specDone = import_jsutils3.noOp;
-  #suiteDone = import_jsutils3.noOp;
-  #specStarted = import_jsutils3.noOp;
-  #suiteStarted = import_jsutils3.noOp;
-  #onAbort = import_jsutils3.noOp;
-  afterAll = import_jsutils3.noOp;
-  afterEach = import_jsutils3.noOp;
-  beforeAll = import_jsutils3.noOp;
-  beforeEach = import_jsutils3.noOp;
-  constructor(config = import_jsutils3.noOpObj) {
+  #specDone = import_jsutils4.noOp;
+  #suiteDone = import_jsutils4.noOp;
+  #specStarted = import_jsutils4.noOp;
+  #suiteStarted = import_jsutils4.noOp;
+  #onAbort = import_jsutils4.noOp;
+  afterAll = import_jsutils4.noOp;
+  afterEach = import_jsutils4.noOp;
+  beforeAll = import_jsutils4.noOp;
+  beforeEach = import_jsutils4.noOp;
+  constructor(config = import_jsutils4.noOpObj) {
     this.#root.description = config.description || `root`;
     this.#addOnly();
     this.#addSkip();
@@ -2737,7 +2773,7 @@ var ParkinTest = class {
     this.#activeParent = this.#root;
     this.#setConfig(config);
   }
-  run = (config = import_jsutils3.noOpObj) => {
+  run = (config = import_jsutils4.noOpObj) => {
     if (config.description)
       this.#root.description = config.description;
     this.#setConfig(config);
@@ -2761,6 +2797,12 @@ var ParkinTest = class {
     this.#autoClean && this.clean();
     return result;
   };
+  /**
+   * Expose the helper method to build a test result
+   * Helpful in cases where ParkinTest is wrapped by another tool
+   * Allows for a consistent iterface of events
+   */
+  buildResult = runResult;
   #shouldAbort = () => this.#abortRun;
   abort = () => {
     this.#abortRun = true;
@@ -2789,7 +2831,7 @@ var ParkinTest = class {
   /**
    * Sets the test config from the passed in object
    */
-  setConfig = (config) => this.#setConfig(config || import_jsutils3.noOpObj);
+  setConfig = (config) => this.#setConfig(config || import_jsutils4.noOpObj);
   /**
    * Adds passed in framework hooks to the class instance
    */
@@ -2827,14 +2869,14 @@ var ParkinTest = class {
       const item = this.#activeParent.describes[this.#activeParent.describes.length - 1];
       item.only = true;
       this.#describeOnly = true;
-      (0, import_jsutils3.checkCall)(this.#activeParent.hasOnlyChild);
+      (0, import_jsutils4.checkCall)(this.#activeParent.hasOnlyChild);
     };
     this.test.only = (...args) => {
       this.test(...args);
       const item = this.#activeParent.tests[this.#activeParent.tests.length - 1];
       item.only = true;
       this.#testOnly = true;
-      (0, import_jsutils3.checkCall)(this.#activeParent.hasOnlyChild);
+      (0, import_jsutils4.checkCall)(this.#activeParent.hasOnlyChild);
     };
   };
   /**
@@ -2883,7 +2925,7 @@ var ParkinTest = class {
     const lastParent = this.#activeParent;
     item.hasOnlyChild = () => {
       item.onlyChild = true;
-      (0, import_jsutils3.checkCall)(lastParent.hasOnlyChild);
+      (0, import_jsutils4.checkCall)(lastParent.hasOnlyChild);
     };
     this.#activeParent = item;
     action();
@@ -2895,12 +2937,20 @@ var ParkinTest = class {
    *
    * @returns {void}
    */
-  test = (description, action, timeout) => {
+  test = (description, action, meta) => {
+    let timeout = void 0;
+    if ((0, import_jsutils4.isObj)(meta) && !(0, import_jsutils4.exists)(action.metaData) && !(0, import_jsutils4.exists)(action.ParkinMetaData)) {
+      action.metaData = meta;
+      if (meta == null ? void 0 : meta.timeout)
+        timeout = meta.timeout;
+    } else if ((0, import_jsutils4.isNum)(meta))
+      timeout = meta;
     if (!this.#activeParent || this.#activeParent.type === Types.root)
-      throwError(
-        `All ${Types.test} method calls must be called within a ${Types.describe} method`
-      );
-    const item = createItem(Types.test, { action, timeout, description });
+      throwError(`All ${Types.test} method calls must be called within a ${Types.describe} method`);
+    const item = createItem(
+      Types.test,
+      { action, timeout, description }
+    );
     item.disabled = () => item.skip = true;
     this.#activeParent.tests.push(item);
   };
@@ -2915,7 +2965,7 @@ var ParkinTest = class {
       throwError(
         `All ${Types.test} method calls must be called within a ${Types.describe} method`
       );
-    !(0, import_jsutils3.isStr)(description) && throwError(
+    !(0, import_jsutils4.isStr)(description) && throwError(
       `The ${Types.test} method requires a "string" as the first argument`
     );
     const item = createItem(Types.test, { description, skip: true }, false);
