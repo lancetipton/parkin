@@ -55,9 +55,9 @@ Feature: Add to world
   I want to add a number to the world
   
   Scenario: Add a number to the world.number property
-    Given I have 1 as $:world.number
-    When I add 1 to $:world.number
-    Then I expect $:world.number to be 2
+    Given I have 1 as "number"
+    When I add 1 to "number"
+    Then I expect "number" to be 2
 </textarea>
 
                 </div>
@@ -65,17 +65,17 @@ Feature: Add to world
                   <h4 class="label definition-label" for="definition-text">Definitions</h4>
 
 <textarea class="form-control text-content" rows="14" id="definition-text" >
-Given("I have {int} as $world.number", (num, ctx) => {
+Given("I have {int} as {string}", (num, str, ctx) => {
   const { world } = ctx
   world.number = num
 })
 
-When("I add {int} to $world.number", (num, ctx) => {
+When("I add {int} to {string}", (num, str, ctx) => {
   const { world } = ctx
   world.number = world.number + num
 })
 
-Then("I expect $world.number to be {int}", (num, ctx) => {
+Then("I expect {string} to be {int}", (str, num, ctx) => {
   const { world } = ctx
   alert(`world.number (${world.number}) is equal to num (${num})? \n` + (world.number === num))
 })
