@@ -78,11 +78,11 @@ export class Hooks {
 
     return foundHooks.length
       ? async () => {
-        return foundHooks.reduce(async (toResolve, hook) => {
-          await toResolve
-          return await hook(this.instance)
-        }, Promise.resolve())
-      }
+          return foundHooks.reduce(async (toResolve, hook) => {
+            await toResolve
+            return await hook(this.instance)
+          }, Promise.resolve())
+        }
       : noOp
   }
 }

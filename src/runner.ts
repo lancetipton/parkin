@@ -51,7 +51,7 @@ const getStepOpts = (
     timeout: single?.timeout
       || shared?.timeout
       || options?.timeout
-      || 30000
+      || 15000
   }
 }
 
@@ -113,7 +113,7 @@ const runStep = async (
 ) => {
   const test = getTestMethod(ETestType.test, testMode)
   const opts = getStepOpts(step, options)
-  const disabled = hasTag(step?.tags?.tokens, options.tags.disabled)
+  const disabled = hasTag(step?.tags?.tokens, options?.tags?.disabled)
 
   const testMethod = async () => {
     if(disabled) return
@@ -151,7 +151,7 @@ const loopSteps = (
   testMode:boolean
 ) => {
   const describe = getTestMethod(ETestType.describe, testMode)
-  const disabled = hasTag(parent?.tags?.tokens, options.tags.disabled)
+  const disabled = hasTag(parent?.tags?.tokens, options?.tags?.disabled)
 
   let responses = []
   const describeMethod = () => {
@@ -262,7 +262,7 @@ const runRule = (
   // Map over the rule scenarios and call their steps
   // Store the returned promise in the responses array
   let responses = []
-  const disabled = hasTag(rule?.tags?.tokens, options.tags.disabled)
+  const disabled = hasTag(rule?.tags?.tokens, options?.tags?.disabled)
 
   const describeMethod = () => {
     if(disabled) return
@@ -307,11 +307,11 @@ const runRule = (
  * @returns {Object} Instance of the Runner class
  */
 export class Runner {
-  
+
   steps:Steps
   hooks:Hooks
   _world:TWorldConfig
-  
+
   constructor(steps:Steps, hooks:Hooks, world:TWorldConfig) {
     !steps && throwMissingSteps()
     !hooks && throwMissingHooks(hooks)
@@ -347,8 +347,15 @@ export class Runner {
    */
   run = async (
     data:TParkinRunFeaturesInput,
-    options:TParkinRunOpts=emptyOpts
+    opts?:TParkinRunOpts
   ) => {
+    const options = {
+      ...emptyOpts,
+      ...opts,
+      tags: {...emptyOpts?.tags, ...opts?.tags},
+      steps: {...emptyOpts?.steps, ...opts?.steps}
+    }
+    
     // Set if were running tests for Parkin, or external tests
     // Only used for testing purposes
     const testMode = (this.run as TRunTestMode).PARKIN_TEST_MODE
@@ -371,7 +378,7 @@ export class Runner {
     // Using promises to resolve each feature / scenario / step
     const promises = await features.map(async feature => {
       let responses = []
-      const disabled = hasTag(feature?.tags?.tokens, options.tags.disabled)
+      const disabled = hasTag(feature?.tags?.tokens, options?.tags?.disabled)
 
       if(!disabled){
         beforeAll(this.hooks.getRegistered(EHookType.beforeAll))

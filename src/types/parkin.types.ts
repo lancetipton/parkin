@@ -108,19 +108,29 @@ export interface IMatcher {
   expressionFind: (definition:TStepDef, step:string) => TExpFindResp
 }
 
+type TParkinRunStepOpts = {
+  retry?:number
+  timeout?:number
+  disabled?: boolean
+  [K:string]:any
+}
+
 export type TParkinRunStepOptsMap = {
-  shared:Record<any, any>
-  [K:string]:Record<any, any>
+  shared:TParkinRunStepOpts
+  [K:string]:TParkinRunStepOpts
+}
+
+export type TParkinRunTags = {
+  filter?: string|string[]
+  disabled?: string|string[]
 }
 
 export type TParkinRunOpts = {
   name?:string
+  retry?:number
   timeout?:number
+  tags?: TParkinRunTags
   steps?:TParkinRunStepOptsMap
-  tags?: {
-    filter?: string|string[]
-    disabled?: string|string[]
-  }
 }
 
 export type TParkinRun = (

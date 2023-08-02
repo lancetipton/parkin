@@ -80,6 +80,15 @@ describe(`Runner`, () => {
     expect(features).toHaveLength(1)
   })
 
+  it(`should handle empty options object`, async () => {
+    const resp = await PK.run(feature, {})
+    expect(resp).toBe(true)
+  })
+
+  it(`should handle partially filled options object`, async () => {
+    const resp = await PK.run(feature, { steps: {} })
+    expect(resp).toBe(true)
+  })
 
   it(`should filter feature.scenarios on tags`, () => {
     let features = PK.runner.getFeatures(featureWithPropertyTags, {
@@ -95,7 +104,6 @@ describe(`Runner`, () => {
     expect(features).toHaveLength(1)
     expect(features[0].scenarios).toHaveLength(0)
   })
-
 
   it(`should filter feature.rules on tags`, () => {
     let features = PK.runner.getFeatures(featureWithPropertyTags, {

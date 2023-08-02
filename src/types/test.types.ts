@@ -1,4 +1,5 @@
 import type { Types } from '../test/utils'
+import type { ParkinError } from '../utils/errors'
 import type { EAstObject, EStepType } from './helpers.types'
 
 export enum EResultAction {
@@ -13,6 +14,7 @@ export enum EResultStatus {
   skipped=`skipped`,
   passed=`passed`,
   failed=`failed`,
+  warning=`warning`,
 }
 
 export enum EResultType {
@@ -47,37 +49,54 @@ export type TParkinResultMeta = {
 export type TRunResultStepMeta = TParkinResultMeta & {
   step:string
   definition?:string
+  warnOnFailed?:boolean
 }
 
 export type TRunResultScenarioMeta = TParkinResultMeta & {
   tags?:string[]
   scenario:string
+  warnOnFailed?:never
 }
 
 export type TRunResultBackgroundMeta = TParkinResultMeta & {
   tags?:string[]
   background:string
+  warnOnFailed?:never
 }
 
 export type TRunResultRuleMeta = TParkinResultMeta & {
   tags?:string[]
   rule:string
+  warnOnFailed?:never
 }
 
 export type TRunResultFeatureMeta = TParkinResultMeta & {
   tags?:string[]
   feature:string
   errors?:string[]
+  warnOnFailed?:never
 }
 
-export type TRunResultActionMeta = TRunResultFeatureMeta
+export type TRunMeta = {
+  warnOnFailed?:boolean
+  [K:string]: any
+}
+export type TRunGeneralMeta<T extends Record<string, any>> = T
+
+export type TRunResultActionMeta<T extends Record<string, any>=any> = TRunResultFeatureMeta
   | TRunResultRuleMeta
   | TRunResultBackgroundMeta
   | TRunResultScenarioMeta
   | TRunResultStepMeta
+  | TRunGeneralMeta<T>
+  | TRunMeta
+
+export type TFailedErrorResult = Partial<TRunResult> & {
+  error: Error|ParkinError
+}
 
 export type TRunResultTestMeta = Omit<Partial<TRunResult>, `passed`|`failed`> & {
-  failed?:Partial<TRunResult>
+  failed?:TFailedErrorResult
   passed?:Partial<TRunResult>|boolean
 }
 
@@ -119,14 +138,17 @@ export type TParkinTestAbort = () => void
 export type TParkinTestCB = (result:TRunResult) => void
 
 export type TDescribeAction = (() => void) & {
+  metaData?:TRunResultActionMeta
   ParkinMetaData?:TRunResultActionMeta
 }
 
 export type TTestAction = ((done?:()=> void) => any) & {
+  metaData?:TRunResultActionMeta
   ParkinMetaData?:TRunResultActionMeta
 }
 
 export type TTestHookMethod = ((fn:(...args:any[]) => any, ...args:any[]) => any) & {
+  metaData?:TRunResultActionMeta
   ParkinMetaData?:TRunResultActionMeta
 }
 

@@ -1,4 +1,4 @@
-import { EStepType, EHookType } from './types'
+import { EAstObject, EStepType, EHookType } from './types'
 import { deepFreeze } from '@keg-hub/jsutils'
 
 const ignoreTypes = [
@@ -21,3 +21,20 @@ export const constants = deepFreeze({
   LOG_JEST_SPEC_ENV: `PARKIN_LOG_JEST_SPEC`,
   SPEC_RESULT_LOG: `------- PARKIN SPEC RESULT LOG -------`,
 })
+
+export const ParentTypes = [
+  EAstObject.rule,
+  EAstObject.scenario,
+  EAstObject.background,
+]
+
+export const StepTypes = [
+  EAstObject.given,
+  EAstObject.when,
+  EAstObject.then,
+  EAstObject.and,
+  EAstObject.but,
+  EAstObject[`*`],
+  EAstObject.step,
+  EAstObject.steps,
+]

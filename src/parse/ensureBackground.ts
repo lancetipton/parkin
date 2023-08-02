@@ -6,7 +6,7 @@ import type {
 } from '../types'
 
 import { EAstObject } from '../types'
-import { idFromLoc } from './idFromLoc'
+import { idFromIdx } from './idFromIdx'
 import { isStr, isBool } from '@keg-hub/jsutils'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
@@ -35,7 +35,7 @@ export const backgroundFactory = (
     index,
     steps: [],
     background,
-    ...(background && parent && { uuid: idFromLoc({ loc: 0, type, parent })}),
+    ...(background && parent && { uuid: idFromIdx({ index: 0, type, parent })}),
   } as TBackgroundAst
 }
 
@@ -71,9 +71,9 @@ export const ensureBackground = (
 
   !background.index && (background.index = index)
   !background.uuid
-    && (background.uuid = idFromLoc({
+    && (background.uuid = idFromIdx({
         parent,
-        loc: 0,
+        index: 0,
         type: background.type
       }))
 

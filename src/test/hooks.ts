@@ -60,7 +60,8 @@ export const loopHooks = async (args:TLoopHooks) => {
       id: test ? specId : suiteId,
       status: EResultStatus.failed,
       failed: {
-        fullName: error.name,
+        error,
+        fullName,
         description: error.message,
         status: EResultStatus.failed,
       },

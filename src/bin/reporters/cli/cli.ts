@@ -1,10 +1,18 @@
-import type { TRunResults } from '../types'
+import type { TFailedErrorResult, TRunResults } from '../../../types'
 
 import { Logger } from '@keg-hub/cli-utils'
 import {emptyObj} from '@keg-hub/jsutils'
 
-const FailText = (text:string) => `${Logger.colors.red(`✘`)} ${Logger.colors.gray(`-`)} ${text}`
-const PassText = (text:string) => `${Logger.colors.green(`✔`)} ${Logger.colors.gray(`-`)} ${text}`
+import {
+  Tags,
+  Format,
+  FormatLine,
+  FormatError,
+  FormatChild,
+  FormatParent,
+  FormatErrors,
+} from './formatters'
+
 
 export type TPrintResultOpts = {
   failedOnly?:boolean
@@ -17,7 +25,10 @@ export type TPrintResultOpts = {
   exitWithError?:boolean
 }
 
-export const printResult = (
+const FailText = (text:string) => `${Logger.colors.red(`✘`)} ${Logger.colors.gray(`-`)} ${text}`
+const PassText = (text:string) => `${Logger.colors.green(`✔`)} ${Logger.colors.gray(`-`)} ${text}`
+
+const printResult = (
   results:TRunResults,
   opts:TPrintResultOpts=emptyObj
 ) => {
@@ -35,43 +46,34 @@ export const printResult = (
   const output:string[] = []
 
   results.forEach((result) => {
-    if((failedOnly || errorOnly) && result.passed) return
 
-    hasFailed = true
-    const HeaderText = result.passed ? PassText : FailText
-    if(features || !errorOnly || !result.passed)
-      output.push(`${HeaderText(result.fullName)}\n`)
+    if((failedOnly || errorOnly) && result.passed) return
+ 
+    if(!hasFailed && result.failed) hasFailed = result.failed
+
+    if(features && (!errorOnly || !result.passed))
+      output.push(FormatParent(result.fullName, result.failed, result.failed))
 
     result.describes.forEach(describe => {
       if((failedOnly || errorOnly) && describe.passed) return
 
-      const DesText = describe.passed ? PassText : FailText
-      if(stepParents || !errorOnly || !describe.passed)
-        output.push(`  ${DesText(describe.description)}\n`)
+      if(stepParents && (!errorOnly || !describe.passed))
+        output.push(FormatParent(describe.description, result.failed, describe.failed))
 
       describe.tests.forEach(test => {
         if((failedOnly || errorOnly) && test.passed) return
 
-        const TestText = test.passed ? PassText : FailText
         if(steps || !test.passed)
-          output.push(`    ${TestText(test.description)}\n`)
+          output.push(FormatChild(test.description, result.failed, test.failed))
 
-        if(test.passed) return
-
-        const space = `      `
-        test.failedExpectations.forEach(failed => {
-          output.push(`${space}${Logger.colors.red(failed.fullName)}:\n`)
-          output.push(Logger.colors.red(
-            failed.description.split(`\n`).map(line => `${space}  ${line}`).join(`\n`)
-          ))
-          output.push(`\n`)
-        })
+        test.failed && output.push(FormatErrors(test.failedExpectations as TFailedErrorResult[]))
 
       })
 
     })
+
   })
-  
+
   if(!hasFailed){
     if(!exitWithError) return output.length && Logger.log(output.join(``))
     output.length && Logger.log(output.join(``))
@@ -95,3 +97,17 @@ export const printResult = (
 
 }
 
+export const CLIReporter = {
+  tags: Tags,
+  fail: FailText,
+  pass: PassText,
+  results: printResult,
+  format: {
+    format: Format,
+    line: FormatLine,
+    error: FormatError,
+    child: FormatChild,
+    parent: FormatParent,
+    errors: FormatErrors,
+  }
+}

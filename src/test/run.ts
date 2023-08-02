@@ -120,11 +120,13 @@ const loopTests = async (args:TLoopTests) => {
         testPath: testPath,
         action: EResultAction.test,
         failed: {
-          fullName: error.name,
+          error,
+          fullName,
           description: error.message,
           status: EResultStatus.failed,
         },
       })
+
       describeFailed = true
     }
     

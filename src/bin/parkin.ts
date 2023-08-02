@@ -11,8 +11,8 @@ import { getDefs } from './getDefs'
 import { getWorld } from './getWorld'
 import { runTests } from './runTests'
 import { getConfig } from './getConfig'
+import { CLIReporter } from './reporters'
 import { pickKeys } from '@keg-hub/jsutils'
-import { printResult } from './printResult'
 import { getFeatures } from './getFeatures'
 import { argsParse } from '@keg-hub/args-parse'
 
@@ -46,13 +46,13 @@ import { argsParse } from '@keg-hub/args-parse'
   // Need to setup way to use Jest instead of PTE based on task option
   // Need to create separate export for parkin in /.bin folder
   // console.dir(results, {depth: null, colors: true})
-  printResult(results as TRunResults, {
-    failedOnly: true,
-    exitWithError:true,
+  CLIReporter.results(results as TRunResults, {
     // steps: false,
-    // features: true,
-    // errorOnly: true,
+    // features: false,
     // stepParents: false,
+    // errorOnly: true,
+    // failedOnly: true,
+    // exitWithError: true,
   })
 
 })()
