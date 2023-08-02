@@ -36,6 +36,8 @@
     "index.js",
     "index.cjs",
     "global.js",
+    "reporters.js",
+    "reporters.cjs",
     "testGlobal.js",
     "README.md"
   ],
