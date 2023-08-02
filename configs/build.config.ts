@@ -18,20 +18,25 @@ const reportersEntry = path.join(rootDir, `src/bin/reporters/index.js`)
 
 const minify = false
 
+const shared = {
+  bundle: true,
+  minify: minify,
+  sourcemap: true,
+  treeShaking: true,
+  entryPoints: [
+    testEntry,
+    globalTest,
+    parkinEntry,
+    globalParkin,
+    reportersEntry
+  ],
+}
+
 const cjsBuild = async () => {
   // Build the files with esbuild
   await esbuild.build({
-    entryPoints: [
-      parkinEntry,
-      testEntry,
-      globalParkin,
-      globalTest,
-      reportersEntry
-    ],
+    ...shared,
     outdir: cjsOut,
-    bundle: true,
-    minify: minify,
-    sourcemap: true,
     platform: "node",
     target: ["node16"],
     plugins: [nodeModulesPolyfillPlugin()]
@@ -42,17 +47,9 @@ const cjsBuild = async () => {
 const esmBuild = async () => {
   // Build the files with esbuild
   await esbuild.build({
-    entryPoints: [
-      parkinEntry,
-      testEntry,
-      globalParkin,
-      globalTest
-    ],
+    ...shared,
     format: "esm",
     outdir: esmOut,
-    bundle: true,
-    minify: minify,
-    sourcemap: true,
     splitting: true,
     target: ["esnext"],
     define: { global: "window" },
@@ -66,11 +63,7 @@ const esmBuild = async () => {
 }
 
 
-
-
 ;(async () => {
   await cjsBuild()
   await esmBuild()
 })()
-
-
