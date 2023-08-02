@@ -31,7 +31,7 @@ export const buildTestArgs = ({
   describe
 }:TBuildTestArgs) => {
   const test = describe.tests[testIdx]
-  const specId = `spec${testIdx}`
+  const specId = `spec-${testIdx}`
 
   return {
     test,

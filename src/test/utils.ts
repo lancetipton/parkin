@@ -10,6 +10,7 @@ import type {
   TDescribeTestObj,
 } from '../types'
 
+import { ParkinError } from '../utils/errors'
 import { keyMap, isFunc, isStr, noOpObj } from '@keg-hub/jsutils'
 
 /**
@@ -56,7 +57,7 @@ export const addToGlobal = (instance:TTestObj) => {}
  * @throws
  */
 export const throwError = (error:string) => {
-  throw new Error(error)
+  throw new ParkinError(error)
 }
 
 /**

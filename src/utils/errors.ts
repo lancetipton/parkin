@@ -1,4 +1,47 @@
+import {isStr} from '@keg-hub/jsutils'
 import { EHookType } from '../types'
+
+const resolveErrMsg = (error?:string|Error, maybe?:Error|string):[string, Error] => {
+  return isStr(error)
+    ? [error as string, maybe as Error]
+    : [((error || maybe) as Error)?.message, (error || maybe) as Error]
+}
+
+const replaceStackMsg = (err:Error, msg:string) => {
+  const split = err.stack.split(`\n`)
+  split[0] = msg
+
+  return split.join(`\n`)
+}
+
+export class ParkinError extends Error {
+  name = `ParkinError`
+
+  constructor(msg:string|Error, error?:string|Error, replaceStack:boolean=true){
+    const [message, err] = resolveErrMsg(msg, error)
+
+    const { stackTraceLimit } = Error
+    if(err && replaceStack){
+      // Create a new error without a stacktrace
+      Error.stackTraceLimit = 0
+    }
+
+    // Set the error cause if it's different form the message
+    const opts = err && message !== err?.message
+      ? { cause: err?.message }
+      : undefined
+
+    super(message, opts)
+    // Reset the original stacktrace limit
+    Error.stackTraceLimit = stackTraceLimit
+    this.name = this.constructor.name
+    
+    if(replaceStack){
+      if(err?.stack) this.stack = replaceStackMsg(err, message)
+      err && Error.captureStackTrace(err, this.constructor)
+    }
+  }
+}
 
 /*
  * Helper method to use the a test method can not be found on the global scope
@@ -16,7 +59,7 @@ export const testMethodFill = (type:string) => {
    *
    */
   return () => {
-    throw new Error(
+    throw new ParkinError(
       `` +
         `Test method ${type} does not exist on the global scope.\n` +
         `Please ensure ${type} exists before calling the run method!\n`
@@ -32,7 +75,7 @@ export const testMethodFill = (type:string) => {
  *
  */
 export const throwMissingSteps = () => {
-  throw new Error(
+  throw new ParkinError(
     `Runner class constructor requires an instance of the Steps class`
   )
 }
@@ -45,7 +88,7 @@ export const throwMissingSteps = () => {
  *
  */
 export const throwMissingHooks = (found:any) => {
-  throw new Error(
+  throw new ParkinError(
     `Runner class constructor requires an instance of the Hooks class. Found: ${found}`
   )
 }
@@ -58,7 +101,7 @@ export const throwMissingHooks = (found:any) => {
  *
  */
 export const throwMissingFeatureText = () => {
-  throw new Error(
+  throw new ParkinError(
     `Runner class requires feature text when calling the run method`
   )
 }
@@ -71,7 +114,7 @@ export const throwMissingFeatureText = () => {
  *
  */
 export const throwNoMatchingStep = (text:string) => {
-  throw new ReferenceError(text)
+  throw new ParkinError(text)
 }
 
 /**
@@ -82,7 +125,7 @@ export const throwNoMatchingStep = (text:string) => {
  *
  */
 export const throwParamTypeExists = (name:string) => {
-  throw new Error(`Cannot register param type "${name}". It already exists!`)
+  throw new ParkinError(`Cannot register param type "${name}". It already exists!`)
 }
 
 /**
@@ -93,7 +136,7 @@ export const throwParamTypeExists = (name:string) => {
  * 
  */
 export const throwFeatureNotAnObj = (feature:any) => {
-  throw new Error(`Assemble feature requires an object matching the feature model spec!`)
+  throw new ParkinError(`Assemble feature requires an object matching the feature model spec!`)
 }
 
 /**
@@ -104,7 +147,7 @@ export const throwFeatureNotAnObj = (feature:any) => {
  *
  */
 export const throwMissingWorldValue = (arg:string) => {
-  throw new Error(
+  throw new ParkinError(
     `Can not replace ${arg} with value from $world, it does not exist on the world object`,
   )
 }
@@ -117,7 +160,7 @@ export const throwMissingWorldValue = (arg:string) => {
  *
  */
 export const throwInvalidHookType = (hookTypes:EHookType, type:string) => {
-  throw new Error(
+  throw new ParkinError(
     [
       `Expected client hook type to be one of ', ${hookTypes}.`,
       `Found: ${type}`,
@@ -133,10 +176,7 @@ export const throwInvalidHookType = (hookTypes:EHookType, type:string) => {
  *
  */
 export const throwWorldReplace = (err:Error, currentMatch:string) => {
-  console.error(
-    `Error replacing $world value in feature text. Current match was ${currentMatch}`
-  )
-  throw err
+  throw new ParkinError(`Error replacing $world value in feature text. Current match was ${currentMatch}`, err)
 }
 
 /**
@@ -147,8 +187,8 @@ export const throwWorldReplace = (err:Error, currentMatch:string) => {
  *
  */
 export const throwAliasReplace = (err:Error, currentMatch:string) => {
-  console.error(
-    `Error replacing $$alias ( $world.$alias ) in feature text. Current match was ${currentMatch}`
+  throw new ParkinError(
+    `Error replacing $$alias ( $world.$alias ) in feature text. Current match was ${currentMatch}`,
+    err
   )
-  throw err
 }

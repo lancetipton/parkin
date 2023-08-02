@@ -1,5 +1,3 @@
-import type { TIdFromLoc } from './parse/idFromIdx'
-import type { TFindInFeature } from './utils/findInFeature'
 import type {
   TParse,
   TAssemble,

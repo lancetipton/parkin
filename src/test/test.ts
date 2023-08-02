@@ -9,11 +9,13 @@ import type {
   TParkinTestFactory,
   TParkinDescribeFactory,
   TRunResults,
+  TRunResultActionMeta,
 } from '../types'
 
 import { run } from './run'
+import { runResult } from './runResult'
 import { PromiseTimeout } from '../utils/promiseTimeout'
-import { noOp, noOpObj, isStr, checkCall } from '@keg-hub/jsutils'
+import { noOp, noOpObj, isStr, checkCall, isNum, isObj, exists } from '@keg-hub/jsutils'
 import {
   Types,
   createRoot,
@@ -90,6 +92,13 @@ export class ParkinTest {
 
     return result
   }
+
+  /**
+   * Expose the helper method to build a test result
+   * Helpful in cases where ParkinTest is wrapped by another tool
+   * Allows for a consistent iterface of events
+   */
+  buildResult = runResult
 
   #shouldAbort = () => this.#abortRun
 
@@ -260,14 +269,24 @@ export class ParkinTest {
   test = ((
     description:string,
     action:TTestAction,
-    timeout?:number
+    meta:TRunResultActionMeta|number
   ) => {
-    if (!this.#activeParent || this.#activeParent.type === Types.root)
-      throwError(
-        `All ${Types.test} method calls must be called within a ${Types.describe} method`
-      )
+    let timeout:number = undefined
 
-    const item = createItem<TTestTestObj>(Types.test, { action, timeout, description })
+    if(isObj(meta) && !exists(action.metaData) && !exists(action.ParkinMetaData)){
+      action.metaData = meta
+      if(meta?.timeout) timeout = meta.timeout
+    }
+    else if(isNum(meta)) timeout = meta
+
+    if (!this.#activeParent || this.#activeParent.type === Types.root)
+      throwError(`All ${Types.test} method calls must be called within a ${Types.describe} method`)
+
+    const item = createItem<TTestTestObj>(
+      Types.test,
+      { action, timeout, description }
+    )
+
     item.disabled = () => (item.skip = true)
 
     this.#activeParent.tests.push(item)

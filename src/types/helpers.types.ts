@@ -25,6 +25,7 @@ export enum EStepMethodType {
 }
 
 export enum EAstObject {
+  error=`error`,
   tags=`tags`,
   rule=`rule`,
   rules=`rules`,

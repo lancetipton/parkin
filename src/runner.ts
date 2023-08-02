@@ -113,7 +113,7 @@ const runStep = async (
 ) => {
   const test = getTestMethod(ETestType.test, testMode)
   const opts = getStepOpts(step, options)
-  const disabled = hasTag(step?.tags?.tokens, options.tags.disabled)
+  const disabled = hasTag(step?.tags?.tokens, options?.tags?.disabled)
 
   const testMethod = async () => {
     if(disabled) return
@@ -151,7 +151,7 @@ const loopSteps = (
   testMode:boolean
 ) => {
   const describe = getTestMethod(ETestType.describe, testMode)
-  const disabled = hasTag(parent?.tags?.tokens, options.tags.disabled)
+  const disabled = hasTag(parent?.tags?.tokens, options?.tags?.disabled)
 
   let responses = []
   const describeMethod = () => {
@@ -262,7 +262,7 @@ const runRule = (
   // Map over the rule scenarios and call their steps
   // Store the returned promise in the responses array
   let responses = []
-  const disabled = hasTag(rule?.tags?.tokens, options.tags.disabled)
+  const disabled = hasTag(rule?.tags?.tokens, options?.tags?.disabled)
 
   const describeMethod = () => {
     if(disabled) return
@@ -349,7 +349,12 @@ export class Runner {
     data:TParkinRunFeaturesInput,
     opts?:TParkinRunOpts
   ) => {
-    const options = {...emptyOpts, ...opts}
+    const options = {
+      ...emptyOpts,
+      ...opts,
+      tags: {...emptyOpts?.tags, ...opts?.tags},
+      steps: {...emptyOpts?.steps, ...opts?.steps}
+    }
     
     // Set if were running tests for Parkin, or external tests
     // Only used for testing purposes

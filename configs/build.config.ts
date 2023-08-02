@@ -14,6 +14,7 @@ const parkinEntry = path.join(rootDir, `src/index.js`)
 const globalParkin = path.join(rootDir, `src/global.js`)
 const testEntry = path.join(rootDir, `src/test/index.js`)
 const globalTest = path.join(rootDir, `src/test/global.js`)
+const reportersEntry = path.join(rootDir, `src/bin/reporters/index.js`)
 
 const minify = false
 
@@ -24,7 +25,8 @@ const cjsBuild = async () => {
       parkinEntry,
       testEntry,
       globalParkin,
-      globalTest
+      globalTest,
+      reportersEntry
     ],
     outdir: cjsOut,
     bundle: true,

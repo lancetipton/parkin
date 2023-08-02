@@ -201,6 +201,57 @@ describe(`ParkinTest`, () => {
       })
     })
 
+    it(`Should add the passed in meta data object when passed as the third argument`, () => {
+      const metadata = { timeout: 1000 }
+      const PTE = new ParkinTest()
+      PTE.describe(`describe method`, () => {
+        PTE.test(`test method`, () => {}, metadata)
+      })
+
+      const parent = PTE.getActiveParent()
+      const describeObj = parent.describes[0]
+      const test = describeObj.tests[0]
+      expect(test.action.metaData).toBe(metadata)
+    })
+
+    it(`Should set timeout from the metadata when it exists on the metadata object passed as the third argument`, () => {
+      const metadata = { timeout: 1500 }
+      const PTE = new ParkinTest()
+      PTE.describe(`describe method`, () => {
+        PTE.test(`test method`, () => {}, metadata)
+      })
+
+      const parent = PTE.getActiveParent()
+      const describeObj = parent.describes[0]
+      const test = describeObj.tests[0]
+      expect(test.timeout).toBe(1500)
+    })
+
+    it(`Should add the passed in timeout when passed third argument is a number`, () => {
+      const timeout = 2000
+      const PTE = new ParkinTest()
+      PTE.describe(`describe method`, () => {
+        PTE.test(`test method`, () => {}, timeout)
+      })
+
+      const parent = PTE.getActiveParent()
+      const describeObj = parent.describes[0]
+      const test = describeObj.tests[0]
+      expect(test.timeout).toBe(2000)
+    })
+
+    it(`Should not set a timeout when a timeout is not passed`, () => {
+      const PTE = new ParkinTest()
+      PTE.describe(`describe method`, () => {
+        PTE.test(`test method`, () => {})
+      })
+
+      const parent = PTE.getActiveParent()
+      const describeObj = parent.describes[0]
+      const test = describeObj.tests[0]
+      expect(test.timeout).toBe(undefined)
+    })
+
     it(`Should throw an error when the test method is called outside of a describe method`, () => {
       expect(() => {
         const PTE = new ParkinTest()
