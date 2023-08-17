@@ -14,7 +14,7 @@ import type {
 import { Steps } from './steps'
 import { Hooks } from './hooks'
 import { Runner } from './runner'
-import { assemble } from './assemble'
+import { Assemble } from './assemble'
 import { constants } from './constants'
 import { idFromIdx } from './parse/idFromIdx'
 import { findInFeature } from './utils/findInFeature'
@@ -150,7 +150,7 @@ export class Parkin {
      *
      * @property {function} feature - Method to assemble a feature model into a string
      */
-    this.assemble = assemble
+    this.assemble = new Assemble(this)
 
     /**
      * Access paramTypes object containing the paramTypes register method
