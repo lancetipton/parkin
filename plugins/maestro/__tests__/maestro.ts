@@ -17,33 +17,13 @@ describe(`Maestro Converter`, () => {
 
   it(`should convert a simple feature file into a simple maestro flow`, () => {
     const maestro = new Maestro({ world })
-
-    console.log(`------- Simple Feature Input -------`)
-    console.log(maestroSimpleFeature)
-    console.log(`\n`)
-
     const converted = maestro.convert(maestroSimpleFeature)[0]
-
-    console.log(`------- Simple Flow Output -------`)
-    console.log(converted)
-    console.log(`\n`)
-
     expect(converted).toEqual(maestroSimpleFlow)
   })
 
   it(`should convert a complex feature file into a complex maestro flow`, () => {
     const maestro = new Maestro({ world })
-    
-    console.log(`------- Complex Feature Input -------`)
-    console.log(maestroFeature)
-    console.log(`\n`)
-
     const converted = maestro.convert(maestroFeature)[0]
-
-    console.log(`------- Complex Flow Output -------`)
-    console.log(converted)
-    console.log(`\n`)
-
     expect(converted).toEqual(maestroFlow)
   })
 

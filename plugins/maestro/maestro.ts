@@ -5,7 +5,7 @@ import type {
 } from '../../src/types'
 
 import { Flow } from './flow'
-import { Parkin } from '../../'
+import { Parkin } from '../../src/parkin'
 import { fromIndex } from './fromIndex'
 import { buildFlowSteps } from './steps'
 import {emptyObj, isArr, isObj, isStr} from '@keg-hub/jsutils'
