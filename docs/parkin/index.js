@@ -3862,7 +3862,7 @@ var filterMatch = ({
     tags: filterTags
   } = options;
   const nameMatch = !filterName || !name || name.includes(filterName);
-  const tagMatch = !filterTags.length || tags.length && filterTags.every((clientTag) => tags.includes(clientTag));
+  const tagMatch = !(filterTags == null ? void 0 : filterTags.length) || (tags == null ? void 0 : tags.length) && (filterTags == null ? void 0 : filterTags.every((clientTag) => tags == null ? void 0 : tags.includes(clientTag)));
   return nameMatch && tagMatch;
 };
 var getFilterOpts = (opts = emptyOpts) => {
@@ -3878,16 +3878,14 @@ var filterChild = ({
   children,
   tags = import_jsutils21.emptyArr
 }) => {
-  return children.filter(
-    (child) => {
-      var _a;
-      return filterMatch({
-        options,
-        name: child[nameKey],
-        tags: [...((_a = child == null ? void 0 : child.tags) == null ? void 0 : _a.tokens) || import_jsutils21.emptyArr, ...tags]
-      });
-    }
-  );
+  return children.filter((child) => {
+    var _a;
+    return filterMatch({
+      options,
+      name: child[nameKey],
+      tags: [...((_a = child == null ? void 0 : child.tags) == null ? void 0 : _a.tokens) || import_jsutils21.emptyArr, ...tags]
+    });
+  });
 };
 var filterFeatures = (features, filterOptions = emptyOpts) => {
   var _a;
