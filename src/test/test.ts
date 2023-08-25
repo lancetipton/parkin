@@ -175,7 +175,7 @@ export class ParkinTest {
       checkCall(this.#activeParent.hasOnlyChild)
     }
 
-    this.test.only = (...args:[description:string, action?:TTestAction, timeout?:number]) => {
+    this.test.only = (...args:[description:string, action?:TTestAction, meta?:TRunResultActionMeta|number]) => {
       this.test(...args)
       // Get the last item just added to the this.#activeParent
       const item = this.#activeParent.tests[this.#activeParent.tests.length - 1]
@@ -200,7 +200,7 @@ export class ParkinTest {
       item.skip = true
     }
 
-    this.test.skip = (...args:[description:string, action?:TTestAction, timeout?:number]) => {
+    this.test.skip = (...args:[description:string, action?:TTestAction, meta?:TRunResultActionMeta|number]) => {
       this.test(...args)
       // Get the last item just added to the this.#activeParent
       const item = this.#activeParent.tests[this.#activeParent.tests.length - 1]

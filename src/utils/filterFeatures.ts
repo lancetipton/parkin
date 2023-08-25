@@ -27,7 +27,7 @@ type TFilterMatch = {
 type TFilterChild = {
   tags?:string[]
   nameKey: `background`|`scenario`|`rule`
-  children: (TBackgroundAst|TRuleAst | TScenarioAst)[]
+  children: Array<TBackgroundAst|TRuleAst | TScenarioAst>
   options:{
     name?:string,
     tags?:string[]
@@ -50,8 +50,8 @@ const filterMatch = ({
   } = options
 
   const nameMatch = !filterName || !name || name.includes(filterName)
-  const tagMatch = !filterTags.length
-    || (tags.length && filterTags.every((clientTag:string) => tags.includes(clientTag)))
+  const tagMatch = !filterTags?.length
+    || (tags?.length && filterTags?.every((clientTag:string) => tags?.includes(clientTag)))
 
   return nameMatch && tagMatch
 }
@@ -72,16 +72,16 @@ const filterChild = ({
   options,
   nameKey,
   children,
-  tags=emptyArr,
+  tags=emptyArr as string[],
 }:TFilterChild) => {
   // check for matching children, where children inherit their parent feature's tags
-  return children.filter(child =>
-    filterMatch({
+  return children.filter(child => {
+    return filterMatch({
       options,
       name: child[nameKey],
-      tags: [ ...(child?.tags?.tokens || emptyArr), ...tags ],
+      tags: [ ...(child?.tags?.tokens || (emptyArr as string[])), ...tags ],
     })
-  )
+  })
 }
 
 /**
