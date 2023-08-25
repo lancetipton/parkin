@@ -313,6 +313,9 @@ export const run = async (args:TRun):Promise<TRunResults> => {
   // If a before all throws an error, we don't want to run the rest of the tests, so just return
   if (beforeAllResult) return [beforeAllResult]
 
+  // TODO: if a test or describe throws an error, the afterAll callbacks registered to the root are never called
+  // Need to wrap this in a try/catch/finally and call the afterAll callbacks in the finally to ensure they are always called
+
   const { describes } = await loopDescribes(args)
 
   if(shouldAbort()){
