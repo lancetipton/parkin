@@ -201,6 +201,7 @@ export type THookTestObj = {
 
 export type TDescribeTestObj = TBaseTestObj & {
   type: `describe`
+  childError?:Error
   tests?:TTestTestObj[]
   action:TDescribeAction
   describes?:TDescribeTestObj[]
@@ -212,6 +213,7 @@ export type TDescribeTestObj = TBaseTestObj & {
 
 export type TRootTestObj = TBaseTestObj & {
   type: `root`
+  childError?:Error
   tests?:TTestTestObj[]
   action:TDescribeAction
   describes?:TDescribeTestObj[]
@@ -220,6 +222,8 @@ export type TRootTestObj = TBaseTestObj & {
   afterEach?:TTestHookMethod[]
   beforeEach?:TTestHookMethod[]
 }
+
+export type TParentTestObj = TRootTestObj | TDescribeTestObj
 
 export type TNonRootTestObj = TDescribeTestObj | TTestTestObj
 

@@ -1,6 +1,37 @@
 import { ParkinTest } from '../test'
 
 describe(`ParkinTest.run`, () => {
+
+  it(`should match the readme example call order`, async () => {
+    const callOrder = []
+    const PTE = new ParkinTest()
+    PTE.describe(`describe-1`, () => {
+
+      PTE.test(`test-1-1`, () => callOrder.push(`call #3`))
+
+      PTE.describe(`describe-1-2`, () => {
+
+        PTE.afterAll(() => callOrder.push(`call #6`))
+
+        PTE.test(`test-1-2-1`, () => callOrder.push(`call #5`))
+      })
+      
+      PTE.beforeAll(() => callOrder.push(`call #1`))
+      PTE.beforeEach(() => callOrder.push(`call #2 & #4`))
+
+    })
+    
+    await PTE.run()
+
+    expect(callOrder[0]).toBe(`call #1`)
+    expect(callOrder[1]).toBe(`call #2 & #4`)
+    expect(callOrder[2]).toBe(`call #3`)
+    expect(callOrder[3]).toBe(`call #2 & #4`)
+    expect(callOrder[4]).toBe(`call #5`)
+    expect(callOrder[5]).toBe(`call #6`)
+
+  })
+
   it(`should run the passed in hook and test methods in correct order`, async () => {
     const callorder = []
     const beforeEach1 = jest.fn(() => callorder.push(`beforeEach1`))
@@ -28,6 +59,7 @@ describe(`ParkinTest.run`, () => {
       })
       PTE.afterEach(afterEach1)
     })
+
     PTE.describe(`describe-2 method`, () => {
       PTE.test(`test-2 method`, testMethod2)
       PTE.afterAll(afterAll1)
@@ -352,4 +384,167 @@ describe(`ParkinTest.run`, () => {
     expect(testCalled3).toHaveBeenCalled()
     expect(testNotCalled1).not.toHaveBeenCalled()
   })
+  
+  it(`should call the parent afterAll hooks when a test throws`, async () => {
+
+    const PTE = new ParkinTest()
+    const testCalled1 = jest.fn()
+    const afterAll1 = jest.fn()
+    const afterAll2 = jest.fn()
+
+    PTE.describe(`describe-1 method`, () => {
+      PTE.test(`test-1 method`, testCalled1)
+
+      PTE.describe(`describe-2 method`, () => {
+        PTE.test(`test-2-1 method`, () => {
+          throw new Error(`test-2-1 test error`)
+        })
+        
+        PTE.afterAll(afterAll1)
+      })
+
+      PTE.afterAll(afterAll2)
+    })
+
+    await PTE.run()
+
+    expect(afterAll1).toHaveBeenCalled()
+    expect(afterAll2).toHaveBeenCalled()
+
+  })
+
+  it(`should call the parent afterAll hooks when a test throws`, async () => {
+
+    const PTE = new ParkinTest()
+    const testCalled1 = jest.fn()
+    const afterEach1 = jest.fn()
+    const afterAll1 = jest.fn()
+
+    PTE.describe(`describe-1 method`, () => {
+      PTE.test(`test-1 method`, testCalled1)
+      
+      PTE.afterEach(afterEach1)
+
+      PTE.describe(`describe-2 method`, () => {
+        PTE.test(`test-1 method`, () => {
+          throw new Error(`describe-2 error`)
+        })
+      })
+
+      PTE.afterAll(afterAll1)
+    })
+
+    await PTE.run()
+
+    expect(afterEach1).toHaveBeenCalled()
+    expect(afterAll1).toHaveBeenCalled()
+
+  })
+
+
+  it(`should call the root afterAll hooks when a test throws`, async () => {
+
+    const PTE = new ParkinTest()
+    const testCalled1 = jest.fn()
+    const afterEach = jest.fn()
+    const afterAll = jest.fn()
+
+    PTE.afterEach(afterEach)
+    PTE.afterAll(afterAll)
+
+    PTE.describe(`describe-1 method`, () => {
+      PTE.test(`test-1 method`, testCalled1)
+
+      PTE.describe(`describe-2 method`, () => {
+        PTE.test(`test-1 method`, () => {
+          throw new Error(`describe-2 error`)
+        })
+      })
+
+    })
+
+    await PTE.run()
+
+    expect(afterEach).toHaveBeenCalled()
+    expect(afterAll).toHaveBeenCalled()
+
+  })
+
+
+  it(`should not call the after hooks when a before hook throws`, async () => {
+
+    const PTE = new ParkinTest()
+    const testCalled1 = jest.fn()
+    const beforeAll = jest.fn(() => {
+      throw new Error(`BeforeAll Error`)
+    })
+    const afterEach = jest.fn()
+    const afterAll = jest.fn()
+
+
+    PTE.describe(`describe-1 method`, () => {
+
+      PTE.beforeAll(beforeAll)
+
+      PTE.test(`test-1 method`, testCalled1)
+
+      PTE.describe(`describe-2 method`, () => {
+        PTE.test(`test-1 method`, () => {
+          throw new Error(`describe-2 error`)
+        })
+      })
+
+      PTE.afterEach(afterEach)
+      PTE.afterAll(afterAll)
+    })
+
+    await PTE.run()
+
+
+    expect(afterEach).not.toHaveBeenCalled()
+    expect(afterAll).not.toHaveBeenCalled()
+
+  })
+
+
+  it(`should call the root afterAll hook when a before hook throws`, async () => {
+
+    const PTE = new ParkinTest()
+    const testCalled1 = jest.fn()
+    const beforeAll = jest.fn(() => {
+      throw new Error(`BeforeAll Error`)
+    })
+    const afterEach = jest.fn()
+    const afterAll = jest.fn()
+    const afterAll1 = jest.fn()
+
+    PTE.afterEach(afterEach)
+    PTE.afterAll(afterAll)
+
+    PTE.describe(`describe-1 method`, () => {
+
+      PTE.beforeAll(beforeAll)
+
+      PTE.test(`test-1 method`, testCalled1)
+
+      PTE.describe(`describe-2 method`, () => {
+        PTE.test(`test-1 method`, () => {
+          throw new Error(`describe-2 error`)
+        })
+      })
+      
+      PTE.afterAll(afterAll1)
+
+    })
+
+    await PTE.run()
+
+    expect(afterEach).not.toHaveBeenCalled()
+    expect(afterAll1).not.toHaveBeenCalled()
+
+    expect(afterAll).toHaveBeenCalled()
+
+  })
+
+
 })

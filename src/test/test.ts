@@ -1,15 +1,16 @@
 import type {
+  TRunResults,
   TTestAction,
-  TParkinTestCB,
   TTestTestObj,
+  TParkinTestCB,
+  TParentTestObj,
   TTestHookMethod,
   TDescribeAction,
   TParkinTestAbort,
   TParkinTestConfig,
   TParkinTestFactory,
-  TParkinDescribeFactory,
-  TRunResults,
   TRunResultActionMeta,
+  TParkinDescribeFactory,
 } from '../types'
 
 import { run } from './run'
@@ -28,7 +29,6 @@ import {
 
 type TTestSkipFactory = (description:string, action?:TTestAction, timeout?:number) => void
 
-
 export class ParkinTest {
   // Default global test timeout is 1hr
   timeout = 3600000
@@ -39,7 +39,6 @@ export class ParkinTest {
   #root = createRoot()
   xit:TTestSkipFactory
   it:TParkinTestFactory
-  #activeParent = undefined
   #specDone:TParkinTestCB = noOp
   #suiteDone:TParkinTestCB = noOp
   #specStarted:TParkinTestCB = noOp
@@ -49,6 +48,7 @@ export class ParkinTest {
   afterEach:TTestHookMethod = noOp
   beforeAll:TTestHookMethod = noOp
   beforeEach:TTestHookMethod = noOp
+  #activeParent:TParentTestObj = undefined
 
   constructor(config:TParkinTestConfig = noOpObj) {
     this.#root.description = config.description || `root`
@@ -237,6 +237,7 @@ export class ParkinTest {
     description:string,
     action:TDescribeAction
   ) => {
+
     // Build the describe item and add defaults
     const item = createDescribe(description, action)
     this.#activeParent.describes.push(item)

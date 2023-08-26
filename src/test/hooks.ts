@@ -1,15 +1,16 @@
 import type {
   TType,
+  TRunResult,
   TRootTestObj,
   TTestTestObj,
-  TParkinTestCB,
+  TParkinHookCB,
   TDescribeTestObj,
 } from '../types'
 
 
 import { Types } from './utils'
-import { EResultStatus, EResultAction } from '../types'
 import { runResult } from './runResult'
+import { EResultStatus, EResultAction, ETestType } from '../types'
 
 type TLoopHooks = {
   test?:TTestTestObj
@@ -18,6 +19,15 @@ type TLoopHooks = {
   specId?:keyof TType|string
   suiteId?:keyof TType|string
   root?: TRootTestObj|TDescribeTestObj
+}
+
+export type TDescribeHooks = {
+  suiteId:string
+  type:`before`|`after`
+  describe:TDescribeTestObj
+  describeResult:TRunResult
+  root:TDescribeTestObj | TRootTestObj
+  suiteDone:(result: TRunResult) => void
 }
 
 /**
@@ -36,6 +46,8 @@ export const loopHooks = async (args:TLoopHooks) => {
     describe,
   } = args
 
+  let hookResults:TRunResult[] = []
+
   let hookIdx
   const activeItem = root || describe
   const fullName = root
@@ -44,32 +56,36 @@ export const loopHooks = async (args:TLoopHooks) => {
       ? `${describe?.description} > ${test?.description} > ${type}`
       : `${describe?.description} > ${type}`
 
-  try {
-    activeItem[type].length &&
-      (await Promise.all(
-        activeItem[type].map((fn, idx) => {
-          hookIdx = idx
-          return fn()
-        })
-      ))
-  }
-  catch (error) {
-    return runResult(activeItem, {
-      fullName,
-      action: type as EResultAction,
-      id: test ? specId : suiteId,
-      status: EResultStatus.failed,
-      failed: {
-        error,
-        fullName,
-        description: error.message,
-        status: EResultStatus.failed,
-      },
-      testPath: test
-        ? `/${suiteId}/${specId}/${type}${hookIdx}`
-        : `/${suiteId}/${type}${hookIdx}`,
-    })
-  }
+
+  activeItem[type].length &&
+    await Promise.all(
+      activeItem[type].map(async (fn:TParkinHookCB, idx:number) => {
+        hookIdx = idx
+        return await Promise.resolve()
+          .then(() => fn?.())
+          .catch((error:Error) => {
+            hookResults.push(
+              runResult(activeItem, {
+                fullName,
+                action: type as EResultAction,
+                id: test ? specId : suiteId,
+                status: EResultStatus.failed,
+                failed: {
+                  error,
+                  fullName,
+                  description: error.message,
+                  status: EResultStatus.failed,
+                },
+                testPath: test
+                  ? `/${suiteId}/${specId}/${type}${hookIdx}`
+                  : `/${suiteId}/${type}${hookIdx}`,
+              })
+            )
+          })
+      })
+    )
+
+  return hookResults
 }
 
 
@@ -79,22 +95,20 @@ export const loopHooks = async (args:TLoopHooks) => {
  *
  * @returns {Object} - Built results if a hook throws an error
  */
-export const callBeforeHooks = async ({ root, suiteId, describe }) => {
+const callBeforeHooks = async ({ root, suiteId, describe }) => {
   const beforeEachResult = await loopHooks({
     root,
     suiteId: Types.root,
     type: Types.beforeEach,
   })
 
-  const beforeAllResult =
-    !beforeEachResult &&
-    (await loopHooks({
-      suiteId,
-      describe,
-      type: Types.beforeAll,
-    }))
+  const beforeAllResult = await loopHooks({
+    suiteId,
+    describe,
+    type: Types.beforeAll,
+  })
 
-  return beforeEachResult || beforeAllResult
+  return [...beforeEachResult, ...beforeAllResult]
 }
 
 /**
@@ -103,20 +117,59 @@ export const callBeforeHooks = async ({ root, suiteId, describe }) => {
  *
  * @returns {Object} - Built results if a hook throws an error
  */
-export const callAfterHooks = async ({ root, suiteId, describe }) => {
+const callAfterHooks = async ({ root, suiteId, describe }) => {
   const afterEachResult = await loopHooks({
     root,
     suiteId: Types.root,
     type: Types.afterEach,
   })
 
-  const afterAllResult =
-    !afterEachResult &&
-    (await loopHooks({
+  const afterAllResult = await loopHooks({
       suiteId,
       describe,
       type: Types.afterAll,
-    }))
+    })
 
-  return afterEachResult || afterAllResult
+  return [...afterEachResult, ...afterAllResult]
+}
+
+
+/**
+ * Helper to call the before and after hooks for describe methods
+ * @param {Object} args - Arguments needed to call the after hooks
+ *
+ * @returns {Object} - Built results if a hook throws an error
+ */
+export const callDescribeHooks = async (args:TDescribeHooks) => {
+  const {
+    root,
+    type,
+    suiteId,
+    describe,
+    suiteDone,
+    describeResult
+  } = args
+
+  const results:TRunResult[] = []
+
+  const beforeResults = type === `before`
+    ? await callBeforeHooks({root, suiteId, describe })
+    : await callAfterHooks({root, suiteId, describe })
+  
+  if(!beforeResults?.length) return results
+  
+  if (beforeResults?.length) {
+    const describeResults = beforeResults.map(result => ({ ...describeResult, ...result }))
+
+    suiteDone({
+      ...describeResult,
+      failed: true,
+      passed: false,
+      describes: describeResults,
+    })
+
+    results.push(...describeResults)
+  }
+
+  return results
 }
