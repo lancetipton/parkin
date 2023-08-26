@@ -1,4 +1,5 @@
 import type { Types } from '../test/utils'
+import { TPromiseRetryCB } from './promise.types'
 import type { ParkinError } from '../utils/errors'
 import type { EAstObject, EStepType } from './helpers.types'
 
@@ -167,6 +168,8 @@ export type TParkinTestFactory = TTestFactory & {
 
 export type TParkinTestConfig = {
   timeout?:number
+  testRetry?:number
+  suiteRetry?:number
   autoClean?:boolean
   description?:string
   onAbort?:TParkinTestAbort
@@ -174,6 +177,8 @@ export type TParkinTestConfig = {
   suiteDone?:TParkinTestCB
   specStarted?:TParkinTestCB
   suiteStarted?:TParkinTestCB
+  onTestRetry?:TPromiseRetryCB<TRunResult>
+  onSuiteRetry?:TPromiseRetryCB<TRunResults>
 }
 
 // TODO: fix these types
@@ -189,8 +194,9 @@ export type TBaseTestObj = {
 }
 
 export type TTestTestObj = TBaseTestObj & {
-  type: `test` | `it` | `xtest` | `xit`
+  retry?:number
   action:TTestAction
+  type: `test` | `it` | `xtest` | `xit`
 }
 
 export type THookTestObj = {
@@ -258,21 +264,25 @@ export type TRunResults = TRunResult[] & { aborted?:boolean }
 export type TLoopTests = {
   suiteId:string
   testOnly:boolean
+  testRetry?:number
   specDone:TParkinTestCB
   shouldAbort:() => boolean
   specStarted:TParkinTestCB
   describe:TDescribeTestObj
+  onTestRetry?:TPromiseRetryCB<TRunResult>
 }
 
 export type TRun = {
   testOnly:boolean
+  testRetry?:number
   describeOnly:boolean
   specDone:TParkinTestCB
   suiteDone:TParkinTestCB
   onAbort:TParkinTestAbort
+  parentIdx?:string|number
   shouldAbort:() => boolean
   specStarted:TParkinTestCB
   suiteStarted:TParkinTestCB
   root:TRootTestObj|TDescribeTestObj
-  parentIdx?:string|number
+  onTestRetry?:TPromiseRetryCB<TRunResult>
 }

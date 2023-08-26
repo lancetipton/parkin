@@ -1,10 +1,12 @@
 import type {
+  TRunResult,
   TRunResults,
   TTestAction,
   TTestTestObj,
   TParkinTestCB,
   TParentTestObj,
   TTestHookMethod,
+  TPromiseRetryCB,
   TDescribeAction,
   TParkinTestAbort,
   TParkinTestConfig,
@@ -15,6 +17,7 @@ import type {
 
 import { run } from './run'
 import { runResult } from './runResult'
+import { PromiseRetry } from '../utils/promiseRetry'
 import { PromiseTimeout } from '../utils/promiseTimeout'
 import { noOp, noOpObj, isStr, checkCall, isNum, isObj, exists } from '@keg-hub/jsutils'
 import {
@@ -30,6 +33,12 @@ import {
 type TTestSkipFactory = (description:string, action?:TTestAction, timeout?:number) => void
 
 export class ParkinTest {
+  // Default retires to 0
+  testRetry = 0
+  suiteRetry = 0
+  #onTestRetry:TPromiseRetryCB<TRunResult>
+  #onSuiteRetry:TPromiseRetryCB<TRunResults>
+
   // Default global test timeout is 1hr
   timeout = 3600000
   #autoClean = true
@@ -67,30 +76,40 @@ export class ParkinTest {
     if (config.description) this.#root.description = config.description
 
     this.#setConfig(config)
-    const promise = run({
-      root: this.#root,
-      onAbort: this.#onAbort,
-      testOnly: this.#testOnly,
-      specDone: this.#specDone,
-      suiteDone: this.#suiteDone,
-      specStarted: this.#specStarted,
-      shouldAbort: this.#shouldAbort,
-      describeOnly: this.#describeOnly,
-      suiteStarted: this.#suiteStarted,
+    const runSuite = async () => {
+      const promise = run({
+        root: this.#root,
+        onAbort: this.#onAbort,
+        testOnly: this.#testOnly,
+        specDone: this.#specDone,
+        testRetry: this.testRetry,
+        suiteDone: this.#suiteDone,
+        specStarted: this.#specStarted,
+        onTestRetry: this.#onTestRetry,
+        shouldAbort: this.#shouldAbort,
+        describeOnly: this.#describeOnly,
+        suiteStarted: this.#suiteStarted,
+      })
+
+      const result = this.timeout
+        ? PromiseTimeout<TRunResults>({
+            promise,
+            timeout: this.timeout,
+            name: this.#root.description,
+            error: `Test Execution failed, the global timeout ${this.timeout}ms was exceeded`
+          })
+        : promise
+
+      this.#autoClean && this.clean()
+
+      return result
+    }
+
+    return PromiseRetry({
+      promise: runSuite,
+      retry: this.suiteRetry,
+      onRetry: this.#onSuiteRetry
     })
-
-    const result = this.timeout
-      ? PromiseTimeout<TRunResults>({
-          promise,
-          timeout: this.timeout,
-          name: this.#root.description,
-          error: `Test Execution failed, the global timeout ${this.timeout}ms was exceeded`
-        })
-      : promise
-
-    this.#autoClean && this.clean()
-
-    return result
   }
 
   /**
@@ -140,6 +159,10 @@ export class ParkinTest {
    */
   #setConfig = ({
     timeout,
+    testRetry,
+    suiteRetry,
+    onTestRetry,
+    onSuiteRetry,
     onAbort,
     autoClean,
     specDone,
@@ -149,6 +172,11 @@ export class ParkinTest {
   }:TParkinTestConfig) => {
     if (timeout) this.timeout = timeout
     if (onAbort) this.#onAbort = onAbort
+
+    if (testRetry) this.testRetry = testRetry
+    if (suiteRetry) this.suiteRetry = suiteRetry
+    if (testRetry) this.#onTestRetry = onTestRetry
+    if (suiteRetry) this.#onSuiteRetry = onSuiteRetry
 
     if (specDone) this.#specDone = specDone
     if (suiteDone) this.#suiteDone = suiteDone
@@ -272,11 +300,14 @@ export class ParkinTest {
     action:TTestAction,
     meta:TRunResultActionMeta|number
   ) => {
+
+    let retry:number = this.testRetry || 0
     let timeout:number = undefined
 
     if(isObj(meta) && !exists(action.metaData) && !exists(action.ParkinMetaData)){
       action.metaData = meta
       if(meta?.timeout) timeout = meta.timeout
+      if(meta?.retry) retry = meta.retry
     }
     else if(isNum(meta)) timeout = meta
 
@@ -285,7 +316,12 @@ export class ParkinTest {
 
     const item = createItem<TTestTestObj>(
       Types.test,
-      { action, timeout, description }
+      {
+        retry,
+        action,
+        timeout,
+        description
+      }
     )
 
     item.disabled = () => (item.skip = true)

@@ -3,13 +3,13 @@ import type {
   TLoopTests,
   TRunResults,
   TRootTestObj,
-  TRunResult,
 } from '../types'
 
+
+import { runTest } from './runTest'
 import { runResult } from './runResult'
 import { Types, validateRootRun } from './utils'
 import { EResultStatus, EResultAction } from '../types'
-import { PromiseTimeout } from '../utils/promiseTimeout'
 import {
   loopHooks,
   callDescribeHooks,
@@ -33,6 +33,8 @@ const loopTests = async (args:TLoopTests) => {
     describe,
     testOnly,
     specDone,
+    testRetry,
+    onTestRetry,
     shouldAbort,
     specStarted
   } = args
@@ -90,20 +92,16 @@ const loopTests = async (args:TLoopTests) => {
     // ------ execute test ------ //
     try {
 
-      const promise = test.action()
       /**
        * If there is a timeout, Use the PromiseTimeout to race it against the test action
        * If the timeout wins, it will reject the promise
        * Which then gets picked up in the catch below
        */
-      const result = test.timeout
-        ? await PromiseTimeout<TRunResult>({
-            promise,
-            timeout: test.timeout,
-            name: test.description,
-            error: `Test failed, the timeout ${test.timeout}ms was exceeded`
-          })
-        : await promise
+      const result = await runTest({
+        test,
+        retry: testRetry,
+        onRetry: onTestRetry,
+      })
 
       testResult = runResult(test, {
         fullName,
@@ -171,7 +169,9 @@ const loopDescribes = async (args:TRun) => {
     testOnly,
     specDone,
     suiteDone,
+    testRetry,
     shouldAbort,
+    onTestRetry,
     specStarted,
     suiteStarted,
     describeOnly,
@@ -231,6 +231,8 @@ const loopDescribes = async (args:TRun) => {
       describe,
       testOnly,
       specDone,
+      testRetry,
+      onTestRetry,
       shouldAbort,
       specStarted,
     })

@@ -1,11 +1,4 @@
-
-export type TPromiseTimeout<T> = {
-  name?:string
-  error?:string
-  timeout:number
-  promise:Promise<T>
-}
-
+import { TPromiseTimeout } from "../types"
 
 class TimeoutError extends Error {
   constructor(message:string, name?:string) {
