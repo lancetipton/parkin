@@ -1,4 +1,5 @@
 # Parkin Test Executer
+
 * Parkin Test Executer (PTE) is a Node.js and Browser Test runner, with a similar API to [Jest](https://jestjs.io/) or [Vitest](https://vitest.dev/)
 * **It is not designed to be a full Testing Suite replacement**
 * Instead acts as fallback for Parkin when no other Testing Suite is defined
@@ -6,6 +7,7 @@
 
 
 ## Use
+
 ```js
 // With esm imports
 import { ParkinTest } from 'parkin/test'
@@ -25,6 +27,7 @@ describe(`Test the thing`, () => {
 ```
 
 ### Global Scope
+
 * In many test frameworks, many of the methods such as `describe` and `test` are automatically added to the global scope
   * This allows calling them with out needing to first import them as shown in the [Use section](#use)
 * `ParkinTest` does not do this by **default**, but it can be accomplished by one of the following:
@@ -40,7 +43,97 @@ describe(`Test the thing`, () => {
     *  Calling the returned `setParkinTestGlobals` method from the Parkin Global import
        * Example: `require('@ltipton/parkin/global').setParkinTestGlobals()`
 
+### Hooks
+
+* There are four different types of hooks that can be registered.
+* Additionally Each hook is registered to its parent describe block, or the root describe block, if called outside.
+* The hook call order follows the following pattern
+  * Before hooks **outside** of a describe block will **always** be called **first**
+  * Before hooks **inside** of a describe block will **always** be called **after** any parent before hooks
+  * After hooks **inside** of a describe block will **always** be called **after** any tests within the same parent
+  * After hooks **outside** of a describe block will **always** be called **last**
+
+* **beforeAll**
+  * Always called before **all children** within the **same parent**
+  * Is called only **once**
+  * If the hook throws an error, no other **children** of the same parent will be called
+* **beforeEach**
+  * Called before **each child** within the **same parent**
+  * Is called multiple times, **once per-child**
+  * If the hook throws an error, no other **children** of the same parent will be called
+* **afterAll**
+  * Always called after **all children** within the **same parent**
+  * Even if a child fails, or throws an error, the **afterAll** will still be called
+  * For child **afterAll** hooks, If a **before** hook throws an error, the hook will **not** be called
+  * If a root **afterAll** hook exists, it will **always** be called
+* **afterEach**
+  * Always called after **each child** within the **same parent**
+  * Even if a child fails, or throws an error, the **afterEach** will still be called
+  * If a **before** hook throws an error, the **afterEach** hooks will not be called
+
+> **IMPORTANT**
+>   * If a test run is aborted, the **afterEach** and **afterAll** hooks will not be called
+
 
 ## Execution order
-* Parkin Test Executer (PTE) executes all `describe` handler as soon as the `PTE.describe` method is called. This is in contrast to `PTE.test` actions which are executed when the `PTE.run` method is called. This is a good reason to do all test setup and teardown inside `before*` and `after*` hooks rather than directly inside the `describe` handler.
-* By default PTE runs all the tests serially in the order they were encountered durning the initial `describe` handler execution. As tests are run, it will wait for each `test` handler to complete before moving on to the next `test` handler.
+
+* Parkin Test Executer (PTE) executes all `describe` handler as soon as the `PTE.describe` method is called. This is in contrast to `PTE.test` and `PTE.<hook>` handlers which are executed when the `PTE.run` method is called. This is a good reason to do all test setup and teardown inside `before*` and `after*` hooks rather than directly inside the `describe` handler.
+  * This allows building a tree of `tests` and `hooks` based on the order in which their parent `describe` method was called
+    * This is similar to the `prepare` or `plan` method of some test frameworks, it just happens automatically
+    * When the `PTE.run` method is called, it will execute the the `tests` in the same order they were added
+* By default PTE runs all the tests serially in the order they were encountered durning the initial `describe` handler execution.
+  * As tests are run, it will wait for each `test` handler to complete before moving on to the next.
+
+## Example
+
+```js
+
+import { ParkinTest } from 'parkin/test'
+
+const PTE = new ParkinTest()
+const { describe, test, it, beforeAll, beforeEach, afterAll, afterEach } = PTE
+
+describe(`describe-1`, () => {
+
+  // Is the third method call, because of the beforeAll and beforeEach hooks
+  it(`test-1-1`, () => console.log(`call #3`))
+
+  describe(`describe-1-2`, () => {
+
+    // BeforeAll hook is always called first within it's parent scope
+    // But after any parent scoped before hooks. i.e. beforeAll and beforeEach
+    beforeAll(() => console.log(`call #5`))
+
+    // After all will always be called last within it's parent scope
+    afterAll(() => console.log(`call #8`))
+
+    // Called after the scoped beforeAll
+    it(`test-1-2-1`, () => console.log(`call #6`))
+    
+    // After Each will always called after each test, but before any afterAll hooks
+    afterEach(() => console.log(`call #7`))
+  })
+  
+  // BeforeAll hook is always called first within it's parent scope
+  beforeAll(() => console.log(`call #1`))
+
+  // BeforeEach hook is always called before each test method
+  beforeEach(() => console.log(`call #2 & #4`))
+
+  // After all will always be called last within it's parent scope
+  afterAll(() => console.log(`call #9`))
+
+})
+
+// Output
+call #1 // - beforeAll
+call #2 & #4 // - beforeEach
+call #3 // - test-1-1
+call #2 & #4 // - beforeEach
+call #5 // - beforeAll, inside describe
+call #6 // - test-1-2-1
+call #7 // - afterEach, inside describe
+call #8 // - afterAll, inside describe
+call #9 // - afterAll
+```
+

@@ -1,8 +1,10 @@
 # Parkin
+
 * Parse gherkin features text and step definition javascript text 
 * Allows mapping feature steps to registered step definition and calls their method
 
 ## Outline
+
 - [Parkin](#parkin)
   - [Outline](#outline)
   - [Install](#install)
@@ -29,10 +31,12 @@
     - [Definition Model](#definition-model)
 
 ## Install
+
 * With NPM - `npm install @ltipton/parkin`
 * With Yarn - `yarn add @ltipton/parkin`
 
 ## Use
+
 ```js
 // With esm imports
 import { Parkin } from 'parkin'
@@ -48,6 +52,7 @@ const PK = new Parkin()
 
 
 ### Parkin
+
 * `<Class>` - Manages features, steps, and definitions
 * `<Arguments>` - Accepts two arguments
   * *(Optional)* `<Object>` - World object passed to all step definition calls
@@ -55,10 +60,12 @@ const PK = new Parkin()
 
 
 ### Parkin.parse
+
 * `<Object>` - Containing methods for parsing features and definitions
 
 
 ### Parkin.parse.feature
+
 * `<Function>` - Parses the text content of a feature file `(.feature)`
 * `<Arguments>` - Accepts a single argument
   * **(REQUIRED)** `<String>` - Feature file text content
@@ -76,6 +83,7 @@ const featureModels = PK.parse.feature(featureContent)
 
 
 ### Parkin.parse.definition
+
 * `<Function>` - Parses the text content of a step definition file `(.js)`
 * `<Arguments>` - Accepts a single argument
   * **(REQUIRED)** `<String>` - Definition text content ( Valid javascript code as text )
@@ -93,6 +101,7 @@ const definitionModel = PK.parse.definition(definitionContent)
 
 
 ### Parkin.Given
+
 * `<Function>` - Register method for `Given` step definitions
 * `<Arguments>` - Accepts two arguments
   * **(REQUIRED)** `<String>` - Match expression string or regex
@@ -105,13 +114,11 @@ const PK = new Parkin()
 
 // Register a step definition with expression syntax
 PK.Given(`Given match with {expression} syntax`, (expression) => { /* Assertion code */ })
-
-// Register a step definition with regex syntax
-PK.Given(/Given match with (\S+) syntax/, (expression) => { /* Assertion code */ })
 ```
 
 
 ### Parkin.When
+
 * `<Function>` - Register method for `When` step definitions
 * `<Arguments>` - Accepts two arguments
   * **(REQUIRED)** `<String>` - Match expression string or regex
@@ -124,13 +131,11 @@ const PK = new Parkin()
 
 // Register a step definition with expression syntax
 PK.When(`When match with {expression} syntax`, (expression) => { /* Assertion code */ })
-
-// Register a step definition with regex syntax
-PK.When(/When match with (\S+) syntax/, (expression) => { /* Assertion code */ })
 ```
 
 
 ### Parkin.Then
+
 * `<Function>` - Register method for `Then` step definitions
 * `<Arguments>` - Accepts two arguments
   * **(REQUIRED)** `<String>` - Match expression string or regex
@@ -142,12 +147,11 @@ import { Parkin } from 'parkin'
 const PK = new Parkin()
 // Register a step definition with expression syntax
 PK.Then(`Then match with {expression} syntax`, (expression) => { /* Assertion code */ })
-// Register a step definition with regex syntax
-PK.Then(/Then match with (\S+) syntax/, (expression) => { /* Assertion code */ })
 ```
 
 
 ### Parkin.registerSteps
+
 * `<Function>` - Helper to register multiple step definitions at one time
 * **(REQUIRED)** `<Arguments>` - Accepts a single `<Object>`, matching the example below
 
@@ -171,6 +175,7 @@ PK.registerSteps({
 
 
 ### Parkin.run
+
 * `<Function>` - Runs tests using the following steps:
   1. Parses the passed in feature text into a feature model
     * Bypassed if argument is a feature model object
@@ -184,6 +189,7 @@ PK.registerSteps({
 
 
 ## Parkin.world
+
 * `<Object>` - Global config object accessible when parsing features, and within step definitions
 * World properties and values can be defined before and during feature execution
   * During feature parsing, any part of the feature text can be replaced
@@ -200,6 +206,7 @@ PK.registerSteps({
 
 
 ### Feature Parsing
+
 * Features that contain the a text matching `$world.*` will be mapped to a corresponding world value
   * The `*` part of `$world.*`, should be a path on the world object
   * The RegEx looks like this => `/(\$:world|\$world)+\.[^"'\s]*/gm`
@@ -242,6 +249,7 @@ PK.registerSteps({
 
 
 ### Runtime Parsing
+
 * In some cases, a world value should be parsed during execution of a step, and not when the feature is parsed
   * This can be useful in cases where one step sets a value to the world, and it used later in a future step
   * Example
@@ -301,6 +309,7 @@ PK.registerSteps({
 
 
 ### Alias Parsing
+
 * Similar to the `$world` object, Parkin has a shortcut for parsing `aliases`
 * This is simply a helper to aid in the readability of feature files
 * All aliases must be defined in the `$world.$alias` object path
@@ -321,6 +330,7 @@ PK.registerSteps({
 ## Model Specs
 
 ### Feature Model
+
 ```ts
 {
   index: <Number> /* Line number within the parse feature text content */
@@ -343,6 +353,7 @@ PK.registerSteps({
 ```
 
 ### Meta Model
+
 ```ts
 {
   content: <String> /* Meta information about the feature */
@@ -351,6 +362,7 @@ PK.registerSteps({
 ```
 
 ### Scenario Model
+
 ```ts
 {
   index: <Number> /* Line number within the parse feature text content */
@@ -364,6 +376,7 @@ PK.registerSteps({
 ```
 
 ### Step Model
+
 ```ts
 {
   index: <Number> /* Line number within the parse feature text content */
@@ -374,6 +387,7 @@ PK.registerSteps({
 ```
 
 ### Definition Model
+
 ```ts
 {
   type: <String> /* Gherkin definition type ( Given, When, Then, And, But ) */

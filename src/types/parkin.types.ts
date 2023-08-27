@@ -20,7 +20,8 @@ import type {
 import { TAssemble } from './assemble.types'
 
 export type TParkinHookName = `beforeAll`|`afterAll`|`beforeEach`|`afterEach`
-export type TParkinHookMethod = (method:(...args:any[]) => any) => void
+export type TParkinHookCB = (...args:any[]) => any
+export type TParkinHookMethod = (method:TParkinHookCB) => void
 
 export interface IParkinHooks {
   instance:IParkin

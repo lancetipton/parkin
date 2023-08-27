@@ -44,10 +44,14 @@ const getStepOpts = (
 ) => {
   const shared = options?.steps?.shared
   const single = options?.steps?.[step?.uuid]
-  
+
   return {
     ...shared,
     ...single,
+    retry: single?.retry
+      || shared?.retry
+      || options?.retry
+      || 0,
     timeout: single?.timeout
       || shared?.timeout
       || options?.timeout
@@ -105,7 +109,7 @@ const resolveFeatures = (
  *
  * @returns {Void}
  */
-const runStep = async (
+const runStep = (
   stepsInstance:Steps,
   step:TStepAst,
   options:TParkinRunOpts=emptyOpts,
@@ -113,7 +117,7 @@ const runStep = async (
 ) => {
   const test = getTestMethod(ETestType.test, testMode)
   const opts = getStepOpts(step, options)
-  const disabled = hasTag(step?.tags?.tokens, options?.tags?.disabled)
+  const disabled = opts?.disabled || hasTag(step?.tags?.tokens, options?.tags?.disabled)
 
   const testMethod = async () => {
     if(disabled) return
@@ -129,7 +133,13 @@ const runStep = async (
     ...pickKeys(step, [ `uuid`, `step`, `index`, `tags`, `type`, `definition`])
   }
 
-  test(`${capitalize(step.type)} ${step.step}`, testMethod, opts.timeout)
+  // Jest only accepts timeout as the last argument
+  // So we have to check the environment to know the last argument
+  const last = process?.env?.JEST_WORKER_ID !== undefined
+    ? opts.timeout
+    : opts
+
+  return test(`${capitalize(step.type)} ${step.step}`, testMethod, last)
 }
 
 /**
@@ -153,26 +163,18 @@ const loopSteps = (
   const describe = getTestMethod(ETestType.describe, testMode)
   const disabled = hasTag(parent?.tags?.tokens, options?.tags?.disabled)
 
-  let responses = []
   const describeMethod = () => {
     if(disabled) return
     // Map over the steps and call them
     // Store the returned promise in the responses array
-    const responses = parent.steps.map(step =>
-      runStep(stepsInstance, step, options, testMode)
-    )
-
-    // Ensure we resolve all promises inside the describe block
-    Promise.all(responses)
+    parent.steps.map(step => runStep(stepsInstance, step, options, testMode))
   }
   describeMethod.ParkinMetaData = {
     disabled,
     ...pickKeys(parent, [`index`, `uuid`, `tags`, `type`, `background`, `scenario`])
   }
 
-  describe(title, describeMethod)
-
-  return responses
+  return describe(title, describeMethod)
 }
 
 /**
@@ -193,23 +195,18 @@ const runScenario = (
   options:TParkinRunOpts=emptyOpts,
   testMode:boolean
 ) => {
-  const responses = []
 
   // If there's a background, run the background steps first
   background &&
-    responses.push(
-      ...runBackground(stepsInstance, scenario.scenario, background, options, testMode)
-    )
+    runBackground(stepsInstance, scenario.scenario, background, options, testMode)
 
   // Next run the scenario steps once the background completes
-  return responses.concat(
-    loopSteps(
-      scenario,
-      buildTitle(scenario.scenario, `Scenario`),
-      stepsInstance,
-      options,
-      testMode
-    )
+  return loopSteps(
+    scenario,
+    buildTitle(scenario.scenario, `Scenario`),
+    stepsInstance,
+    options,
+    testMode
   )
 }
 
@@ -260,29 +257,30 @@ const runRule = (
   testMode:boolean
 ) => {
   // Map over the rule scenarios and call their steps
-  // Store the returned promise in the responses array
-  let responses = []
   const disabled = hasTag(rule?.tags?.tokens, options?.tags?.disabled)
 
   const describeMethod = () => {
     if(disabled) return
 
-    background &&
-      responses.push(
-        ...responses.concat(
-          runBackground(stepsInstance, rule.rule, background, options, testMode)
+    background
+      && runBackground(
+          stepsInstance,
+          rule.rule,
+          background,
+          options,
+          testMode
         )
-      )
 
-    responses.push(
-      ...rule.scenarios.map(scenario =>
-        runScenario(stepsInstance, scenario, rule.background, options, testMode)
-      )
-    )
+    rule.scenarios.map(scenario => runScenario(
+      stepsInstance,
+      scenario,
+      rule.background,
+      options,
+      testMode
+    ))
 
-    // Ensure we resolve all promises inside the describe block
-    Promise.all(responses)
   }
+
   describeMethod.ParkinMetaData = {
     disabled,
     ...pickKeys(
@@ -291,9 +289,8 @@ const runRule = (
     )
   }
 
-  describe(`Rule > ${rule.rule}`, describeMethod)
+  return describe(`Rule > ${rule.rule}`, describeMethod)
 
-  return responses
 }
 
 /**
@@ -376,8 +373,7 @@ export class Runner {
 
     // Ensures all tests resolve before ending by
     // Using promises to resolve each feature / scenario / step
-    const promises = await features.map(async feature => {
-      let responses = []
+    features.map(feature => {
       const disabled = hasTag(feature?.tags?.tokens, options?.tags?.disabled)
 
       if(!disabled){
@@ -390,37 +386,32 @@ export class Runner {
       const describeMethod = () => {
         if(disabled) return
 
-        responses.push(
-          ...feature.rules.reduce((acc:any[], rule:TRuleAst) => {
-            acc.push(runRule(
-              this.steps,
-              rule,
-              feature.background,
-              options,
-              testMode
-            ))
+        feature.rules.reduce((acc:any[], rule:TRuleAst) => {
+          acc.push(runRule(
+            this.steps,
+            rule,
+            feature.background,
+            options,
+            testMode
+          ))
 
-            return acc
-          }, [] as any[])
-        )
+          return acc
+        }, [] as any[])
 
-        responses.push(
-          ...feature.scenarios.reduce((acc:any[], scenario:TScenarioAst) => {
-            acc.push(runScenario(
-              this.steps,
-              scenario,
-              feature.background,
-              options,
-              testMode
-            ))
+        feature.scenarios.reduce((acc:any[], scenario:TScenarioAst) => {
+          acc.push(runScenario(
+            this.steps,
+            scenario,
+            feature.background,
+            options,
+            testMode
+          ))
 
-            return acc
-          }, [] as any[])
-        )
+          return acc
+        }, [] as any[])
 
-        // Ensure we resolve all promises inside the describe block
-        Promise.all(responses)
       }
+
       describeMethod.ParkinMetaData = {
         disabled,
         ...pickKeys(
@@ -431,13 +422,8 @@ export class Runner {
     
       // Map over the features scenarios and call their steps
       // Store the returned promise in the responses array
-      describe(buildTitle(feature.feature, `Feature`), describeMethod)
-
-      return responses
+      return describe(buildTitle(feature.feature, `Feature`), describeMethod)
     })
-
-    // Ensure all promises are resolved before returning
-    await Promise.all(promises)
 
     return true
   }
