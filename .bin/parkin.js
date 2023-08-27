@@ -148,6 +148,12 @@ var init_indexed_types = __esm({
   }
 });
 
+// src/types/promise.types.ts
+var init_promise_types = __esm({
+  "src/types/promise.types.ts"() {
+  }
+});
+
 // src/types/index.ts
 var init_types = __esm({
   "src/types/index.ts"() {
@@ -163,6 +169,7 @@ var init_types = __esm({
     init_definitions_types();
     init_paramTypes_types();
     init_indexed_types();
+    init_promise_types();
   }
 });
 
@@ -1299,7 +1306,7 @@ var require_stackTracePaths_a7780a09 = __commonJS({
       return valid ? (...args) => !predicate(...args) : null;
     };
     var eitherFunc = (func1, func2) => isFunc5.isFunc(func1) && func1 || func2;
-    var debounce = (func, wait = 250, immediate = false) => {
+    var debounce = (func, wait2 = 250, immediate = false) => {
       let timeout;
       function wrapFunc(...args) {
         if (!isFunc5.isFunc(func))
@@ -1311,7 +1318,7 @@ var require_stackTracePaths_a7780a09 = __commonJS({
         };
         const callNow = immediate && !timeout;
         clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+        timeout = setTimeout(later, wait2);
         if (callNow)
           return isFunc5.isFunc(func) && func.apply(context, args);
       }
@@ -1388,7 +1395,7 @@ var require_stackTracePaths_a7780a09 = __commonJS({
       const result = await fn(...args);
       return [result, /* @__PURE__ */ new Date() - startTime];
     };
-    var throttle = (func, wait = 100) => {
+    var throttle = (func, wait2 = 100) => {
       let waiting = false;
       return function(...args) {
         if (waiting)
@@ -1397,13 +1404,13 @@ var require_stackTracePaths_a7780a09 = __commonJS({
         func.apply(this, args);
         return setTimeout(() => {
           waiting = false;
-        }, wait);
+        }, wait2);
       };
     };
-    var throttleLast = (func, cb, wait = 100) => {
+    var throttleLast = (func, cb, wait2 = 100) => {
       let throttleTimeout;
       if (isNum3.isNum(cb)) {
-        wait = cb;
+        wait2 = cb;
         cb = void 0;
       }
       return function(...args) {
@@ -1412,7 +1419,7 @@ var require_stackTracePaths_a7780a09 = __commonJS({
         throttleTimeout = setTimeout(() => {
           func.apply(this, args);
           clearTimeout(throttleTimeout);
-        }, wait);
+        }, wait2);
         typeof cb === "function" && cb();
       };
     };
@@ -1836,10 +1843,10 @@ var require_wait_8ca88995 = __commonJS({
       proto && Object.getPrototypeOf(proto) !== null && addAsync(proto);
       return object;
     };
-    var wait = (time) => new Promise((res) => setTimeout(() => res(true), time));
+    var wait2 = (time) => new Promise((res) => setTimeout(() => res(true), time));
     exports.promisify = promisify;
     exports.promisifyAll = promisifyAll;
-    exports.wait = wait;
+    exports.wait = wait2;
   }
 });
 
@@ -2198,7 +2205,7 @@ var require_cjs = __commonJS({
     var jsonEqual = require_jsonEqual_7e69ef6a();
     var isObj8 = require_isObj_6b3aa807();
     var reduceObj = require_reduceObj_f41cbf8d();
-    var wait = require_wait_8ca88995();
+    var wait2 = require_wait_8ca88995();
     var joinRegex4 = require_joinRegex_5320d139();
     var getWordEndingAt2 = require_getWordEndingAt_63d038a5();
     var isQuoted2 = require_isQuoted_eb6994da();
@@ -2341,9 +2348,9 @@ var require_cjs = __commonJS({
     exports.jsonEqual = jsonEqual.jsonEqual;
     exports.isObj = isObj8.isObj;
     exports.reduceObj = reduceObj.reduceObj;
-    exports.promisify = wait.promisify;
-    exports.promisifyAll = wait.promisifyAll;
-    exports.wait = wait.wait;
+    exports.promisify = wait2.promisify;
+    exports.promisifyAll = wait2.promisifyAll;
+    exports.wait = wait2.wait;
     exports.getRegexSource = joinRegex4.getRegexSource;
     exports.joinRegex = joinRegex4.joinRegex;
     exports.buildPath = getWordEndingAt2.buildPath;
@@ -4232,6 +4239,7 @@ var init_runner = __esm({
       return {
         ...shared,
         ...single,
+        retry: (single == null ? void 0 : single.retry) || (shared == null ? void 0 : shared.retry) || (options2 == null ? void 0 : options2.retry) || 0,
         timeout: (single == null ? void 0 : single.timeout) || (shared == null ? void 0 : shared.timeout) || (options2 == null ? void 0 : options2.timeout) || 15e3
       };
     };
@@ -4244,11 +4252,11 @@ var init_runner = __esm({
         []
       ) : throwMissingFeatureText();
     };
-    runStep = async (stepsInstance, step, options2 = emptyOpts2, testMode) => {
-      var _a, _b;
+    runStep = (stepsInstance, step, options2 = emptyOpts2, testMode) => {
+      var _a, _b, _c;
       const test = getTestMethod("test" /* test */, testMode);
       const opts = getStepOpts(step, options2);
-      const disabled = hasTag((_a = step == null ? void 0 : step.tags) == null ? void 0 : _a.tokens, (_b = options2 == null ? void 0 : options2.tags) == null ? void 0 : _b.disabled);
+      const disabled = (opts == null ? void 0 : opts.disabled) || hasTag((_a = step == null ? void 0 : step.tags) == null ? void 0 : _a.tokens, (_b = options2 == null ? void 0 : options2.tags) == null ? void 0 : _b.disabled);
       const testMethod = async () => {
         if (disabled)
           return;
@@ -4262,41 +4270,32 @@ var init_runner = __esm({
         disabled,
         ...(0, import_jsutils23.pickKeys)(step, [`uuid`, `step`, `index`, `tags`, `type`, `definition`])
       };
-      test(`${(0, import_jsutils23.capitalize)(step.type)} ${step.step}`, testMethod, opts.timeout);
+      const last = ((_c = process == null ? void 0 : process.env) == null ? void 0 : _c.JEST_WORKER_ID) !== void 0 ? opts.timeout : opts;
+      return test(`${(0, import_jsutils23.capitalize)(step.type)} ${step.step}`, testMethod, last);
     };
     loopSteps = (parent, title, stepsInstance, options2 = emptyOpts2, testMode) => {
       var _a, _b;
       const describe2 = getTestMethod("describe" /* describe */, testMode);
       const disabled = hasTag((_a = parent == null ? void 0 : parent.tags) == null ? void 0 : _a.tokens, (_b = options2 == null ? void 0 : options2.tags) == null ? void 0 : _b.disabled);
-      let responses = [];
       const describeMethod = () => {
         if (disabled)
           return;
-        const responses2 = parent.steps.map(
-          (step) => runStep(stepsInstance, step, options2, testMode)
-        );
-        Promise.all(responses2);
+        parent.steps.map((step) => runStep(stepsInstance, step, options2, testMode));
       };
       describeMethod.ParkinMetaData = {
         disabled,
         ...(0, import_jsutils23.pickKeys)(parent, [`index`, `uuid`, `tags`, `type`, `background`, `scenario`])
       };
-      describe2(title, describeMethod);
-      return responses;
+      return describe2(title, describeMethod);
     };
     runScenario = (stepsInstance, scenario, background, options2 = emptyOpts2, testMode) => {
-      const responses = [];
-      background && responses.push(
-        ...runBackground(stepsInstance, scenario.scenario, background, options2, testMode)
-      );
-      return responses.concat(
-        loopSteps(
-          scenario,
-          buildTitle(scenario.scenario, `Scenario`),
-          stepsInstance,
-          options2,
-          testMode
-        )
+      background && runBackground(stepsInstance, scenario.scenario, background, options2, testMode);
+      return loopSteps(
+        scenario,
+        buildTitle(scenario.scenario, `Scenario`),
+        stepsInstance,
+        options2,
+        testMode
       );
     };
     runBackground = (stepsInstance, title, background, options2 = emptyOpts2, testMode) => {
@@ -4310,22 +4309,24 @@ var init_runner = __esm({
     };
     runRule = (stepsInstance, rule, background, options2 = emptyOpts2, testMode) => {
       var _a, _b;
-      let responses = [];
       const disabled = hasTag((_a = rule == null ? void 0 : rule.tags) == null ? void 0 : _a.tokens, (_b = options2 == null ? void 0 : options2.tags) == null ? void 0 : _b.disabled);
       const describeMethod = () => {
         if (disabled)
           return;
-        background && responses.push(
-          ...responses.concat(
-            runBackground(stepsInstance, rule.rule, background, options2, testMode)
-          )
+        background && runBackground(
+          stepsInstance,
+          rule.rule,
+          background,
+          options2,
+          testMode
         );
-        responses.push(
-          ...rule.scenarios.map(
-            (scenario) => runScenario(stepsInstance, scenario, rule.background, options2, testMode)
-          )
-        );
-        Promise.all(responses);
+        rule.scenarios.map((scenario) => runScenario(
+          stepsInstance,
+          scenario,
+          rule.background,
+          options2,
+          testMode
+        ));
       };
       describeMethod.ParkinMetaData = {
         disabled,
@@ -4334,8 +4335,7 @@ var init_runner = __esm({
           [`index`, `uuid`, `tags`, `type`, `rule`]
         )
       };
-      describe(`Rule > ${rule.rule}`, describeMethod);
-      return responses;
+      return describe(`Rule > ${rule.rule}`, describeMethod);
     };
     Runner = class {
       steps;
@@ -4385,9 +4385,8 @@ var init_runner = __esm({
         const features = this.getFeatures(data, options2);
         if (!features.length)
           return false;
-        const promises = await features.map(async (feature) => {
+        features.map((feature) => {
           var _a, _b;
-          let responses = [];
           const disabled = hasTag((_a = feature == null ? void 0 : feature.tags) == null ? void 0 : _a.tokens, (_b = options2 == null ? void 0 : options2.tags) == null ? void 0 : _b.disabled);
           if (!disabled) {
             beforeAll(this.hooks.getRegistered("beforeAll" /* beforeAll */));
@@ -4398,31 +4397,26 @@ var init_runner = __esm({
           const describeMethod = () => {
             if (disabled)
               return;
-            responses.push(
-              ...feature.rules.reduce((acc, rule) => {
-                acc.push(runRule(
-                  this.steps,
-                  rule,
-                  feature.background,
-                  options2,
-                  testMode
-                ));
-                return acc;
-              }, [])
-            );
-            responses.push(
-              ...feature.scenarios.reduce((acc, scenario) => {
-                acc.push(runScenario(
-                  this.steps,
-                  scenario,
-                  feature.background,
-                  options2,
-                  testMode
-                ));
-                return acc;
-              }, [])
-            );
-            Promise.all(responses);
+            feature.rules.reduce((acc, rule) => {
+              acc.push(runRule(
+                this.steps,
+                rule,
+                feature.background,
+                options2,
+                testMode
+              ));
+              return acc;
+            }, []);
+            feature.scenarios.reduce((acc, scenario) => {
+              acc.push(runScenario(
+                this.steps,
+                scenario,
+                feature.background,
+                options2,
+                testMode
+              ));
+              return acc;
+            }, []);
           };
           describeMethod.ParkinMetaData = {
             disabled,
@@ -4431,10 +4425,8 @@ var init_runner = __esm({
               [`index`, `uuid`, `tags`, `feature`, `type`, `errors`]
             )
           };
-          describe2(buildTitle(feature.feature, `Feature`), describeMethod);
-          return responses;
+          return describe2(buildTitle(feature.feature, `Feature`), describeMethod);
         });
-        await Promise.all(promises);
         return true;
       };
     };
@@ -14340,110 +14332,35 @@ ${t5}`);
   }
 });
 
-// src/test/runResult.ts
-var import_jsutils33, runResult;
-var init_runResult = __esm({
-  "src/test/runResult.ts"() {
-    init_types();
+// src/utils/promiseRetry.ts
+var import_jsutils33, RetryError, PromiseRetry;
+var init_promiseRetry = __esm({
+  "src/utils/promiseRetry.ts"() {
     import_jsutils33 = __toESM(require_cjs());
-    runResult = (item, {
-      id,
-      action,
-      failed,
-      passed,
-      testPath,
-      fullName
-    }) => {
-      var _a;
-      const result = {
-        id,
-        action,
-        testPath,
-        fullName,
-        type: item.type,
-        failedExpectations: [],
-        passedExpectations: [],
-        failed: Boolean(failed),
-        passed: Boolean(passed),
-        description: item.description,
-        timestamp: (/* @__PURE__ */ new Date()).getTime()
-      };
-      (0, import_jsutils33.isObj)(failed) && result.failedExpectations.push(failed);
-      (0, import_jsutils33.isObj)(passed) && result.passedExpectations.push(passed);
-      (0, import_jsutils33.isObj)(item.action.ParkinMetaData) ? result.metaData = item.action.ParkinMetaData : (0, import_jsutils33.isObj)(item.action.metaData) && (result.metaData = item.action.metaData);
-      if (passed || failed)
-        result.status = passed ? "passed" /* passed */ : ((_a = result == null ? void 0 : result.metaData) == null ? void 0 : _a.warnOnFailed) ? "warning" /* warning */ : "failed" /* failed */;
-      return result;
+    RetryError = class extends Error {
+      constructor(err, message) {
+        super(message || err.message);
+        this.stack = err.stack;
+        this.name = err.name !== `Error` ? err.name : this.constructor.name;
+        if (message)
+          this.cause = err.message;
+      }
     };
-  }
-});
-
-// src/test/utils.ts
-var import_jsutils34, hookTypes, globalTypes, Types, throwError, validateHook, validateRootRun, validateItem, createItem, createDescribe, createRoot;
-var init_utils = __esm({
-  "src/test/utils.ts"() {
-    init_errors();
-    import_jsutils34 = __toESM(require_cjs());
-    hookTypes = (0, import_jsutils34.keyMap)([
-      `beforeAll`,
-      `beforeEach`,
-      `afterAll`,
-      `afterEach`
-    ]);
-    globalTypes = {
-      ...(0, import_jsutils34.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
-      ...hookTypes
-    };
-    Types = {
-      ...globalTypes,
-      ...(0, import_jsutils34.keyMap)([`root`])
-    };
-    throwError = (error) => {
-      throw new ParkinError(error);
-    };
-    validateHook = (type, action) => {
-      !(0, import_jsutils34.isFunc)(action) && throwError(
-        `The ${type} method requires a "function" as the first argument`
-      );
-    };
-    validateRootRun = (root) => {
-      root.type !== Types.root && throwError(`Invalid root type "${root.type}" set for root object`);
-      !root.describes || !root.describes.length && throwError(`No tests have been registered to this ParkinTest instance`);
-    };
-    validateItem = (type, description, action) => {
-      !(0, import_jsutils34.isStr)(type) && throwError(`Test item type is required as a string`);
-      !(0, import_jsutils34.isFunc)(action) && throwError(
-        `The ${type} method requires a "function" as the second argument`
-      );
-      !(0, import_jsutils34.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
-    };
-    createItem = (type, metadata = import_jsutils34.noOpObj, validate = true) => {
-      const { description, action } = metadata;
-      validate && validateItem(type, description, action);
-      return { ...metadata, type };
-    };
-    createDescribe = (description, action) => {
-      const item = createItem(Types.describe, {
-        ...createRoot(),
-        action,
-        tests: [],
-        description
-      });
-      item.disabled = () => item.skip = true;
-      return item;
-    };
-    createRoot = () => {
-      return createItem(
-        Types.root,
-        {
-          describes: [],
-          ...Object.values(hookTypes).reduce((acc, type) => {
-            acc[type] = [];
-            return acc;
-          }, {})
-        },
-        false
-      );
+    PromiseRetry = async (opts) => {
+      const fn = opts.promise;
+      const onRetry = opts == null ? void 0 : opts.onRetry;
+      const delay = (opts == null ? void 0 : opts.delay) || 0;
+      const retry = (opts == null ? void 0 : opts.retry) || 0;
+      try {
+        return await fn();
+      } catch (err) {
+        if (retry <= 0)
+          throw new RetryError(err, opts == null ? void 0 : opts.error);
+        const next = { ...opts, retry: retry - 1 };
+        onRetry && await (onRetry == null ? void 0 : onRetry(next));
+        delay && await (0, import_jsutils33.wait)(delay);
+        return PromiseRetry(next);
+      }
     };
   }
 });
@@ -14480,13 +14397,146 @@ var init_promiseTimeout = __esm({
   }
 });
 
+// src/test/runTest.ts
+var runTest;
+var init_runTest = __esm({
+  "src/test/runTest.ts"() {
+    init_promiseRetry();
+    init_promiseTimeout();
+    runTest = async (args) => {
+      const { test, ...rest } = args;
+      return PromiseRetry({
+        ...rest,
+        retry: test.retry || rest.retry || 0,
+        promise: async () => {
+          const promise = test.action();
+          return test.timeout ? await PromiseTimeout({
+            promise,
+            timeout: test.timeout,
+            name: test.description,
+            error: `Test failed, the timeout ${test.timeout}ms was exceeded`
+          }) : await promise;
+        }
+      });
+    };
+  }
+});
+
+// src/test/runResult.ts
+var import_jsutils34, runResult;
+var init_runResult = __esm({
+  "src/test/runResult.ts"() {
+    init_types();
+    import_jsutils34 = __toESM(require_cjs());
+    runResult = (item, {
+      id,
+      action,
+      failed,
+      passed,
+      testPath,
+      fullName
+    }) => {
+      var _a;
+      const result = {
+        id,
+        action,
+        testPath,
+        fullName,
+        type: item.type,
+        failedExpectations: [],
+        passedExpectations: [],
+        failed: Boolean(failed),
+        passed: Boolean(passed),
+        description: item.description,
+        timestamp: (/* @__PURE__ */ new Date()).getTime()
+      };
+      (0, import_jsutils34.isObj)(failed) && result.failedExpectations.push(failed);
+      (0, import_jsutils34.isObj)(passed) && result.passedExpectations.push(passed);
+      (0, import_jsutils34.isObj)(item.action.ParkinMetaData) ? result.metaData = item.action.ParkinMetaData : (0, import_jsutils34.isObj)(item.action.metaData) && (result.metaData = item.action.metaData);
+      if (passed || failed)
+        result.status = passed ? "passed" /* passed */ : ((_a = result == null ? void 0 : result.metaData) == null ? void 0 : _a.warnOnFailed) ? "warning" /* warning */ : "failed" /* failed */;
+      return result;
+    };
+  }
+});
+
+// src/test/utils.ts
+var import_jsutils35, hookTypes, globalTypes, Types, throwError, validateHook, validateRootRun, validateItem, createItem, createDescribe, createRoot;
+var init_utils = __esm({
+  "src/test/utils.ts"() {
+    init_errors();
+    import_jsutils35 = __toESM(require_cjs());
+    hookTypes = (0, import_jsutils35.keyMap)([
+      `beforeAll`,
+      `beforeEach`,
+      `afterAll`,
+      `afterEach`
+    ]);
+    globalTypes = {
+      ...(0, import_jsutils35.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
+      ...hookTypes
+    };
+    Types = {
+      ...globalTypes,
+      ...(0, import_jsutils35.keyMap)([`root`])
+    };
+    throwError = (error) => {
+      throw new ParkinError(error);
+    };
+    validateHook = (type, action) => {
+      !(0, import_jsutils35.isFunc)(action) && throwError(
+        `The ${type} method requires a "function" as the first argument`
+      );
+    };
+    validateRootRun = (root) => {
+      root.type !== Types.root && throwError(`Invalid root type "${root.type}" set for root object`);
+      !root.describes || !root.describes.length && throwError(`No tests have been registered to this ParkinTest instance`);
+    };
+    validateItem = (type, description, action) => {
+      !(0, import_jsutils35.isStr)(type) && throwError(`Test item type is required as a string`);
+      !(0, import_jsutils35.isFunc)(action) && throwError(
+        `The ${type} method requires a "function" as the second argument`
+      );
+      !(0, import_jsutils35.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
+    };
+    createItem = (type, metadata = import_jsutils35.noOpObj, validate = true) => {
+      const { description, action } = metadata;
+      validate && validateItem(type, description, action);
+      return { ...metadata, type };
+    };
+    createDescribe = (description, action) => {
+      const item = createItem(Types.describe, {
+        ...createRoot(),
+        action,
+        tests: [],
+        description
+      });
+      item.disabled = () => item.skip = true;
+      return item;
+    };
+    createRoot = () => {
+      return createItem(
+        Types.root,
+        {
+          describes: [],
+          ...Object.values(hookTypes).reduce((acc, type) => {
+            acc[type] = [];
+            return acc;
+          }, {})
+        },
+        false
+      );
+    };
+  }
+});
+
 // src/test/hooks.ts
-var loopHooks, callBeforeHooks, callAfterHooks;
+var loopHooks, callBeforeHooks, callAfterHooks, callDescribeHooks;
 var init_hooks2 = __esm({
   "src/test/hooks.ts"() {
     init_utils();
-    init_types();
     init_runResult();
+    init_types();
     loopHooks = async (args) => {
       const {
         type,
@@ -14496,31 +14546,33 @@ var init_hooks2 = __esm({
         suiteId,
         describe: describe2
       } = args;
+      let hookResults = [];
       let hookIdx;
       const activeItem = root || describe2;
       const fullName = root ? root.description : test ? `${describe2 == null ? void 0 : describe2.description} > ${test == null ? void 0 : test.description} > ${type}` : `${describe2 == null ? void 0 : describe2.description} > ${type}`;
-      try {
-        activeItem[type].length && await Promise.all(
-          activeItem[type].map((fn, idx) => {
-            hookIdx = idx;
-            return fn();
-          })
-        );
-      } catch (error) {
-        return runResult(activeItem, {
-          fullName,
-          action: type,
-          id: test ? specId : suiteId,
-          status: "failed" /* failed */,
-          failed: {
-            error,
-            fullName,
-            description: error.message,
-            status: "failed" /* failed */
-          },
-          testPath: test ? `/${suiteId}/${specId}/${type}${hookIdx}` : `/${suiteId}/${type}${hookIdx}`
-        });
-      }
+      activeItem[type].length && await Promise.all(
+        activeItem[type].map(async (fn, idx) => {
+          hookIdx = idx;
+          return await Promise.resolve().then(() => fn == null ? void 0 : fn()).catch((error) => {
+            hookResults.push(
+              runResult(activeItem, {
+                fullName,
+                action: type,
+                id: test ? specId : suiteId,
+                status: "failed" /* failed */,
+                failed: {
+                  error,
+                  fullName,
+                  description: error.message,
+                  status: "failed" /* failed */
+                },
+                testPath: test ? `/${suiteId}/${specId}/${type}${hookIdx}` : `/${suiteId}/${type}${hookIdx}`
+              })
+            );
+          });
+        })
+      );
+      return hookResults;
     };
     callBeforeHooks = async ({ root, suiteId, describe: describe2 }) => {
       const beforeEachResult = await loopHooks({
@@ -14528,12 +14580,12 @@ var init_hooks2 = __esm({
         suiteId: Types.root,
         type: Types.beforeEach
       });
-      const beforeAllResult = !beforeEachResult && await loopHooks({
+      const beforeAllResult = await loopHooks({
         suiteId,
         describe: describe2,
         type: Types.beforeAll
       });
-      return beforeEachResult || beforeAllResult;
+      return [...beforeEachResult, ...beforeAllResult];
     };
     callAfterHooks = async ({ root, suiteId, describe: describe2 }) => {
       const afterEachResult = await loopHooks({
@@ -14541,12 +14593,37 @@ var init_hooks2 = __esm({
         suiteId: Types.root,
         type: Types.afterEach
       });
-      const afterAllResult = !afterEachResult && await loopHooks({
+      const afterAllResult = await loopHooks({
         suiteId,
         describe: describe2,
         type: Types.afterAll
       });
-      return afterEachResult || afterAllResult;
+      return [...afterEachResult, ...afterAllResult];
+    };
+    callDescribeHooks = async (args) => {
+      const {
+        root,
+        type,
+        suiteId,
+        describe: describe2,
+        suiteDone,
+        describeResult
+      } = args;
+      const results = [];
+      const beforeResults = type === `before` ? await callBeforeHooks({ root, suiteId, describe: describe2 }) : await callAfterHooks({ root, suiteId, describe: describe2 });
+      if (!(beforeResults == null ? void 0 : beforeResults.length))
+        return results;
+      if (beforeResults == null ? void 0 : beforeResults.length) {
+        const describeResults = beforeResults.map((result) => ({ ...describeResult, ...result }));
+        suiteDone({
+          ...describeResult,
+          failed: true,
+          passed: false,
+          describes: describeResults
+        });
+        results.push(...describeResults);
+      }
+      return results;
     };
   }
 });
@@ -14582,10 +14659,10 @@ var init_runHelpers = __esm({
 var loopTests, loopDescribes, run;
 var init_run = __esm({
   "src/test/run.ts"() {
+    init_runTest();
     init_runResult();
     init_utils();
     init_types();
-    init_promiseTimeout();
     init_hooks2();
     init_runHelpers();
     loopTests = async (args) => {
@@ -14594,6 +14671,8 @@ var init_run = __esm({
         describe: describe2,
         testOnly,
         specDone,
+        testRetry,
+        onTestRetry,
         shouldAbort,
         specStarted
       } = args;
@@ -14626,27 +14705,25 @@ var init_run = __esm({
           specStarted(testResult);
         if (shouldAbort())
           break;
-        const beforeEachResult = await loopHooks({
+        const beforeEachResults = await loopHooks({
           test,
           specId,
           suiteId,
           describe: describe2,
           type: Types.beforeEach
         });
-        if (beforeEachResult) {
+        if (beforeEachResults == null ? void 0 : beforeEachResults.length) {
           describeFailed = true;
-          results.push(beforeEachResult);
-          specDone(beforeEachResult);
+          results.push(...beforeEachResults);
+          beforeEachResults.forEach(specDone);
           break;
         }
         try {
-          const promise = test.action();
-          const result = test.timeout ? await PromiseTimeout({
-            promise,
-            timeout: test.timeout,
-            name: test.description,
-            error: `Test failed, the timeout ${test.timeout}ms was exceeded`
-          }) : await promise;
+          const result = await runTest({
+            test,
+            retry: testRetry,
+            onRetry: onTestRetry
+          });
           testResult = runResult(test, {
             fullName,
             id: specId,
@@ -14671,17 +14748,17 @@ var init_run = __esm({
         }
         if (shouldAbort())
           break;
-        const afterEachResult = await loopHooks({
+        const afterEachResults = await loopHooks({
           test,
           specId,
           suiteId,
           describe: describe2,
           type: Types.afterEach
         });
-        if (afterEachResult) {
+        if (afterEachResults == null ? void 0 : afterEachResults.length) {
           describeFailed = true;
-          results.push(afterEachResult);
-          specDone(afterEachResult);
+          results.push(...afterEachResults);
+          afterEachResults.forEach(specDone);
           break;
         }
         results.push(testResult);
@@ -14698,7 +14775,9 @@ var init_run = __esm({
         testOnly,
         specDone,
         suiteDone,
+        testRetry,
         shouldAbort,
+        onTestRetry,
         specStarted,
         suiteStarted,
         describeOnly,
@@ -14727,16 +14806,17 @@ var init_run = __esm({
           continue;
         } else
           suiteStarted(describeResult);
-        const beforeResult = await callBeforeHooks({
+        const beforeResults = await callDescribeHooks({
           root,
           suiteId,
-          describe: describe2
+          describe: describe2,
+          suiteDone,
+          describeResult,
+          type: `before`
         });
-        if (beforeResult) {
+        if (beforeResults == null ? void 0 : beforeResults.length) {
           describeFailed = true;
-          describeResult = { ...describeResult, ...beforeResult };
-          suiteDone(describeResult);
-          results.push(describeResult);
+          results.push(...beforeResults);
           continue;
         }
         if (shouldAbort())
@@ -14746,6 +14826,8 @@ var init_run = __esm({
           describe: describe2,
           testOnly,
           specDone,
+          testRetry,
+          onTestRetry,
           shouldAbort,
           specStarted
         });
@@ -14767,16 +14849,17 @@ var init_run = __esm({
           describeResult.failed = true;
         } else
           describeResult.passed = true;
-        const afterResult = await callAfterHooks({
+        const afterResults = await callDescribeHooks({
           root,
           suiteId,
-          describe: describe2
+          describe: describe2,
+          suiteDone,
+          describeResult,
+          type: `after`
         });
-        if (afterResult) {
+        if (afterResults == null ? void 0 : afterResults.length) {
           describeFailed = true;
-          describeResult = { ...describeResult, ...afterResult };
-          suiteDone(describeResult);
-          results.push(describeResult);
+          results.push(...afterResults);
           continue;
         }
         if (shouldAbort())
@@ -14792,48 +14875,73 @@ var init_run = __esm({
         onAbort,
         shouldAbort
       } = args;
+      let describes = [];
       validateRootRun(root);
-      const beforeAllResult = await loopHooks({
+      const beforeAllResults = await loopHooks({
         root,
         suiteId: Types.root,
         type: Types.beforeAll
       });
       if (shouldAbort()) {
         onAbort == null ? void 0 : onAbort();
-        const results = [];
-        results.aborted = true;
-        return results;
+        describes.aborted = true;
+        return describes;
       }
-      if (beforeAllResult)
-        return [beforeAllResult];
-      const { describes } = await loopDescribes(args);
-      if (shouldAbort()) {
-        onAbort == null ? void 0 : onAbort();
-        const results = [];
-        results.aborted = true;
-        return results;
+      if (beforeAllResults == null ? void 0 : beforeAllResults.length)
+        return beforeAllResults;
+      try {
+        const resp = await loopDescribes(args);
+        describes = resp.describes;
+        if (shouldAbort()) {
+          onAbort == null ? void 0 : onAbort();
+          describes.aborted = true;
+          return describes;
+        }
+      } catch (err) {
+        describes.push(
+          runResult(root, {
+            id: Types.root,
+            fullName: root.description,
+            testPath: `/${Types.root}`,
+            action: "end" /* end */,
+            status: "failed" /* failed */,
+            failed: {
+              error: err,
+              description: err.message,
+              fullName: root.description,
+              status: "failed" /* failed */
+            }
+          })
+        );
+      } finally {
+        const afterAllResult = await loopHooks({
+          root,
+          suiteId: Types.root,
+          type: Types.afterAll
+        });
+        (afterAllResult == null ? void 0 : afterAllResult.length) && describes.push(...afterAllResult);
       }
-      const afterAllResult = await loopHooks({
-        root,
-        suiteId: Types.root,
-        type: Types.afterAll
-      });
-      afterAllResult && describes.push(afterAllResult);
       return describes;
     };
   }
 });
 
 // src/test/test.ts
-var import_jsutils35, ParkinTest;
+var import_jsutils36, ParkinTest;
 var init_test = __esm({
   "src/test/test.ts"() {
     init_run();
     init_runResult();
+    init_promiseRetry();
     init_promiseTimeout();
-    import_jsutils35 = __toESM(require_cjs());
+    import_jsutils36 = __toESM(require_cjs());
     init_utils();
     ParkinTest = class {
+      // Default retires to 0
+      testRetry = 0;
+      suiteRetry = 0;
+      #onTestRetry;
+      #onSuiteRetry;
       // Default global test timeout is 1hr
       timeout = 36e5;
       #autoClean = true;
@@ -14843,17 +14951,17 @@ var init_test = __esm({
       #root = createRoot();
       xit;
       it;
+      #specDone = import_jsutils36.noOp;
+      #suiteDone = import_jsutils36.noOp;
+      #specStarted = import_jsutils36.noOp;
+      #suiteStarted = import_jsutils36.noOp;
+      #onAbort = import_jsutils36.noOp;
+      afterAll = import_jsutils36.noOp;
+      afterEach = import_jsutils36.noOp;
+      beforeAll = import_jsutils36.noOp;
+      beforeEach = import_jsutils36.noOp;
       #activeParent = void 0;
-      #specDone = import_jsutils35.noOp;
-      #suiteDone = import_jsutils35.noOp;
-      #specStarted = import_jsutils35.noOp;
-      #suiteStarted = import_jsutils35.noOp;
-      #onAbort = import_jsutils35.noOp;
-      afterAll = import_jsutils35.noOp;
-      afterEach = import_jsutils35.noOp;
-      beforeAll = import_jsutils35.noOp;
-      beforeEach = import_jsutils35.noOp;
-      constructor(config = import_jsutils35.noOpObj) {
+      constructor(config = import_jsutils36.noOpObj) {
         this.#root.description = config.description || `root`;
         this.#addOnly();
         this.#addSkip();
@@ -14863,29 +14971,38 @@ var init_test = __esm({
         this.#activeParent = this.#root;
         this.#setConfig(config);
       }
-      run = (config = import_jsutils35.noOpObj) => {
+      run = (config = import_jsutils36.noOpObj) => {
         if (config.description)
           this.#root.description = config.description;
         this.#setConfig(config);
-        const promise = run({
-          root: this.#root,
-          onAbort: this.#onAbort,
-          testOnly: this.#testOnly,
-          specDone: this.#specDone,
-          suiteDone: this.#suiteDone,
-          specStarted: this.#specStarted,
-          shouldAbort: this.#shouldAbort,
-          describeOnly: this.#describeOnly,
-          suiteStarted: this.#suiteStarted
+        const runSuite = async () => {
+          const promise = run({
+            root: this.#root,
+            onAbort: this.#onAbort,
+            testOnly: this.#testOnly,
+            specDone: this.#specDone,
+            testRetry: this.testRetry,
+            suiteDone: this.#suiteDone,
+            specStarted: this.#specStarted,
+            onTestRetry: this.#onTestRetry,
+            shouldAbort: this.#shouldAbort,
+            describeOnly: this.#describeOnly,
+            suiteStarted: this.#suiteStarted
+          });
+          const result = this.timeout ? PromiseTimeout({
+            promise,
+            timeout: this.timeout,
+            name: this.#root.description,
+            error: `Test Execution failed, the global timeout ${this.timeout}ms was exceeded`
+          }) : promise;
+          this.#autoClean && this.clean();
+          return result;
+        };
+        return PromiseRetry({
+          promise: runSuite,
+          retry: this.suiteRetry,
+          onRetry: this.#onSuiteRetry
         });
-        const result = this.timeout ? PromiseTimeout({
-          promise,
-          timeout: this.timeout,
-          name: this.#root.description,
-          error: `Test Execution failed, the global timeout ${this.timeout}ms was exceeded`
-        }) : promise;
-        this.#autoClean && this.clean();
-        return result;
       };
       /**
        * Expose the helper method to build a test result
@@ -14921,12 +15038,16 @@ var init_test = __esm({
       /**
        * Sets the test config from the passed in object
        */
-      setConfig = (config) => this.#setConfig(config || import_jsutils35.noOpObj);
+      setConfig = (config) => this.#setConfig(config || import_jsutils36.noOpObj);
       /**
        * Adds passed in framework hooks to the class instance
        */
       #setConfig = ({
         timeout,
+        testRetry,
+        suiteRetry,
+        onTestRetry,
+        onSuiteRetry,
         onAbort,
         autoClean,
         specDone,
@@ -14934,10 +15055,18 @@ var init_test = __esm({
         specStarted,
         suiteStarted
       }) => {
-        if (timeout)
+        if ((0, import_jsutils36.isNum)(timeout))
           this.timeout = timeout;
         if (onAbort)
           this.#onAbort = onAbort;
+        if ((0, import_jsutils36.isNum)(testRetry))
+          this.testRetry = testRetry;
+        if ((0, import_jsutils36.isNum)(suiteRetry))
+          this.suiteRetry = suiteRetry;
+        if (onTestRetry)
+          this.#onTestRetry = onTestRetry;
+        if (onSuiteRetry)
+          this.#onSuiteRetry = onSuiteRetry;
         if (specDone)
           this.#specDone = specDone;
         if (suiteDone)
@@ -14959,14 +15088,14 @@ var init_test = __esm({
           const item = this.#activeParent.describes[this.#activeParent.describes.length - 1];
           item.only = true;
           this.#describeOnly = true;
-          (0, import_jsutils35.checkCall)(this.#activeParent.hasOnlyChild);
+          (0, import_jsutils36.checkCall)(this.#activeParent.hasOnlyChild);
         };
         this.test.only = (...args) => {
           this.test(...args);
           const item = this.#activeParent.tests[this.#activeParent.tests.length - 1];
           item.only = true;
           this.#testOnly = true;
-          (0, import_jsutils35.checkCall)(this.#activeParent.hasOnlyChild);
+          (0, import_jsutils36.checkCall)(this.#activeParent.hasOnlyChild);
         };
       };
       /**
@@ -15015,7 +15144,7 @@ var init_test = __esm({
         const lastParent = this.#activeParent;
         item.hasOnlyChild = () => {
           item.onlyChild = true;
-          (0, import_jsutils35.checkCall)(lastParent.hasOnlyChild);
+          (0, import_jsutils36.checkCall)(lastParent.hasOnlyChild);
         };
         this.#activeParent = item;
         action();
@@ -15028,18 +15157,26 @@ var init_test = __esm({
        * @returns {void}
        */
       test = (description, action, meta) => {
+        let retry = this.testRetry || 0;
         let timeout = void 0;
-        if ((0, import_jsutils35.isObj)(meta) && !(0, import_jsutils35.exists)(action.metaData) && !(0, import_jsutils35.exists)(action.ParkinMetaData)) {
+        if ((0, import_jsutils36.isObj)(meta) && !(0, import_jsutils36.exists)(action.metaData) && !(0, import_jsutils36.exists)(action.ParkinMetaData)) {
           action.metaData = meta;
           if (meta == null ? void 0 : meta.timeout)
             timeout = meta.timeout;
-        } else if ((0, import_jsutils35.isNum)(meta))
+          if (meta == null ? void 0 : meta.retry)
+            retry = meta.retry;
+        } else if ((0, import_jsutils36.isNum)(meta))
           timeout = meta;
         if (!this.#activeParent || this.#activeParent.type === Types.root)
           throwError(`All ${Types.test} method calls must be called within a ${Types.describe} method`);
         const item = createItem(
           Types.test,
-          { action, timeout, description }
+          {
+            retry,
+            action,
+            timeout,
+            description
+          }
         );
         item.disabled = () => item.skip = true;
         this.#activeParent.tests.push(item);
@@ -15055,7 +15192,7 @@ var init_test = __esm({
           throwError(
             `All ${Types.test} method calls must be called within a ${Types.describe} method`
           );
-        !(0, import_jsutils35.isStr)(description) && throwError(
+        !(0, import_jsutils36.isStr)(description) && throwError(
           `The ${Types.test} method requires a "string" as the first argument`
         );
         const item = createItem(Types.test, { description, skip: true }, false);
@@ -15101,16 +15238,16 @@ var init_globals = __esm({
 });
 
 // src/bin/paths.ts
-var import_os, import_path, import_jsutils36, cwd, homeDir, checkRootDir, __RootDir, setRoot, getRoot;
+var import_os, import_path, import_jsutils37, cwd, homeDir, checkRootDir, __RootDir, setRoot, getRoot;
 var init_paths = __esm({
   "src/bin/paths.ts"() {
     import_os = require("os");
     import_path = __toESM(require("path"));
-    import_jsutils36 = __toESM(require_cjs());
+    import_jsutils37 = __toESM(require_cjs());
     cwd = process.cwd();
     homeDir = (0, import_os.homedir)();
     checkRootDir = (rootDir) => {
-      return !(0, import_jsutils36.isStr)(rootDir) ? void 0 : rootDir.startsWith(`/`) ? rootDir : rootDir.startsWith(`~/`) ? import_path.default.join(homeDir, rootDir.replace(`~/`, ``)) : import_path.default.join(cwd, rootDir);
+      return !(0, import_jsutils37.isStr)(rootDir) ? void 0 : rootDir.startsWith(`/`) ? rootDir : rootDir.startsWith(`~/`) ? import_path.default.join(homeDir, rootDir.replace(`~/`, ``)) : import_path.default.join(cwd, rootDir);
     };
     setRoot = (loc, force) => {
       (!__RootDir || force) && (__RootDir = checkRootDir(loc));
@@ -15291,18 +15428,18 @@ var init_dist = __esm({
 });
 
 // src/bin/helpers.ts
-var import_path3, import_jsutils37, locsByTypes, fullLoc;
+var import_path3, import_jsutils38, locsByTypes, fullLoc;
 var init_helpers3 = __esm({
   "src/bin/helpers.ts"() {
     import_path3 = __toESM(require("path"));
-    import_jsutils37 = __toESM(require_cjs());
+    import_jsutils38 = __toESM(require_cjs());
     init_dist();
     init_paths();
     locsByTypes = async (loc, opts) => {
       const { exclude, include, ext, exts } = opts;
       if (!ext && (!exts || !exts.length))
         return [];
-      const extsArr = (0, import_jsutils37.eitherArr)(exts, []);
+      const extsArr = (0, import_jsutils38.eitherArr)(exts, []);
       ext && !extsArr.includes(ext) && extsArr.push(ext);
       const extensions = extsArr.map((ex) => ex.startsWith(`.`) ? ex : `.${ex}`);
       const files = await c(loc, { resolve: true }).toArray();
@@ -15323,17 +15460,17 @@ var init_helpers3 = __esm({
 });
 
 // src/bin/getDefs.ts
-var import_jsutils38, filterDefs, getDefs;
+var import_jsutils39, filterDefs, getDefs;
 var init_getDefs = __esm({
   "src/bin/getDefs.ts"() {
     init_instance();
     init_paths();
-    import_jsutils38 = __toESM(require_cjs());
+    import_jsutils39 = __toESM(require_cjs());
     init_helpers3();
     filterDefs = async (loc, opts) => {
       return await locsByTypes(loc, {
         ...opts,
-        exts: (0, import_jsutils38.flatUnion)([
+        exts: (0, import_jsutils39.flatUnion)([
           opts == null ? void 0 : opts.ext,
           ...(opts == null ? void 0 : opts.exts) || [],
           `.js`,
@@ -15346,7 +15483,7 @@ var init_getDefs = __esm({
       });
     };
     getDefs = async (opts) => {
-      let filesArr = (0, import_jsutils38.ensureArr)(opts.defs || []);
+      let filesArr = (0, import_jsutils39.ensureArr)(opts.defs || []);
       const defs = !filesArr.length ? await filterDefs(getRoot() || cwd, opts) : await filesArr.reduce(async (resolve, loc) => {
         const acc = await resolve;
         const defs2 = await filterDefs(fullLoc(loc), opts);
@@ -15405,11 +15542,11 @@ var init_runTests = __esm({
 });
 
 // src/bin/getConfig.ts
-var import_jsutils39, mergeConfig, getConfig;
+var import_jsutils40, mergeConfig, getConfig;
 var init_getConfig = __esm({
   "src/bin/getConfig.ts"() {
     init_helpers3();
-    import_jsutils39 = __toESM(require_cjs());
+    import_jsutils40 = __toESM(require_cjs());
     mergeConfig = (base, override) => {
       const {
         defs: bDefs,
@@ -15436,13 +15573,13 @@ var init_getConfig = __esm({
       return {
         ...baseRest,
         ...ovRest,
-        defs: (0, import_jsutils39.flatUnion)((0, import_jsutils39.ensureArr)(bDefs), (0, import_jsutils39.ensureArr)(defs)),
-        exts: (0, import_jsutils39.flatUnion)((0, import_jsutils39.ensureArr)(bExts), (0, import_jsutils39.ensureArr)(exts)),
-        filter: (0, import_jsutils39.flatUnion)((0, import_jsutils39.ensureArr)(filter), (0, import_jsutils39.ensureArr)(bFilter)),
-        exclude: (0, import_jsutils39.flatUnion)((0, import_jsutils39.ensureArr)(bExclude), (0, import_jsutils39.ensureArr)(exclude)),
-        include: (0, import_jsutils39.flatUnion)((0, import_jsutils39.ensureArr)(bInclude), (0, import_jsutils39.ensureArr)(include)),
-        features: (0, import_jsutils39.flatUnion)((0, import_jsutils39.ensureArr)(bFeatures), (0, import_jsutils39.ensureArr)(features)),
-        disabled: (0, import_jsutils39.flatUnion)((0, import_jsutils39.ensureArr)(disabled), (0, import_jsutils39.ensureArr)(bDisabled))
+        defs: (0, import_jsutils40.flatUnion)((0, import_jsutils40.ensureArr)(bDefs), (0, import_jsutils40.ensureArr)(defs)),
+        exts: (0, import_jsutils40.flatUnion)((0, import_jsutils40.ensureArr)(bExts), (0, import_jsutils40.ensureArr)(exts)),
+        filter: (0, import_jsutils40.flatUnion)((0, import_jsutils40.ensureArr)(filter), (0, import_jsutils40.ensureArr)(bFilter)),
+        exclude: (0, import_jsutils40.flatUnion)((0, import_jsutils40.ensureArr)(bExclude), (0, import_jsutils40.ensureArr)(exclude)),
+        include: (0, import_jsutils40.flatUnion)((0, import_jsutils40.ensureArr)(bInclude), (0, import_jsutils40.ensureArr)(include)),
+        features: (0, import_jsutils40.flatUnion)((0, import_jsutils40.ensureArr)(bFeatures), (0, import_jsutils40.ensureArr)(features)),
+        disabled: (0, import_jsutils40.flatUnion)((0, import_jsutils40.ensureArr)(disabled), (0, import_jsutils40.ensureArr)(bDisabled))
       };
     };
     getConfig = (opts) => {
@@ -15577,15 +15714,15 @@ ${space}${Clrs.red(first)}
 });
 
 // src/bin/reporters/cli/cli.ts
-var import_cli_utils2, import_jsutils40, FailText, PassText, printResult, CLIReporter;
+var import_cli_utils2, import_jsutils41, FailText, PassText, printResult, CLIReporter;
 var init_cli = __esm({
   "src/bin/reporters/cli/cli.ts"() {
     import_cli_utils2 = require("@keg-hub/cli-utils");
-    import_jsutils40 = __toESM(require_cjs());
+    import_jsutils41 = __toESM(require_cjs());
     init_formatters2();
     FailText = (text) => `${import_cli_utils2.Logger.colors.red(`\u2718`)} ${import_cli_utils2.Logger.colors.gray(`-`)} ${text}`;
     PassText = (text) => `${import_cli_utils2.Logger.colors.green(`\u2714`)} ${import_cli_utils2.Logger.colors.gray(`-`)} ${text}`;
-    printResult = (results, opts = import_jsutils40.emptyObj) => {
+    printResult = (results, opts = import_jsutils41.emptyObj) => {
       const {
         errorOnly,
         failedOnly,
@@ -15671,11 +15808,11 @@ var init_reporters = __esm({
 });
 
 // src/bin/getFeatures.ts
-var import_jsutils41, filterFeatures2, featureFromArg, getFeatures;
+var import_jsutils42, filterFeatures2, featureFromArg, getFeatures;
 var init_getFeatures = __esm({
   "src/bin/getFeatures.ts"() {
     init_paths();
-    import_jsutils41 = __toESM(require_cjs());
+    import_jsutils42 = __toESM(require_cjs());
     init_helpers3();
     filterFeatures2 = async (loc, opts) => {
       return await locsByTypes(loc, {
@@ -15693,9 +15830,9 @@ var init_getFeatures = __esm({
       });
     };
     getFeatures = async (opts, args) => {
-      let optsFiles = (0, import_jsutils41.ensureArr)(opts.features || []);
+      let optsFiles = (0, import_jsutils42.ensureArr)(opts.features || []);
       const featureArgs = featureFromArg(args);
-      const options2 = featureArgs.length ? { ...opts, include: (0, import_jsutils41.flatArr)([...(opts == null ? void 0 : opts.include) || import_jsutils41.emptyArr, ...featureArgs]) } : opts;
+      const options2 = featureArgs.length ? { ...opts, include: (0, import_jsutils42.flatArr)([...(opts == null ? void 0 : opts.include) || import_jsutils42.emptyArr, ...featureArgs]) } : opts;
       const filesArr = optsFiles.length || !args.length ? optsFiles : featureArgs;
       if (!filesArr.length) {
         const root = __RootDir || cwd;
@@ -15714,7 +15851,7 @@ var init_getFeatures = __esm({
 
 // src/bin/parkin.ts
 var parkin_exports = {};
-var import_jsutils42, import_args_parse;
+var import_jsutils43, import_args_parse;
 var init_parkin2 = __esm({
   "src/bin/parkin.ts"() {
     init_globals();
@@ -15726,7 +15863,7 @@ var init_parkin2 = __esm({
     init_runTests();
     init_getConfig();
     init_reporters();
-    import_jsutils42 = __toESM(require_cjs());
+    import_jsutils43 = __toESM(require_cjs());
     init_getFeatures();
     import_args_parse = require("@keg-hub/args-parse");
     (async () => {
@@ -15746,7 +15883,7 @@ var init_parkin2 = __esm({
         {
           name: parsed.name,
           timeout: parsed.timeout,
-          tags: (0, import_jsutils42.pickKeys)(parsed, [`disabled`, `filter`])
+          tags: (0, import_jsutils43.pickKeys)(parsed, [`disabled`, `filter`])
         }
       );
       CLIReporter.results(results, {
