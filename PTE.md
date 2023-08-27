@@ -79,8 +79,8 @@ describe(`Test the thing`, () => {
 
 * Parkin Test Executer (PTE) executes all `describe` handler as soon as the `PTE.describe` method is called. This is in contrast to `PTE.test` and `PTE.<hook>` handlers which are executed when the `PTE.run` method is called. This is a good reason to do all test setup and teardown inside `before*` and `after*` hooks rather than directly inside the `describe` handler.
   * This allows building a tree of `tests` and `hooks` based on the order in which their parent `describe` method was called
-    * This is similar to the `prepare` or `plan` method of some test frameworks, it just happends automatically
-    * Then, when the `PTE.run` method is called, it executes the tree in the same the `tests` and `hooks` were added
+    * This is similar to the `prepare` or `plan` method of some test frameworks, it just happens automatically
+    * When the `PTE.run` method is called, it will execute the the `tests` in the same order they were added
 * By default PTE runs all the tests serially in the order they were encountered durning the initial `describe` handler execution.
   * As tests are run, it will wait for each `test` handler to complete before moving on to the next.
 
@@ -95,17 +95,33 @@ const { describe, test, it, beforeAll, beforeEach, afterAll, afterEach } = PTE
 
 describe(`describe-1`, () => {
 
+  // Is the third method call, because of the beforeAll and beforeEach hooks
   it(`test-1-1`, () => console.log(`call #3`))
 
   describe(`describe-1-2`, () => {
 
-    afterAll(() => console.log(`call #6`))
+    // BeforeAll hook is always called first within it's parent scope
+    // But after any parent scoped before hooks. i.e. beforeAll and beforeEach
+    beforeAll(() => console.log(`call #5`))
 
-    it(`test-1-2-1`, () => console.log(`call #5`))
+    // After all will always be called last within it's parent scope
+    afterAll(() => console.log(`call #8`))
+
+    // Called after the scoped beforeAll
+    it(`test-1-2-1`, () => console.log(`call #6`))
+    
+    // After Each will always called after each test, but before any afterAll hooks
+    afterEach(() => console.log(`call #7`))
   })
   
+  // BeforeAll hook is always called first within it's parent scope
   beforeAll(() => console.log(`call #1`))
+
+  // BeforeEach hook is always called before each test method
   beforeEach(() => console.log(`call #2 & #4`))
+
+  // After all will always be called last within it's parent scope
+  afterAll(() => console.log(`call #9`))
 
 })
 
@@ -114,7 +130,10 @@ call #1 // - beforeAll
 call #2 & #4 // - beforeEach
 call #3 // - test-1-1
 call #2 & #4 // - beforeEach
-call #5 // - test-1-2-1
-call #6 // - afterAll
+call #5 // - beforeAll, inside describe
+call #6 // - test-1-2-1
+call #7 // - afterEach, inside describe
+call #8 // - afterAll, inside describe
+call #9 // - afterAll
 ```
 
