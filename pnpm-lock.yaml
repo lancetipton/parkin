@@ -7,11 +7,13 @@ dependencies:
   '@keg-hub/cli-utils':
     specifier: 0.8.0
     version: 0.8.0
+
+optionalDependencies:
   esbuild:
-    specifier: 0.18.17
+    specifier: '>=0.18.0'
     version: 0.18.17
   esbuild-register:
-    specifier: 3.4.2
+    specifier: '>=3.0.0'
     version: 3.4.2(esbuild@0.18.17)
 
 devDependencies:
@@ -33,9 +35,6 @@ devDependencies:
   '@typescript-eslint/parser':
     specifier: 5.60.1
     version: 5.60.1(eslint@8.44.0)(typescript@5.2.2)
-  dot-json:
-    specifier: 1.3.0
-    version: 1.3.0
   es-jest:
     specifier: 2.1.0
     version: 2.1.0
@@ -66,6 +65,9 @@ devDependencies:
   jest-jasmine2:
     specifier: 29.5.0
     version: 29.5.0
+  jqn:
+    specifier: 1.0.10
+    version: 1.0.10
   prettier:
     specifier: 2.8.8
     version: 2.8.8
@@ -2047,11 +2049,6 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /detect-indent@6.0.0:
-    resolution: {integrity: sha512-oSyFlqaTHCItVRGK5RmrmjB+CmaMOW7IaNA/kdxqhoa6d17j/5ce9O9eWXmV/KEdRwqpQA+Vqe8a8Bsybu4YnA==}
-    engines: {node: '>=8'}
-    dev: true
-
   /detect-newline@3.1.0:
     resolution: {integrity: sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==}
     engines: {node: '>=8'}
@@ -2074,25 +2071,11 @@ packages:
       path-type: 4.0.0
     dev: true
 
-  /docopt@0.6.2:
-    resolution: {integrity: sha512-NqTbaYeE4gA/wU1hdKFdU+AFahpDOpgGLzHP42k6H6DKExJd0A55KEVWYhL9FEmHmgeLvEU2vuKXDuU+4yToOw==}
-    engines: {node: '>=0.10.0'}
-    dev: true
-
   /doctrine@3.0.0:
     resolution: {integrity: sha512-yS+Q5i3hBf7GBkd4KG8a7eBNNWNGLTaEwwYWUijIYM7zrlYDM0BFXHjjPWlWZ1Rg7UaddZeIDmi9jF3HmqiQ2w==}
     engines: {node: '>=6.0.0'}
     dependencies:
       esutils: 2.0.3
-    dev: true
-
-  /dot-json@1.3.0:
-    resolution: {integrity: sha512-Pu11Prog/Yjf2lBICow82/DSV46n3a2XT1Rqt/CeuhkO1fuacF7xydYhI0SwQx2Ue0jCyLtQzgKPFEO6ewv+bQ==}
-    hasBin: true
-    dependencies:
-      detect-indent: 6.0.0
-      docopt: 0.6.2
-      underscore-keypath: 0.0.22
     dev: true
 
   /eastasianwidth@0.2.0:
@@ -2316,6 +2299,7 @@ packages:
 
   /esbuild-register@3.4.2(esbuild@0.17.6):
     resolution: {integrity: sha512-kG/XyTDyz6+YDuyfB9ZoSIOOmgyFCH+xPRtsCa8W85HLRV5Csp+o3jWVbOSHgSLfyLc5DmP+KFDNwty4mEjC+Q==}
+    requiresBuild: true
     peerDependencies:
       esbuild: '>=0.12 <1'
     dependencies:
@@ -2328,6 +2312,7 @@ packages:
 
   /esbuild-register@3.4.2(esbuild@0.18.17):
     resolution: {integrity: sha512-kG/XyTDyz6+YDuyfB9ZoSIOOmgyFCH+xPRtsCa8W85HLRV5Csp+o3jWVbOSHgSLfyLc5DmP+KFDNwty4mEjC+Q==}
+    requiresBuild: true
     peerDependencies:
       esbuild: '>=0.12 <1'
     dependencies:
@@ -2336,6 +2321,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: false
+    optional: true
 
   /esbuild-sunos-64@0.14.54:
     resolution: {integrity: sha512-28GZ24KmMSeKi5ueWzMcco6EBHStL3B6ubM7M51RmPwXQGLe0teBGJocmWhgwccA1GeFXqxzILIxXpHbl9Q/Kw==}
@@ -3590,6 +3576,11 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
+  /jqn@1.0.10:
+    resolution: {integrity: sha512-7dfnJMzplR3Si8OpfaShrLExmIxhGAEQq3mke7BWPmsBPyRjX5IU4931bm/aZAlPp8bN7GLiQXMtbeKEWjOeew==}
+    hasBin: true
+    dev: true
+
   /js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
     dev: true
@@ -4595,16 +4586,6 @@ packages:
     resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
     engines: {node: '>=14.17'}
     hasBin: true
-    dev: true
-
-  /underscore-keypath@0.0.22:
-    resolution: {integrity: sha512-fU7aYj1J2LQd+jqdQ67AlCOZKK3Pl+VErS8fGYcgZG75XB9/bY+RLM+F2xEcKHhHNtLvqqFyXAoZQlLYfec3Xg==}
-    dependencies:
-      underscore: 1.13.6
-    dev: true
-
-  /underscore@1.13.6:
-    resolution: {integrity: sha512-+A5Sja4HP1M08MaXya7p5LvjuM7K6q/2EaC0+iovj/wOcMsTzMvDFbasi/oSapiwOlt252IqsKqPjCl7huKS0A==}
     dev: true
 
   /universalify@0.1.2:
