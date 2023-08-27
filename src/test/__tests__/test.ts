@@ -1,6 +1,12 @@
+
+let failRunMock = false
 const runMock = jest.fn(async () => {
-  return new Promise((res) => {
-    setTimeout(() => res(true), 50)
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      if(failRunMock) return rej(new Error(`Failed Run Mock`))
+
+      res(true)
+    }, 50)
   })
 })
 jest.setMock(`../run`, { run: runMock })
@@ -589,7 +595,7 @@ describe(`ParkinTest`, () => {
       expect(cleanRunProps.describeOnly).toBe(false)
     })
   })
-  
+
   describe(`Test.run`, () => {
     beforeEach(() => {
       runMock.mockClear()
@@ -623,24 +629,91 @@ describe(`ParkinTest`, () => {
       expect(PTE.timeout).toBe(3000)
       expect(PTE.clean).not.toHaveBeenCalled()
     })
+
+    it(`should fail when the global timeout finishes before the the run module`, async () => {
+      const PTE = new ParkinTest({ timeout: 10 })
+      let caught:boolean = false
+
+      try {
+        await PTE.run()
+      }
+      catch(err){
+        caught = true
+        expect(err.name).toBe(`TimeoutError`)
+        expect(err.message).toBe(`Test Execution failed, the global timeout 10ms was exceeded`)
+      }
+
+      if(!caught)
+        throw new Error(`PTE.run should have thrown a timeout error, but it did not`)
+
+    })
+
+
+    it(`should set the suiteRetry and testRetry values when passed`, async () => {
+      const PTE = new ParkinTest({
+        testRetry: 4,
+        suiteRetry: 2,
+      })
+      
+      expect(PTE.testRetry).toBe(4)
+      expect(PTE.suiteRetry).toBe(2)
     
+    })
+
+    it(`should pass the testRetry and retry callbacks to the run method`, async () => {
+      const onTestRetry = () => {}
+      const PTE = new ParkinTest({
+        onTestRetry,
+        testRetry: 2,
+      })
+
+      await PTE.run()
+      const args = runMock.mock.calls[0][0]
+      expect(args.testRetry).toBe(2)
+      expect(args.onTestRetry).toBe(onTestRetry)
+    })
+
+
+    it(`should allow overwriting the testRetry and onTestRetry when calling the run method`, async () => {
+      const onTestRetry = () => {}
+      const onTestRetry2 = () => {}
+      const PTE = new ParkinTest({
+        onTestRetry,
+        testRetry: 2,
+      })
+
+      await PTE.run({
+        testRetry: 0,
+        onTestRetry: onTestRetry2,
+      })
+      const args = runMock.mock.calls[0][0]
+      expect(args.testRetry).toBe(0)
+      expect(args.onTestRetry).toBe(onTestRetry2)
+    })
+
   })
 
-  it(`should fail when the global timeout finishes before the the run module`, async () => {
-    const PTE = new ParkinTest({ timeout: 10 })
-    let caught:boolean = false
+  it(`should retry a suite when suite retry is greater then 0`, async () => {
+
+    const onSuiteRetry = jest.fn()
+    const PTE = new ParkinTest({
+      suiteRetry: 1,
+      onSuiteRetry
+    })
+
+    failRunMock = true
 
     try {
+      runMock.mockClear()
       await PTE.run()
     }
     catch(err){
-      caught = true
-      expect(err.name).toBe(`TimeoutError`)
-      expect(err.message).toBe(`Test Execution failed, the global timeout 10ms was exceeded`)
+      expect(err.name).toBe(`RetryError`)
+      expect(runMock).toHaveBeenCalledTimes(2)
+      expect(onSuiteRetry).toHaveBeenCalled()
     }
-
-    if(!caught)
-      throw new Error(`PTE.run should have thrown a timeout error, but it did not`)
+    
+    failRunMock = false
 
   })
 

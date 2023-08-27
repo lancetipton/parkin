@@ -547,4 +547,80 @@ describe(`ParkinTest.run`, () => {
   })
 
 
+  it(`should retry a test when retry is grater then 0 and the test fails`, async () => {
+    const onTestRetry = jest.fn()
+
+    const PTE = new ParkinTest({
+      testRetry: 1,
+      onTestRetry
+    })
+    
+    let calls = 0
+    
+    PTE.describe(`describe-retry`, () => {
+      PTE.test(`test-retry-1`, () => {
+        if(calls) return true
+
+        calls = calls + 1
+        throw new Error(`Failed first call`)
+      })
+    })
+    
+    const [resp] = await PTE.run()
+    expect(calls).toBe(1)
+    expect(onTestRetry).toHaveBeenCalled()
+    expect(resp.failed).toBe(false)
+    expect(resp.passed).toBe(true)
+
+  })
+
+
+  it(`should only retry tests until they pass`, async () => {
+    const onTestRetry = jest.fn()
+
+    const PTE = new ParkinTest({
+      testRetry: 5,
+      onTestRetry
+    })
+    
+    let calls = 0
+    
+    PTE.describe(`describe-retry`, () => {
+      PTE.test(`test-retry-1`, () => {
+        if(calls >= 2) return true
+
+        calls = calls + 1
+        throw new Error(`Failed Test`)
+      })
+    })
+
+    const [resp] = await PTE.run()
+    expect(calls).toBe(2)
+    expect(onTestRetry).toHaveBeenCalledTimes(2)
+    expect(resp.failed).toBe(false)
+    expect(resp.passed).toBe(true)
+
+  })
+
+
+  it(`should fail if the test still fails after retrys`, async () => {
+    const onTestRetry = jest.fn()
+
+    const PTE = new ParkinTest({
+      testRetry: 2,
+      onTestRetry
+    })
+
+    PTE.describe(`describe-retry`, () => {
+      PTE.test(`test-retry-1`, () => {
+        throw new Error(`Failed Test`)
+      })
+    })
+
+    const [resp] = await PTE.run()
+    expect(resp.failed).toBe(true)
+    expect(resp.passed).toBe(false)
+
+  })
+
 })

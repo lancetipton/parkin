@@ -170,13 +170,13 @@ export class ParkinTest {
     specStarted,
     suiteStarted,
   }:TParkinTestConfig) => {
-    if (timeout) this.timeout = timeout
+    if (isNum(timeout)) this.timeout = timeout
     if (onAbort) this.#onAbort = onAbort
 
-    if (testRetry) this.testRetry = testRetry
-    if (suiteRetry) this.suiteRetry = suiteRetry
-    if (testRetry) this.#onTestRetry = onTestRetry
-    if (suiteRetry) this.#onSuiteRetry = onSuiteRetry
+    if (isNum(testRetry)) this.testRetry = testRetry
+    if (isNum(suiteRetry)) this.suiteRetry = suiteRetry
+    if (onTestRetry) this.#onTestRetry = onTestRetry
+    if (onSuiteRetry) this.#onSuiteRetry = onSuiteRetry
 
     if (specDone) this.#specDone = specDone
     if (suiteDone) this.#suiteDone = suiteDone
