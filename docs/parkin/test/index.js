@@ -1162,7 +1162,7 @@ var require_stackTracePaths_a7780a09 = __commonJS({
       return valid ? (...args) => !predicate(...args) : null;
     };
     var eitherFunc = (func1, func2) => isFunc2.isFunc(func1) && func1 || func2;
-    var debounce = (func, wait = 250, immediate = false) => {
+    var debounce = (func, wait2 = 250, immediate = false) => {
       let timeout;
       function wrapFunc(...args) {
         if (!isFunc2.isFunc(func))
@@ -1174,7 +1174,7 @@ var require_stackTracePaths_a7780a09 = __commonJS({
         };
         const callNow = immediate && !timeout;
         clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+        timeout = setTimeout(later, wait2);
         if (callNow)
           return isFunc2.isFunc(func) && func.apply(context, args);
       }
@@ -1251,7 +1251,7 @@ var require_stackTracePaths_a7780a09 = __commonJS({
       const result = await fn(...args);
       return [result, /* @__PURE__ */ new Date() - startTime];
     };
-    var throttle = (func, wait = 100) => {
+    var throttle = (func, wait2 = 100) => {
       let waiting = false;
       return function(...args) {
         if (waiting)
@@ -1260,13 +1260,13 @@ var require_stackTracePaths_a7780a09 = __commonJS({
         func.apply(this, args);
         return setTimeout(() => {
           waiting = false;
-        }, wait);
+        }, wait2);
       };
     };
-    var throttleLast = (func, cb, wait = 100) => {
+    var throttleLast = (func, cb, wait2 = 100) => {
       let throttleTimeout;
       if (isNum2.isNum(cb)) {
-        wait = cb;
+        wait2 = cb;
         cb = void 0;
       }
       return function(...args) {
@@ -1275,7 +1275,7 @@ var require_stackTracePaths_a7780a09 = __commonJS({
         throttleTimeout = setTimeout(() => {
           func.apply(this, args);
           clearTimeout(throttleTimeout);
-        }, wait);
+        }, wait2);
         typeof cb === "function" && cb();
       };
     };
@@ -1699,10 +1699,10 @@ var require_wait_8ca88995 = __commonJS({
       proto && Object.getPrototypeOf(proto) !== null && addAsync(proto);
       return object;
     };
-    var wait = (time) => new Promise((res) => setTimeout(() => res(true), time));
+    var wait2 = (time) => new Promise((res) => setTimeout(() => res(true), time));
     exports.promisify = promisify;
     exports.promisifyAll = promisifyAll;
-    exports.wait = wait;
+    exports.wait = wait2;
   }
 });
 
@@ -2061,7 +2061,7 @@ var require_cjs = __commonJS({
     var jsonEqual = require_jsonEqual_7e69ef6a();
     var isObj3 = require_isObj_6b3aa807();
     var reduceObj = require_reduceObj_f41cbf8d();
-    var wait = require_wait_8ca88995();
+    var wait2 = require_wait_8ca88995();
     var joinRegex = require_joinRegex_5320d139();
     var getWordEndingAt = require_getWordEndingAt_63d038a5();
     var isQuoted = require_isQuoted_eb6994da();
@@ -2204,9 +2204,9 @@ var require_cjs = __commonJS({
     exports.jsonEqual = jsonEqual.jsonEqual;
     exports.isObj = isObj3.isObj;
     exports.reduceObj = reduceObj.reduceObj;
-    exports.promisify = wait.promisify;
-    exports.promisifyAll = wait.promisifyAll;
-    exports.wait = wait.wait;
+    exports.promisify = wait2.promisify;
+    exports.promisifyAll = wait2.promisifyAll;
+    exports.wait = wait2.wait;
     exports.getRegexSource = joinRegex.getRegexSource;
     exports.joinRegex = joinRegex.joinRegex;
     exports.buildPath = getWordEndingAt.buildPath;
@@ -2265,133 +2265,32 @@ __export(test_exports, {
 });
 module.exports = __toCommonJS(test_exports);
 
-// src/test/runResult.ts
+// src/utils/promiseRetry.ts
 var import_jsutils = __toESM(require_cjs());
-var runResult = (item, {
-  id,
-  action,
-  failed,
-  passed,
-  testPath,
-  fullName
-}) => {
-  var _a;
-  const result = {
-    id,
-    action,
-    testPath,
-    fullName,
-    type: item.type,
-    failedExpectations: [],
-    passedExpectations: [],
-    failed: Boolean(failed),
-    passed: Boolean(passed),
-    description: item.description,
-    timestamp: (/* @__PURE__ */ new Date()).getTime()
-  };
-  (0, import_jsutils.isObj)(failed) && result.failedExpectations.push(failed);
-  (0, import_jsutils.isObj)(passed) && result.passedExpectations.push(passed);
-  (0, import_jsutils.isObj)(item.action.ParkinMetaData) ? result.metaData = item.action.ParkinMetaData : (0, import_jsutils.isObj)(item.action.metaData) && (result.metaData = item.action.metaData);
-  if (passed || failed)
-    result.status = passed ? "passed" /* passed */ : ((_a = result == null ? void 0 : result.metaData) == null ? void 0 : _a.warnOnFailed) ? "warning" /* warning */ : "failed" /* failed */;
-  return result;
-};
-
-// src/utils/errors.ts
-var import_jsutils2 = __toESM(require_cjs());
-var resolveErrMsg = (error, maybe) => {
-  var _a;
-  return (0, import_jsutils2.isStr)(error) ? [error, maybe] : [(_a = error || maybe) == null ? void 0 : _a.message, error || maybe];
-};
-var replaceStackMsg = (err, msg) => {
-  const split = err.stack.split(`
-`);
-  split[0] = msg;
-  return split.join(`
-`);
-};
-var ParkinError = class extends Error {
-  name = `ParkinError`;
-  constructor(msg, error, replaceStack = true) {
-    const [message, err] = resolveErrMsg(msg, error);
-    const { stackTraceLimit } = Error;
-    if (err && replaceStack) {
-      Error.stackTraceLimit = 0;
-    }
-    const opts = err && message !== (err == null ? void 0 : err.message) ? { cause: err == null ? void 0 : err.message } : void 0;
-    super(message, opts);
-    Error.stackTraceLimit = stackTraceLimit;
-    this.name = this.constructor.name;
-    if (replaceStack) {
-      if (err == null ? void 0 : err.stack)
-        this.stack = replaceStackMsg(err, message);
-      err && Error.captureStackTrace(err, this.constructor);
-    }
+var RetryError = class extends Error {
+  constructor(err, message) {
+    super(message || err.message);
+    this.stack = err.stack;
+    this.name = err.name !== `Error` ? err.name : this.constructor.name;
+    if (message)
+      this.cause = err.message;
   }
 };
-
-// src/test/utils.ts
-var import_jsutils3 = __toESM(require_cjs());
-var hookTypes = (0, import_jsutils3.keyMap)([
-  `beforeAll`,
-  `beforeEach`,
-  `afterAll`,
-  `afterEach`
-]);
-var globalTypes = {
-  ...(0, import_jsutils3.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
-  ...hookTypes
-};
-var Types = {
-  ...globalTypes,
-  ...(0, import_jsutils3.keyMap)([`root`])
-};
-var throwError = (error) => {
-  throw new ParkinError(error);
-};
-var validateHook = (type, action) => {
-  !(0, import_jsutils3.isFunc)(action) && throwError(
-    `The ${type} method requires a "function" as the first argument`
-  );
-};
-var validateRootRun = (root) => {
-  root.type !== Types.root && throwError(`Invalid root type "${root.type}" set for root object`);
-  !root.describes || !root.describes.length && throwError(`No tests have been registered to this ParkinTest instance`);
-};
-var validateItem = (type, description, action) => {
-  !(0, import_jsutils3.isStr)(type) && throwError(`Test item type is required as a string`);
-  !(0, import_jsutils3.isFunc)(action) && throwError(
-    `The ${type} method requires a "function" as the second argument`
-  );
-  !(0, import_jsutils3.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
-};
-var createItem = (type, metadata = import_jsutils3.noOpObj, validate = true) => {
-  const { description, action } = metadata;
-  validate && validateItem(type, description, action);
-  return { ...metadata, type };
-};
-var createDescribe = (description, action) => {
-  const item = createItem(Types.describe, {
-    ...createRoot(),
-    action,
-    tests: [],
-    description
-  });
-  item.disabled = () => item.skip = true;
-  return item;
-};
-var createRoot = () => {
-  return createItem(
-    Types.root,
-    {
-      describes: [],
-      ...Object.values(hookTypes).reduce((acc, type) => {
-        acc[type] = [];
-        return acc;
-      }, {})
-    },
-    false
-  );
+var PromiseRetry = async (opts) => {
+  const fn = opts.promise;
+  const onRetry = opts == null ? void 0 : opts.onRetry;
+  const delay = (opts == null ? void 0 : opts.delay) || 0;
+  const retry = (opts == null ? void 0 : opts.retry) || 0;
+  try {
+    return await fn();
+  } catch (err) {
+    if (retry <= 0)
+      throw new RetryError(err, opts == null ? void 0 : opts.error);
+    const next = { ...opts, retry: retry - 1 };
+    onRetry && await (onRetry == null ? void 0 : onRetry(next));
+    delay && await (0, import_jsutils.wait)(delay);
+    return PromiseRetry(next);
+  }
 };
 
 // src/utils/promiseTimeout.ts
@@ -2421,6 +2320,153 @@ var PromiseTimeout = async ({
   return await Promise.race([promise, timePromise]).finally(() => clearTimeout(timer));
 };
 
+// src/test/runTest.ts
+var runTest = async (args) => {
+  const { test, ...rest } = args;
+  return PromiseRetry({
+    ...rest,
+    retry: test.retry || rest.retry || 0,
+    promise: async () => {
+      const promise = test.action();
+      return test.timeout ? await PromiseTimeout({
+        promise,
+        timeout: test.timeout,
+        name: test.description,
+        error: `Test failed, the timeout ${test.timeout}ms was exceeded`
+      }) : await promise;
+    }
+  });
+};
+
+// src/test/runResult.ts
+var import_jsutils2 = __toESM(require_cjs());
+var runResult = (item, {
+  id,
+  action,
+  failed,
+  passed,
+  testPath,
+  fullName
+}) => {
+  var _a;
+  const result = {
+    id,
+    action,
+    testPath,
+    fullName,
+    type: item.type,
+    failedExpectations: [],
+    passedExpectations: [],
+    failed: Boolean(failed),
+    passed: Boolean(passed),
+    description: item.description,
+    timestamp: (/* @__PURE__ */ new Date()).getTime()
+  };
+  (0, import_jsutils2.isObj)(failed) && result.failedExpectations.push(failed);
+  (0, import_jsutils2.isObj)(passed) && result.passedExpectations.push(passed);
+  (0, import_jsutils2.isObj)(item.action.ParkinMetaData) ? result.metaData = item.action.ParkinMetaData : (0, import_jsutils2.isObj)(item.action.metaData) && (result.metaData = item.action.metaData);
+  if (passed || failed)
+    result.status = passed ? "passed" /* passed */ : ((_a = result == null ? void 0 : result.metaData) == null ? void 0 : _a.warnOnFailed) ? "warning" /* warning */ : "failed" /* failed */;
+  return result;
+};
+
+// src/utils/errors.ts
+var import_jsutils3 = __toESM(require_cjs());
+var resolveErrMsg = (error, maybe) => {
+  var _a;
+  return (0, import_jsutils3.isStr)(error) ? [error, maybe] : [(_a = error || maybe) == null ? void 0 : _a.message, error || maybe];
+};
+var replaceStackMsg = (err, msg) => {
+  const split = err.stack.split(`
+`);
+  split[0] = msg;
+  return split.join(`
+`);
+};
+var ParkinError = class extends Error {
+  name = `ParkinError`;
+  constructor(msg, error, replaceStack = true) {
+    const [message, err] = resolveErrMsg(msg, error);
+    const { stackTraceLimit } = Error;
+    if (err && replaceStack) {
+      Error.stackTraceLimit = 0;
+    }
+    const opts = err && message !== (err == null ? void 0 : err.message) ? { cause: err == null ? void 0 : err.message } : void 0;
+    super(message, opts);
+    Error.stackTraceLimit = stackTraceLimit;
+    this.name = this.constructor.name;
+    if (replaceStack) {
+      if (err == null ? void 0 : err.stack)
+        this.stack = replaceStackMsg(err, message);
+      err && Error.captureStackTrace(err, this.constructor);
+    }
+  }
+};
+
+// src/test/utils.ts
+var import_jsutils4 = __toESM(require_cjs());
+var hookTypes = (0, import_jsutils4.keyMap)([
+  `beforeAll`,
+  `beforeEach`,
+  `afterAll`,
+  `afterEach`
+]);
+var globalTypes = {
+  ...(0, import_jsutils4.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
+  ...hookTypes
+};
+var Types = {
+  ...globalTypes,
+  ...(0, import_jsutils4.keyMap)([`root`])
+};
+var throwError = (error) => {
+  throw new ParkinError(error);
+};
+var validateHook = (type, action) => {
+  !(0, import_jsutils4.isFunc)(action) && throwError(
+    `The ${type} method requires a "function" as the first argument`
+  );
+};
+var validateRootRun = (root) => {
+  root.type !== Types.root && throwError(`Invalid root type "${root.type}" set for root object`);
+  !root.describes || !root.describes.length && throwError(`No tests have been registered to this ParkinTest instance`);
+};
+var validateItem = (type, description, action) => {
+  !(0, import_jsutils4.isStr)(type) && throwError(`Test item type is required as a string`);
+  !(0, import_jsutils4.isFunc)(action) && throwError(
+    `The ${type} method requires a "function" as the second argument`
+  );
+  !(0, import_jsutils4.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
+};
+var createItem = (type, metadata = import_jsutils4.noOpObj, validate = true) => {
+  const { description, action } = metadata;
+  validate && validateItem(type, description, action);
+  return { ...metadata, type };
+};
+var createDescribe = (description, action) => {
+  const item = createItem(Types.describe, {
+    ...createRoot(),
+    action,
+    tests: [],
+    description
+  });
+  item.disabled = () => item.skip = true;
+  return item;
+};
+var createRoot = () => {
+  return createItem(
+    Types.root,
+    {
+      describes: [],
+      ...Object.values(hookTypes).reduce((acc, type) => {
+        acc[type] = [];
+        return acc;
+      }, {})
+    },
+    false
+  );
+};
+
 // src/test/hooks.ts
 var loopHooks = async (args) => {
   const {
@@ -2431,31 +2477,33 @@ var loopHooks = async (args) => {
     suiteId,
     describe
   } = args;
+  let hookResults = [];
   let hookIdx;
   const activeItem = root || describe;
   const fullName = root ? root.description : test ? `${describe == null ? void 0 : describe.description} > ${test == null ? void 0 : test.description} > ${type}` : `${describe == null ? void 0 : describe.description} > ${type}`;
-  try {
-    activeItem[type].length && await Promise.all(
-      activeItem[type].map((fn, idx) => {
-        hookIdx = idx;
-        return fn();
-      })
-    );
-  } catch (error) {
-    return runResult(activeItem, {
-      fullName,
-      action: type,
-      id: test ? specId : suiteId,
-      status: "failed" /* failed */,
-      failed: {
-        error,
-        fullName,
-        description: error.message,
-        status: "failed" /* failed */
-      },
-      testPath: test ? `/${suiteId}/${specId}/${type}${hookIdx}` : `/${suiteId}/${type}${hookIdx}`
-    });
-  }
+  activeItem[type].length && await Promise.all(
+    activeItem[type].map(async (fn, idx) => {
+      hookIdx = idx;
+      return await Promise.resolve().then(() => fn == null ? void 0 : fn()).catch((error) => {
+        hookResults.push(
+          runResult(activeItem, {
+            fullName,
+            action: type,
+            id: test ? specId : suiteId,
+            status: "failed" /* failed */,
+            failed: {
+              error,
+              fullName,
+              description: error.message,
+              status: "failed" /* failed */
+            },
+            testPath: test ? `/${suiteId}/${specId}/${type}${hookIdx}` : `/${suiteId}/${type}${hookIdx}`
+          })
+        );
+      });
+    })
+  );
+  return hookResults;
 };
 var callBeforeHooks = async ({ root, suiteId, describe }) => {
   const beforeEachResult = await loopHooks({
@@ -2463,12 +2511,12 @@ var callBeforeHooks = async ({ root, suiteId, describe }) => {
     suiteId: Types.root,
     type: Types.beforeEach
   });
-  const beforeAllResult = !beforeEachResult && await loopHooks({
+  const beforeAllResult = await loopHooks({
     suiteId,
     describe,
     type: Types.beforeAll
   });
-  return beforeEachResult || beforeAllResult;
+  return [...beforeEachResult, ...beforeAllResult];
 };
 var callAfterHooks = async ({ root, suiteId, describe }) => {
   const afterEachResult = await loopHooks({
@@ -2476,12 +2524,37 @@ var callAfterHooks = async ({ root, suiteId, describe }) => {
     suiteId: Types.root,
     type: Types.afterEach
   });
-  const afterAllResult = !afterEachResult && await loopHooks({
+  const afterAllResult = await loopHooks({
     suiteId,
     describe,
     type: Types.afterAll
   });
-  return afterEachResult || afterAllResult;
+  return [...afterEachResult, ...afterAllResult];
+};
+var callDescribeHooks = async (args) => {
+  const {
+    root,
+    type,
+    suiteId,
+    describe,
+    suiteDone,
+    describeResult
+  } = args;
+  const results = [];
+  const beforeResults = type === `before` ? await callBeforeHooks({ root, suiteId, describe }) : await callAfterHooks({ root, suiteId, describe });
+  if (!(beforeResults == null ? void 0 : beforeResults.length))
+    return results;
+  if (beforeResults == null ? void 0 : beforeResults.length) {
+    const describeResults = beforeResults.map((result) => ({ ...describeResult, ...result }));
+    suiteDone({
+      ...describeResult,
+      failed: true,
+      passed: false,
+      describes: describeResults
+    });
+    results.push(...describeResults);
+  }
+  return results;
 };
 
 // src/test/runHelpers.ts
@@ -2513,6 +2586,8 @@ var loopTests = async (args) => {
     describe,
     testOnly,
     specDone,
+    testRetry,
+    onTestRetry,
     shouldAbort,
     specStarted
   } = args;
@@ -2545,27 +2620,25 @@ var loopTests = async (args) => {
       specStarted(testResult);
     if (shouldAbort())
       break;
-    const beforeEachResult = await loopHooks({
+    const beforeEachResults = await loopHooks({
       test,
       specId,
       suiteId,
       describe,
       type: Types.beforeEach
     });
-    if (beforeEachResult) {
+    if (beforeEachResults == null ? void 0 : beforeEachResults.length) {
       describeFailed = true;
-      results.push(beforeEachResult);
-      specDone(beforeEachResult);
+      results.push(...beforeEachResults);
+      beforeEachResults.forEach(specDone);
       break;
     }
     try {
-      const promise = test.action();
-      const result = test.timeout ? await PromiseTimeout({
-        promise,
-        timeout: test.timeout,
-        name: test.description,
-        error: `Test failed, the timeout ${test.timeout}ms was exceeded`
-      }) : await promise;
+      const result = await runTest({
+        test,
+        retry: testRetry,
+        onRetry: onTestRetry
+      });
       testResult = runResult(test, {
         fullName,
         id: specId,
@@ -2590,17 +2663,17 @@ var loopTests = async (args) => {
     }
     if (shouldAbort())
       break;
-    const afterEachResult = await loopHooks({
+    const afterEachResults = await loopHooks({
       test,
       specId,
       suiteId,
       describe,
       type: Types.afterEach
     });
-    if (afterEachResult) {
+    if (afterEachResults == null ? void 0 : afterEachResults.length) {
       describeFailed = true;
-      results.push(afterEachResult);
-      specDone(afterEachResult);
+      results.push(...afterEachResults);
+      afterEachResults.forEach(specDone);
       break;
     }
     results.push(testResult);
@@ -2617,7 +2690,9 @@ var loopDescribes = async (args) => {
     testOnly,
     specDone,
     suiteDone,
+    testRetry,
     shouldAbort,
+    onTestRetry,
     specStarted,
     suiteStarted,
     describeOnly,
@@ -2646,16 +2721,17 @@ var loopDescribes = async (args) => {
       continue;
     } else
       suiteStarted(describeResult);
-    const beforeResult = await callBeforeHooks({
+    const beforeResults = await callDescribeHooks({
       root,
       suiteId,
-      describe
+      describe,
+      suiteDone,
+      describeResult,
+      type: `before`
     });
-    if (beforeResult) {
+    if (beforeResults == null ? void 0 : beforeResults.length) {
       describeFailed = true;
-      describeResult = { ...describeResult, ...beforeResult };
-      suiteDone(describeResult);
-      results.push(describeResult);
+      results.push(...beforeResults);
       continue;
     }
     if (shouldAbort())
@@ -2665,6 +2741,8 @@ var loopDescribes = async (args) => {
       describe,
       testOnly,
       specDone,
+      testRetry,
+      onTestRetry,
       shouldAbort,
       specStarted
     });
@@ -2686,16 +2764,17 @@ var loopDescribes = async (args) => {
       describeResult.failed = true;
     } else
       describeResult.passed = true;
-    const afterResult = await callAfterHooks({
+    const afterResults = await callDescribeHooks({
       root,
       suiteId,
-      describe
+      describe,
+      suiteDone,
+      describeResult,
+      type: `after`
     });
-    if (afterResult) {
+    if (afterResults == null ? void 0 : afterResults.length) {
       describeFailed = true;
-      describeResult = { ...describeResult, ...afterResult };
-      suiteDone(describeResult);
-      results.push(describeResult);
+      results.push(...afterResults);
       continue;
     }
     if (shouldAbort())
@@ -2711,39 +2790,63 @@ var run = async (args) => {
     onAbort,
     shouldAbort
   } = args;
+  let describes = [];
   validateRootRun(root);
-  const beforeAllResult = await loopHooks({
+  const beforeAllResults = await loopHooks({
     root,
     suiteId: Types.root,
     type: Types.beforeAll
   });
   if (shouldAbort()) {
     onAbort == null ? void 0 : onAbort();
-    const results = [];
-    results.aborted = true;
-    return results;
+    describes.aborted = true;
+    return describes;
   }
-  if (beforeAllResult)
-    return [beforeAllResult];
-  const { describes } = await loopDescribes(args);
-  if (shouldAbort()) {
-    onAbort == null ? void 0 : onAbort();
-    const results = [];
-    results.aborted = true;
-    return results;
+  if (beforeAllResults == null ? void 0 : beforeAllResults.length)
+    return beforeAllResults;
+  try {
+    const resp = await loopDescribes(args);
+    describes = resp.describes;
+    if (shouldAbort()) {
+      onAbort == null ? void 0 : onAbort();
+      describes.aborted = true;
+      return describes;
+    }
+  } catch (err) {
+    describes.push(
+      runResult(root, {
+        id: Types.root,
+        fullName: root.description,
+        testPath: `/${Types.root}`,
+        action: "end" /* end */,
+        status: "failed" /* failed */,
+        failed: {
+          error: err,
+          description: err.message,
+          fullName: root.description,
+          status: "failed" /* failed */
+        }
+      })
+    );
+  } finally {
+    const afterAllResult = await loopHooks({
+      root,
+      suiteId: Types.root,
+      type: Types.afterAll
+    });
+    (afterAllResult == null ? void 0 : afterAllResult.length) && describes.push(...afterAllResult);
   }
-  const afterAllResult = await loopHooks({
-    root,
-    suiteId: Types.root,
-    type: Types.afterAll
-  });
-  afterAllResult && describes.push(afterAllResult);
   return describes;
 };
 
 // src/test/test.ts
-var import_jsutils4 = __toESM(require_cjs());
+var import_jsutils5 = __toESM(require_cjs());
 var ParkinTest = class {
+  // Default retires to 0
+  testRetry = 0;
+  suiteRetry = 0;
+  #onTestRetry;
+  #onSuiteRetry;
   // Default global test timeout is 1hr
   timeout = 36e5;
   #autoClean = true;
@@ -2753,17 +2856,17 @@ var ParkinTest = class {
   #root = createRoot();
   xit;
   it;
+  #specDone = import_jsutils5.noOp;
+  #suiteDone = import_jsutils5.noOp;
+  #specStarted = import_jsutils5.noOp;
+  #suiteStarted = import_jsutils5.noOp;
+  #onAbort = import_jsutils5.noOp;
+  afterAll = import_jsutils5.noOp;
+  afterEach = import_jsutils5.noOp;
+  beforeAll = import_jsutils5.noOp;
+  beforeEach = import_jsutils5.noOp;
   #activeParent = void 0;
-  #specDone = import_jsutils4.noOp;
-  #suiteDone = import_jsutils4.noOp;
-  #specStarted = import_jsutils4.noOp;
-  #suiteStarted = import_jsutils4.noOp;
-  #onAbort = import_jsutils4.noOp;
-  afterAll = import_jsutils4.noOp;
-  afterEach = import_jsutils4.noOp;
-  beforeAll = import_jsutils4.noOp;
-  beforeEach = import_jsutils4.noOp;
-  constructor(config = import_jsutils4.noOpObj) {
+  constructor(config = import_jsutils5.noOpObj) {
     this.#root.description = config.description || `root`;
     this.#addOnly();
     this.#addSkip();
@@ -2773,29 +2876,38 @@ var ParkinTest = class {
     this.#activeParent = this.#root;
     this.#setConfig(config);
   }
-  run = (config = import_jsutils4.noOpObj) => {
+  run = (config = import_jsutils5.noOpObj) => {
     if (config.description)
       this.#root.description = config.description;
     this.#setConfig(config);
-    const promise = run({
-      root: this.#root,
-      onAbort: this.#onAbort,
-      testOnly: this.#testOnly,
-      specDone: this.#specDone,
-      suiteDone: this.#suiteDone,
-      specStarted: this.#specStarted,
-      shouldAbort: this.#shouldAbort,
-      describeOnly: this.#describeOnly,
-      suiteStarted: this.#suiteStarted
+    const runSuite = async () => {
+      const promise = run({
+        root: this.#root,
+        onAbort: this.#onAbort,
+        testOnly: this.#testOnly,
+        specDone: this.#specDone,
+        testRetry: this.testRetry,
+        suiteDone: this.#suiteDone,
+        specStarted: this.#specStarted,
+        onTestRetry: this.#onTestRetry,
+        shouldAbort: this.#shouldAbort,
+        describeOnly: this.#describeOnly,
+        suiteStarted: this.#suiteStarted
+      });
+      const result = this.timeout ? PromiseTimeout({
+        promise,
+        timeout: this.timeout,
+        name: this.#root.description,
+        error: `Test Execution failed, the global timeout ${this.timeout}ms was exceeded`
+      }) : promise;
+      this.#autoClean && this.clean();
+      return result;
+    };
+    return PromiseRetry({
+      promise: runSuite,
+      retry: this.suiteRetry,
+      onRetry: this.#onSuiteRetry
     });
-    const result = this.timeout ? PromiseTimeout({
-      promise,
-      timeout: this.timeout,
-      name: this.#root.description,
-      error: `Test Execution failed, the global timeout ${this.timeout}ms was exceeded`
-    }) : promise;
-    this.#autoClean && this.clean();
-    return result;
   };
   /**
    * Expose the helper method to build a test result
@@ -2831,12 +2943,16 @@ var ParkinTest = class {
   /**
    * Sets the test config from the passed in object
    */
-  setConfig = (config) => this.#setConfig(config || import_jsutils4.noOpObj);
+  setConfig = (config) => this.#setConfig(config || import_jsutils5.noOpObj);
   /**
    * Adds passed in framework hooks to the class instance
    */
   #setConfig = ({
     timeout,
+    testRetry,
+    suiteRetry,
+    onTestRetry,
+    onSuiteRetry,
     onAbort,
     autoClean,
     specDone,
@@ -2844,10 +2960,18 @@ var ParkinTest = class {
     specStarted,
     suiteStarted
   }) => {
-    if (timeout)
+    if ((0, import_jsutils5.isNum)(timeout))
       this.timeout = timeout;
     if (onAbort)
       this.#onAbort = onAbort;
+    if ((0, import_jsutils5.isNum)(testRetry))
+      this.testRetry = testRetry;
+    if ((0, import_jsutils5.isNum)(suiteRetry))
+      this.suiteRetry = suiteRetry;
+    if (onTestRetry)
+      this.#onTestRetry = onTestRetry;
+    if (onSuiteRetry)
+      this.#onSuiteRetry = onSuiteRetry;
     if (specDone)
       this.#specDone = specDone;
     if (suiteDone)
@@ -2869,14 +2993,14 @@ var ParkinTest = class {
       const item = this.#activeParent.describes[this.#activeParent.describes.length - 1];
       item.only = true;
       this.#describeOnly = true;
-      (0, import_jsutils4.checkCall)(this.#activeParent.hasOnlyChild);
+      (0, import_jsutils5.checkCall)(this.#activeParent.hasOnlyChild);
     };
     this.test.only = (...args) => {
       this.test(...args);
       const item = this.#activeParent.tests[this.#activeParent.tests.length - 1];
       item.only = true;
       this.#testOnly = true;
-      (0, import_jsutils4.checkCall)(this.#activeParent.hasOnlyChild);
+      (0, import_jsutils5.checkCall)(this.#activeParent.hasOnlyChild);
     };
   };
   /**
@@ -2925,7 +3049,7 @@ var ParkinTest = class {
     const lastParent = this.#activeParent;
     item.hasOnlyChild = () => {
       item.onlyChild = true;
-      (0, import_jsutils4.checkCall)(lastParent.hasOnlyChild);
+      (0, import_jsutils5.checkCall)(lastParent.hasOnlyChild);
     };
     this.#activeParent = item;
     action();
@@ -2938,18 +3062,26 @@ var ParkinTest = class {
    * @returns {void}
    */
   test = (description, action, meta) => {
+    let retry = this.testRetry || 0;
     let timeout = void 0;
-    if ((0, import_jsutils4.isObj)(meta) && !(0, import_jsutils4.exists)(action.metaData) && !(0, import_jsutils4.exists)(action.ParkinMetaData)) {
+    if ((0, import_jsutils5.isObj)(meta) && !(0, import_jsutils5.exists)(action.metaData) && !(0, import_jsutils5.exists)(action.ParkinMetaData)) {
       action.metaData = meta;
       if (meta == null ? void 0 : meta.timeout)
         timeout = meta.timeout;
-    } else if ((0, import_jsutils4.isNum)(meta))
+      if (meta == null ? void 0 : meta.retry)
+        retry = meta.retry;
+    } else if ((0, import_jsutils5.isNum)(meta))
       timeout = meta;
     if (!this.#activeParent || this.#activeParent.type === Types.root)
       throwError(`All ${Types.test} method calls must be called within a ${Types.describe} method`);
     const item = createItem(
       Types.test,
-      { action, timeout, description }
+      {
+        retry,
+        action,
+        timeout,
+        description
+      }
     );
     item.disabled = () => item.skip = true;
     this.#activeParent.tests.push(item);
@@ -2965,7 +3097,7 @@ var ParkinTest = class {
       throwError(
         `All ${Types.test} method calls must be called within a ${Types.describe} method`
       );
-    !(0, import_jsutils4.isStr)(description) && throwError(
+    !(0, import_jsutils5.isStr)(description) && throwError(
       `The ${Types.test} method requires a "string" as the first argument`
     );
     const item = createItem(Types.test, { description, skip: true }, false);

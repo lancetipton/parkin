@@ -4026,6 +4026,7 @@ var getStepOpts = (step, options = emptyOpts2) => {
   return {
     ...shared,
     ...single,
+    retry: (single == null ? void 0 : single.retry) || (shared == null ? void 0 : shared.retry) || (options == null ? void 0 : options.retry) || 0,
     timeout: (single == null ? void 0 : single.timeout) || (shared == null ? void 0 : shared.timeout) || (options == null ? void 0 : options.timeout) || 15e3
   };
 };
@@ -4038,11 +4039,11 @@ var resolveFeatures = (data, $world) => {
     []
   ) : throwMissingFeatureText();
 };
-var runStep = async (stepsInstance, step, options = emptyOpts2, testMode) => {
-  var _a, _b;
+var runStep = (stepsInstance, step, options = emptyOpts2, testMode) => {
+  var _a, _b, _c;
   const test = getTestMethod("test" /* test */, testMode);
   const opts = getStepOpts(step, options);
-  const disabled = hasTag((_a = step == null ? void 0 : step.tags) == null ? void 0 : _a.tokens, (_b = options == null ? void 0 : options.tags) == null ? void 0 : _b.disabled);
+  const disabled = (opts == null ? void 0 : opts.disabled) || hasTag((_a = step == null ? void 0 : step.tags) == null ? void 0 : _a.tokens, (_b = options == null ? void 0 : options.tags) == null ? void 0 : _b.disabled);
   const testMethod = async () => {
     if (disabled)
       return;
@@ -4056,41 +4057,32 @@ var runStep = async (stepsInstance, step, options = emptyOpts2, testMode) => {
     disabled,
     ...(0, import_jsutils23.pickKeys)(step, [`uuid`, `step`, `index`, `tags`, `type`, `definition`])
   };
-  test(`${(0, import_jsutils23.capitalize)(step.type)} ${step.step}`, testMethod, opts.timeout);
+  const last = ((_c = process == null ? void 0 : process.env) == null ? void 0 : _c.JEST_WORKER_ID) !== void 0 ? opts.timeout : opts;
+  return test(`${(0, import_jsutils23.capitalize)(step.type)} ${step.step}`, testMethod, last);
 };
 var loopSteps = (parent, title, stepsInstance, options = emptyOpts2, testMode) => {
   var _a, _b;
   const describe2 = getTestMethod("describe" /* describe */, testMode);
   const disabled = hasTag((_a = parent == null ? void 0 : parent.tags) == null ? void 0 : _a.tokens, (_b = options == null ? void 0 : options.tags) == null ? void 0 : _b.disabled);
-  let responses = [];
   const describeMethod = () => {
     if (disabled)
       return;
-    const responses2 = parent.steps.map(
-      (step) => runStep(stepsInstance, step, options, testMode)
-    );
-    Promise.all(responses2);
+    parent.steps.map((step) => runStep(stepsInstance, step, options, testMode));
   };
   describeMethod.ParkinMetaData = {
     disabled,
     ...(0, import_jsutils23.pickKeys)(parent, [`index`, `uuid`, `tags`, `type`, `background`, `scenario`])
   };
-  describe2(title, describeMethod);
-  return responses;
+  return describe2(title, describeMethod);
 };
 var runScenario = (stepsInstance, scenario, background, options = emptyOpts2, testMode) => {
-  const responses = [];
-  background && responses.push(
-    ...runBackground(stepsInstance, scenario.scenario, background, options, testMode)
-  );
-  return responses.concat(
-    loopSteps(
-      scenario,
-      buildTitle(scenario.scenario, `Scenario`),
-      stepsInstance,
-      options,
-      testMode
-    )
+  background && runBackground(stepsInstance, scenario.scenario, background, options, testMode);
+  return loopSteps(
+    scenario,
+    buildTitle(scenario.scenario, `Scenario`),
+    stepsInstance,
+    options,
+    testMode
   );
 };
 var runBackground = (stepsInstance, title, background, options = emptyOpts2, testMode) => {
@@ -4104,22 +4096,24 @@ var runBackground = (stepsInstance, title, background, options = emptyOpts2, tes
 };
 var runRule = (stepsInstance, rule, background, options = emptyOpts2, testMode) => {
   var _a, _b;
-  let responses = [];
   const disabled = hasTag((_a = rule == null ? void 0 : rule.tags) == null ? void 0 : _a.tokens, (_b = options == null ? void 0 : options.tags) == null ? void 0 : _b.disabled);
   const describeMethod = () => {
     if (disabled)
       return;
-    background && responses.push(
-      ...responses.concat(
-        runBackground(stepsInstance, rule.rule, background, options, testMode)
-      )
+    background && runBackground(
+      stepsInstance,
+      rule.rule,
+      background,
+      options,
+      testMode
     );
-    responses.push(
-      ...rule.scenarios.map(
-        (scenario) => runScenario(stepsInstance, scenario, rule.background, options, testMode)
-      )
-    );
-    Promise.all(responses);
+    rule.scenarios.map((scenario) => runScenario(
+      stepsInstance,
+      scenario,
+      rule.background,
+      options,
+      testMode
+    ));
   };
   describeMethod.ParkinMetaData = {
     disabled,
@@ -4128,8 +4122,7 @@ var runRule = (stepsInstance, rule, background, options = emptyOpts2, testMode) 
       [`index`, `uuid`, `tags`, `type`, `rule`]
     )
   };
-  describe(`Rule > ${rule.rule}`, describeMethod);
-  return responses;
+  return describe(`Rule > ${rule.rule}`, describeMethod);
 };
 var Runner = class {
   steps;
@@ -4179,9 +4172,8 @@ var Runner = class {
     const features = this.getFeatures(data, options);
     if (!features.length)
       return false;
-    const promises = await features.map(async (feature) => {
+    features.map((feature) => {
       var _a, _b;
-      let responses = [];
       const disabled = hasTag((_a = feature == null ? void 0 : feature.tags) == null ? void 0 : _a.tokens, (_b = options == null ? void 0 : options.tags) == null ? void 0 : _b.disabled);
       if (!disabled) {
         beforeAll(this.hooks.getRegistered("beforeAll" /* beforeAll */));
@@ -4192,31 +4184,26 @@ var Runner = class {
       const describeMethod = () => {
         if (disabled)
           return;
-        responses.push(
-          ...feature.rules.reduce((acc, rule) => {
-            acc.push(runRule(
-              this.steps,
-              rule,
-              feature.background,
-              options,
-              testMode
-            ));
-            return acc;
-          }, [])
-        );
-        responses.push(
-          ...feature.scenarios.reduce((acc, scenario) => {
-            acc.push(runScenario(
-              this.steps,
-              scenario,
-              feature.background,
-              options,
-              testMode
-            ));
-            return acc;
-          }, [])
-        );
-        Promise.all(responses);
+        feature.rules.reduce((acc, rule) => {
+          acc.push(runRule(
+            this.steps,
+            rule,
+            feature.background,
+            options,
+            testMode
+          ));
+          return acc;
+        }, []);
+        feature.scenarios.reduce((acc, scenario) => {
+          acc.push(runScenario(
+            this.steps,
+            scenario,
+            feature.background,
+            options,
+            testMode
+          ));
+          return acc;
+        }, []);
       };
       describeMethod.ParkinMetaData = {
         disabled,
@@ -4225,10 +4212,8 @@ var Runner = class {
           [`index`, `uuid`, `tags`, `feature`, `type`, `errors`]
         )
       };
-      describe2(buildTitle(feature.feature, `Feature`), describeMethod);
-      return responses;
+      return describe2(buildTitle(feature.feature, `Feature`), describeMethod);
     });
-    await Promise.all(promises);
     return true;
   };
 };
