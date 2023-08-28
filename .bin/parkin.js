@@ -14436,7 +14436,7 @@ var init_runResult = __esm({
       testPath,
       fullName
     }) => {
-      var _a;
+      var _a, _b, _c, _d, _e;
       const result = {
         id,
         action,
@@ -14452,9 +14452,9 @@ var init_runResult = __esm({
       };
       (0, import_jsutils34.isObj)(failed) && result.failedExpectations.push(failed);
       (0, import_jsutils34.isObj)(passed) && result.passedExpectations.push(passed);
-      (0, import_jsutils34.isObj)(item.action.ParkinMetaData) ? result.metaData = item.action.ParkinMetaData : (0, import_jsutils34.isObj)(item.action.metaData) && (result.metaData = item.action.metaData);
+      (0, import_jsutils34.isObj)((_a = item == null ? void 0 : item.action) == null ? void 0 : _a.ParkinMetaData) ? result.metaData = (_b = item == null ? void 0 : item.action) == null ? void 0 : _b.ParkinMetaData : (0, import_jsutils34.isObj)((_c = item == null ? void 0 : item.action) == null ? void 0 : _c.metaData) && (result.metaData = (_d = item == null ? void 0 : item.action) == null ? void 0 : _d.metaData);
       if (passed || failed)
-        result.status = passed ? "passed" /* passed */ : ((_a = result == null ? void 0 : result.metaData) == null ? void 0 : _a.warnOnFailed) ? "warning" /* warning */ : "failed" /* failed */;
+        result.status = passed ? "passed" /* passed */ : ((_e = result == null ? void 0 : result.metaData) == null ? void 0 : _e.warnOnFailed) ? "warning" /* warning */ : "failed" /* failed */;
       return result;
     };
   }
