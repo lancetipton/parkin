@@ -40,11 +40,10 @@ export const runResult = (
   isObj(failed) && result.failedExpectations.push(failed)
   isObj(passed) && result.passedExpectations.push(passed)
 
-  isObj(item.action.ParkinMetaData)
-    ? (result.metaData = item.action.ParkinMetaData)
-    : isObj(item.action.metaData)
-        && (result.metaData = item.action.metaData)
-    
+  isObj(item?.action?.ParkinMetaData)
+    ? (result.metaData = item?.action?.ParkinMetaData)
+    : isObj(item?.action?.metaData)
+        && (result.metaData = item?.action?.metaData)
 
   if (passed || failed)
     result.status = passed
