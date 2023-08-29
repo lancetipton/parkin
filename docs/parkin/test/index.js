@@ -2265,116 +2265,11 @@ __export(test_exports, {
 });
 module.exports = __toCommonJS(test_exports);
 
-// src/utils/promiseRetry.ts
-var import_jsutils = __toESM(require_cjs());
-var RetryError = class extends Error {
-  constructor(err, message) {
-    super(message || err.message);
-    this.stack = err.stack;
-    this.name = err.name !== `Error` ? err.name : this.constructor.name;
-    if (message)
-      this.cause = err.message;
-  }
-};
-var PromiseRetry = async (opts) => {
-  const fn = opts.promise;
-  const onRetry = opts == null ? void 0 : opts.onRetry;
-  const delay = (opts == null ? void 0 : opts.delay) || 0;
-  const retry = (opts == null ? void 0 : opts.retry) || 0;
-  try {
-    return await fn();
-  } catch (err) {
-    if (retry <= 0)
-      throw new RetryError(err, opts == null ? void 0 : opts.error);
-    const next = { ...opts, retry: retry - 1 };
-    onRetry && await (onRetry == null ? void 0 : onRetry(next));
-    delay && await (0, import_jsutils.wait)(delay);
-    return PromiseRetry(next);
-  }
-};
-
-// src/utils/promiseTimeout.ts
-var TimeoutError = class extends Error {
-  constructor(message, name) {
-    super(message);
-    this.name = name || this.constructor.name;
-    Error.captureStackTrace(this, this.constructor);
-  }
-};
-var PromiseTimeout = async ({
-  name,
-  error,
-  promise,
-  timeout = 5e3
-}) => {
-  const method = name ? `${name} method` : `method`;
-  let timer;
-  const timePromise = new Promise((res, rej) => {
-    timer = setTimeout(() => rej(
-      new TimeoutError(
-        error || `The ${method} timed out after ${timeout} ms.`,
-        `TimeoutError`
-      )
-    ), timeout);
-  });
-  return await Promise.race([promise, timePromise]).finally(() => clearTimeout(timer));
-};
-
-// src/test/runTest.ts
-var runTest = async (args) => {
-  const { test, ...rest } = args;
-  return PromiseRetry({
-    ...rest,
-    retry: test.retry || rest.retry || 0,
-    promise: async () => {
-      const promise = test.action();
-      return test.timeout ? await PromiseTimeout({
-        promise,
-        timeout: test.timeout,
-        name: test.description,
-        error: `Test failed, the timeout ${test.timeout}ms was exceeded`
-      }) : await promise;
-    }
-  });
-};
-
-// src/test/runResult.ts
-var import_jsutils2 = __toESM(require_cjs());
-var runResult = (item, {
-  id,
-  action,
-  failed,
-  passed,
-  testPath,
-  fullName
-}) => {
-  var _a, _b, _c, _d, _e;
-  const result = {
-    id,
-    action,
-    testPath,
-    fullName,
-    type: item.type,
-    failedExpectations: [],
-    passedExpectations: [],
-    failed: Boolean(failed),
-    passed: Boolean(passed),
-    description: item.description,
-    timestamp: (/* @__PURE__ */ new Date()).getTime()
-  };
-  (0, import_jsutils2.isObj)(failed) && result.failedExpectations.push(failed);
-  (0, import_jsutils2.isObj)(passed) && result.passedExpectations.push(passed);
-  (0, import_jsutils2.isObj)((_a = item == null ? void 0 : item.action) == null ? void 0 : _a.ParkinMetaData) ? result.metaData = (_b = item == null ? void 0 : item.action) == null ? void 0 : _b.ParkinMetaData : (0, import_jsutils2.isObj)((_c = item == null ? void 0 : item.action) == null ? void 0 : _c.metaData) && (result.metaData = (_d = item == null ? void 0 : item.action) == null ? void 0 : _d.metaData);
-  if (passed || failed)
-    result.status = passed ? "passed" /* passed */ : ((_e = result == null ? void 0 : result.metaData) == null ? void 0 : _e.warnOnFailed) ? "warning" /* warning */ : "failed" /* failed */;
-  return result;
-};
-
 // src/utils/errors.ts
-var import_jsutils3 = __toESM(require_cjs());
+var import_jsutils = __toESM(require_cjs());
 var resolveErrMsg = (error, maybe) => {
   var _a;
-  return (0, import_jsutils3.isStr)(error) ? [error, maybe] : [(_a = error || maybe) == null ? void 0 : _a.message, error || maybe];
+  return (0, import_jsutils.isStr)(error) ? [error, maybe] : [(_a = error || maybe) == null ? void 0 : _a.message, error || maybe];
 };
 var replaceStackMsg = (err, msg) => {
   const split = err.stack.split(`
@@ -2404,26 +2299,26 @@ var ParkinError = class extends Error {
 };
 
 // src/test/utils.ts
-var import_jsutils4 = __toESM(require_cjs());
-var hookTypes = (0, import_jsutils4.keyMap)([
+var import_jsutils2 = __toESM(require_cjs());
+var hookTypes = (0, import_jsutils2.keyMap)([
   `beforeAll`,
   `beforeEach`,
   `afterAll`,
   `afterEach`
 ]);
 var globalTypes = {
-  ...(0, import_jsutils4.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
+  ...(0, import_jsutils2.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
   ...hookTypes
 };
 var Types = {
   ...globalTypes,
-  ...(0, import_jsutils4.keyMap)([`root`])
+  ...(0, import_jsutils2.keyMap)([`root`])
 };
 var throwError = (error) => {
   throw new ParkinError(error);
 };
 var validateHook = (type, action) => {
-  !(0, import_jsutils4.isFunc)(action) && throwError(
+  !(0, import_jsutils2.isFunc)(action) && throwError(
     `The ${type} method requires a "function" as the first argument`
   );
 };
@@ -2432,13 +2327,13 @@ var validateRootRun = (root) => {
   !root.describes || !root.describes.length && throwError(`No tests have been registered to this ParkinTest instance`);
 };
 var validateItem = (type, description, action) => {
-  !(0, import_jsutils4.isStr)(type) && throwError(`Test item type is required as a string`);
-  !(0, import_jsutils4.isFunc)(action) && throwError(
+  !(0, import_jsutils2.isStr)(type) && throwError(`Test item type is required as a string`);
+  !(0, import_jsutils2.isFunc)(action) && throwError(
     `The ${type} method requires a "function" as the second argument`
   );
-  !(0, import_jsutils4.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
+  !(0, import_jsutils2.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
 };
-var createItem = (type, metadata = import_jsutils4.noOpObj, validate = true) => {
+var createItem = (type, metadata = import_jsutils2.noOpObj, validate = true) => {
   const { description, action } = metadata;
   validate && validateItem(type, description, action);
   return { ...metadata, type };
@@ -2465,6 +2360,38 @@ var createRoot = () => {
     },
     false
   );
+};
+
+// src/test/runResult.ts
+var import_jsutils3 = __toESM(require_cjs());
+var runResult = (item, {
+  id,
+  action,
+  failed,
+  passed,
+  testPath,
+  fullName
+}) => {
+  var _a, _b, _c, _d, _e;
+  const result = {
+    id,
+    action,
+    testPath,
+    fullName,
+    type: item.type,
+    failedExpectations: [],
+    passedExpectations: [],
+    failed: Boolean(failed),
+    passed: Boolean(passed),
+    description: item.description,
+    timestamp: (/* @__PURE__ */ new Date()).getTime()
+  };
+  (0, import_jsutils3.isObj)(failed) && result.failedExpectations.push(failed);
+  (0, import_jsutils3.isObj)(passed) && result.passedExpectations.push(passed);
+  (0, import_jsutils3.isObj)((_a = item == null ? void 0 : item.action) == null ? void 0 : _a.ParkinMetaData) ? result.metaData = (_b = item == null ? void 0 : item.action) == null ? void 0 : _b.ParkinMetaData : (0, import_jsutils3.isObj)((_c = item == null ? void 0 : item.action) == null ? void 0 : _c.metaData) && (result.metaData = (_d = item == null ? void 0 : item.action) == null ? void 0 : _d.metaData);
+  if (passed || failed)
+    result.status = passed ? "passed" /* passed */ : ((_e = result == null ? void 0 : result.metaData) == null ? void 0 : _e.warnOnFailed) ? "warning" /* warning */ : "failed" /* failed */;
+  return result;
 };
 
 // src/test/hooks.ts
@@ -2537,24 +2464,95 @@ var callDescribeHooks = async (args) => {
     type,
     suiteId,
     describe,
-    suiteDone,
+    onSuiteDone,
     describeResult
   } = args;
   const results = [];
-  const beforeResults = type === `before` ? await callBeforeHooks({ root, suiteId, describe }) : await callAfterHooks({ root, suiteId, describe });
-  if (!(beforeResults == null ? void 0 : beforeResults.length))
+  const hooksResults = type === `before` ? await callBeforeHooks({ root, suiteId, describe }) : await callAfterHooks({ root, suiteId, describe });
+  if (!(hooksResults == null ? void 0 : hooksResults.length))
     return results;
-  if (beforeResults == null ? void 0 : beforeResults.length) {
-    const describeResults = beforeResults.map((result) => ({ ...describeResult, ...result }));
-    suiteDone({
-      ...describeResult,
-      failed: true,
-      passed: false,
-      describes: describeResults
+  if (hooksResults == null ? void 0 : hooksResults.length) {
+    const describeResults = hooksResults.map((result) => {
+      const joined = { ...describeResult, ...result, failed: true, passed: false };
+      onSuiteDone(joined);
+      return joined;
     });
     results.push(...describeResults);
   }
   return results;
+};
+
+// src/utils/promiseRetry.ts
+var import_jsutils4 = __toESM(require_cjs());
+var RetryError = class extends Error {
+  constructor(err, message) {
+    super(message || err.message);
+    this.stack = err.stack;
+    this.name = err.name !== `Error` ? err.name : this.constructor.name;
+    if (message)
+      this.cause = err.message;
+  }
+};
+var PromiseRetry = async (opts) => {
+  const fn = opts.promise;
+  const onRetry = opts == null ? void 0 : opts.onRetry;
+  const delay = (opts == null ? void 0 : opts.delay) || 0;
+  const retry = (opts == null ? void 0 : opts.retry) || 0;
+  try {
+    return await fn();
+  } catch (err) {
+    if (retry <= 0)
+      throw new RetryError(err, opts == null ? void 0 : opts.error);
+    const next = { ...opts, retry: retry - 1 };
+    onRetry && await (onRetry == null ? void 0 : onRetry(next));
+    delay && await (0, import_jsutils4.wait)(delay);
+    return PromiseRetry(next);
+  }
+};
+
+// src/utils/promiseTimeout.ts
+var TimeoutError = class extends Error {
+  constructor(message, name) {
+    super(message);
+    this.name = name || this.constructor.name;
+    Error.captureStackTrace(this, this.constructor);
+  }
+};
+var PromiseTimeout = async ({
+  name,
+  error,
+  promise,
+  timeout = 5e3
+}) => {
+  const method = name ? `${name} method` : `method`;
+  let timer;
+  const timePromise = new Promise((res, rej) => {
+    timer = setTimeout(() => rej(
+      new TimeoutError(
+        error || `The ${method} timed out after ${timeout} ms.`,
+        `TimeoutError`
+      )
+    ), timeout);
+  });
+  return await Promise.race([promise, timePromise]).finally(() => clearTimeout(timer));
+};
+
+// src/test/runTest.ts
+var runTest = async (args) => {
+  const { test, ...rest } = args;
+  return PromiseRetry({
+    ...rest,
+    retry: test.retry || rest.retry || 0,
+    promise: async () => {
+      const promise = test.action();
+      return test.timeout ? await PromiseTimeout({
+        promise,
+        timeout: test.timeout,
+        name: test.description,
+        error: `Test failed, the timeout ${test.timeout}ms was exceeded`
+      }) : await promise;
+    }
+  });
 };
 
 // src/test/runHelpers.ts
@@ -2579,19 +2577,19 @@ var shouldSkipDescribe = ({ describe, describeOnly, testOnly }) => {
   return describe.skip || describeOnly && !describe.only && !describe.onlyChild || testOnly && !describe.onlyChild;
 };
 
-// src/test/run.ts
+// src/test/loopTests.ts
 var loopTests = async (args) => {
   const {
     suiteId,
     describe,
     testOnly,
-    specDone,
+    onSpecDone,
     testRetry,
     onTestRetry,
     shouldAbort,
-    specStarted
+    onSpecStart
   } = args;
-  let describeFailed = false;
+  let testsFailed = false;
   const results = [];
   for (let testIdx = 0; testIdx < describe.tests.length; testIdx++) {
     if (shouldAbort())
@@ -2609,7 +2607,7 @@ var loopTests = async (args) => {
       action: "start" /* start */
     });
     if (shouldSkipTest({ testOnly, test })) {
-      specStarted({
+      onSpecStart({
         ...testResult,
         skipped: true,
         action: "skipped" /* skipped */,
@@ -2617,7 +2615,7 @@ var loopTests = async (args) => {
       });
       continue;
     } else
-      specStarted(testResult);
+      onSpecStart(testResult);
     if (shouldAbort())
       break;
     const beforeEachResults = await loopHooks({
@@ -2628,9 +2626,9 @@ var loopTests = async (args) => {
       type: Types.beforeEach
     });
     if (beforeEachResults == null ? void 0 : beforeEachResults.length) {
-      describeFailed = true;
+      testsFailed = true;
       results.push(...beforeEachResults);
-      beforeEachResults.forEach(specDone);
+      beforeEachResults.forEach(onSpecDone);
       break;
     }
     try {
@@ -2659,7 +2657,7 @@ var loopTests = async (args) => {
           status: "failed" /* failed */
         }
       });
-      describeFailed = true;
+      testsFailed = true;
     }
     if (shouldAbort())
       break;
@@ -2671,30 +2669,68 @@ var loopTests = async (args) => {
       type: Types.afterEach
     });
     if (afterEachResults == null ? void 0 : afterEachResults.length) {
-      describeFailed = true;
+      testsFailed = true;
       results.push(...afterEachResults);
-      afterEachResults.forEach(specDone);
+      afterEachResults.forEach(onSpecDone);
       break;
     }
     results.push(testResult);
-    specDone({
+    onSpecDone({
       ...testResult,
       action: "end" /* end */
     });
   }
-  return shouldAbort() ? { tests: [], failed: describeFailed } : { tests: results, failed: describeFailed };
+  return shouldAbort() ? { tests: [], failed: testsFailed } : { tests: results, failed: testsFailed };
+};
+
+// src/test/loopDescribes.ts
+var loopChildren = async (args) => {
+  const {
+    describe,
+    onSuiteDone,
+    describeResult,
+    loopFun
+  } = args;
+  try {
+    const results = await loopFun();
+    const failed = (results == null ? void 0 : results.failed) || (describeResult == null ? void 0 : describeResult.failed);
+    const joined = {
+      ...describeResult,
+      ...results,
+      action: "end" /* end */
+    };
+    if (failed)
+      joined.failed = failed;
+    return joined;
+  } catch (err) {
+    const errorResult = runResult(describe, {
+      ...describeResult,
+      action: "end" /* end */,
+      failed: {
+        error: err,
+        description: err.message,
+        status: "failed" /* failed */,
+        fullName: describe.description
+      }
+    });
+    onSuiteDone(errorResult);
+    if (!err.result)
+      err.result = errorResult;
+    throw err;
+  }
 };
 var loopDescribes = async (args) => {
+  var _a, _b;
   const {
     root,
     testOnly,
-    specDone,
-    suiteDone,
+    onSpecDone,
+    onSuiteDone,
     testRetry,
     shouldAbort,
     onTestRetry,
-    specStarted,
-    suiteStarted,
+    onSpecStart,
+    onSuiteStart,
     describeOnly,
     parentIdx = ``
   } = args;
@@ -2712,7 +2748,7 @@ var loopDescribes = async (args) => {
       fullName: describe.description
     });
     if (shouldSkipDescribe({ describe, describeOnly, testOnly })) {
-      suiteStarted({
+      onSuiteStart({
         ...describeResult,
         skipped: true,
         action: "skipped" /* skipped */,
@@ -2720,12 +2756,12 @@ var loopDescribes = async (args) => {
       });
       continue;
     } else
-      suiteStarted(describeResult);
+      onSuiteStart(describeResult);
     const beforeResults = await callDescribeHooks({
       root,
       suiteId,
       describe,
-      suiteDone,
+      onSuiteDone,
       describeResult,
       type: `before`
     });
@@ -2736,39 +2772,46 @@ var loopDescribes = async (args) => {
     }
     if (shouldAbort())
       break;
-    const testResults = await loopTests({
-      suiteId,
+    describeResult = ((_a = describe == null ? void 0 : describe.tests) == null ? void 0 : _a.length) ? await loopChildren({
       describe,
-      testOnly,
-      specDone,
-      testRetry,
-      onTestRetry,
-      shouldAbort,
-      specStarted
-    });
+      onSuiteDone,
+      describeResult,
+      loopFun: async () => await loopTests({
+        suiteId,
+        describe,
+        testOnly,
+        onSpecDone,
+        testRetry,
+        onTestRetry,
+        shouldAbort,
+        onSpecStart
+      })
+    }) : describeResult;
+    describeResult = ((_b = describe == null ? void 0 : describe.describes) == null ? void 0 : _b.length) ? await loopChildren({
+      describe,
+      onSuiteDone,
+      describeResult,
+      loopFun: async () => await loopDescribes({
+        ...args,
+        root: describe,
+        parentIdx: `${idx}-`
+      })
+    }) : describeResult;
     if (shouldAbort())
       break;
-    const describesResults = describe.describes && describe.describes.length && await loopDescribes({
-      ...args,
-      root: describe,
-      parentIdx: `${idx}-`
-    });
-    describeResult = {
-      ...describeResult,
-      ...describesResults,
-      tests: testResults.tests,
-      action: "end" /* end */
-    };
-    if (testResults.failed || describesResults.failed) {
+    if (describeResult.failed) {
       describeFailed = true;
       describeResult.failed = true;
-    } else
+      describeResult.status = "failed" /* failed */;
+    } else {
       describeResult.passed = true;
+      describeResult.status = "passed" /* passed */;
+    }
     const afterResults = await callDescribeHooks({
       root,
       suiteId,
       describe,
-      suiteDone,
+      onSuiteDone,
       describeResult,
       type: `after`
     });
@@ -2779,19 +2822,34 @@ var loopDescribes = async (args) => {
     }
     if (shouldAbort())
       break;
-    suiteDone(describeResult);
+    onSuiteDone(describeResult);
     results.push(describeResult);
   }
   return shouldAbort() ? { describes: [], failed: describeFailed } : { describes: results, failed: describeFailed };
 };
+
+// src/test/run.ts
 var run = async (args) => {
   const {
     root,
     onAbort,
-    shouldAbort
+    onRunDone,
+    shouldAbort,
+    onRunStart
   } = args;
+  let describesFailed;
   let describes = [];
   validateRootRun(root);
+  let rootResult = runResult(root, {
+    id: Types.root,
+    fullName: root.description,
+    testPath: `/${Types.root}`
+  });
+  onRunStart({
+    ...rootResult,
+    action: "start" /* start */,
+    description: `Starting test execution`
+  });
   const beforeAllResults = await loopHooks({
     root,
     suiteId: Types.root,
@@ -2799,6 +2857,11 @@ var run = async (args) => {
   });
   if (shouldAbort()) {
     onAbort == null ? void 0 : onAbort();
+    onRunDone({
+      ...rootResult,
+      action: "abort" /* abort */,
+      description: `Test execution aborted`
+    });
     describes.aborted = true;
     return describes;
   }
@@ -2807,14 +2870,21 @@ var run = async (args) => {
   try {
     const resp = await loopDescribes(args);
     describes = resp.describes;
+    describesFailed = resp.failed;
     if (shouldAbort()) {
       onAbort == null ? void 0 : onAbort();
+      onRunDone({
+        ...rootResult,
+        action: "abort" /* abort */,
+        description: `Test execution aborted`
+      });
       describes.aborted = true;
       return describes;
     }
   } catch (err) {
+    describesFailed = true;
     describes.push(
-      runResult(root, {
+      err.result || runResult(root, {
         id: Types.root,
         fullName: root.description,
         testPath: `/${Types.root}`,
@@ -2835,6 +2905,15 @@ var run = async (args) => {
       type: Types.afterAll
     });
     (afterAllResult == null ? void 0 : afterAllResult.length) && describes.push(...afterAllResult);
+    onRunDone({
+      ...rootResult,
+      describes,
+      failed: describesFailed,
+      passed: !describesFailed,
+      action: "end" /* end */,
+      description: `Test execution complete`,
+      status: describesFailed ? "failed" /* failed */ : "passed" /* passed */
+    });
   }
   return describes;
 };
@@ -2856,10 +2935,12 @@ var ParkinTest = class {
   #root = createRoot();
   xit;
   it;
-  #specDone = import_jsutils5.noOp;
-  #suiteDone = import_jsutils5.noOp;
-  #specStarted = import_jsutils5.noOp;
-  #suiteStarted = import_jsutils5.noOp;
+  #onRunDone = import_jsutils5.noOp;
+  #onRunStart = import_jsutils5.noOp;
+  #onSpecDone = import_jsutils5.noOp;
+  #onSuiteDone = import_jsutils5.noOp;
+  #onSpecStart = import_jsutils5.noOp;
+  #onSuiteStart = import_jsutils5.noOp;
   #onAbort = import_jsutils5.noOp;
   afterAll = import_jsutils5.noOp;
   afterEach = import_jsutils5.noOp;
@@ -2874,25 +2955,27 @@ var ParkinTest = class {
     this.it = this.test;
     this.xit = this.xtest;
     this.#activeParent = this.#root;
-    this.#setConfig(config);
+    this.setConfig(config);
   }
   run = (config = import_jsutils5.noOpObj) => {
     if (config.description)
       this.#root.description = config.description;
-    this.#setConfig(config);
+    this.setConfig(config);
     const runSuite = async () => {
       const promise = run({
         root: this.#root,
         onAbort: this.#onAbort,
         testOnly: this.#testOnly,
-        specDone: this.#specDone,
+        onSpecDone: this.#onSpecDone,
         testRetry: this.testRetry,
-        suiteDone: this.#suiteDone,
-        specStarted: this.#specStarted,
+        onRunDone: this.#onRunDone,
+        onSuiteDone: this.#onSuiteDone,
+        onSpecStart: this.#onSpecStart,
         onTestRetry: this.#onTestRetry,
         shouldAbort: this.#shouldAbort,
         describeOnly: this.#describeOnly,
-        suiteStarted: this.#suiteStarted
+        onSuiteStart: this.#onSuiteStart,
+        onRunStart: this.#onRunStart
       });
       const result = this.timeout ? PromiseTimeout({
         promise,
@@ -2941,13 +3024,9 @@ var ParkinTest = class {
     return this.#activeParent;
   };
   /**
-   * Sets the test config from the passed in object
-   */
-  setConfig = (config) => this.#setConfig(config || import_jsutils5.noOpObj);
-  /**
    * Adds passed in framework hooks to the class instance
    */
-  #setConfig = ({
+  setConfig = ({
     timeout,
     testRetry,
     suiteRetry,
@@ -2955,15 +3034,17 @@ var ParkinTest = class {
     onSuiteRetry,
     onAbort,
     autoClean,
-    specDone,
-    suiteDone,
-    specStarted,
-    suiteStarted
-  }) => {
-    if ((0, import_jsutils5.isNum)(timeout))
-      this.timeout = timeout;
+    onSpecDone,
+    onSuiteDone,
+    onRunDone,
+    onRunStart,
+    onSpecStart,
+    onSuiteStart
+  } = import_jsutils5.noOpObj) => {
     if (onAbort)
       this.#onAbort = onAbort;
+    if ((0, import_jsutils5.isNum)(timeout))
+      this.timeout = timeout;
     if ((0, import_jsutils5.isNum)(testRetry))
       this.testRetry = testRetry;
     if ((0, import_jsutils5.isNum)(suiteRetry))
@@ -2972,14 +3053,18 @@ var ParkinTest = class {
       this.#onTestRetry = onTestRetry;
     if (onSuiteRetry)
       this.#onSuiteRetry = onSuiteRetry;
-    if (specDone)
-      this.#specDone = specDone;
-    if (suiteDone)
-      this.#suiteDone = suiteDone;
-    if (specStarted)
-      this.#specStarted = specStarted;
-    if (suiteStarted)
-      this.#suiteStarted = suiteStarted;
+    if (onSpecDone)
+      this.#onSpecDone = onSpecDone;
+    if (onSpecStart)
+      this.#onSpecStart = onSpecStart;
+    if (onSuiteDone)
+      this.#onSuiteDone = onSuiteDone;
+    if (onSuiteStart)
+      this.#onSuiteStart = onSuiteStart;
+    if (onRunDone)
+      this.#onRunDone = onRunDone;
+    if (onRunStart)
+      this.#onRunStart = onRunStart;
     if (autoClean === false)
       this.#autoClean = autoClean;
   };

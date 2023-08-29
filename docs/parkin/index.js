@@ -2374,6 +2374,7 @@ var EResultAction = /* @__PURE__ */ ((EResultAction2) => {
   EResultAction2["skipped"] = `skipped`;
   EResultAction2["start"] = `start`;
   EResultAction2["end"] = `end`;
+  EResultAction2["abort"] = `abort`;
   return EResultAction2;
 })(EResultAction || {});
 var EResultStatus = /* @__PURE__ */ ((EResultStatus2) => {
