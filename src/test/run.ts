@@ -1,292 +1,14 @@
 import type {
   TRun,
-  TLoopTests,
   TRunResults,
   TRootTestObj,
 } from '../types'
 
-
-import { runTest } from './runTest'
+import { loopHooks } from './hooks'
 import { runResult } from './runResult'
+import { loopDescribes } from './loopDescribes'
 import { Types, validateRootRun } from './utils'
 import { EResultStatus, EResultAction } from '../types'
-import {
-  loopHooks,
-  callDescribeHooks,
-} from './hooks'
-
-import {
-  buildTestArgs,
-  shouldSkipTest,
-  shouldSkipDescribe,
-} from './runHelpers'
-
-
-/**
- * Helper to loop over tests and call their test method
- *
- * @returns {Object} - Built run result object of the test results
- */
-const loopTests = async (args:TLoopTests) => {
-  const {
-    suiteId,
-    describe,
-    testOnly,
-    specDone,
-    testRetry,
-    onTestRetry,
-    shouldAbort,
-    specStarted
-  } = args
-
-  let describeFailed = false
-  const results = []
-
-  // ------ describe - loop tests ------ //
-  for (let testIdx = 0; testIdx < describe.tests.length; testIdx++) {
-
-    if(shouldAbort()) break
-
-    const {
-      test,
-      specId,
-      testPath,
-      fullName,
-    } = buildTestArgs({ suiteId, testIdx, describe })
-
-    let testResult = runResult(test, {
-      fullName,
-      testPath,
-      id: specId,
-      action: EResultAction.start,
-    })
-
-    if(shouldSkipTest({ testOnly, test })){
-      specStarted({
-        ...testResult,
-        skipped: true,
-        action: EResultAction.skipped,
-        status: EResultStatus.skipped,
-      })
-      continue
-    }
-    else specStarted(testResult)
-
-    if(shouldAbort()) break
-
-    const beforeEachResults = await loopHooks({
-      test,
-      specId,
-      suiteId,
-      describe,
-      type: Types.beforeEach,
-    })
-
-    if (beforeEachResults?.length) {
-      describeFailed = true
-      results.push(...beforeEachResults)
-      beforeEachResults.forEach(specDone)
-      break
-    }
-
-    // ------ execute test ------ //
-    try {
-
-      /**
-       * If there is a timeout, Use the PromiseTimeout to race it against the test action
-       * If the timeout wins, it will reject the promise
-       * Which then gets picked up in the catch below
-       */
-      const result = await runTest({
-        test,
-        retry: testRetry,
-        onRetry: onTestRetry,
-      })
-
-      testResult = runResult(test, {
-        fullName,
-        id: specId,
-        testPath: testPath,
-        passed: result || true,
-        action: EResultAction.test,
-      })
-    }
-    catch (error) {
-      testResult = runResult(test, {
-        fullName,
-        id: specId,
-        testPath: testPath,
-        action: EResultAction.test,
-        failed: {
-          error,
-          fullName,
-          description: error.message,
-          status: EResultStatus.failed,
-        },
-      })
-
-      describeFailed = true
-    }
-    
-    if(shouldAbort()) break
-
-    const afterEachResults = await loopHooks({
-      test,
-      specId,
-      suiteId,
-      describe,
-      type: Types.afterEach,
-    })
-    if (afterEachResults?.length) {
-      describeFailed = true
-      results.push(...afterEachResults)
-      afterEachResults.forEach(specDone)
-      break
-    }
-
-    results.push(testResult)
-    specDone({
-      ...testResult,
-      action: EResultAction.end
-    })
-  }
-
-  return shouldAbort()
-    ? { tests: [], failed: describeFailed }
-    : { tests: results, failed: describeFailed }
-
-}
-
-/**
- * Helper to loop over describe methods and call child tests
- * @param {Object} args - Config to overwrite the initial test config object
- *
- * @returns {Object} - Built run results of the test results
- */
-const loopDescribes = async (args:TRun) => {
-  const {
-    root,
-    testOnly,
-    specDone,
-    suiteDone,
-    testRetry,
-    shouldAbort,
-    onTestRetry,
-    specStarted,
-    suiteStarted,
-    describeOnly,
-    parentIdx = ``,
-  } = args
-
-  let describeFailed = false
-  const results:TRunResults = []
-
-
-  // ------ loop describes ------ //
-  for (let idx = 0; idx < root.describes.length; idx++) {
-
-    if(shouldAbort()) break
-
-    const describe = root.describes[idx]
-    const suiteId = `suite-${parentIdx}${idx}`
-    // Create a runResult with general information that can be reused below
-    let describeResult = runResult(describe, {
-      id: suiteId,
-      testPath: `/${suiteId}`,
-      action: EResultAction.start,
-      fullName: describe.description,
-    })
-
-
-    if (shouldSkipDescribe({ describe, describeOnly, testOnly })) {
-      suiteStarted({
-        ...describeResult,
-        skipped: true,
-        action: EResultAction.skipped,
-        status: EResultStatus.skipped,
-      })
-      continue
-    }
-    else suiteStarted(describeResult)
-
-    const beforeResults = await callDescribeHooks({
-      root,
-      suiteId,
-      describe,
-      suiteDone,
-      describeResult,
-      type: `before`,
-    })
-
-    if (beforeResults?.length) {
-      describeFailed = true
-      results.push(...beforeResults)
-      continue
-    }
-
-    if(shouldAbort()) break
-
-    const testResults = await loopTests({
-      suiteId,
-      describe,
-      testOnly,
-      specDone,
-      testRetry,
-      onTestRetry,
-      shouldAbort,
-      specStarted,
-    })
-
-    if(shouldAbort()) break
-
-    const describesResults =
-      describe.describes &&
-      describe.describes.length &&
-      (await loopDescribes({
-        ...args,
-        root: describe,
-        parentIdx: `${idx}-`,
-      }))
-
-    describeResult = {
-      ...describeResult,
-      ...describesResults,
-      tests: testResults.tests,
-      action: EResultAction.end,
-    }
-
-    if (testResults.failed || describesResults.failed) {
-      describeFailed = true
-      describeResult.failed = true
-    }
-    else describeResult.passed = true
-
-    const afterResults = await callDescribeHooks({
-      root,
-      suiteId,
-      describe,
-      suiteDone,
-      describeResult,
-      type: `after`,
-    })
-
-    if (afterResults?.length) {
-      describeFailed = true
-      results.push(...afterResults)
-      continue
-    }
-
-    if(shouldAbort()) break
-
-    suiteDone(describeResult)
-    results.push(describeResult)
-  }
-
-  return shouldAbort()
-    ? { describes: [], failed: describeFailed }
-    : { describes: results, failed: describeFailed }
-
-}
 
 /**
  * Executes all methods registered to the ParkinTest instance
@@ -298,12 +20,27 @@ export const run = async (args:TRun):Promise<TRunResults> => {
   const {
     root,
     onAbort,
-    shouldAbort
+    onRunDone,
+    shouldAbort,
+    onRunStart,
   } = args
 
+  let describesFailed:boolean
   let describes:TRunResults = []
 
   validateRootRun(root as TRootTestObj)
+  // Create a runResult with general information that can be reused below
+  let rootResult = runResult(root, {
+    id: Types.root,
+    fullName: root.description,
+    testPath: `/${Types.root}`,
+  })
+
+  onRunStart({
+    ...rootResult,
+    action: EResultAction.start,
+    description: `Starting test execution`,
+  })
 
   const beforeAllResults = await loopHooks({
     root,
@@ -313,6 +50,13 @@ export const run = async (args:TRun):Promise<TRunResults> => {
 
   if(shouldAbort()){
     onAbort?.()
+
+    onRunDone({
+      ...rootResult,
+      action: EResultAction.abort,
+      description: `Test execution aborted`,
+    })
+
     describes.aborted = true
     return describes
   }
@@ -325,28 +69,36 @@ export const run = async (args:TRun):Promise<TRunResults> => {
   try {
     const resp = await loopDescribes(args)
     describes = resp.describes
+    describesFailed = resp.failed
 
     if(shouldAbort()){
       onAbort?.()
+      onRunDone({
+        ...rootResult,
+        action: EResultAction.abort,
+        description: `Test execution aborted`,
+      })
       describes.aborted = true
       return describes
     }
   }
   catch(err){
+    describesFailed = true
     describes.push(
-      runResult(root, {
-        id: Types.root,
-        fullName: root.description,
-        testPath: `/${Types.root}`,
-        action: EResultAction.end,
-        status: EResultStatus.failed,
-        failed: {
-          error: err,
-          description: err.message,
+      err.result
+      || runResult(root, {
+          id: Types.root,
           fullName: root.description,
+          testPath: `/${Types.root}`,
+          action: EResultAction.end,
           status: EResultStatus.failed,
-        }
-      })
+          failed: {
+            error: err,
+            description: err.message,
+            fullName: root.description,
+            status: EResultStatus.failed,
+          }
+        })
     )
   }
   finally {
@@ -356,6 +108,16 @@ export const run = async (args:TRun):Promise<TRunResults> => {
       type: Types.afterAll,
     })
     afterAllResult?.length && describes.push(...afterAllResult)
+
+    onRunDone({
+      ...rootResult,
+      describes,
+      failed: describesFailed,
+      passed: !describesFailed,
+      action: EResultAction.end,
+      description: `Test execution complete`,
+      status: describesFailed ? EResultStatus.failed : EResultStatus.passed
+    })
   }
 
   return describes

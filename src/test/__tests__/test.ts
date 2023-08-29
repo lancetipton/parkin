@@ -36,10 +36,10 @@ describe(`ParkinTest`, () => {
       expect(() => {
         const PTE = new ParkinTest({
           timeout: 8543,
-          specDone: jest.fn(),
-          suiteDone: jest.fn(),
-          specStarted: jest.fn(),
-          suiteStarted: jest.fn(),
+          onSpecDone: jest.fn(),
+          onSuiteDone: jest.fn(),
+          onSpecStart: jest.fn(),
+          onSuiteStart: jest.fn(),
           description: `Test Description`,
         })
         expect(PTE.timeout).toBe(8543)

@@ -140,10 +140,10 @@ describe(`ParkinTest.run`, () => {
   it(`should call the test callback hooks`, async () => {
     const config = {
       timeout: 8543,
-      specDone: jest.fn(),
-      suiteDone: jest.fn(),
-      specStarted: jest.fn(),
-      suiteStarted: jest.fn(),
+      onSpecDone: jest.fn(),
+      onSuiteDone: jest.fn(),
+      onSpecStart: jest.fn(),
+      onSuiteStart: jest.fn(),
     }
     const PTE = new ParkinTest(config)
 
@@ -159,10 +159,10 @@ describe(`ParkinTest.run`, () => {
     })
 
     await PTE.run()
-    expect(config.suiteStarted).toHaveBeenCalledTimes(2)
-    expect(config.suiteDone).toHaveBeenCalledTimes(2)
-    expect(config.specStarted).toHaveBeenCalledTimes(3)
-    expect(config.specDone).toHaveBeenCalledTimes(3)
+    expect(config.onSuiteStart).toHaveBeenCalledTimes(2)
+    expect(config.onSuiteDone).toHaveBeenCalledTimes(2)
+    expect(config.onSpecStart).toHaveBeenCalledTimes(3)
+    expect(config.onSpecDone).toHaveBeenCalledTimes(3)
   })
 
   it(`should only run tests in a describe.only block when set`, async () => {
