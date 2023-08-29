@@ -27,7 +27,7 @@ export type TDescribeHooks = {
   describe:TDescribeTestObj
   describeResult:TRunResult
   root:TDescribeTestObj | TRootTestObj
-  suiteDone:(result: TRunResult) => void
+  onSuiteDone:(result: TRunResult) => void
 }
 
 /**
@@ -146,26 +146,24 @@ export const callDescribeHooks = async (args:TDescribeHooks) => {
     type,
     suiteId,
     describe,
-    suiteDone,
+    onSuiteDone,
     describeResult
   } = args
 
   const results:TRunResult[] = []
 
-  const beforeResults = type === `before`
+  const hooksResults = type === `before`
     ? await callBeforeHooks({root, suiteId, describe })
     : await callAfterHooks({root, suiteId, describe })
   
-  if(!beforeResults?.length) return results
+  if(!hooksResults?.length) return results
   
-  if (beforeResults?.length) {
-    const describeResults = beforeResults.map(result => ({ ...describeResult, ...result }))
+  if (hooksResults?.length) {
+    const describeResults = hooksResults.map(result => {
+      const joined = {...describeResult, ...result, failed: true, passed: false }
+      onSuiteDone(joined)
 
-    suiteDone({
-      ...describeResult,
-      failed: true,
-      passed: false,
-      describes: describeResults,
+      return joined
     })
 
     results.push(...describeResults)

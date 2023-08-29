@@ -48,10 +48,12 @@ export class ParkinTest {
   #root = createRoot()
   xit:TTestSkipFactory
   it:TParkinTestFactory
-  #specDone:TParkinTestCB = noOp
-  #suiteDone:TParkinTestCB = noOp
-  #specStarted:TParkinTestCB = noOp
-  #suiteStarted:TParkinTestCB = noOp
+  #onRunDone:TParkinTestCB = noOp
+  #onRunStart:TParkinTestCB = noOp
+  #onSpecDone:TParkinTestCB = noOp
+  #onSuiteDone:TParkinTestCB = noOp
+  #onSpecStart:TParkinTestCB = noOp
+  #onSuiteStart:TParkinTestCB = noOp
   #onAbort:TParkinTestAbort = noOp
   afterAll:TTestHookMethod = noOp
   afterEach:TTestHookMethod = noOp
@@ -68,27 +70,29 @@ export class ParkinTest {
     this.it = this.test
     this.xit = this.xtest
     this.#activeParent = this.#root
-    this.#setConfig(config)
+    this.setConfig(config)
   }
 
   run = (config:TParkinTestConfig = noOpObj) => {
 
     if (config.description) this.#root.description = config.description
 
-    this.#setConfig(config)
+    this.setConfig(config)
     const runSuite = async () => {
       const promise = run({
         root: this.#root,
         onAbort: this.#onAbort,
         testOnly: this.#testOnly,
-        specDone: this.#specDone,
+        onSpecDone: this.#onSpecDone,
         testRetry: this.testRetry,
-        suiteDone: this.#suiteDone,
-        specStarted: this.#specStarted,
+        onRunDone: this.#onRunDone,
+        onSuiteDone: this.#onSuiteDone,
+        onSpecStart: this.#onSpecStart,
         onTestRetry: this.#onTestRetry,
         shouldAbort: this.#shouldAbort,
         describeOnly: this.#describeOnly,
-        suiteStarted: this.#suiteStarted,
+        onSuiteStart: this.#onSuiteStart,
+        onRunStart: this.#onRunStart,
       })
 
       const result = this.timeout
@@ -150,14 +154,9 @@ export class ParkinTest {
   }
 
   /**
-   * Sets the test config from the passed in object
-   */
-  setConfig = (config:TParkinTestConfig) => this.#setConfig(config || noOpObj)
-
-  /**
    * Adds passed in framework hooks to the class instance
    */
-  #setConfig = ({
+  setConfig = ({
     timeout,
     testRetry,
     suiteRetry,
@@ -165,24 +164,32 @@ export class ParkinTest {
     onSuiteRetry,
     onAbort,
     autoClean,
-    specDone,
-    suiteDone,
-    specStarted,
-    suiteStarted,
-  }:TParkinTestConfig) => {
-    if (isNum(timeout)) this.timeout = timeout
+    onSpecDone,
+    onSuiteDone,
+    onRunDone,
+    onRunStart,
+    onSpecStart,
+    onSuiteStart,
+  }:TParkinTestConfig=noOpObj) => {
+
     if (onAbort) this.#onAbort = onAbort
+    if (isNum(timeout)) this.timeout = timeout
 
     if (isNum(testRetry)) this.testRetry = testRetry
     if (isNum(suiteRetry)) this.suiteRetry = suiteRetry
+
     if (onTestRetry) this.#onTestRetry = onTestRetry
     if (onSuiteRetry) this.#onSuiteRetry = onSuiteRetry
 
-    if (specDone) this.#specDone = specDone
-    if (suiteDone) this.#suiteDone = suiteDone
-    if (specStarted) this.#specStarted = specStarted
-    if (suiteStarted) this.#suiteStarted = suiteStarted
-    
+    if (onSpecDone) this.#onSpecDone = onSpecDone
+    if (onSpecStart) this.#onSpecStart = onSpecStart
+
+    if (onSuiteDone) this.#onSuiteDone = onSuiteDone
+    if (onSuiteStart) this.#onSuiteStart = onSuiteStart
+
+    if (onRunDone) this.#onRunDone = onRunDone
+    if (onRunStart) this.#onRunStart = onRunStart
+
     if (autoClean === false) this.#autoClean = autoClean
   }
 

@@ -7,8 +7,8 @@ export enum EResultAction {
   test=`test`,
   skipped=`skipped`,
   start=`start`,
-  end=`end`
-  
+  end=`end`,
+  abort=`abort`
 }
 
 export enum EResultStatus {
@@ -173,10 +173,12 @@ export type TParkinTestConfig = {
   autoClean?:boolean
   description?:string
   onAbort?:TParkinTestAbort
-  specDone?:TParkinTestCB
-  suiteDone?:TParkinTestCB
-  specStarted?:TParkinTestCB
-  suiteStarted?:TParkinTestCB
+  onRunDone?:TParkinTestCB
+  onSpecDone?:TParkinTestCB
+  onRunStart?:TParkinTestCB
+  onSuiteDone?:TParkinTestCB
+  onSpecStart?:TParkinTestCB
+  onSuiteStart?:TParkinTestCB
   onTestRetry?:TPromiseRetryCB<TRunResult>
   onSuiteRetry?:TPromiseRetryCB<TRunResults>
 }
@@ -265,9 +267,9 @@ export type TLoopTests = {
   suiteId:string
   testOnly:boolean
   testRetry?:number
-  specDone:TParkinTestCB
+  onSpecDone:TParkinTestCB
   shouldAbort:() => boolean
-  specStarted:TParkinTestCB
+  onSpecStart:TParkinTestCB
   describe:TDescribeTestObj
   onTestRetry?:TPromiseRetryCB<TRunResult>
 }
@@ -276,13 +278,15 @@ export type TRun = {
   testOnly:boolean
   testRetry?:number
   describeOnly:boolean
-  specDone:TParkinTestCB
-  suiteDone:TParkinTestCB
+  onSpecDone:TParkinTestCB
+  onRunDone:TParkinTestCB
+  onSuiteDone:TParkinTestCB
   onAbort:TParkinTestAbort
   parentIdx?:string|number
   shouldAbort:() => boolean
-  specStarted:TParkinTestCB
-  suiteStarted:TParkinTestCB
+  onSpecStart:TParkinTestCB
+  onRunStart:TParkinTestCB
+  onSuiteStart:TParkinTestCB
   root:TRootTestObj|TDescribeTestObj
   onTestRetry?:TPromiseRetryCB<TRunResult>
 }
