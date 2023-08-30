@@ -184,3 +184,5 @@ reports/
 
 # helper file testing out the cli 
 src/bin/testCli.ts
+
+.cacheVersion
