@@ -14410,11 +14410,13 @@ var init_runResult = __esm({
     import_jsutils34 = __toESM(require_cjs());
     runResult = (item, {
       id,
+      tests,
       action,
       failed,
       passed,
       testPath,
-      fullName
+      fullName,
+      describes
     }) => {
       var _a, _b, _c, _d, _e;
       const result = {
@@ -14430,6 +14432,10 @@ var init_runResult = __esm({
         description: item.description,
         timestamp: (/* @__PURE__ */ new Date()).getTime()
       };
+      if (tests == null ? void 0 : tests.length)
+        result.tests = tests;
+      if (describes == null ? void 0 : describes.length)
+        result.describes = describes;
       (0, import_jsutils34.isObj)(failed) && result.failedExpectations.push(failed);
       (0, import_jsutils34.isObj)(passed) && result.passedExpectations.push(passed);
       (0, import_jsutils34.isObj)((_a = item == null ? void 0 : item.action) == null ? void 0 : _a.ParkinMetaData) ? result.metaData = (_b = item == null ? void 0 : item.action) == null ? void 0 : _b.ParkinMetaData : (0, import_jsutils34.isObj)((_c = item == null ? void 0 : item.action) == null ? void 0 : _c.metaData) && (result.metaData = (_d = item == null ? void 0 : item.action) == null ? void 0 : _d.metaData);
@@ -14537,20 +14543,23 @@ var init_hooks2 = __esm({
 });
 
 // src/utils/promiseRetry.ts
-var import_jsutils35, RetryError, PromiseRetry;
+var import_jsutils35, RetryError, loopRetry, PromiseRetry;
 var init_promiseRetry = __esm({
   "src/utils/promiseRetry.ts"() {
     import_jsutils35 = __toESM(require_cjs());
     RetryError = class extends Error {
-      constructor(err, message) {
+      result;
+      constructor(err, message, retry) {
         super(message || err.message);
         this.stack = err.stack;
-        this.name = err.name !== `Error` ? err.name : this.constructor.name;
+        this.name = !retry ? err.name : this.constructor.name;
         if (message)
           this.cause = err.message;
+        if (err.result)
+          this.result = err.result;
       }
     };
-    PromiseRetry = async (opts) => {
+    loopRetry = async (opts, orgRetry) => {
       const fn = opts.promise;
       const onRetry = opts == null ? void 0 : opts.onRetry;
       const delay = (opts == null ? void 0 : opts.delay) || 0;
@@ -14559,13 +14568,17 @@ var init_promiseRetry = __esm({
         return await fn();
       } catch (err) {
         if (retry <= 0)
-          throw new RetryError(err, opts == null ? void 0 : opts.error);
+          throw new RetryError(err, opts == null ? void 0 : opts.error, orgRetry);
         const next = { ...opts, retry: retry - 1 };
         onRetry && await (onRetry == null ? void 0 : onRetry(next));
         delay && await (0, import_jsutils35.wait)(delay);
-        return PromiseRetry(next);
+        return loopRetry(next, orgRetry);
       }
     };
+    PromiseRetry = async (opts) => loopRetry(
+      opts,
+      (opts == null ? void 0 : opts.retry) || 0
+    );
   }
 });
 
@@ -14630,8 +14643,14 @@ var init_runTest = __esm({
 var shouldSkipTest, buildTestArgs, shouldSkipDescribe;
 var init_runHelpers = __esm({
   "src/test/runHelpers.ts"() {
-    shouldSkipTest = ({ testOnly, test }) => {
-      return testOnly && !test.only || test.skip;
+    shouldSkipTest = (params) => {
+      const {
+        test,
+        testOnly,
+        hasFailed,
+        skipAfterFailed
+      } = params;
+      return test.skip || testOnly && !test.only || hasFailed && skipAfterFailed;
     };
     buildTestArgs = ({
       suiteId,
@@ -14672,7 +14691,9 @@ var init_loopTests = __esm({
         testRetry,
         onTestRetry,
         shouldAbort,
-        onSpecStart
+        onSpecStart,
+        exitOnFailed,
+        skipAfterFailed
       } = args;
       let testsFailed = false;
       const results = [];
@@ -14691,13 +14712,21 @@ var init_loopTests = __esm({
           id: specId,
           action: "start" /* start */
         });
-        if (shouldSkipTest({ testOnly, test })) {
-          onSpecStart({
+        const shouldSkip = shouldSkipTest({
+          test,
+          testOnly,
+          skipAfterFailed,
+          hasFailed: testsFailed
+        });
+        if (shouldSkip) {
+          const skipped = {
             ...testResult,
             skipped: true,
             action: "skipped" /* skipped */,
             status: "skipped" /* skipped */
-          });
+          };
+          onSpecStart(skipped);
+          results.push(skipped);
           continue;
         } else
           onSpecStart(testResult);
@@ -14743,6 +14772,11 @@ var init_loopTests = __esm({
             }
           });
           testsFailed = true;
+          if (exitOnFailed) {
+            results.push(testResult);
+            onSpecDone(testResult);
+            break;
+          }
         }
         if (shouldAbort())
           break;
@@ -14827,7 +14861,9 @@ var init_loopDescribes = __esm({
         onSpecStart,
         onSuiteStart,
         describeOnly,
-        parentIdx = ``
+        parentIdx = ``,
+        exitOnFailed,
+        skipAfterFailed
       } = args;
       let describeFailed = false;
       const results = [];
@@ -14879,9 +14915,17 @@ var init_loopDescribes = __esm({
             testRetry,
             onTestRetry,
             shouldAbort,
-            onSpecStart
+            onSpecStart,
+            exitOnFailed,
+            skipAfterFailed
           })
         }) : describeResult;
+        if (exitOnFailed && describeResult.failed) {
+          describeFailed = true;
+          onSuiteDone(describeResult);
+          results.push(describeResult);
+          break;
+        }
         describeResult = ((_b = describe2 == null ? void 0 : describe2.describes) == null ? void 0 : _b.length) ? await loopChildren({
           describe: describe2,
           onSuiteDone,
@@ -14892,6 +14936,12 @@ var init_loopDescribes = __esm({
             parentIdx: `${idx}-`
           })
         }) : describeResult;
+        if (exitOnFailed && describeResult.failed) {
+          describeFailed = true;
+          onSuiteDone(describeResult);
+          results.push(describeResult);
+          break;
+        }
         if (shouldAbort())
           break;
         if (describeResult.failed) {
@@ -14990,6 +15040,7 @@ var init_run = __esm({
         describesFailed = true;
         describes.push(
           err.result || runResult(root, {
+            describes,
             id: Types.root,
             fullName: root.description,
             testPath: `/${Types.root}`,
@@ -15047,6 +15098,8 @@ var init_test = __esm({
       #testOnly = false;
       #abortRun = false;
       #describeOnly = false;
+      #exitOnFailed = false;
+      #skipAfterFailed = false;
       #root = createRoot();
       xit;
       it;
@@ -15084,13 +15137,15 @@ var init_test = __esm({
             onSpecDone: this.#onSpecDone,
             testRetry: this.testRetry,
             onRunDone: this.#onRunDone,
+            onRunStart: this.#onRunStart,
             onSuiteDone: this.#onSuiteDone,
             onSpecStart: this.#onSpecStart,
             onTestRetry: this.#onTestRetry,
             shouldAbort: this.#shouldAbort,
             describeOnly: this.#describeOnly,
             onSuiteStart: this.#onSuiteStart,
-            onRunStart: this.#onRunStart
+            exitOnFailed: this.#exitOnFailed,
+            skipAfterFailed: this.#skipAfterFailed
           });
           const result = this.timeout ? PromiseTimeout({
             promise,
@@ -15147,6 +15202,8 @@ var init_test = __esm({
         suiteRetry,
         onTestRetry,
         onSuiteRetry,
+        exitOnFailed,
+        skipAfterFailed,
         onAbort,
         autoClean,
         onSpecDone,
@@ -15182,6 +15239,10 @@ var init_test = __esm({
           this.#onRunStart = onRunStart;
         if (autoClean === false)
           this.#autoClean = autoClean;
+        if (exitOnFailed)
+          this.#exitOnFailed = exitOnFailed;
+        if (skipAfterFailed)
+          this.#skipAfterFailed = skipAfterFailed;
       };
       /**
        * Adds the only method to describe and test methods
@@ -15461,6 +15522,16 @@ var init_options = __esm({
         type: `string`,
         example: `--name my-feature`,
         description: `Specify a name of a specific feature to run. All other features will be skipped`
+      },
+      exitOnFailed: {
+        type: `bool`,
+        alias: [`eof`],
+        description: `Exit test execution when a test step fails`
+      },
+      skipAfterFailed: {
+        type: `bool`,
+        alias: [`saf`],
+        description: `Skip proceeding tests within the same parent when a test step fails`
       }
     };
   }
@@ -15629,8 +15700,11 @@ var init_runTests = __esm({
     import_fs2 = require("fs");
     init_instance();
     runTests = async (features, world, steps, testConfig, runOpts) => {
+      let hasFailed;
       return await features.reduce(async (resolve, feature) => {
         const acc = await resolve;
+        if (hasFailed)
+          return acc;
         const PK = getParkin(world, steps);
         const PTE = getPTE();
         const content = await import_fs2.promises.readFile(feature, { encoding: `utf8` });
@@ -15640,6 +15714,8 @@ var init_runTests = __esm({
           description: `Parkin > ${feature}`,
           ...testConfig
         });
+        if (testConfig == null ? void 0 : testConfig.exitOnFailed)
+          hasFailed = Boolean(responses.find((resp) => resp.failed));
         return acc.concat(responses);
       }, Promise.resolve([]));
     };
@@ -15984,7 +16060,11 @@ var init_parkin2 = __esm({
         features,
         world,
         defs,
-        { timeout: parsed.timeout },
+        {
+          timeout: parsed.timeout,
+          exitOnFailed: parsed.exitOnFailed,
+          skipAfterFailed: parsed.skipAfterFailed
+        },
         {
           name: parsed.name,
           timeout: parsed.timeout,
