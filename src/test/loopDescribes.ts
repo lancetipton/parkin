@@ -81,6 +81,8 @@ export const loopDescribes = async (args:TRun) => {
     onSuiteStart,
     describeOnly,
     parentIdx = ``,
+    exitOnFailed,
+    skipAfterFailed,
   } = args
 
   let describeFailed = false
@@ -147,9 +149,19 @@ export const loopDescribes = async (args:TRun) => {
             onTestRetry,
             shouldAbort,
             onSpecStart,
+            exitOnFailed,
+            skipAfterFailed,
           })
         })
       : describeResult
+
+
+    if(exitOnFailed && describeResult.failed){
+      describeFailed = true
+      onSuiteDone(describeResult)
+      results.push(describeResult)
+      break
+    }
 
     // Loop over any describe children
     describeResult = describe?.describes?.length
@@ -164,6 +176,14 @@ export const loopDescribes = async (args:TRun) => {
           })
         })
       : describeResult
+
+
+    if(exitOnFailed && describeResult.failed){
+      describeFailed = true
+      onSuiteDone(describeResult)
+      results.push(describeResult)
+      break
+    }
 
     if(shouldAbort()) break
 

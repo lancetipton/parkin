@@ -172,6 +172,8 @@ export type TParkinTestConfig = {
   suiteRetry?:number
   autoClean?:boolean
   description?:string
+  exitOnFailed?:boolean
+  skipAfterFailed?:boolean
   onAbort?:TParkinTestAbort
   onRunDone?:TParkinTestCB
   onSpecDone?:TParkinTestCB
@@ -267,6 +269,8 @@ export type TLoopTests = {
   suiteId:string
   testOnly:boolean
   testRetry?:number
+  exitOnFailed?:boolean
+  skipAfterFailed?:boolean
   onSpecDone:TParkinTestCB
   shouldAbort:() => boolean
   onSpecStart:TParkinTestCB
@@ -278,6 +282,8 @@ export type TRun = {
   testOnly:boolean
   testRetry?:number
   describeOnly:boolean
+  exitOnFailed?:boolean
+  skipAfterFailed?:boolean
   onSpecDone:TParkinTestCB
   onRunDone:TParkinTestCB
   onSuiteDone:TParkinTestCB

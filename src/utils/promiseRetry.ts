@@ -1,22 +1,21 @@
 import { wait } from "@keg-hub/jsutils"
-import { TPromiseRetry } from "../types"
-
+import { TRunResult, TPromiseRetry } from "../types"
 
 class RetryError extends Error {
-  constructor(err:Error, message?:string) {
+  result?:TRunResult
+  constructor(err:Error, message?:string, retry?:number) {
     super(message || err.message)
     this.stack = err.stack
-
-    // Only overwrite the default Error name
+    // Only overwrite the default Error name when retry was actually set
     // Keep custom named errors incase they are depended on
-    this.name = err.name !== `Error` ? err.name : this.constructor.name
+    this.name = !retry ? err.name : this.constructor.name
 
     if(message) this.cause = err.message
+    if((err as RetryError).result) this.result = (err as RetryError).result
   }
 }
 
-
-export const PromiseRetry = async <T=any>(opts:TPromiseRetry<T>): Promise<T> => {
+const loopRetry = async <T=any>(opts:TPromiseRetry<T>, orgRetry?:number): Promise<T> => {
   const fn = opts.promise
   const onRetry = opts?.onRetry
   const delay = opts?.delay || 0
@@ -26,15 +25,18 @@ export const PromiseRetry = async <T=any>(opts:TPromiseRetry<T>): Promise<T> => 
     return await fn()
   }
   catch (err) {
-    if (retry <= 0) throw new RetryError(err, opts?.error)
+    if (retry <= 0) throw new RetryError(err, opts?.error, orgRetry)
 
     const next = {...opts, retry: retry - 1}
     onRetry && await onRetry?.(next)
     delay && await wait(delay)
 
-    return PromiseRetry(next)
+    return loopRetry(next, orgRetry)
   }
 }
 
-
+export const PromiseRetry = async <T=any>(opts:TPromiseRetry<T>): Promise<T> => loopRetry(
+  opts,
+  opts?.retry || 0
+)
 

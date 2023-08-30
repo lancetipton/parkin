@@ -45,6 +45,8 @@ export class ParkinTest {
   #testOnly = false
   #abortRun = false
   #describeOnly = false
+  #exitOnFailed = false
+  #skipAfterFailed = false
   #root = createRoot()
   xit:TTestSkipFactory
   it:TParkinTestFactory
@@ -86,13 +88,15 @@ export class ParkinTest {
         onSpecDone: this.#onSpecDone,
         testRetry: this.testRetry,
         onRunDone: this.#onRunDone,
+        onRunStart: this.#onRunStart,
         onSuiteDone: this.#onSuiteDone,
         onSpecStart: this.#onSpecStart,
         onTestRetry: this.#onTestRetry,
         shouldAbort: this.#shouldAbort,
         describeOnly: this.#describeOnly,
         onSuiteStart: this.#onSuiteStart,
-        onRunStart: this.#onRunStart,
+        exitOnFailed: this.#exitOnFailed,
+        skipAfterFailed: this.#skipAfterFailed,
       })
 
       const result = this.timeout
@@ -162,6 +166,8 @@ export class ParkinTest {
     suiteRetry,
     onTestRetry,
     onSuiteRetry,
+    exitOnFailed,
+    skipAfterFailed,
     onAbort,
     autoClean,
     onSpecDone,
@@ -191,6 +197,9 @@ export class ParkinTest {
     if (onRunStart) this.#onRunStart = onRunStart
 
     if (autoClean === false) this.#autoClean = autoClean
+
+    if(exitOnFailed) this.#exitOnFailed = exitOnFailed
+    if(skipAfterFailed) this.#skipAfterFailed = skipAfterFailed
   }
 
   /**

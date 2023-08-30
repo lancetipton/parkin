@@ -26,7 +26,9 @@ export const loopTests = async (args:TLoopTests) => {
     testRetry,
     onTestRetry,
     shouldAbort,
-    onSpecStart
+    onSpecStart,
+    exitOnFailed,
+    skipAfterFailed,
   } = args
 
   let testsFailed = false
@@ -51,13 +53,23 @@ export const loopTests = async (args:TLoopTests) => {
       action: EResultAction.start,
     })
 
-    if(shouldSkipTest({ testOnly, test })){
-      onSpecStart({
+    const shouldSkip = shouldSkipTest({
+      test,
+      testOnly,
+      skipAfterFailed,
+      hasFailed: testsFailed
+    })
+
+    if(shouldSkip){
+      const skipped = {
         ...testResult,
         skipped: true,
         action: EResultAction.skipped,
         status: EResultStatus.skipped,
-      })
+      }
+
+      onSpecStart(skipped)
+      results.push(skipped)
       continue
     }
     else onSpecStart(testResult)
@@ -116,6 +128,13 @@ export const loopTests = async (args:TLoopTests) => {
       })
 
       testsFailed = true
+
+      if(exitOnFailed){
+        results.push(testResult)
+        onSpecDone(testResult)
+        break
+      }
+
     }
     
     if(shouldAbort()) break

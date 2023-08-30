@@ -15,11 +15,13 @@ export const runResult = (
   item:TTestObj,
   {
     id,
+    tests,
     action,
     failed,
     passed,
     testPath,
     fullName,
+    describes,
   }:TRunResultTestMeta
 ) => {
 
@@ -36,6 +38,9 @@ export const runResult = (
     description: item.description,
     timestamp: new Date().getTime(),
   }
+
+  if(tests?.length) result.tests = tests
+  if(describes?.length) result.describes = describes
 
   isObj(failed) && result.failedExpectations.push(failed)
   isObj(passed) && result.passedExpectations.push(passed)
