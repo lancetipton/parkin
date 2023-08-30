@@ -691,29 +691,29 @@ describe(`ParkinTest`, () => {
       expect(args.onTestRetry).toBe(onTestRetry2)
     })
 
-  })
+    it(`should retry a suite when suite retry is greater then 0`, async () => {
 
-  it(`should retry a suite when suite retry is greater then 0`, async () => {
+      const onSuiteRetry = jest.fn()
+      const PTE = new ParkinTest({
+        suiteRetry: 1,
+        onSuiteRetry
+      })
 
-    const onSuiteRetry = jest.fn()
-    const PTE = new ParkinTest({
-      suiteRetry: 1,
-      onSuiteRetry
+      failRunMock = true
+
+      try {
+        runMock.mockClear()
+        await PTE.run()
+      }
+      catch(err){
+        expect(err.name).toBe(`RetryError`)
+        expect(runMock).toHaveBeenCalledTimes(2)
+        expect(onSuiteRetry).toHaveBeenCalled()
+      }
+
+      failRunMock = false
+
     })
-
-    failRunMock = true
-
-    try {
-      runMock.mockClear()
-      await PTE.run()
-    }
-    catch(err){
-      expect(err.name).toBe(`RetryError`)
-      expect(runMock).toHaveBeenCalledTimes(2)
-      expect(onSuiteRetry).toHaveBeenCalled()
-    }
-    
-    failRunMock = false
 
   })
 

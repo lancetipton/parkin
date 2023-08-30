@@ -64,5 +64,15 @@ export const options = {
     type: `string`,
     example:`--name my-feature`,
     description: `Specify a name of a specific feature to run. All other features will be skipped`,
-  }
+  },
+  exitOnFailed: {
+    type: `bool`,
+    alias: [`eof`],
+    description: `Exit test execution when a test step fails`
+  },
+  skipAfterFailed: {
+    type: `bool`,
+    alias: [`saf`],
+    description: `Skip proceeding tests within the same parent when a test step fails`
+  },
 }

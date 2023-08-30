@@ -441,7 +441,6 @@ describe(`ParkinTest.run`, () => {
 
   })
 
-
   it(`should call the root afterAll hooks when a test throws`, async () => {
 
     const PTE = new ParkinTest()
@@ -469,7 +468,6 @@ describe(`ParkinTest.run`, () => {
     expect(afterAll).toHaveBeenCalled()
 
   })
-
 
   it(`should not call the after hooks when a before hook throws`, async () => {
 
@@ -620,6 +618,98 @@ describe(`ParkinTest.run`, () => {
     const [resp] = await PTE.run()
     expect(resp.failed).toBe(true)
     expect(resp.passed).toBe(false)
+
+  })
+
+
+  it(`should skip proceeding steps if skipAfterFailed is true`, async () => {
+    const test1 = jest.fn()
+    const test2 = jest.fn()
+
+    const PTE = new ParkinTest({
+      skipAfterFailed: true,
+    })
+
+    PTE.describe(`describe-1`, () => {
+      PTE.test(`test-1-1`, test1)
+      PTE.test(`test-failed`, () => {
+        throw new Error(`Failed Test`)
+      })
+      PTE.test(`test-skipped`, test2)
+    })
+
+    const [resp] = await PTE.run()
+    expect(resp.failed).toBe(true)
+    expect(resp.passed).toBe(false)
+    expect(test1).toHaveBeenCalled()
+    expect(test2).not.toHaveBeenCalled()
+
+  })
+
+  it(`should not skip steps of a different parent when skipAfterFailed is true`, async () => {
+    const test1 = jest.fn()
+    const test2 = jest.fn()
+    const test3 = jest.fn()
+    const test4 = jest.fn()
+
+    const PTE = new ParkinTest({
+      skipAfterFailed: true,
+    })
+
+    PTE.describe(`describe-1`, () => {
+      PTE.test(`test-1-1`, test1)
+      PTE.test(`test-failed`, () => {
+        throw new Error(`Failed Test`)
+      })
+      PTE.test(`test-skipped`, test2)
+    })
+
+    PTE.describe(`describe-2`, () => {
+      PTE.test(`test-2-1`, test3)
+      PTE.test(`test-2-2`, test4)
+    })
+
+    const [resp] = await PTE.run()
+    expect(resp.failed).toBe(true)
+    expect(resp.passed).toBe(false)
+    expect(test1).toHaveBeenCalled()
+    expect(test3).toHaveBeenCalled()
+    expect(test4).toHaveBeenCalled()
+    expect(test2).not.toHaveBeenCalled()
+
+  })
+
+
+  it(`should stop executing test when exitOnFailed is true and a test fails`, async () => {
+    const test1 = jest.fn()
+    const test2 = jest.fn()
+    const test3 = jest.fn()
+    const test4 = jest.fn()
+
+    const PTE = new ParkinTest({
+      exitOnFailed: true,
+    })
+
+    PTE.describe(`describe-1`, () => {
+      PTE.test(`test-1-1`, test1)
+      PTE.test(`test-failed`, () => {
+        throw new Error(`Failed Test`)
+      })
+      PTE.test(`test-skipped`, test2)
+    })
+
+    PTE.describe(`describe-2`, () => {
+      PTE.test(`test-2-1`, test3)
+      PTE.test(`test-2-2`, test4)
+    })
+
+    const [resp] = await PTE.run()
+    expect(resp.failed).toBe(true)
+    expect(resp.passed).toBe(false)
+    expect(test1).toHaveBeenCalled()
+    expect(test2).not.toHaveBeenCalled()
+    expect(test3).not.toHaveBeenCalled()
+    expect(test4).not.toHaveBeenCalled()
 
   })
 

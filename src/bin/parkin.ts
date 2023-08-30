@@ -33,13 +33,19 @@ import { argsParse } from '@keg-hub/args-parse'
     features,
     world,
     defs,
-    { timeout: parsed.timeout },
+    {
+      timeout: parsed.timeout,
+      exitOnFailed: parsed.exitOnFailed,
+      skipAfterFailed: parsed.skipAfterFailed,
+    },
     {
       name: parsed.name,
       timeout: parsed.timeout,
-      tags: pickKeys(parsed,[`disabled`, `filter`]) 
+      tags: pickKeys(parsed,[`disabled`, `filter`])
     },
   )
+  
+    // console.log(require('util').inspect(results, false, null, true))
 
   // TODO: add reporting ???
   // Should figure out a way to reuse Jest || Jasmine reporters

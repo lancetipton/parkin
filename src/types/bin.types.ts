@@ -4,6 +4,8 @@ export type TParkinOpts = TLoadOpts & {
   world?: string
   rootDir?:string
   config?:string
+  exitOnFailed?:boolean
+  skipAfterFailed?:boolean
   defs?:string|string[]
   features?:string|string[]
   filter?:string|string[]

@@ -17,7 +17,9 @@ const allowOpts = [
   `config`,
   `disabled`,
   `filter`,
-  `name`
+  `name`,
+  `exitOnFailed`,
+  `skipAfterFailed`
 ]
 
 const allowedTypes = [

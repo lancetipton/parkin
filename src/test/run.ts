@@ -87,6 +87,7 @@ export const run = async (args:TRun):Promise<TRunResults> => {
     describes.push(
       err.result
       || runResult(root, {
+          describes,
           id: Types.root,
           fullName: root.description,
           testPath: `/${Types.root}`,

@@ -6,6 +6,8 @@ import type {
 export type TShouldSkipTest = {
   testOnly?:boolean
   test: TTestTestObj
+  hasFailed?:boolean
+  skipAfterFailed?:boolean
 }
 
 export type TBuildTestArgs = {
@@ -21,8 +23,17 @@ export type TShouldSkipDescribe = {
 }
 
 
-export const shouldSkipTest = ({ testOnly, test }:TShouldSkipTest) => {
-  return (testOnly && !test.only) || test.skip
+export const shouldSkipTest = (params:TShouldSkipTest) => {
+  const {
+    test,
+    testOnly,
+    hasFailed,
+    skipAfterFailed
+  } = params
+
+  return test.skip
+    || (testOnly && !test.only)
+    || (hasFailed && skipAfterFailed)
 }
 
 export const buildTestArgs = ({

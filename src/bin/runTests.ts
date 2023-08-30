@@ -19,8 +19,10 @@ export const runTests = async (
   runOpts:TParkinRunOpts
 ) => {
 
+  let hasFailed:boolean
   return await features.reduce(async (resolve, feature) => {
     const acc = await resolve
+    if(hasFailed) return acc
 
     const PK = getParkin(world, steps)
     const PTE = getPTE()
@@ -34,6 +36,9 @@ export const runTests = async (
       description: `Parkin > ${feature}`,
       ...testConfig,
     }) as TRunResults
+    
+    if(testConfig?.exitOnFailed)
+      hasFailed = Boolean(responses.find(resp => resp.failed))
 
     return acc.concat(responses)
   }, Promise.resolve([] as TRunResults))
