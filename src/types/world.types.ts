@@ -6,7 +6,7 @@ export type TWorldApp = {
 export type TWorldConfig = {
   url?:string
   app?: TWorldApp
-  merge?: string[]
+  $merge?: string[]
   environment?: string
   data?: Record<string, any>
   $alias: Record<string, any>

@@ -384,4 +384,195 @@ describe(`ParkinTest.run`, () => {
 
   })
 
+  it(`should wait for the callback to resolve before proceeding with the tests`, async () => {
+
+    const callorder = []
+    const call1 = () => callorder.push(`call1`)
+    const call2 = () => callorder.push(`call2`)
+    const call3 = () => callorder.push(`call3`)
+    const test1 = () => callorder.push(`test1`)
+    const test2 = () => callorder.push(`test2`)
+    const test3 = () => callorder.push(`test3`)
+
+    const onSuiteStart = () => callorder.push(`onSuiteStart`)
+    const onSuiteDone = () => {
+      return new Promise((res, rej) => {
+        setTimeout(() => {
+          callorder.push(`onSuiteDone`)
+          res(true)
+        }, 1000)
+      })
+    }
+    const onRunDone = () => callorder.push(`onRunDone`)
+
+    const onSpecDone = async (evt:any) => {
+      return new Promise((res, rej) => {
+        setTimeout(() => {
+          if(evt.id === `spec-0`) call1()
+          else if(evt.id === `spec-1`) call2()
+          else call3()
+
+          res(true)
+        }, 50)
+      })
+    }
+  
+
+
+    const PTE = new ParkinTest({
+      onRunDone,
+      onSpecDone,
+      onSuiteDone,
+      onSuiteStart,
+    })
+
+    PTE.describe(`describe-1`, () => {
+      PTE.test(`test-1`, test1)
+      PTE.test(`test-1-1-1`, test2)
+      PTE.test(`test-1-1-2`, test3)
+    })
+
+    await PTE.run()
+    expect(callorder).toEqual([
+      `onSuiteStart`,
+      `test1`,
+      `call1`,
+      `test2`,
+      `call2`,
+      `test3`,
+      `call3`,
+      `onSuiteDone`,
+      `onRunDone`
+    ])
+
+
+  })
+
+
+  it(`should wait for the callback to resolve before proceeding with the tests`, async () => {
+
+    let called1 = false
+    let called2 = false
+    let called3 = false
+    const onRunDone = () => {
+      expect(called1).toBe(true)
+      expect(called2).toBe(true)
+      expect(called3).toBe(true)
+    }
+    const onSpecDone = async () => {
+      return new Promise((res, rej) => {
+        setTimeout(() => {
+          if(!called1)
+            called1 = true
+          else if(!called2)
+            called2 = true
+          else called3 = true
+
+          return res(true)
+        }, 500)
+      })
+    }
+  
+    const test1 = () => {
+      expect(called1).toBe(false)
+      expect(called2).toBe(false)
+      expect(called3).toBe(false)
+    }
+    const test2 = () => {
+      expect(called1).toBe(true)
+      expect(called2).toBe(false)
+      expect(called3).toBe(false)
+    }
+    const test3 = () => {
+      expect(called1).toBe(true)
+      expect(called2).toBe(true)
+      expect(called3).toBe(false)
+    }
+    
+
+    const PTE = new ParkinTest({
+      onSpecDone,
+      onRunDone
+    })
+
+    PTE.describe(`describe-1`, () => {
+      PTE.test(`test-1`, test1)
+      PTE.test(`test-1-1-1`, test2)
+      PTE.test(`test-1-1-2`, test3)
+    })
+
+    const resp = await PTE.run()
+    expect(called1).toBe(true)
+    expect(called2).toBe(true)
+    expect(called3).toBe(true)
+    
+    expect(resp[0].passed).toBe(true)
+
+
+  })
+
+
+  it(`should fail the parkin test because the called values are incorrect`, async () => {
+
+    let called1 = false
+    let called2 = false
+    let called3 = false
+    const onRunDone = () => {
+      expect(called1).toBe(true)
+      expect(called2).toBe(true)
+      expect(called3).toBe(true)
+    }
+    const onSpecDone = async () => {
+      return new Promise((res, rej) => {
+        setTimeout(() => {
+          if(!called1)
+            called1 = true
+          else if(!called2)
+            called2 = true
+          else called3 = true
+
+          return res(true)
+        }, 500)
+      })
+    }
+  
+    const test1 = () => {
+      expect(called1).toBe(false)
+      expect(called2).toBe(false)
+      expect(called3).toBe(false)
+    }
+    const test2 = () => {
+      expect(called1).toBe(true)
+      expect(called2).toBe(true)
+      expect(called3).toBe(false)
+    }
+    const test3 = () => {
+      expect(called1).toBe(true)
+      expect(called2).toBe(true)
+      expect(called3).toBe(true)
+    }
+    
+
+    const PTE = new ParkinTest({
+      onSpecDone,
+      onRunDone
+    })
+
+    PTE.describe(`describe-1`, () => {
+      PTE.test(`test-1`, test1)
+      PTE.test(`test-1-1-1`, test2)
+      PTE.test(`test-1-1-2`, test3)
+    })
+
+    const resp = await PTE.run()
+    expect(called1).toBe(true)
+    expect(called2).toBe(true)
+    expect(called3).toBe(true)
+    
+    expect(resp[0].passed).toBe(false)
+
+
+  })
+
+
 })

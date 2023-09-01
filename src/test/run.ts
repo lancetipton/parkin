@@ -36,7 +36,7 @@ export const run = async (args:TRun):Promise<TRunResults> => {
     testPath: `/${Types.root}`,
   })
 
-  onRunStart({
+  await onRunStart({
     ...rootResult,
     action: EResultAction.start,
     description: `Starting test execution`,
@@ -49,9 +49,9 @@ export const run = async (args:TRun):Promise<TRunResults> => {
   })
 
   if(shouldAbort()){
-    onAbort?.()
+    await onAbort?.()
 
-    onRunDone({
+    await onRunDone({
       ...rootResult,
       action: EResultAction.abort,
       description: `Test execution aborted`,
@@ -72,8 +72,8 @@ export const run = async (args:TRun):Promise<TRunResults> => {
     describesFailed = resp.failed
 
     if(shouldAbort()){
-      onAbort?.()
-      onRunDone({
+      await onAbort?.()
+      await onRunDone({
         ...rootResult,
         action: EResultAction.abort,
         description: `Test execution aborted`,
@@ -110,7 +110,7 @@ export const run = async (args:TRun):Promise<TRunResults> => {
     })
     afterAllResult?.length && describes.push(...afterAllResult)
 
-    onRunDone({
+    await onRunDone({
       ...rootResult,
       describes,
       failed: describesFailed,
