@@ -3231,12 +3231,13 @@ var Hooks = class {
 // src/utils/hasTag.ts
 var import_jsutils16 = __toESM(require_cjs());
 var parseTags = (tags) => {
-  return (0, import_jsutils16.isStr)(tags) ? tags.match(/[@]\w*/g) : (0, import_jsutils16.isArr)(tags) ? tags : import_jsutils16.emptyArr;
+  const parsed = (0, import_jsutils16.isStr)(tags) ? tags.match(/([@](\w|-)*)/g) : (0, import_jsutils16.isArr)(tags) ? tags : import_jsutils16.emptyArr;
+  return parsed.filter((tag) => (0, import_jsutils16.isStr)(tag) && tag.startsWith(`@`) && tag.length > 2);
 };
 var hasTag = (itemTags = import_jsutils16.emptyArr, compareTags = import_jsutils16.emptyArr) => {
   const iTags = (0, import_jsutils16.isStr)(itemTags) ? parseTags(itemTags) : (0, import_jsutils16.eitherArr)(itemTags, []);
   const cTags = (0, import_jsutils16.isStr)(compareTags) ? parseTags(compareTags) : (0, import_jsutils16.eitherArr)(compareTags, []);
-  return Boolean(cTags.find((cTag) => itemTags.includes(cTag)));
+  return Boolean(cTags.find((cTag) => iTags.includes(cTag)));
 };
 
 // src/parse/idFromIdx.ts
