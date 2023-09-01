@@ -5,11 +5,13 @@ import {eitherArr, emptyArr, isArr, isStr} from "@keg-hub/jsutils"
  * Returns false if input is invalid.
  */
 export const parseTags = (tags?:string|string[]):string[] => {
-  return isStr(tags)
-    ? tags.match(/[@]\w*/g)
+  const parsed = isStr(tags)
+    ? tags.match(/([@](\w|-)*)/g)
     : isArr<string>(tags)
       ? tags
       : emptyArr
+
+  return parsed.filter(tag => isStr(tag) && tag.startsWith(`@`) && tag.length > 2)
 }
 
 /**
@@ -30,5 +32,5 @@ export const hasTag = (
     ? parseTags(compareTags)
     : eitherArr<string[]>(compareTags, [])
 
-  return Boolean(cTags.find((cTag) => itemTags.includes(cTag)))
+  return Boolean(cTags.find((cTag) => iTags.includes(cTag)))
 }
