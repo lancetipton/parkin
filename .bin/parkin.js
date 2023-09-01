@@ -3466,12 +3466,13 @@ var init_hasTag = __esm({
   "src/utils/hasTag.ts"() {
     import_jsutils16 = __toESM(require_cjs());
     parseTags = (tags) => {
-      return (0, import_jsutils16.isStr)(tags) ? tags.match(/[@]\w*/g) : (0, import_jsutils16.isArr)(tags) ? tags : import_jsutils16.emptyArr;
+      const parsed = (0, import_jsutils16.isStr)(tags) ? tags.match(/([@](\w|-)*)/g) : (0, import_jsutils16.isArr)(tags) ? tags : import_jsutils16.emptyArr;
+      return parsed.filter((tag) => (0, import_jsutils16.isStr)(tag) && tag.startsWith(`@`) && tag.length > 2);
     };
     hasTag = (itemTags = import_jsutils16.emptyArr, compareTags = import_jsutils16.emptyArr) => {
       const iTags = (0, import_jsutils16.isStr)(itemTags) ? parseTags(itemTags) : (0, import_jsutils16.eitherArr)(itemTags, []);
       const cTags = (0, import_jsutils16.isStr)(compareTags) ? parseTags(compareTags) : (0, import_jsutils16.eitherArr)(compareTags, []);
-      return Boolean(cTags.find((cTag) => itemTags.includes(cTag)));
+      return Boolean(cTags.find((cTag) => iTags.includes(cTag)));
     };
   }
 });
@@ -14530,11 +14531,13 @@ var init_hooks2 = __esm({
       if (!(hooksResults == null ? void 0 : hooksResults.length))
         return results;
       if (hooksResults == null ? void 0 : hooksResults.length) {
-        const describeResults = hooksResults.map((result) => {
-          const joined = { ...describeResult, ...result, failed: true, passed: false };
-          onSuiteDone(joined);
-          return joined;
-        });
+        const describeResults = await Promise.all(
+          hooksResults.map(async (result) => {
+            const joined = { ...describeResult, ...result, failed: true, passed: false };
+            await onSuiteDone(joined);
+            return joined;
+          })
+        );
         results.push(...describeResults);
       }
       return results;
@@ -14725,11 +14728,11 @@ var init_loopTests = __esm({
             action: "skipped" /* skipped */,
             status: "skipped" /* skipped */
           };
-          onSpecStart(skipped);
+          await onSpecStart(skipped);
           results.push(skipped);
           continue;
         } else
-          onSpecStart(testResult);
+          await onSpecStart(testResult);
         if (shouldAbort())
           break;
         const beforeEachResults = await loopHooks({
@@ -14774,7 +14777,7 @@ var init_loopTests = __esm({
           testsFailed = true;
           if (exitOnFailed) {
             results.push(testResult);
-            onSpecDone(testResult);
+            await onSpecDone(testResult);
             break;
           }
         }
@@ -14794,7 +14797,7 @@ var init_loopTests = __esm({
           break;
         }
         results.push(testResult);
-        onSpecDone({
+        await onSpecDone({
           ...testResult,
           action: "end" /* end */
         });
@@ -14842,7 +14845,7 @@ var init_loopDescribes = __esm({
             fullName: describe2.description
           }
         });
-        onSuiteDone(errorResult);
+        await onSuiteDone(errorResult);
         if (!err.result)
           err.result = errorResult;
         throw err;
@@ -14879,7 +14882,7 @@ var init_loopDescribes = __esm({
           fullName: describe2.description
         });
         if (shouldSkipDescribe({ describe: describe2, describeOnly, testOnly })) {
-          onSuiteStart({
+          await onSuiteStart({
             ...describeResult,
             skipped: true,
             action: "skipped" /* skipped */,
@@ -14887,7 +14890,7 @@ var init_loopDescribes = __esm({
           });
           continue;
         } else
-          onSuiteStart(describeResult);
+          await onSuiteStart(describeResult);
         const beforeResults = await callDescribeHooks({
           root,
           suiteId,
@@ -14922,7 +14925,7 @@ var init_loopDescribes = __esm({
         }) : describeResult;
         if (exitOnFailed && describeResult.failed) {
           describeFailed = true;
-          onSuiteDone(describeResult);
+          await onSuiteDone(describeResult);
           results.push(describeResult);
           break;
         }
@@ -14938,7 +14941,7 @@ var init_loopDescribes = __esm({
         }) : describeResult;
         if (exitOnFailed && describeResult.failed) {
           describeFailed = true;
-          onSuiteDone(describeResult);
+          await onSuiteDone(describeResult);
           results.push(describeResult);
           break;
         }
@@ -14967,7 +14970,7 @@ var init_loopDescribes = __esm({
         }
         if (shouldAbort())
           break;
-        onSuiteDone(describeResult);
+        await onSuiteDone(describeResult);
         results.push(describeResult);
       }
       return shouldAbort() ? { describes: [], failed: describeFailed } : { describes: results, failed: describeFailed };
@@ -15000,7 +15003,7 @@ var init_run = __esm({
         fullName: root.description,
         testPath: `/${Types.root}`
       });
-      onRunStart({
+      await onRunStart({
         ...rootResult,
         action: "start" /* start */,
         description: `Starting test execution`
@@ -15011,8 +15014,8 @@ var init_run = __esm({
         type: Types.beforeAll
       });
       if (shouldAbort()) {
-        onAbort == null ? void 0 : onAbort();
-        onRunDone({
+        await (onAbort == null ? void 0 : onAbort());
+        await onRunDone({
           ...rootResult,
           action: "abort" /* abort */,
           description: `Test execution aborted`
@@ -15027,8 +15030,8 @@ var init_run = __esm({
         describes = resp.describes;
         describesFailed = resp.failed;
         if (shouldAbort()) {
-          onAbort == null ? void 0 : onAbort();
-          onRunDone({
+          await (onAbort == null ? void 0 : onAbort());
+          await onRunDone({
             ...rootResult,
             action: "abort" /* abort */,
             description: `Test execution aborted`
@@ -15061,7 +15064,7 @@ var init_run = __esm({
           type: Types.afterAll
         });
         (afterAllResult == null ? void 0 : afterAllResult.length) && describes.push(...afterAllResult);
-        onRunDone({
+        await onRunDone({
           ...rootResult,
           describes,
           failed: describesFailed,

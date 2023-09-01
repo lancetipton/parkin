@@ -2478,11 +2478,13 @@ var callDescribeHooks = async (args) => {
   if (!(hooksResults == null ? void 0 : hooksResults.length))
     return results;
   if (hooksResults == null ? void 0 : hooksResults.length) {
-    const describeResults = hooksResults.map((result) => {
-      const joined = { ...describeResult, ...result, failed: true, passed: false };
-      onSuiteDone(joined);
-      return joined;
-    });
+    const describeResults = await Promise.all(
+      hooksResults.map(async (result) => {
+        const joined = { ...describeResult, ...result, failed: true, passed: false };
+        await onSuiteDone(joined);
+        return joined;
+      })
+    );
     results.push(...describeResults);
   }
   return results;
@@ -2640,11 +2642,11 @@ var loopTests = async (args) => {
         action: "skipped" /* skipped */,
         status: "skipped" /* skipped */
       };
-      onSpecStart(skipped);
+      await onSpecStart(skipped);
       results.push(skipped);
       continue;
     } else
-      onSpecStart(testResult);
+      await onSpecStart(testResult);
     if (shouldAbort())
       break;
     const beforeEachResults = await loopHooks({
@@ -2689,7 +2691,7 @@ var loopTests = async (args) => {
       testsFailed = true;
       if (exitOnFailed) {
         results.push(testResult);
-        onSpecDone(testResult);
+        await onSpecDone(testResult);
         break;
       }
     }
@@ -2709,7 +2711,7 @@ var loopTests = async (args) => {
       break;
     }
     results.push(testResult);
-    onSpecDone({
+    await onSpecDone({
       ...testResult,
       action: "end" /* end */
     });
@@ -2747,7 +2749,7 @@ var loopChildren = async (args) => {
         fullName: describe.description
       }
     });
-    onSuiteDone(errorResult);
+    await onSuiteDone(errorResult);
     if (!err.result)
       err.result = errorResult;
     throw err;
@@ -2784,7 +2786,7 @@ var loopDescribes = async (args) => {
       fullName: describe.description
     });
     if (shouldSkipDescribe({ describe, describeOnly, testOnly })) {
-      onSuiteStart({
+      await onSuiteStart({
         ...describeResult,
         skipped: true,
         action: "skipped" /* skipped */,
@@ -2792,7 +2794,7 @@ var loopDescribes = async (args) => {
       });
       continue;
     } else
-      onSuiteStart(describeResult);
+      await onSuiteStart(describeResult);
     const beforeResults = await callDescribeHooks({
       root,
       suiteId,
@@ -2827,7 +2829,7 @@ var loopDescribes = async (args) => {
     }) : describeResult;
     if (exitOnFailed && describeResult.failed) {
       describeFailed = true;
-      onSuiteDone(describeResult);
+      await onSuiteDone(describeResult);
       results.push(describeResult);
       break;
     }
@@ -2843,7 +2845,7 @@ var loopDescribes = async (args) => {
     }) : describeResult;
     if (exitOnFailed && describeResult.failed) {
       describeFailed = true;
-      onSuiteDone(describeResult);
+      await onSuiteDone(describeResult);
       results.push(describeResult);
       break;
     }
@@ -2872,7 +2874,7 @@ var loopDescribes = async (args) => {
     }
     if (shouldAbort())
       break;
-    onSuiteDone(describeResult);
+    await onSuiteDone(describeResult);
     results.push(describeResult);
   }
   return shouldAbort() ? { describes: [], failed: describeFailed } : { describes: results, failed: describeFailed };
@@ -2895,7 +2897,7 @@ var run = async (args) => {
     fullName: root.description,
     testPath: `/${Types.root}`
   });
-  onRunStart({
+  await onRunStart({
     ...rootResult,
     action: "start" /* start */,
     description: `Starting test execution`
@@ -2906,8 +2908,8 @@ var run = async (args) => {
     type: Types.beforeAll
   });
   if (shouldAbort()) {
-    onAbort == null ? void 0 : onAbort();
-    onRunDone({
+    await (onAbort == null ? void 0 : onAbort());
+    await onRunDone({
       ...rootResult,
       action: "abort" /* abort */,
       description: `Test execution aborted`
@@ -2922,8 +2924,8 @@ var run = async (args) => {
     describes = resp.describes;
     describesFailed = resp.failed;
     if (shouldAbort()) {
-      onAbort == null ? void 0 : onAbort();
-      onRunDone({
+      await (onAbort == null ? void 0 : onAbort());
+      await onRunDone({
         ...rootResult,
         action: "abort" /* abort */,
         description: `Test execution aborted`
@@ -2956,7 +2958,7 @@ var run = async (args) => {
       type: Types.afterAll
     });
     (afterAllResult == null ? void 0 : afterAllResult.length) && describes.push(...afterAllResult);
-    onRunDone({
+    await onRunDone({
       ...rootResult,
       describes,
       failed: describesFailed,
