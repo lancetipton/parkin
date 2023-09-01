@@ -135,8 +135,8 @@ export type TSuite = {
   children: TSpec[]
 }
 
-export type TParkinTestAbort = () => void
-export type TParkinTestCB = (result:TRunResult) => void
+export type TParkinTestAbort = () => Promise<any>|any
+export type TParkinTestCB = (result:TRunResult) => Promise<any>|any
 
 export type TDescribeAction = (() => void) & {
   metaData?:TRunResultActionMeta

@@ -54,7 +54,7 @@ const loopChildren = async (args:TLoopChildren) => {
       }
     })
     
-    onSuiteDone(errorResult)
+    await onSuiteDone(errorResult)
     if(!err.result) err.result = errorResult
 
     throw err
@@ -107,7 +107,7 @@ export const loopDescribes = async (args:TRun) => {
 
 
     if (shouldSkipDescribe({ describe, describeOnly, testOnly })) {
-      onSuiteStart({
+      await onSuiteStart({
         ...describeResult,
         skipped: true,
         action: EResultAction.skipped,
@@ -115,7 +115,7 @@ export const loopDescribes = async (args:TRun) => {
       })
       continue
     }
-    else onSuiteStart(describeResult)
+    else await onSuiteStart(describeResult)
 
     const beforeResults = await callDescribeHooks({
       root,
@@ -158,7 +158,7 @@ export const loopDescribes = async (args:TRun) => {
 
     if(exitOnFailed && describeResult.failed){
       describeFailed = true
-      onSuiteDone(describeResult)
+      await onSuiteDone(describeResult)
       results.push(describeResult)
       break
     }
@@ -180,7 +180,7 @@ export const loopDescribes = async (args:TRun) => {
 
     if(exitOnFailed && describeResult.failed){
       describeFailed = true
-      onSuiteDone(describeResult)
+      await onSuiteDone(describeResult)
       results.push(describeResult)
       break
     }
@@ -214,7 +214,7 @@ export const loopDescribes = async (args:TRun) => {
 
     if(shouldAbort()) break
 
-    onSuiteDone(describeResult)
+    await onSuiteDone(describeResult)
     results.push(describeResult)
   }
 

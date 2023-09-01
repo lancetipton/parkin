@@ -68,11 +68,11 @@ export const loopTests = async (args:TLoopTests) => {
         status: EResultStatus.skipped,
       }
 
-      onSpecStart(skipped)
+      await onSpecStart(skipped)
       results.push(skipped)
       continue
     }
-    else onSpecStart(testResult)
+    else await onSpecStart(testResult)
 
     if(shouldAbort()) break
 
@@ -131,7 +131,7 @@ export const loopTests = async (args:TLoopTests) => {
 
       if(exitOnFailed){
         results.push(testResult)
-        onSpecDone(testResult)
+        await onSpecDone(testResult)
         break
       }
 
@@ -155,7 +155,7 @@ export const loopTests = async (args:TLoopTests) => {
 
     results.push(testResult)
 
-    onSpecDone({
+    await onSpecDone({
       ...testResult,
       action: EResultAction.end
     })

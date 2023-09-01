@@ -159,12 +159,14 @@ export const callDescribeHooks = async (args:TDescribeHooks) => {
   if(!hooksResults?.length) return results
   
   if (hooksResults?.length) {
-    const describeResults = hooksResults.map(result => {
-      const joined = {...describeResult, ...result, failed: true, passed: false }
-      onSuiteDone(joined)
+    const describeResults = await Promise.all(
+      hooksResults.map(async (result) => {
+        const joined = {...describeResult, ...result, failed: true, passed: false }
+        await onSuiteDone(joined)
 
-      return joined
-    })
+        return joined
+      })
+    )
 
     results.push(...describeResults)
   }
