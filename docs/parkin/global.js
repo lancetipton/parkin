@@ -2433,6 +2433,8 @@ var replaceStackMsg = (err, msg) => {
 };
 var ParkinError = class extends Error {
   name = `ParkinError`;
+  results;
+  testResults;
   constructor(msg, error, replaceStack = true) {
     const [message, err] = resolveErrMsg(msg, error);
     const { stackTraceLimit } = Error;
@@ -2441,6 +2443,10 @@ var ParkinError = class extends Error {
     }
     const opts = err && message !== (err == null ? void 0 : err.message) ? { cause: err == null ? void 0 : err.message } : void 0;
     super(message, opts);
+    this.results = (err == null ? void 0 : err.results) || [];
+    this.testResults = (err == null ? void 0 : err.testResults) || [];
+    if ((err == null ? void 0 : err.result) && !this.results.includes(err.result))
+      this.results.push(err.result);
     Error.stackTraceLimit = stackTraceLimit;
     this.name = this.constructor.name;
     if (replaceStack) {
