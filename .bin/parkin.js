@@ -2403,7 +2403,7 @@ var require_cjs = __commonJS({
 });
 
 // src/constants.ts
-var import_jsutils, ignoreTypes, constants, ParentTypes, StepTypes;
+var import_jsutils, ignoreTypes, constants, ParentTypes, StepTypes, ParkinBailErrName, ParkinAbortErrName;
 var init_constants = __esm({
   "src/constants.ts"() {
     init_types();
@@ -2442,6 +2442,8 @@ var init_constants = __esm({
       "step" /* step */,
       "steps" /* steps */
     ];
+    ParkinBailErrName = `ParkinBailError`;
+    ParkinAbortErrName = `ParkinAbortError`;
   }
 });
 
@@ -2521,10 +2523,11 @@ var init_patterns = __esm({
 });
 
 // src/utils/errors.ts
-var import_jsutils4, resolveErrMsg, replaceStackMsg, ParkinError, testMethodFill, throwMissingSteps, throwMissingHooks, throwMissingFeatureText, throwNoMatchingStep, throwParamTypeExists, throwFeatureNotAnObj, throwMissingWorldValue, throwInvalidHookType, throwWorldReplace, throwAliasReplace;
+var import_jsutils4, resolveErrMsg, replaceStackMsg, ParkinError, ParkinBailError, ParkinAbortError, RetryError, throwAbortError, throwBailError, throwExitOnFailed, testMethodFill, throwMissingSteps, throwMissingHooks, throwMissingFeatureText, throwNoMatchingStep, throwParamTypeExists, throwFeatureNotAnObj, throwMissingWorldValue, throwInvalidHookType, throwWorldReplace, throwAliasReplace;
 var init_errors = __esm({
   "src/utils/errors.ts"() {
     import_jsutils4 = __toESM(require_cjs());
+    init_constants();
     resolveErrMsg = (error, maybe) => {
       var _a;
       return (0, import_jsutils4.isStr)(error) ? [error, maybe] : [(_a = error || maybe) == null ? void 0 : _a.message, error || maybe];
@@ -2538,6 +2541,8 @@ var init_errors = __esm({
     };
     ParkinError = class extends Error {
       name = `ParkinError`;
+      results;
+      testResults;
       constructor(msg, error, replaceStack = true) {
         const [message, err] = resolveErrMsg(msg, error);
         const { stackTraceLimit } = Error;
@@ -2546,6 +2551,10 @@ var init_errors = __esm({
         }
         const opts = err && message !== (err == null ? void 0 : err.message) ? { cause: err == null ? void 0 : err.message } : void 0;
         super(message, opts);
+        this.results = (err == null ? void 0 : err.results) || [];
+        this.testResults = (err == null ? void 0 : err.testResults) || [];
+        if ((err == null ? void 0 : err.result) && !this.results.includes(err.result))
+          this.results.push(err.result);
         Error.stackTraceLimit = stackTraceLimit;
         this.name = this.constructor.name;
         if (replaceStack) {
@@ -2554,6 +2563,52 @@ var init_errors = __esm({
           err && Error.captureStackTrace(err, this.constructor);
         }
       }
+    };
+    ParkinBailError = class extends ParkinError {
+      name = ParkinBailErrName;
+      constructor(msg, error, replaceStack = true) {
+        super(msg, error, replaceStack);
+      }
+    };
+    ParkinAbortError = class extends ParkinError {
+      name = ParkinAbortErrName;
+      constructor(msg, error, replaceStack = true) {
+        super(msg, error, replaceStack);
+      }
+    };
+    RetryError = class extends Error {
+      results;
+      constructor(err, message, retry) {
+        super(message || err.message);
+        this.stack = err.stack;
+        this.name = !retry ? err.name : this.constructor.name;
+        if (message)
+          this.cause = err.message;
+        if (err.results)
+          this.results = err.results;
+      }
+    };
+    throwAbortError = (err) => {
+      throw new ParkinAbortError(
+        `Test execution \x1B[33m"aborted"\x1B[0m`,
+        err,
+        true
+      );
+    };
+    throwBailError = (err, bail) => {
+      const colored = `\x1B[33m${bail}\x1B[0m`;
+      throw new ParkinBailError(
+        `Stopping test execution. Max allowed failed${bail ? ` ${colored} ` : ` `}tests has been reached`,
+        err,
+        true
+      );
+    };
+    throwExitOnFailed = (err) => {
+      throw new ParkinBailError(
+        `Stopping test execution. A test failed and \x1B[33m"exitOnFailed"\x1B[0m is active`,
+        err,
+        true
+      );
     };
     testMethodFill = (type) => {
       return () => {
@@ -14412,6 +14467,7 @@ var init_runResult = __esm({
     runResult = (item, {
       id,
       tests,
+      stats,
       action,
       failed,
       passed,
@@ -14422,6 +14478,7 @@ var init_runResult = __esm({
       var _a, _b, _c, _d, _e;
       const result = {
         id,
+        stats,
         action,
         testPath,
         fullName,
@@ -14459,6 +14516,7 @@ var init_hooks2 = __esm({
         type,
         test,
         root,
+        stats,
         specId,
         suiteId,
         describe: describe2
@@ -14473,6 +14531,7 @@ var init_hooks2 = __esm({
           return await Promise.resolve().then(() => fn == null ? void 0 : fn()).catch((error) => {
             hookResults.push(
               runResult(activeItem, {
+                stats,
                 fullName,
                 action: type,
                 id: test ? specId : suiteId,
@@ -14491,26 +14550,30 @@ var init_hooks2 = __esm({
       );
       return hookResults;
     };
-    callBeforeHooks = async ({ root, suiteId, describe: describe2 }) => {
+    callBeforeHooks = async ({ root, suiteId, describe: describe2, stats }) => {
       const beforeEachResult = await loopHooks({
         root,
+        stats,
         suiteId: Types.root,
         type: Types.beforeEach
       });
       const beforeAllResult = await loopHooks({
+        stats,
         suiteId,
         describe: describe2,
         type: Types.beforeAll
       });
       return [...beforeEachResult, ...beforeAllResult];
     };
-    callAfterHooks = async ({ root, suiteId, describe: describe2 }) => {
+    callAfterHooks = async ({ root, suiteId, describe: describe2, stats }) => {
       const afterEachResult = await loopHooks({
         root,
+        stats,
         suiteId: Types.root,
         type: Types.afterEach
       });
       const afterAllResult = await loopHooks({
+        stats,
         suiteId,
         describe: describe2,
         type: Types.afterAll
@@ -14521,13 +14584,14 @@ var init_hooks2 = __esm({
       const {
         root,
         type,
+        stats,
         suiteId,
         describe: describe2,
         onSuiteDone,
         describeResult
       } = args;
       const results = [];
-      const hooksResults = type === `before` ? await callBeforeHooks({ root, suiteId, describe: describe2 }) : await callAfterHooks({ root, suiteId, describe: describe2 });
+      const hooksResults = type === `before` ? await callBeforeHooks({ root, suiteId, describe: describe2, stats }) : await callAfterHooks({ root, suiteId, describe: describe2, stats });
       if (!(hooksResults == null ? void 0 : hooksResults.length))
         return results;
       if (hooksResults == null ? void 0 : hooksResults.length) {
@@ -14546,30 +14610,27 @@ var init_hooks2 = __esm({
 });
 
 // src/utils/promiseRetry.ts
-var import_jsutils35, RetryError, loopRetry, PromiseRetry;
+var import_jsutils35, loopRetry, PromiseRetry;
 var init_promiseRetry = __esm({
   "src/utils/promiseRetry.ts"() {
     import_jsutils35 = __toESM(require_cjs());
-    RetryError = class extends Error {
-      result;
-      constructor(err, message, retry) {
-        super(message || err.message);
-        this.stack = err.stack;
-        this.name = !retry ? err.name : this.constructor.name;
-        if (message)
-          this.cause = err.message;
-        if (err.result)
-          this.result = err.result;
-      }
-    };
+    init_errors();
     loopRetry = async (opts, orgRetry) => {
-      const fn = opts.promise;
-      const onRetry = opts == null ? void 0 : opts.onRetry;
-      const delay = (opts == null ? void 0 : opts.delay) || 0;
-      const retry = (opts == null ? void 0 : opts.retry) || 0;
+      const {
+        delay = 0,
+        retry = 0,
+        onRetry,
+        controller,
+        promise: fn,
+        shouldAbort
+      } = opts;
+      const signal = controller == null ? void 0 : controller.signal;
       try {
-        return await fn();
+        const resp = await fn(opts);
+        return (signal == null ? void 0 : signal.aborted) || (shouldAbort == null ? void 0 : shouldAbort()) ? throwAbortError() : resp;
       } catch (err) {
+        if ((signal == null ? void 0 : signal.aborted) || (shouldAbort == null ? void 0 : shouldAbort()))
+          return throwAbortError();
         if (retry <= 0)
           throw new RetryError(err, opts == null ? void 0 : opts.error, orgRetry);
         const next = { ...opts, retry: retry - 1 };
@@ -14621,15 +14682,17 @@ var init_promiseTimeout = __esm({
 var runTest;
 var init_runTest = __esm({
   "src/test/runTest.ts"() {
+    init_errors();
     init_promiseRetry();
     init_promiseTimeout();
     runTest = async (args) => {
-      const { test, ...rest } = args;
+      const { test, shouldAbort, ...rest } = args;
       return PromiseRetry({
         ...rest,
         retry: test.retry || rest.retry || 0,
         promise: async () => {
           const promise = test.action();
+          shouldAbort() && throwAbortError();
           return test.timeout ? await PromiseTimeout({
             promise,
             timeout: test.timeout,
@@ -14683,10 +14746,15 @@ var init_loopTests = __esm({
     init_runTest();
     init_hooks2();
     init_runResult();
+    init_constants();
+    init_errors();
     init_types();
+    init_errors();
     init_runHelpers();
     loopTests = async (args) => {
       const {
+        bail,
+        stats,
         suiteId,
         describe: describe2,
         testOnly,
@@ -14701,8 +14769,7 @@ var init_loopTests = __esm({
       let testsFailed = false;
       const results = [];
       for (let testIdx = 0; testIdx < describe2.tests.length; testIdx++) {
-        if (shouldAbort())
-          break;
+        shouldAbort() && throwAbortError();
         const {
           test,
           specId,
@@ -14710,6 +14777,7 @@ var init_loopTests = __esm({
           fullName
         } = buildTestArgs({ suiteId, testIdx, describe: describe2 });
         let testResult = runResult(test, {
+          stats,
           fullName,
           testPath,
           id: specId,
@@ -14733,10 +14801,10 @@ var init_loopTests = __esm({
           continue;
         } else
           await onSpecStart(testResult);
-        if (shouldAbort())
-          break;
+        shouldAbort() && throwAbortError();
         const beforeEachResults = await loopHooks({
           test,
+          stats,
           specId,
           suiteId,
           describe: describe2,
@@ -14751,10 +14819,14 @@ var init_loopTests = __esm({
         try {
           const result = await runTest({
             test,
+            shouldAbort,
             retry: testRetry,
             onRetry: onTestRetry
           });
+          shouldAbort() && throwAbortError();
+          stats.passedSpecs += 1;
           testResult = runResult(test, {
+            stats,
             fullName,
             id: specId,
             testPath,
@@ -14762,7 +14834,12 @@ var init_loopTests = __esm({
             action: "test" /* test */
           });
         } catch (error) {
+          if (error.name === ParkinAbortErrName)
+            throw error;
+          testsFailed = true;
+          stats.failedSpecs += 1;
           testResult = runResult(test, {
+            stats,
             fullName,
             id: specId,
             testPath,
@@ -14774,17 +14851,20 @@ var init_loopTests = __esm({
               status: "failed" /* failed */
             }
           });
-          testsFailed = true;
-          if (exitOnFailed) {
+          const shouldBail = Boolean(bail && stats.failedSpecs >= bail);
+          if (exitOnFailed || shouldBail) {
             results.push(testResult);
+            error.testResults = results;
             await onSpecDone(testResult);
+            exitOnFailed && throwExitOnFailed(error);
+            shouldBail && throwBailError(error, bail);
             break;
           }
         }
-        if (shouldAbort())
-          break;
+        shouldAbort() && throwAbortError();
         const afterEachResults = await loopHooks({
           test,
+          stats,
           specId,
           suiteId,
           describe: describe2,
@@ -14802,7 +14882,8 @@ var init_loopTests = __esm({
           action: "end" /* end */
         });
       }
-      return shouldAbort() ? { tests: [], failed: testsFailed } : { tests: results, failed: testsFailed };
+      shouldAbort() && throwAbortError();
+      return { tests: results, failed: testsFailed };
     };
   }
 });
@@ -14814,10 +14895,12 @@ var init_loopDescribes = __esm({
     init_runResult();
     init_loopTests();
     init_hooks2();
+    init_constants();
     init_runHelpers();
     init_types();
     loopChildren = async (args) => {
       const {
+        stats,
         describe: describe2,
         onSuiteDone,
         describeResult,
@@ -14835,8 +14918,12 @@ var init_loopDescribes = __esm({
           joined.failed = failed;
         return joined;
       } catch (err) {
+        if (err.name === ParkinAbortErrName)
+          throw err;
+        stats.failedSuites += 1;
         const errorResult = runResult(describe2, {
           ...describeResult,
+          stats,
           action: "end" /* end */,
           failed: {
             error: err,
@@ -14845,9 +14932,13 @@ var init_loopDescribes = __esm({
             fullName: describe2.description
           }
         });
+        if (err.testResults) {
+          errorResult.tests = err.testResults;
+          err.testResults = void 0;
+        }
         await onSuiteDone(errorResult);
-        if (!err.result)
-          err.result = errorResult;
+        err.results = err.results || [];
+        err.results.push(errorResult);
         throw err;
       }
     };
@@ -14855,10 +14946,12 @@ var init_loopDescribes = __esm({
       var _a, _b;
       const {
         root,
+        bail,
+        stats,
         testOnly,
+        testRetry,
         onSpecDone,
         onSuiteDone,
-        testRetry,
         shouldAbort,
         onTestRetry,
         onSpecStart,
@@ -14876,6 +14969,7 @@ var init_loopDescribes = __esm({
         const describe2 = root.describes[idx];
         const suiteId = `suite-${parentIdx}${idx}`;
         let describeResult = runResult(describe2, {
+          stats,
           id: suiteId,
           testPath: `/${suiteId}`,
           action: "start" /* start */,
@@ -14893,6 +14987,7 @@ var init_loopDescribes = __esm({
           await onSuiteStart(describeResult);
         const beforeResults = await callDescribeHooks({
           root,
+          stats,
           suiteId,
           describe: describe2,
           onSuiteDone,
@@ -14907,10 +15002,13 @@ var init_loopDescribes = __esm({
         if (shouldAbort())
           break;
         describeResult = ((_a = describe2 == null ? void 0 : describe2.tests) == null ? void 0 : _a.length) ? await loopChildren({
+          stats,
           describe: describe2,
           onSuiteDone,
           describeResult,
           loopFun: async () => await loopTests({
+            bail,
+            stats,
             suiteId,
             describe: describe2,
             testOnly,
@@ -14925,11 +15023,13 @@ var init_loopDescribes = __esm({
         }) : describeResult;
         if (exitOnFailed && describeResult.failed) {
           describeFailed = true;
+          stats.failedSuites += 1;
           await onSuiteDone(describeResult);
           results.push(describeResult);
           break;
         }
         describeResult = ((_b = describe2 == null ? void 0 : describe2.describes) == null ? void 0 : _b.length) ? await loopChildren({
+          stats,
           describe: describe2,
           onSuiteDone,
           describeResult,
@@ -14939,6 +15039,7 @@ var init_loopDescribes = __esm({
             parentIdx: `${idx}-`
           })
         }) : describeResult;
+        describeResult.failed ? stats.failedSuites += 1 : stats.passedSuites += 1;
         if (exitOnFailed && describeResult.failed) {
           describeFailed = true;
           await onSuiteDone(describeResult);
@@ -14957,6 +15058,7 @@ var init_loopDescribes = __esm({
         }
         const afterResults = await callDescribeHooks({
           root,
+          stats,
           suiteId,
           describe: describe2,
           onSuiteDone,
@@ -14984,65 +15086,82 @@ var init_run = __esm({
   "src/test/run.ts"() {
     init_hooks2();
     init_runResult();
+    init_constants();
     init_loopDescribes();
     init_utils();
     init_types();
     run = async (args) => {
       const {
         root,
+        stats,
         onAbort,
         onRunDone,
         shouldAbort,
         onRunStart
       } = args;
+      let bailError;
       let describesFailed;
       let describes = [];
       validateRootRun(root);
       let rootResult = runResult(root, {
+        stats,
         id: Types.root,
         fullName: root.description,
         testPath: `/${Types.root}`
       });
       await onRunStart({
         ...rootResult,
+        stats,
         action: "start" /* start */,
         description: `Starting test execution`
       });
       const beforeAllResults = await loopHooks({
         root,
+        stats,
         suiteId: Types.root,
         type: Types.beforeAll
       });
       if (shouldAbort()) {
         await (onAbort == null ? void 0 : onAbort());
+        stats.runEnd = (/* @__PURE__ */ new Date()).getTime();
         await onRunDone({
           ...rootResult,
+          stats,
           action: "abort" /* abort */,
           description: `Test execution aborted`
         });
         describes.aborted = true;
-        return describes;
+        return Object.assign(describes, stats);
       }
       if (beforeAllResults == null ? void 0 : beforeAllResults.length)
-        return beforeAllResults;
+        return Object.assign(beforeAllResults, stats);
       try {
         const resp = await loopDescribes(args);
         describes = resp.describes;
         describesFailed = resp.failed;
         if (shouldAbort()) {
           await (onAbort == null ? void 0 : onAbort());
+          stats.runEnd = (/* @__PURE__ */ new Date()).getTime();
           await onRunDone({
             ...rootResult,
+            stats,
             action: "abort" /* abort */,
             description: `Test execution aborted`
           });
           describes.aborted = true;
-          return describes;
         }
       } catch (err) {
         describesFailed = true;
-        describes.push(
-          err.result || runResult(root, {
+        const isBailErr = err.name === ParkinBailErrName;
+        const isAbortErr = err.name === ParkinAbortErrName;
+        bailError = isBailErr || isAbortErr ? err : void 0;
+        if (isBailErr)
+          describes.bailed = true;
+        if (isAbortErr)
+          describes.aborted = true;
+        err.results ? describes.push(...err.results) : describes.push(
+          runResult(root, {
+            stats,
             describes,
             id: Types.root,
             fullName: root.description,
@@ -15060,12 +15179,15 @@ var init_run = __esm({
       } finally {
         const afterAllResult = await loopHooks({
           root,
+          stats,
           suiteId: Types.root,
           type: Types.afterAll
         });
         (afterAllResult == null ? void 0 : afterAllResult.length) && describes.push(...afterAllResult);
+        stats.runEnd = stats.runEnd || (/* @__PURE__ */ new Date()).getTime();
         await onRunDone({
           ...rootResult,
+          stats,
           describes,
           failed: describesFailed,
           passed: !describesFailed,
@@ -15073,8 +15195,12 @@ var init_run = __esm({
           description: `Test execution complete`,
           status: describesFailed ? "failed" /* failed */ : "passed" /* passed */
         });
+        if (bailError) {
+          bailError.results = Object.assign(describes, stats);
+          throw bailError;
+        }
       }
-      return describes;
+      return Object.assign(describes, stats);
     };
   }
 });
@@ -15090,7 +15216,8 @@ var init_test = __esm({
     import_jsutils36 = __toESM(require_cjs());
     init_utils();
     ParkinTest = class {
-      // Default retires to 0
+      // Defaults set to 0, is the same as disabled
+      bail = 0;
       testRetry = 0;
       suiteRetry = 0;
       #onTestRetry;
@@ -15134,21 +15261,30 @@ var init_test = __esm({
         this.setConfig(config);
         const runSuite = async () => {
           const promise = run({
+            bail: this.bail,
             root: this.#root,
             onAbort: this.#onAbort,
             testOnly: this.#testOnly,
-            onSpecDone: this.#onSpecDone,
             testRetry: this.testRetry,
             onRunDone: this.#onRunDone,
             onRunStart: this.#onRunStart,
-            onSuiteDone: this.#onSuiteDone,
+            onSpecDone: this.#onSpecDone,
             onSpecStart: this.#onSpecStart,
             onTestRetry: this.#onTestRetry,
             shouldAbort: this.#shouldAbort,
-            describeOnly: this.#describeOnly,
+            onSuiteDone: this.#onSuiteDone,
             onSuiteStart: this.#onSuiteStart,
             exitOnFailed: this.#exitOnFailed,
-            skipAfterFailed: this.#skipAfterFailed
+            describeOnly: this.#describeOnly,
+            skipAfterFailed: this.#skipAfterFailed,
+            stats: {
+              runEnd: 0,
+              failedSpecs: 0,
+              passedSpecs: 0,
+              passedSuites: 0,
+              failedSuites: 0,
+              runStart: (/* @__PURE__ */ new Date()).getTime()
+            }
           });
           const result = this.timeout ? PromiseTimeout({
             promise,
@@ -15200,6 +15336,7 @@ var init_test = __esm({
        * Adds passed in framework hooks to the class instance
        */
       setConfig = ({
+        bail,
         timeout,
         testRetry,
         suiteRetry,
@@ -15220,6 +15357,8 @@ var init_test = __esm({
           this.#onAbort = onAbort;
         if ((0, import_jsutils36.isNum)(timeout))
           this.timeout = timeout;
+        if ((0, import_jsutils36.isNum)(bail))
+          this.bail = bail;
         if ((0, import_jsutils36.isNum)(testRetry))
           this.testRetry = testRetry;
         if ((0, import_jsutils36.isNum)(suiteRetry))

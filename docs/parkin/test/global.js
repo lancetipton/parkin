@@ -9663,22 +9663,22 @@ var require_noOps_b5f3c7e4 = __commonJS({
   "node_modules/.pnpm/@keg-hub+jsutils@9.6.1/node_modules/@keg-hub/jsutils/build/cjs/noOps-b5f3c7e4.js"(exports) {
     "use strict";
     var isFunc2 = require_isFunc_f93803cb();
-    var deepFreeze = (obj) => {
+    var deepFreeze2 = (obj) => {
       Object.freeze(obj);
       Object.getOwnPropertyNames(obj).map((prop) => {
-        obj.hasOwnProperty(prop) && obj[prop] !== null && (typeof obj[prop] === "object" || isFunc2.isFunc(obj[prop])) && !Object.isFrozen(obj[prop]) && deepFreeze(obj[prop]);
+        obj.hasOwnProperty(prop) && obj[prop] !== null && (typeof obj[prop] === "object" || isFunc2.isFunc(obj[prop])) && !Object.isFrozen(obj[prop]) && deepFreeze2(obj[prop]);
       });
       return obj;
     };
     var noOpObj4 = Object.freeze({});
     var emptyObj = noOpObj4;
-    var noPropObj = deepFreeze({
+    var noPropObj = deepFreeze2({
       content: {}
     });
-    var noPropArr = deepFreeze([]);
+    var noPropArr = deepFreeze2([]);
     var noOpArr = noPropArr;
     var emptyArr = noPropArr;
-    exports.deepFreeze = deepFreeze;
+    exports.deepFreeze = deepFreeze2;
     exports.emptyArr = emptyArr;
     exports.emptyObj = emptyObj;
     exports.noOpArr = noOpArr;
@@ -11386,10 +11386,70 @@ module.exports = __toCommonJS(global_exports);
 var import_expect = __toESM(require_cjs());
 
 // src/utils/errors.ts
+var import_jsutils2 = __toESM(require_cjs2());
+
+// src/types/helpers.types.ts
+var EHookType = /* @__PURE__ */ ((EHookType2) => {
+  EHookType2["beforeAll"] = `beforeAll`;
+  EHookType2["afterAll"] = `afterAll`;
+  EHookType2["beforeEach"] = `beforeEach`;
+  EHookType2["afterEach"] = `afterEach`;
+  return EHookType2;
+})(EHookType || {});
+var EStepType = /* @__PURE__ */ ((EStepType2) => {
+  EStepType2["step"] = `step`;
+  EStepType2["given"] = `given`;
+  EStepType2["when"] = `when`;
+  EStepType2["then"] = `then`;
+  EStepType2["and"] = `and`;
+  EStepType2["but"] = `but`;
+  EStepType2["*"] = `*`;
+  return EStepType2;
+})(EStepType || {});
+
+// src/constants.ts
 var import_jsutils = __toESM(require_cjs2());
+var ignoreTypes = [
+  `*`,
+  ``
+];
+var constants = (0, import_jsutils.deepFreeze)({
+  ALIAS_REF: `$$`,
+  ALIAS_WORLD_KEY: `$alias`,
+  ALIAS_REF_AT_RUNTIME: `$$:`,
+  REGEX_VARIANT: "regex",
+  WORLD_REF: `$`,
+  WORLD_KEY: `$world`,
+  WORLD_AT_RUNTIME: `$:`,
+  EXPRESSION_VARIANT: "expression",
+  HOOK_TYPES: Object.keys(EHookType),
+  STEP_TYPES: Object.keys(EStepType).filter((type) => !ignoreTypes.includes(type)),
+  FEATURE_META: ["feature", "perspective", "desire", "reason", "comments"],
+  LOG_JEST_SPEC_ENV: `PARKIN_LOG_JEST_SPEC`,
+  SPEC_RESULT_LOG: `------- PARKIN SPEC RESULT LOG -------`
+});
+var ParentTypes = [
+  "rule" /* rule */,
+  "scenario" /* scenario */,
+  "background" /* background */
+];
+var StepTypes = [
+  "given" /* given */,
+  "when" /* when */,
+  "then" /* then */,
+  "and" /* and */,
+  "but" /* but */,
+  "*" /* * */,
+  "step" /* step */,
+  "steps" /* steps */
+];
+var ParkinBailErrName = `ParkinBailError`;
+var ParkinAbortErrName = `ParkinAbortError`;
+
+// src/utils/errors.ts
 var resolveErrMsg = (error, maybe) => {
   var _a;
-  return (0, import_jsutils.isStr)(error) ? [error, maybe] : [(_a = error || maybe) == null ? void 0 : _a.message, error || maybe];
+  return (0, import_jsutils2.isStr)(error) ? [error, maybe] : [(_a = error || maybe) == null ? void 0 : _a.message, error || maybe];
 };
 var replaceStackMsg = (err, msg) => {
   const split = err.stack.split(`
@@ -11400,6 +11460,8 @@ var replaceStackMsg = (err, msg) => {
 };
 var ParkinError = class extends Error {
   name = `ParkinError`;
+  results;
+  testResults;
   constructor(msg, error, replaceStack = true) {
     const [message, err] = resolveErrMsg(msg, error);
     const { stackTraceLimit } = Error;
@@ -11408,6 +11470,10 @@ var ParkinError = class extends Error {
     }
     const opts = err && message !== (err == null ? void 0 : err.message) ? { cause: err == null ? void 0 : err.message } : void 0;
     super(message, opts);
+    this.results = (err == null ? void 0 : err.results) || [];
+    this.testResults = (err == null ? void 0 : err.testResults) || [];
+    if ((err == null ? void 0 : err.result) && !this.results.includes(err.result))
+      this.results.push(err.result);
     Error.stackTraceLimit = stackTraceLimit;
     this.name = this.constructor.name;
     if (replaceStack) {
@@ -11417,28 +11483,74 @@ var ParkinError = class extends Error {
     }
   }
 };
+var ParkinBailError = class extends ParkinError {
+  name = ParkinBailErrName;
+  constructor(msg, error, replaceStack = true) {
+    super(msg, error, replaceStack);
+  }
+};
+var ParkinAbortError = class extends ParkinError {
+  name = ParkinAbortErrName;
+  constructor(msg, error, replaceStack = true) {
+    super(msg, error, replaceStack);
+  }
+};
+var RetryError = class extends Error {
+  results;
+  constructor(err, message, retry) {
+    super(message || err.message);
+    this.stack = err.stack;
+    this.name = !retry ? err.name : this.constructor.name;
+    if (message)
+      this.cause = err.message;
+    if (err.results)
+      this.results = err.results;
+  }
+};
+var throwAbortError = (err) => {
+  throw new ParkinAbortError(
+    `Test execution \x1B[33m"aborted"\x1B[0m`,
+    err,
+    true
+  );
+};
+var throwBailError = (err, bail) => {
+  const colored = `\x1B[33m${bail}\x1B[0m`;
+  throw new ParkinBailError(
+    `Stopping test execution. Max allowed failed${bail ? ` ${colored} ` : ` `}tests has been reached`,
+    err,
+    true
+  );
+};
+var throwExitOnFailed = (err) => {
+  throw new ParkinBailError(
+    `Stopping test execution. A test failed and \x1B[33m"exitOnFailed"\x1B[0m is active`,
+    err,
+    true
+  );
+};
 
 // src/test/utils.ts
-var import_jsutils2 = __toESM(require_cjs2());
-var hookTypes = (0, import_jsutils2.keyMap)([
+var import_jsutils3 = __toESM(require_cjs2());
+var hookTypes = (0, import_jsutils3.keyMap)([
   `beforeAll`,
   `beforeEach`,
   `afterAll`,
   `afterEach`
 ]);
 var globalTypes = {
-  ...(0, import_jsutils2.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
+  ...(0, import_jsutils3.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
   ...hookTypes
 };
 var Types = {
   ...globalTypes,
-  ...(0, import_jsutils2.keyMap)([`root`])
+  ...(0, import_jsutils3.keyMap)([`root`])
 };
 var throwError = (error) => {
   throw new ParkinError(error);
 };
 var validateHook = (type, action) => {
-  !(0, import_jsutils2.isFunc)(action) && throwError(
+  !(0, import_jsutils3.isFunc)(action) && throwError(
     `The ${type} method requires a "function" as the first argument`
   );
 };
@@ -11447,13 +11559,13 @@ var validateRootRun = (root) => {
   !root.describes || !root.describes.length && throwError(`No tests have been registered to this ParkinTest instance`);
 };
 var validateItem = (type, description, action) => {
-  !(0, import_jsutils2.isStr)(type) && throwError(`Test item type is required as a string`);
-  !(0, import_jsutils2.isFunc)(action) && throwError(
+  !(0, import_jsutils3.isStr)(type) && throwError(`Test item type is required as a string`);
+  !(0, import_jsutils3.isFunc)(action) && throwError(
     `The ${type} method requires a "function" as the second argument`
   );
-  !(0, import_jsutils2.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
+  !(0, import_jsutils3.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
 };
-var createItem = (type, metadata = import_jsutils2.noOpObj, validate = true) => {
+var createItem = (type, metadata = import_jsutils3.noOpObj, validate = true) => {
   const { description, action } = metadata;
   validate && validateItem(type, description, action);
   return { ...metadata, type };
@@ -11483,10 +11595,11 @@ var createRoot = () => {
 };
 
 // src/test/runResult.ts
-var import_jsutils3 = __toESM(require_cjs2());
+var import_jsutils4 = __toESM(require_cjs2());
 var runResult = (item, {
   id,
   tests,
+  stats,
   action,
   failed,
   passed,
@@ -11497,6 +11610,7 @@ var runResult = (item, {
   var _a, _b, _c, _d, _e;
   const result = {
     id,
+    stats,
     action,
     testPath,
     fullName,
@@ -11512,9 +11626,9 @@ var runResult = (item, {
     result.tests = tests;
   if (describes == null ? void 0 : describes.length)
     result.describes = describes;
-  (0, import_jsutils3.isObj)(failed) && result.failedExpectations.push(failed);
-  (0, import_jsutils3.isObj)(passed) && result.passedExpectations.push(passed);
-  (0, import_jsutils3.isObj)((_a = item == null ? void 0 : item.action) == null ? void 0 : _a.ParkinMetaData) ? result.metaData = (_b = item == null ? void 0 : item.action) == null ? void 0 : _b.ParkinMetaData : (0, import_jsutils3.isObj)((_c = item == null ? void 0 : item.action) == null ? void 0 : _c.metaData) && (result.metaData = (_d = item == null ? void 0 : item.action) == null ? void 0 : _d.metaData);
+  (0, import_jsutils4.isObj)(failed) && result.failedExpectations.push(failed);
+  (0, import_jsutils4.isObj)(passed) && result.passedExpectations.push(passed);
+  (0, import_jsutils4.isObj)((_a = item == null ? void 0 : item.action) == null ? void 0 : _a.ParkinMetaData) ? result.metaData = (_b = item == null ? void 0 : item.action) == null ? void 0 : _b.ParkinMetaData : (0, import_jsutils4.isObj)((_c = item == null ? void 0 : item.action) == null ? void 0 : _c.metaData) && (result.metaData = (_d = item == null ? void 0 : item.action) == null ? void 0 : _d.metaData);
   if (passed || failed)
     result.status = passed ? "passed" /* passed */ : ((_e = result == null ? void 0 : result.metaData) == null ? void 0 : _e.warnOnFailed) ? "warning" /* warning */ : "failed" /* failed */;
   return result;
@@ -11526,6 +11640,7 @@ var loopHooks = async (args) => {
     type,
     test,
     root,
+    stats,
     specId,
     suiteId,
     describe
@@ -11540,6 +11655,7 @@ var loopHooks = async (args) => {
       return await Promise.resolve().then(() => fn == null ? void 0 : fn()).catch((error) => {
         hookResults.push(
           runResult(activeItem, {
+            stats,
             fullName,
             action: type,
             id: test ? specId : suiteId,
@@ -11558,26 +11674,30 @@ var loopHooks = async (args) => {
   );
   return hookResults;
 };
-var callBeforeHooks = async ({ root, suiteId, describe }) => {
+var callBeforeHooks = async ({ root, suiteId, describe, stats }) => {
   const beforeEachResult = await loopHooks({
     root,
+    stats,
     suiteId: Types.root,
     type: Types.beforeEach
   });
   const beforeAllResult = await loopHooks({
+    stats,
     suiteId,
     describe,
     type: Types.beforeAll
   });
   return [...beforeEachResult, ...beforeAllResult];
 };
-var callAfterHooks = async ({ root, suiteId, describe }) => {
+var callAfterHooks = async ({ root, suiteId, describe, stats }) => {
   const afterEachResult = await loopHooks({
     root,
+    stats,
     suiteId: Types.root,
     type: Types.afterEach
   });
   const afterAllResult = await loopHooks({
+    stats,
     suiteId,
     describe,
     type: Types.afterAll
@@ -11588,13 +11708,14 @@ var callDescribeHooks = async (args) => {
   const {
     root,
     type,
+    stats,
     suiteId,
     describe,
     onSuiteDone,
     describeResult
   } = args;
   const results = [];
-  const hooksResults = type === `before` ? await callBeforeHooks({ root, suiteId, describe }) : await callAfterHooks({ root, suiteId, describe });
+  const hooksResults = type === `before` ? await callBeforeHooks({ root, suiteId, describe, stats }) : await callAfterHooks({ root, suiteId, describe, stats });
   if (!(hooksResults == null ? void 0 : hooksResults.length))
     return results;
   if (hooksResults == null ? void 0 : hooksResults.length) {
@@ -11611,32 +11732,28 @@ var callDescribeHooks = async (args) => {
 };
 
 // src/utils/promiseRetry.ts
-var import_jsutils4 = __toESM(require_cjs2());
-var RetryError = class extends Error {
-  result;
-  constructor(err, message, retry) {
-    super(message || err.message);
-    this.stack = err.stack;
-    this.name = !retry ? err.name : this.constructor.name;
-    if (message)
-      this.cause = err.message;
-    if (err.result)
-      this.result = err.result;
-  }
-};
+var import_jsutils5 = __toESM(require_cjs2());
 var loopRetry = async (opts, orgRetry) => {
-  const fn = opts.promise;
-  const onRetry = opts == null ? void 0 : opts.onRetry;
-  const delay = (opts == null ? void 0 : opts.delay) || 0;
-  const retry = (opts == null ? void 0 : opts.retry) || 0;
+  const {
+    delay = 0,
+    retry = 0,
+    onRetry,
+    controller,
+    promise: fn,
+    shouldAbort
+  } = opts;
+  const signal = controller == null ? void 0 : controller.signal;
   try {
-    return await fn();
+    const resp = await fn(opts);
+    return (signal == null ? void 0 : signal.aborted) || (shouldAbort == null ? void 0 : shouldAbort()) ? throwAbortError() : resp;
   } catch (err) {
+    if ((signal == null ? void 0 : signal.aborted) || (shouldAbort == null ? void 0 : shouldAbort()))
+      return throwAbortError();
     if (retry <= 0)
       throw new RetryError(err, opts == null ? void 0 : opts.error, orgRetry);
     const next = { ...opts, retry: retry - 1 };
     onRetry && await (onRetry == null ? void 0 : onRetry(next));
-    delay && await (0, import_jsutils4.wait)(delay);
+    delay && await (0, import_jsutils5.wait)(delay);
     return loopRetry(next, orgRetry);
   }
 };
@@ -11674,12 +11791,13 @@ var PromiseTimeout = async ({
 
 // src/test/runTest.ts
 var runTest = async (args) => {
-  const { test, ...rest } = args;
+  const { test, shouldAbort, ...rest } = args;
   return PromiseRetry({
     ...rest,
     retry: test.retry || rest.retry || 0,
     promise: async () => {
       const promise = test.action();
+      shouldAbort() && throwAbortError();
       return test.timeout ? await PromiseTimeout({
         promise,
         timeout: test.timeout,
@@ -11721,6 +11839,8 @@ var shouldSkipDescribe = ({ describe, describeOnly, testOnly }) => {
 // src/test/loopTests.ts
 var loopTests = async (args) => {
   const {
+    bail,
+    stats,
     suiteId,
     describe,
     testOnly,
@@ -11735,8 +11855,7 @@ var loopTests = async (args) => {
   let testsFailed = false;
   const results = [];
   for (let testIdx = 0; testIdx < describe.tests.length; testIdx++) {
-    if (shouldAbort())
-      break;
+    shouldAbort() && throwAbortError();
     const {
       test,
       specId,
@@ -11744,6 +11863,7 @@ var loopTests = async (args) => {
       fullName
     } = buildTestArgs({ suiteId, testIdx, describe });
     let testResult = runResult(test, {
+      stats,
       fullName,
       testPath,
       id: specId,
@@ -11767,10 +11887,10 @@ var loopTests = async (args) => {
       continue;
     } else
       await onSpecStart(testResult);
-    if (shouldAbort())
-      break;
+    shouldAbort() && throwAbortError();
     const beforeEachResults = await loopHooks({
       test,
+      stats,
       specId,
       suiteId,
       describe,
@@ -11785,10 +11905,14 @@ var loopTests = async (args) => {
     try {
       const result = await runTest({
         test,
+        shouldAbort,
         retry: testRetry,
         onRetry: onTestRetry
       });
+      shouldAbort() && throwAbortError();
+      stats.passedSpecs += 1;
       testResult = runResult(test, {
+        stats,
         fullName,
         id: specId,
         testPath,
@@ -11796,7 +11920,12 @@ var loopTests = async (args) => {
         action: "test" /* test */
       });
     } catch (error) {
+      if (error.name === ParkinAbortErrName)
+        throw error;
+      testsFailed = true;
+      stats.failedSpecs += 1;
       testResult = runResult(test, {
+        stats,
         fullName,
         id: specId,
         testPath,
@@ -11808,17 +11937,20 @@ var loopTests = async (args) => {
           status: "failed" /* failed */
         }
       });
-      testsFailed = true;
-      if (exitOnFailed) {
+      const shouldBail = Boolean(bail && stats.failedSpecs >= bail);
+      if (exitOnFailed || shouldBail) {
         results.push(testResult);
+        error.testResults = results;
         await onSpecDone(testResult);
+        exitOnFailed && throwExitOnFailed(error);
+        shouldBail && throwBailError(error, bail);
         break;
       }
     }
-    if (shouldAbort())
-      break;
+    shouldAbort() && throwAbortError();
     const afterEachResults = await loopHooks({
       test,
+      stats,
       specId,
       suiteId,
       describe,
@@ -11836,12 +11968,14 @@ var loopTests = async (args) => {
       action: "end" /* end */
     });
   }
-  return shouldAbort() ? { tests: [], failed: testsFailed } : { tests: results, failed: testsFailed };
+  shouldAbort() && throwAbortError();
+  return { tests: results, failed: testsFailed };
 };
 
 // src/test/loopDescribes.ts
 var loopChildren = async (args) => {
   const {
+    stats,
     describe,
     onSuiteDone,
     describeResult,
@@ -11859,8 +11993,12 @@ var loopChildren = async (args) => {
       joined.failed = failed;
     return joined;
   } catch (err) {
+    if (err.name === ParkinAbortErrName)
+      throw err;
+    stats.failedSuites += 1;
     const errorResult = runResult(describe, {
       ...describeResult,
+      stats,
       action: "end" /* end */,
       failed: {
         error: err,
@@ -11869,9 +12007,13 @@ var loopChildren = async (args) => {
         fullName: describe.description
       }
     });
+    if (err.testResults) {
+      errorResult.tests = err.testResults;
+      err.testResults = void 0;
+    }
     await onSuiteDone(errorResult);
-    if (!err.result)
-      err.result = errorResult;
+    err.results = err.results || [];
+    err.results.push(errorResult);
     throw err;
   }
 };
@@ -11879,10 +12021,12 @@ var loopDescribes = async (args) => {
   var _a, _b;
   const {
     root,
+    bail,
+    stats,
     testOnly,
+    testRetry,
     onSpecDone,
     onSuiteDone,
-    testRetry,
     shouldAbort,
     onTestRetry,
     onSpecStart,
@@ -11900,6 +12044,7 @@ var loopDescribes = async (args) => {
     const describe = root.describes[idx];
     const suiteId = `suite-${parentIdx}${idx}`;
     let describeResult = runResult(describe, {
+      stats,
       id: suiteId,
       testPath: `/${suiteId}`,
       action: "start" /* start */,
@@ -11917,6 +12062,7 @@ var loopDescribes = async (args) => {
       await onSuiteStart(describeResult);
     const beforeResults = await callDescribeHooks({
       root,
+      stats,
       suiteId,
       describe,
       onSuiteDone,
@@ -11931,10 +12077,13 @@ var loopDescribes = async (args) => {
     if (shouldAbort())
       break;
     describeResult = ((_a = describe == null ? void 0 : describe.tests) == null ? void 0 : _a.length) ? await loopChildren({
+      stats,
       describe,
       onSuiteDone,
       describeResult,
       loopFun: async () => await loopTests({
+        bail,
+        stats,
         suiteId,
         describe,
         testOnly,
@@ -11949,11 +12098,13 @@ var loopDescribes = async (args) => {
     }) : describeResult;
     if (exitOnFailed && describeResult.failed) {
       describeFailed = true;
+      stats.failedSuites += 1;
       await onSuiteDone(describeResult);
       results.push(describeResult);
       break;
     }
     describeResult = ((_b = describe == null ? void 0 : describe.describes) == null ? void 0 : _b.length) ? await loopChildren({
+      stats,
       describe,
       onSuiteDone,
       describeResult,
@@ -11963,6 +12114,7 @@ var loopDescribes = async (args) => {
         parentIdx: `${idx}-`
       })
     }) : describeResult;
+    describeResult.failed ? stats.failedSuites += 1 : stats.passedSuites += 1;
     if (exitOnFailed && describeResult.failed) {
       describeFailed = true;
       await onSuiteDone(describeResult);
@@ -11981,6 +12133,7 @@ var loopDescribes = async (args) => {
     }
     const afterResults = await callDescribeHooks({
       root,
+      stats,
       suiteId,
       describe,
       onSuiteDone,
@@ -12004,59 +12157,75 @@ var loopDescribes = async (args) => {
 var run = async (args) => {
   const {
     root,
+    stats,
     onAbort,
     onRunDone,
     shouldAbort,
     onRunStart
   } = args;
+  let bailError;
   let describesFailed;
   let describes = [];
   validateRootRun(root);
   let rootResult = runResult(root, {
+    stats,
     id: Types.root,
     fullName: root.description,
     testPath: `/${Types.root}`
   });
   await onRunStart({
     ...rootResult,
+    stats,
     action: "start" /* start */,
     description: `Starting test execution`
   });
   const beforeAllResults = await loopHooks({
     root,
+    stats,
     suiteId: Types.root,
     type: Types.beforeAll
   });
   if (shouldAbort()) {
     await (onAbort == null ? void 0 : onAbort());
+    stats.runEnd = (/* @__PURE__ */ new Date()).getTime();
     await onRunDone({
       ...rootResult,
+      stats,
       action: "abort" /* abort */,
       description: `Test execution aborted`
     });
     describes.aborted = true;
-    return describes;
+    return Object.assign(describes, stats);
   }
   if (beforeAllResults == null ? void 0 : beforeAllResults.length)
-    return beforeAllResults;
+    return Object.assign(beforeAllResults, stats);
   try {
     const resp = await loopDescribes(args);
     describes = resp.describes;
     describesFailed = resp.failed;
     if (shouldAbort()) {
       await (onAbort == null ? void 0 : onAbort());
+      stats.runEnd = (/* @__PURE__ */ new Date()).getTime();
       await onRunDone({
         ...rootResult,
+        stats,
         action: "abort" /* abort */,
         description: `Test execution aborted`
       });
       describes.aborted = true;
-      return describes;
     }
   } catch (err) {
     describesFailed = true;
-    describes.push(
-      err.result || runResult(root, {
+    const isBailErr = err.name === ParkinBailErrName;
+    const isAbortErr = err.name === ParkinAbortErrName;
+    bailError = isBailErr || isAbortErr ? err : void 0;
+    if (isBailErr)
+      describes.bailed = true;
+    if (isAbortErr)
+      describes.aborted = true;
+    err.results ? describes.push(...err.results) : describes.push(
+      runResult(root, {
+        stats,
         describes,
         id: Types.root,
         fullName: root.description,
@@ -12074,12 +12243,15 @@ var run = async (args) => {
   } finally {
     const afterAllResult = await loopHooks({
       root,
+      stats,
       suiteId: Types.root,
       type: Types.afterAll
     });
     (afterAllResult == null ? void 0 : afterAllResult.length) && describes.push(...afterAllResult);
+    stats.runEnd = stats.runEnd || (/* @__PURE__ */ new Date()).getTime();
     await onRunDone({
       ...rootResult,
+      stats,
       describes,
       failed: describesFailed,
       passed: !describesFailed,
@@ -12087,14 +12259,19 @@ var run = async (args) => {
       description: `Test execution complete`,
       status: describesFailed ? "failed" /* failed */ : "passed" /* passed */
     });
+    if (bailError) {
+      bailError.results = Object.assign(describes, stats);
+      throw bailError;
+    }
   }
-  return describes;
+  return Object.assign(describes, stats);
 };
 
 // src/test/test.ts
-var import_jsutils5 = __toESM(require_cjs2());
+var import_jsutils6 = __toESM(require_cjs2());
 var ParkinTest = class {
-  // Default retires to 0
+  // Defaults set to 0, is the same as disabled
+  bail = 0;
   testRetry = 0;
   suiteRetry = 0;
   #onTestRetry;
@@ -12110,19 +12287,19 @@ var ParkinTest = class {
   #root = createRoot();
   xit;
   it;
-  #onRunDone = import_jsutils5.noOp;
-  #onRunStart = import_jsutils5.noOp;
-  #onSpecDone = import_jsutils5.noOp;
-  #onSuiteDone = import_jsutils5.noOp;
-  #onSpecStart = import_jsutils5.noOp;
-  #onSuiteStart = import_jsutils5.noOp;
-  #onAbort = import_jsutils5.noOp;
-  afterAll = import_jsutils5.noOp;
-  afterEach = import_jsutils5.noOp;
-  beforeAll = import_jsutils5.noOp;
-  beforeEach = import_jsutils5.noOp;
+  #onRunDone = import_jsutils6.noOp;
+  #onRunStart = import_jsutils6.noOp;
+  #onSpecDone = import_jsutils6.noOp;
+  #onSuiteDone = import_jsutils6.noOp;
+  #onSpecStart = import_jsutils6.noOp;
+  #onSuiteStart = import_jsutils6.noOp;
+  #onAbort = import_jsutils6.noOp;
+  afterAll = import_jsutils6.noOp;
+  afterEach = import_jsutils6.noOp;
+  beforeAll = import_jsutils6.noOp;
+  beforeEach = import_jsutils6.noOp;
   #activeParent = void 0;
-  constructor(config = import_jsutils5.noOpObj) {
+  constructor(config = import_jsutils6.noOpObj) {
     this.#root.description = config.description || `root`;
     this.#addOnly();
     this.#addSkip();
@@ -12132,27 +12309,36 @@ var ParkinTest = class {
     this.#activeParent = this.#root;
     this.setConfig(config);
   }
-  run = (config = import_jsutils5.noOpObj) => {
+  run = (config = import_jsutils6.noOpObj) => {
     if (config.description)
       this.#root.description = config.description;
     this.setConfig(config);
     const runSuite = async () => {
       const promise = run({
+        bail: this.bail,
         root: this.#root,
         onAbort: this.#onAbort,
         testOnly: this.#testOnly,
-        onSpecDone: this.#onSpecDone,
         testRetry: this.testRetry,
         onRunDone: this.#onRunDone,
         onRunStart: this.#onRunStart,
-        onSuiteDone: this.#onSuiteDone,
+        onSpecDone: this.#onSpecDone,
         onSpecStart: this.#onSpecStart,
         onTestRetry: this.#onTestRetry,
         shouldAbort: this.#shouldAbort,
-        describeOnly: this.#describeOnly,
+        onSuiteDone: this.#onSuiteDone,
         onSuiteStart: this.#onSuiteStart,
         exitOnFailed: this.#exitOnFailed,
-        skipAfterFailed: this.#skipAfterFailed
+        describeOnly: this.#describeOnly,
+        skipAfterFailed: this.#skipAfterFailed,
+        stats: {
+          runEnd: 0,
+          failedSpecs: 0,
+          passedSpecs: 0,
+          passedSuites: 0,
+          failedSuites: 0,
+          runStart: (/* @__PURE__ */ new Date()).getTime()
+        }
       });
       const result = this.timeout ? PromiseTimeout({
         promise,
@@ -12204,6 +12390,7 @@ var ParkinTest = class {
    * Adds passed in framework hooks to the class instance
    */
   setConfig = ({
+    bail,
     timeout,
     testRetry,
     suiteRetry,
@@ -12219,14 +12406,16 @@ var ParkinTest = class {
     onRunStart,
     onSpecStart,
     onSuiteStart
-  } = import_jsutils5.noOpObj) => {
+  } = import_jsutils6.noOpObj) => {
     if (onAbort)
       this.#onAbort = onAbort;
-    if ((0, import_jsutils5.isNum)(timeout))
+    if ((0, import_jsutils6.isNum)(timeout))
       this.timeout = timeout;
-    if ((0, import_jsutils5.isNum)(testRetry))
+    if ((0, import_jsutils6.isNum)(bail))
+      this.bail = bail;
+    if ((0, import_jsutils6.isNum)(testRetry))
       this.testRetry = testRetry;
-    if ((0, import_jsutils5.isNum)(suiteRetry))
+    if ((0, import_jsutils6.isNum)(suiteRetry))
       this.suiteRetry = suiteRetry;
     if (onTestRetry)
       this.#onTestRetry = onTestRetry;
@@ -12261,14 +12450,14 @@ var ParkinTest = class {
       const item = this.#activeParent.describes[this.#activeParent.describes.length - 1];
       item.only = true;
       this.#describeOnly = true;
-      (0, import_jsutils5.checkCall)(this.#activeParent.hasOnlyChild);
+      (0, import_jsutils6.checkCall)(this.#activeParent.hasOnlyChild);
     };
     this.test.only = (...args) => {
       this.test(...args);
       const item = this.#activeParent.tests[this.#activeParent.tests.length - 1];
       item.only = true;
       this.#testOnly = true;
-      (0, import_jsutils5.checkCall)(this.#activeParent.hasOnlyChild);
+      (0, import_jsutils6.checkCall)(this.#activeParent.hasOnlyChild);
     };
   };
   /**
@@ -12317,7 +12506,7 @@ var ParkinTest = class {
     const lastParent = this.#activeParent;
     item.hasOnlyChild = () => {
       item.onlyChild = true;
-      (0, import_jsutils5.checkCall)(lastParent.hasOnlyChild);
+      (0, import_jsutils6.checkCall)(lastParent.hasOnlyChild);
     };
     this.#activeParent = item;
     action();
@@ -12332,13 +12521,13 @@ var ParkinTest = class {
   test = (description, action, meta) => {
     let retry = this.testRetry || 0;
     let timeout = void 0;
-    if ((0, import_jsutils5.isObj)(meta) && !(0, import_jsutils5.exists)(action.metaData) && !(0, import_jsutils5.exists)(action.ParkinMetaData)) {
+    if ((0, import_jsutils6.isObj)(meta) && !(0, import_jsutils6.exists)(action.metaData) && !(0, import_jsutils6.exists)(action.ParkinMetaData)) {
       action.metaData = meta;
       if (meta == null ? void 0 : meta.timeout)
         timeout = meta.timeout;
       if (meta == null ? void 0 : meta.retry)
         retry = meta.retry;
-    } else if ((0, import_jsutils5.isNum)(meta))
+    } else if ((0, import_jsutils6.isNum)(meta))
       timeout = meta;
     if (!this.#activeParent || this.#activeParent.type === Types.root)
       throwError(`All ${Types.test} method calls must be called within a ${Types.describe} method`);
@@ -12365,7 +12554,7 @@ var ParkinTest = class {
       throwError(
         `All ${Types.test} method calls must be called within a ${Types.describe} method`
       );
-    !(0, import_jsutils5.isStr)(description) && throwError(
+    !(0, import_jsutils6.isStr)(description) && throwError(
       `The ${Types.test} method requires a "string" as the first argument`
     );
     const item = createItem(Types.test, { description, skip: true }, false);
@@ -12375,7 +12564,7 @@ var ParkinTest = class {
 };
 
 // src/utils/globalScope.ts
-var import_jsutils6 = __toESM(require_cjs2());
+var import_jsutils7 = __toESM(require_cjs2());
 var hasWindow = Boolean(typeof window !== "undefined");
 var hasGlobal = Boolean(typeof globalThis !== "undefined");
 var hasModule = Boolean(typeof module === "object");
@@ -12385,9 +12574,9 @@ var hasJasmine = Boolean(
 );
 var resolveGlobalObj = () => {
   try {
-    return hasWindow ? (0, import_jsutils6.checkCall)(() => window) : hasGlobal ? (0, import_jsutils6.checkCall)(() => globalThis) : import_jsutils6.noOpObj;
+    return hasWindow ? (0, import_jsutils7.checkCall)(() => window) : hasGlobal ? (0, import_jsutils7.checkCall)(() => globalThis) : import_jsutils7.noOpObj;
   } catch (err) {
-    return import_jsutils6.noOpObj;
+    return import_jsutils7.noOpObj;
   }
 };
 
