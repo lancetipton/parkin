@@ -10,6 +10,7 @@ import type {
 import { runResult } from './runResult'
 import { loopTests } from './loopTests'
 import { callDescribeHooks } from './hooks'
+import { ParkinAbortErrName } from '../constants'
 import { shouldSkipDescribe } from './runHelpers'
 import { EResultStatus, EResultAction } from '../types'
 
@@ -47,11 +48,14 @@ const loopChildren = async (args:TLoopChildren) => {
     return joined
   }
   /**
-    * If an error is thrown by something other then a test of hook 
-    * Or a Parkin Bail Error is thrown from a failed test, then it will show up here
+    * This will catch if an error is thrown by something other then a test or a hook
+    * For example Parkin Bail Error, or Parkin abort error is thrown, then it will show up here
+    * For abort errors we just rethrow the error, but for Bail errors
     * We capture it so we can still call the onSuiteEnd callback, then rethrow the error
     */
   catch(err){
+    if(err.name === ParkinAbortErrName) throw err
+
     stats.failedSuites += 1
     const errorResult = runResult(describe, {
       ...describeResult,

@@ -5,6 +5,8 @@ import { Types } from './utils'
 import { runTest } from './runTest'
 import { loopHooks } from './hooks'
 import { runResult } from './runResult'
+import { ParkinAbortErrName } from '../constants'
+import { throwAbortError } from '../utils/errors'
 import { EResultStatus, EResultAction } from '../types'
 import { throwBailError, throwExitOnFailed } from '../utils/errors'
 
@@ -41,7 +43,7 @@ export const loopTests = async (args:TLoopTests) => {
   // ------ describe - loop tests ------ //
   for (let testIdx = 0; testIdx < describe.tests.length; testIdx++) {
 
-    if(shouldAbort()) break
+    shouldAbort() && throwAbortError()
 
     const {
       test,
@@ -79,7 +81,7 @@ export const loopTests = async (args:TLoopTests) => {
     }
     else await onSpecStart(testResult)
 
-    if(shouldAbort()) break
+    shouldAbort() && throwAbortError()
 
     const beforeEachResults = await loopHooks({
       test,
@@ -107,9 +109,12 @@ export const loopTests = async (args:TLoopTests) => {
        */
       const result = await runTest({
         test,
+        shouldAbort,
         retry: testRetry,
         onRetry: onTestRetry,
       })
+      
+      shouldAbort() && throwAbortError()
 
       // If we get to here, the test passed, so up the passed spec count
       stats.passedSpecs += 1
@@ -125,6 +130,9 @@ export const loopTests = async (args:TLoopTests) => {
 
     }
     catch (error) {
+
+      if(error.name === ParkinAbortErrName) throw error
+
       testsFailed = true
       stats.failedSpecs += 1
 
@@ -155,7 +163,7 @@ export const loopTests = async (args:TLoopTests) => {
 
     }
     
-    if(shouldAbort()) break
+    shouldAbort() && throwAbortError()
 
     const afterEachResults = await loopHooks({
       test,
@@ -181,8 +189,8 @@ export const loopTests = async (args:TLoopTests) => {
 
   }
 
-  return shouldAbort()
-    ? { tests: [], failed: testsFailed }
-    : { tests: results, failed: testsFailed }
+  shouldAbort() && throwAbortError()
+
+  return { tests: results, failed: testsFailed }
 
 }

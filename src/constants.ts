@@ -40,3 +40,4 @@ export const StepTypes = [
 ]
 
 export const ParkinBailErrName = `ParkinBailError`
+export const ParkinAbortErrName = `ParkinAbortError`

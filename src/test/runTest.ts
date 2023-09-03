@@ -1,10 +1,12 @@
 import type { TPromiseRetry, TRunResult, TTestTestObj } from "src/types"
 
+import { throwAbortError } from '../utils/errors'
 import { PromiseRetry } from '../utils/promiseRetry'
 import { PromiseTimeout } from '../utils/promiseTimeout'
 
 export type TRunTest = Omit<TPromiseRetry<TRunResult>, `promise`> & {
   test:TTestTestObj
+  shouldAbort:() => boolean
 }
 
 /**
@@ -12,13 +14,14 @@ export type TRunTest = Omit<TPromiseRetry<TRunResult>, `promise`> & {
  * Promise retry wraps the timeout, so each retry gets the same amount of time to resolve
  */
 export const runTest = async (args:TRunTest) => {
-  const {test, ...rest} = args
+  const {test, shouldAbort, ...rest} = args
 
   return PromiseRetry({
     ...rest,
     retry: test.retry || rest.retry || 0,
     promise: async () => {
       const promise = test.action()
+      shouldAbort() && throwAbortError()
 
       /**
         * If there is a timeout, Use the PromiseTimeout to race it against the test action

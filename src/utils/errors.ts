@@ -1,5 +1,5 @@
 import {isStr} from '@keg-hub/jsutils'
-import { ParkinBailErrName } from '../constants'
+import { ParkinAbortErrName, ParkinBailErrName } from '../constants'
 import { EHookType, TRunResults } from '../types'
 
 const resolveErrMsg = (error?:string|Error, maybe?:Error|string):[string, Error] => {
@@ -35,10 +35,10 @@ export class ParkinError extends Error {
 
     super(message, opts)
 
-    this.results = (err as ParkinError).results || []
-    this.testResults = (err as ParkinError).testResults || []
+    this.results = (err as ParkinError)?.results || []
+    this.testResults = (err as ParkinError)?.testResults || []
 
-    if((err as any).result && !this.results.includes((err as any).result))
+    if((err as any)?.result && !this.results.includes((err as any).result))
       this.results.push((err as any).result)
 
     // Reset the original stacktrace limit
@@ -59,6 +59,42 @@ export class ParkinBailError extends ParkinError {
   }
 }
 
+export class ParkinAbortError extends ParkinError {
+  name = ParkinAbortErrName
+  constructor(msg:string|Error, error?:string|Error, replaceStack:boolean=true){
+    super(msg, error, replaceStack)
+  }
+}
+
+export class RetryError extends Error {
+  results?:TRunResults
+  constructor(err:Error, message?:string, retry?:number) {
+    super(message || err.message)
+    this.stack = err.stack
+    // Only overwrite the default Error name when retry was actually set
+    // Keep custom named errors incase they are depended on
+    this.name = !retry ? err.name : this.constructor.name
+
+    if(message) this.cause = err.message
+    if((err as RetryError).results) this.results = (err as RetryError).results
+  }
+}
+
+/*
+ * Helper method to use throw a Parkin Bail error
+ * @function
+ * @public
+ * @throws
+ *
+ */
+export const throwAbortError = (err?:Error) => {
+  throw new ParkinAbortError(
+    `Test execution \x1b[33m"aborted"\x1b[0m`,
+    err,
+    true
+  )
+}
+
 /*
  * Helper method to use throw a Parkin Bail error
  * @function
@@ -76,9 +112,8 @@ export const throwBailError = (err:Error, bail?:number) => {
 }
 
 export const throwExitOnFailed = (err:Error) => {
-  const colored = `\x1b[33mexitOnFailed\x1b[0m`
   throw new ParkinBailError(
-    `Stopping test execution. A test failed and "${colored}" is active`,
+    `Stopping test execution. A test failed and \x1b[33m"exitOnFailed"\x1b[0m is active`,
     err,
     true
   )

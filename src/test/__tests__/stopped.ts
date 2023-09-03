@@ -475,4 +475,85 @@ describe(`ParkinTest.run`, () => {
   })
 
 
+  it(`should stop executing test when abort is called`, async () => {
+    const test1 = jest.fn()
+    const test2 = jest.fn()
+    const inside = jest.fn()
+
+    const PTE = new ParkinTest({})
+
+    PTE.describe(`describe-1`, () => {
+      PTE.test(`test-1-1`, test1)
+      PTE.test(`test-1-2`, async () => new Promise((res) => setTimeout(() => {
+        res(true)
+      }, 3000)))
+
+      PTE.test(`test-skipped-1`, () => inside())
+      PTE.test(`test-skipped-2`, test2)
+    })
+
+    let error
+    try {
+      const promise = PTE.run()
+      setTimeout(() => PTE.abort(), 1500)
+      await promise
+      expect(`Expected Parkin Test to throw an error`).toBe(true)
+    }
+    catch(err){
+      error = err
+    }
+
+    expect(error.name).toBe(`ParkinAbortError`)
+    expect(error.results.aborted).toBe(true)
+    expect(inside).not.toHaveBeenCalled()
+    expect(test2).not.toHaveBeenCalled()
+
+  })
+
+
+  it(`should still capture some stats when abort is called`, async () => {
+    const test1 = jest.fn()
+    const test2 = jest.fn()
+    const test3 = jest.fn()
+    const test4 = jest.fn()
+
+
+    const PTE = new ParkinTest({})
+
+    PTE.describe(`describe-1`, () => {
+      PTE.test(`test-1-1`, test1)
+      PTE.test(`test-1-2`, test2)
+    })
+
+    PTE.describe(`describe-2`, () => {
+      PTE.test(`test-2-1`, async () => new Promise((res) => setTimeout(() => {
+        res(true)
+      }, 3000)))
+      PTE.test(`test-2-2`, test3)
+      PTE.test(`test-2-2`, test4)
+    })
+
+    let error
+    try {
+      const promise = PTE.run()
+      setTimeout(() => PTE.abort(), 2900)
+      await promise
+      expect(`Expected Parkin Test to throw an error`).toBe(true)
+    }
+    catch(err){
+      error = err
+    }
+
+    const resp = error.results
+    expect(error.name).toBe(`ParkinAbortError`)
+    expect(error.results.aborted).toBe(true)
+    expect(resp.passedSpecs).toBe(2)
+    expect(resp.passedSuites).toBe(1)
+    expect(resp.failedSpecs).toBe(0)
+    expect(resp.failedSuites).toBe(0)
+    expect(test3).not.toHaveBeenCalled()
+    expect(test4).not.toHaveBeenCalled()
+
+  })
+
 })

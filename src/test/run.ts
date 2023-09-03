@@ -8,7 +8,7 @@ import { loopHooks } from './hooks'
 import { runResult } from './runResult'
 
 import { ParkinError } from '../utils/errors'
-import { ParkinBailErrName } from '../constants'
+import { ParkinBailErrName, ParkinAbortErrName } from '../constants'
 import { loopDescribes } from './loopDescribes'
 import { Types, validateRootRun } from './utils'
 import { EResultStatus, EResultAction } from '../types'
@@ -95,8 +95,13 @@ export const run = async (args:TRun):Promise<TRunResults> => {
   }
   catch(err){
     describesFailed = true
-    bailError = err.name === ParkinBailErrName ? err : undefined
-    if(bailError) describes.bailed = true
+    const isBailErr = err.name === ParkinBailErrName
+    const isAbortErr = err.name === ParkinAbortErrName
+
+    bailError = isBailErr || isAbortErr ? err : undefined
+
+    if(isBailErr) describes.bailed = true
+    if(isAbortErr) describes.aborted = true
 
     err.results
       ? describes.push(...err.results)
@@ -117,9 +122,6 @@ export const run = async (args:TRun):Promise<TRunResults> => {
         })
       )
 
-    // After joining the error results with the already captured results
-    // Ensure the stats object is added as well
-    err.results = Object.assign(describes, stats)
   }
   finally {
     const afterAllResult = await loopHooks({
@@ -142,7 +144,12 @@ export const run = async (args:TRun):Promise<TRunResults> => {
       status: describesFailed ? EResultStatus.failed : EResultStatus.passed
     })
 
-    if(bailError) throw bailError
+    if(bailError){
+      // After joining the error results with the already captured results
+      // Ensure the stats object is added as well
+      bailError.results = Object.assign(describes, stats)
+      throw bailError
+    }
   }
 
   return Object.assign(describes, stats)
