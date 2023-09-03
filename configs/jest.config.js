@@ -27,6 +27,5 @@ module.exports = {
   globals: {
     __DEV__: true,
   },
-  testEnvironment: 'node',
   setupFilesAfterEnv: [`<rootDir>/configs/setupTests.js`],
 }

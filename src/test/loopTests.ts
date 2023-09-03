@@ -1,10 +1,14 @@
 import type { TLoopTests, TRunResult, TRunResults } from '../types'
 
 import { Types } from './utils'
+
 import { runTest } from './runTest'
 import { loopHooks } from './hooks'
 import { runResult } from './runResult'
+import { ParkinAbortErrName } from '../constants'
+import { throwAbortError } from '../utils/errors'
 import { EResultStatus, EResultAction } from '../types'
+import { throwBailError, throwExitOnFailed } from '../utils/errors'
 
 import {
   buildTestArgs,
@@ -19,6 +23,8 @@ import {
  */
 export const loopTests = async (args:TLoopTests) => {
   const {
+    bail,
+    stats,
     suiteId,
     describe,
     testOnly,
@@ -37,7 +43,7 @@ export const loopTests = async (args:TLoopTests) => {
   // ------ describe - loop tests ------ //
   for (let testIdx = 0; testIdx < describe.tests.length; testIdx++) {
 
-    if(shouldAbort()) break
+    shouldAbort() && throwAbortError()
 
     const {
       test,
@@ -47,6 +53,7 @@ export const loopTests = async (args:TLoopTests) => {
     } = buildTestArgs({ suiteId, testIdx, describe })
 
     let testResult = runResult(test, {
+      stats,
       fullName,
       testPath,
       id: specId,
@@ -74,10 +81,11 @@ export const loopTests = async (args:TLoopTests) => {
     }
     else await onSpecStart(testResult)
 
-    if(shouldAbort()) break
+    shouldAbort() && throwAbortError()
 
     const beforeEachResults = await loopHooks({
       test,
+      stats,
       specId,
       suiteId,
       describe,
@@ -101,20 +109,35 @@ export const loopTests = async (args:TLoopTests) => {
        */
       const result = await runTest({
         test,
+        shouldAbort,
         retry: testRetry,
         onRetry: onTestRetry,
       })
+      
+      shouldAbort() && throwAbortError()
+
+      // If we get to here, the test passed, so up the passed spec count
+      stats.passedSpecs += 1
 
       testResult = runResult(test, {
+        stats,
         fullName,
         id: specId,
         testPath: testPath,
         passed: result || true,
         action: EResultAction.test,
       })
+
     }
     catch (error) {
+
+      if(error.name === ParkinAbortErrName) throw error
+
+      testsFailed = true
+      stats.failedSpecs += 1
+
       testResult = runResult(test, {
+        stats,
         fullName,
         id: specId,
         testPath: testPath,
@@ -127,20 +150,24 @@ export const loopTests = async (args:TLoopTests) => {
         },
       })
 
-      testsFailed = true
-
-      if(exitOnFailed){
+      const shouldBail = Boolean(bail && stats.failedSpecs >= bail)
+      if(exitOnFailed || shouldBail){
         results.push(testResult)
+        error.testResults = results
         await onSpecDone(testResult)
+
+        exitOnFailed && throwExitOnFailed(error)
+        shouldBail && throwBailError(error, bail)
         break
       }
 
     }
     
-    if(shouldAbort()) break
+    shouldAbort() && throwAbortError()
 
     const afterEachResults = await loopHooks({
       test,
+      stats,
       specId,
       suiteId,
       describe,
@@ -162,8 +189,8 @@ export const loopTests = async (args:TLoopTests) => {
 
   }
 
-  return shouldAbort()
-    ? { tests: [], failed: testsFailed }
-    : { tests: results, failed: testsFailed }
+  shouldAbort() && throwAbortError()
+
+  return { tests: results, failed: testsFailed }
 
 }

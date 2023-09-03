@@ -1,30 +1,38 @@
 import { wait } from "@keg-hub/jsutils"
-import { TRunResult, TPromiseRetry } from "../types"
+import { TPromiseRetry } from "../types"
+import { RetryError, throwAbortError } from './errors'
 
-class RetryError extends Error {
-  result?:TRunResult
-  constructor(err:Error, message?:string, retry?:number) {
-    super(message || err.message)
-    this.stack = err.stack
-    // Only overwrite the default Error name when retry was actually set
-    // Keep custom named errors incase they are depended on
-    this.name = !retry ? err.name : this.constructor.name
-
-    if(message) this.cause = err.message
-    if((err as RetryError).result) this.result = (err as RetryError).result
-  }
-}
+// import { TAbortPromise } from "../types"
+// import { PromiseAbort } from './promiseAbort'
+// ----- Uncomment to add a PromiseAbort wrapper -----
+// Still working out how to do this properly, needs some work
+// export const PromiseRetry = <T=any>(opts:TPromiseRetry<T>): TAbortPromise<T> => {
+//   return PromiseAbort({
+//     promise: (args) => loopRetry({...opts, ...args}, opts?.retry || 0)
+//   })
+// }
 
 const loopRetry = async <T=any>(opts:TPromiseRetry<T>, orgRetry?:number): Promise<T> => {
-  const fn = opts.promise
-  const onRetry = opts?.onRetry
-  const delay = opts?.delay || 0
-  const retry = opts?.retry || 0
+  const {
+    delay=0,
+    retry=0,
+    onRetry,
+    controller,
+    promise:fn,
+    shouldAbort,
+  } = opts
+
+  const signal = controller?.signal
 
   try {
-    return await fn()
+    const resp = await fn(opts)
+    return signal?.aborted || shouldAbort?.()
+      ?  throwAbortError()
+      : resp
   }
   catch (err) {
+    if(signal?.aborted || shouldAbort?.()) return throwAbortError()
+
     if (retry <= 0) throw new RetryError(err, opts?.error, orgRetry)
 
     const next = {...opts, retry: retry - 1}

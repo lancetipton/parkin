@@ -38,3 +38,6 @@ export const StepTypes = [
   EAstObject.step,
   EAstObject.steps,
 ]
+
+export const ParkinBailErrName = `ParkinBailError`
+export const ParkinAbortErrName = `ParkinAbortError`

@@ -1,5 +1,6 @@
 import type {
   TType,
+  TTestStats,
   TRunResult,
   TRootTestObj,
   TTestTestObj,
@@ -15,6 +16,7 @@ import { EResultStatus, EResultAction, ETestType } from '../types'
 type TLoopHooks = {
   test?:TTestTestObj
   type: keyof TType
+  stats:TTestStats
   describe?:TDescribeTestObj
   specId?:keyof TType|string
   suiteId?:keyof TType|string
@@ -23,6 +25,7 @@ type TLoopHooks = {
 
 export type TDescribeHooks = {
   suiteId:string
+  stats:TTestStats
   type:`before`|`after`
   describe:TDescribeTestObj
   describeResult:TRunResult
@@ -41,6 +44,7 @@ export const loopHooks = async (args:TLoopHooks) => {
     type,
     test,
     root,
+    stats,
     specId,
     suiteId,
     describe,
@@ -66,6 +70,7 @@ export const loopHooks = async (args:TLoopHooks) => {
           .catch((error:Error) => {
             hookResults.push(
               runResult(activeItem, {
+                stats,
                 fullName,
                 action: type as EResultAction,
                 id: test ? specId : suiteId,
@@ -95,14 +100,16 @@ export const loopHooks = async (args:TLoopHooks) => {
  *
  * @returns {Object} - Built results if a hook throws an error
  */
-const callBeforeHooks = async ({ root, suiteId, describe }) => {
+const callBeforeHooks = async ({ root, suiteId, describe, stats }) => {
   const beforeEachResult = await loopHooks({
     root,
+    stats,
     suiteId: Types.root,
     type: Types.beforeEach,
   })
 
   const beforeAllResult = await loopHooks({
+    stats,
     suiteId,
     describe,
     type: Types.beforeAll,
@@ -117,14 +124,16 @@ const callBeforeHooks = async ({ root, suiteId, describe }) => {
  *
  * @returns {Object} - Built results if a hook throws an error
  */
-const callAfterHooks = async ({ root, suiteId, describe }) => {
+const callAfterHooks = async ({ root, suiteId, describe, stats }) => {
   const afterEachResult = await loopHooks({
     root,
+    stats,
     suiteId: Types.root,
     type: Types.afterEach,
   })
 
   const afterAllResult = await loopHooks({
+      stats,
       suiteId,
       describe,
       type: Types.afterAll,
@@ -144,6 +153,7 @@ export const callDescribeHooks = async (args:TDescribeHooks) => {
   const {
     root,
     type,
+    stats,
     suiteId,
     describe,
     onSuiteDone,
@@ -153,8 +163,8 @@ export const callDescribeHooks = async (args:TDescribeHooks) => {
   const results:TRunResult[] = []
 
   const hooksResults = type === `before`
-    ? await callBeforeHooks({root, suiteId, describe })
-    : await callAfterHooks({root, suiteId, describe })
+    ? await callBeforeHooks({root, suiteId, describe, stats })
+    : await callAfterHooks({root, suiteId, describe, stats })
   
   if(!hooksResults?.length) return results
   
