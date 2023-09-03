@@ -16,6 +16,7 @@ export const runResult = (
   {
     id,
     tests,
+    stats,
     action,
     failed,
     passed,
@@ -27,6 +28,7 @@ export const runResult = (
 
   const result:TRunResult = {
     id,
+    stats,
     action,
     testPath,
     fullName,

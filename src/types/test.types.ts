@@ -110,6 +110,7 @@ export type TRunResult = {
   skipped?:boolean
   timestamp:number
   children?:TSpec[]
+  stats: TTestStats
   tests?:TRunResult[]
   description: string
   action:EResultAction
@@ -167,6 +168,7 @@ export type TParkinTestFactory = TTestFactory & {
 
 
 export type TParkinTestConfig = {
+  bail?:number
   timeout?:number
   testRetry?:number
   suiteRetry?:number
@@ -263,14 +265,28 @@ export type TType = TGlobalTypes & {
 }
 
 
-export type TRunResults = TRunResult[] & { aborted?:boolean }
+export type TRunResults = (TRunResult[] & TTestStats & {
+  aborted?:boolean
+  bailed?:boolean
+})
+
+export type TTestStats = {
+  runEnd?:number
+  runStart?:number
+  passedSpecs?:number
+  failedSpecs?:number
+  failedSuites?:number
+  passedSuites?:number
+}
 
 export type TLoopTests = {
+  bail:number
   suiteId:string
   testOnly:boolean
   testRetry?:number
   exitOnFailed?:boolean
   skipAfterFailed?:boolean
+  stats: TTestStats
   onSpecDone:TParkinTestCB
   shouldAbort:() => boolean
   onSpecStart:TParkinTestCB
@@ -279,6 +295,8 @@ export type TLoopTests = {
 }
 
 export type TRun = {
+  bail?:number
+  stats: TTestStats
   testOnly:boolean
   testRetry?:number
   describeOnly:boolean

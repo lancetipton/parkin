@@ -1,8 +1,8 @@
 import { wait } from "@keg-hub/jsutils"
-import { TRunResult, TPromiseRetry } from "../types"
+import { TPromiseRetry, TRunResults } from "../types"
 
 class RetryError extends Error {
-  result?:TRunResult
+  results?:TRunResults
   constructor(err:Error, message?:string, retry?:number) {
     super(message || err.message)
     this.stack = err.stack
@@ -11,7 +11,7 @@ class RetryError extends Error {
     this.name = !retry ? err.name : this.constructor.name
 
     if(message) this.cause = err.message
-    if((err as RetryError).result) this.result = (err as RetryError).result
+    if((err as RetryError).results) this.results = (err as RetryError).results
   }
 }
 

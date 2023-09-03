@@ -33,7 +33,8 @@ import {
 type TTestSkipFactory = (description:string, action?:TTestAction, timeout?:number) => void
 
 export class ParkinTest {
-  // Default retires to 0
+  // Defaults set to 0, is the same as disabled
+  bail = 0
   testRetry = 0
   suiteRetry = 0
   #onTestRetry:TPromiseRetryCB<TRunResult>
@@ -82,21 +83,30 @@ export class ParkinTest {
     this.setConfig(config)
     const runSuite = async () => {
       const promise = run({
+        bail: this.bail,
         root: this.#root,
         onAbort: this.#onAbort,
         testOnly: this.#testOnly,
-        onSpecDone: this.#onSpecDone,
         testRetry: this.testRetry,
         onRunDone: this.#onRunDone,
         onRunStart: this.#onRunStart,
-        onSuiteDone: this.#onSuiteDone,
+        onSpecDone: this.#onSpecDone,
         onSpecStart: this.#onSpecStart,
         onTestRetry: this.#onTestRetry,
         shouldAbort: this.#shouldAbort,
-        describeOnly: this.#describeOnly,
+        onSuiteDone: this.#onSuiteDone,
         onSuiteStart: this.#onSuiteStart,
         exitOnFailed: this.#exitOnFailed,
+        describeOnly: this.#describeOnly,
         skipAfterFailed: this.#skipAfterFailed,
+        stats: {
+          runEnd: 0,
+          failedSpecs: 0,
+          passedSpecs: 0,
+          passedSuites: 0,
+          failedSuites: 0,
+          runStart: new Date().getTime(),
+        },
       })
 
       const result = this.timeout
@@ -161,6 +171,7 @@ export class ParkinTest {
    * Adds passed in framework hooks to the class instance
    */
   setConfig = ({
+    bail,
     timeout,
     testRetry,
     suiteRetry,
@@ -181,6 +192,7 @@ export class ParkinTest {
     if (onAbort) this.#onAbort = onAbort
     if (isNum(timeout)) this.timeout = timeout
 
+    if (isNum(bail)) this.bail = bail
     if (isNum(testRetry)) this.testRetry = testRetry
     if (isNum(suiteRetry)) this.suiteRetry = suiteRetry
 

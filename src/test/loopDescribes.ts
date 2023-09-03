@@ -1,4 +1,11 @@
-import type { TDescribeTestObj, TParkinTestCB, TRun, TRunResult, TRunResults } from '../types'
+import type {
+  TRun,
+  TRunResult,
+  TTestStats,
+  TRunResults,
+  TParkinTestCB,
+  TDescribeTestObj,
+} from '../types'
 
 import { runResult } from './runResult'
 import { loopTests } from './loopTests'
@@ -6,8 +13,8 @@ import { callDescribeHooks } from './hooks'
 import { shouldSkipDescribe } from './runHelpers'
 import { EResultStatus, EResultAction } from '../types'
 
-
 export type TLoopChildren<T=any> = {
+  stats:TTestStats
   describeResult:TRunResult
   onSuiteDone:TParkinTestCB
   describe:TDescribeTestObj
@@ -19,6 +26,7 @@ export type TLoopChildren<T=any> = {
  */
 const loopChildren = async (args:TLoopChildren) => {
   const {
+    stats,
     describe,
     onSuiteDone,
     describeResult,
@@ -39,12 +47,15 @@ const loopChildren = async (args:TLoopChildren) => {
     return joined
   }
   /**
-    * If an error is thrown by something other then a test of hook then it will show up here
+    * If an error is thrown by something other then a test of hook 
+    * Or a Parkin Bail Error is thrown from a failed test, then it will show up here
     * We capture it so we can still call the onSuiteEnd callback, then rethrow the error
     */
   catch(err){
+    stats.failedSuites += 1
     const errorResult = runResult(describe, {
       ...describeResult,
+      stats,
       action: EResultAction.end,
       failed: {
         error: err,
@@ -53,9 +64,18 @@ const loopChildren = async (args:TLoopChildren) => {
         fullName: describe.description,
       }
     })
-    
+
+    // If there's testsResults
+    // Store them in the describe result, and remove them from the error
+    if(err.testResults){
+      errorResult.tests = err.testResults
+      err.testResults = undefined
+    }
+
     await onSuiteDone(errorResult)
-    if(!err.result) err.result = errorResult
+
+    err.results = err.results || []
+    err.results.push(errorResult)
 
     throw err
   }
@@ -71,10 +91,12 @@ const loopChildren = async (args:TLoopChildren) => {
 export const loopDescribes = async (args:TRun) => {
   const {
     root,
+    bail,
+    stats,
     testOnly,
+    testRetry,
     onSpecDone,
     onSuiteDone,
-    testRetry,
     shouldAbort,
     onTestRetry,
     onSpecStart,
@@ -99,6 +121,7 @@ export const loopDescribes = async (args:TRun) => {
 
     // Create a runResult with general information that can be reused below
     let describeResult = runResult(describe, {
+      stats,
       id: suiteId,
       testPath: `/${suiteId}`,
       action: EResultAction.start,
@@ -119,6 +142,7 @@ export const loopDescribes = async (args:TRun) => {
 
     const beforeResults = await callDescribeHooks({
       root,
+      stats,
       suiteId,
       describe,
       onSuiteDone,
@@ -137,10 +161,13 @@ export const loopDescribes = async (args:TRun) => {
     // Loop over any test children
     describeResult = describe?.tests?.length
       ? await loopChildren({
+          stats,
           describe,
           onSuiteDone,
           describeResult,
           loopFun: async () => await loopTests({
+            bail,
+            stats,
             suiteId,
             describe,
             testOnly,
@@ -155,9 +182,9 @@ export const loopDescribes = async (args:TRun) => {
         })
       : describeResult
 
-
     if(exitOnFailed && describeResult.failed){
       describeFailed = true
+      stats.failedSuites += 1
       await onSuiteDone(describeResult)
       results.push(describeResult)
       break
@@ -166,6 +193,7 @@ export const loopDescribes = async (args:TRun) => {
     // Loop over any describe children
     describeResult = describe?.describes?.length
       ? await loopChildren({
+          stats,
           describe,
           onSuiteDone,
           describeResult,
@@ -177,6 +205,9 @@ export const loopDescribes = async (args:TRun) => {
         })
       : describeResult
 
+    describeResult.failed
+      ? (stats.failedSuites += 1)
+      : (stats.passedSuites += 1)
 
     if(exitOnFailed && describeResult.failed){
       describeFailed = true
@@ -199,6 +230,7 @@ export const loopDescribes = async (args:TRun) => {
 
     const afterResults = await callDescribeHooks({
       root,
+      stats,
       suiteId,
       describe,
       onSuiteDone,

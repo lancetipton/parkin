@@ -1,10 +1,12 @@
 import type { TLoopTests, TRunResult, TRunResults } from '../types'
 
 import { Types } from './utils'
+
 import { runTest } from './runTest'
 import { loopHooks } from './hooks'
 import { runResult } from './runResult'
 import { EResultStatus, EResultAction } from '../types'
+import { throwBailError, throwExitOnFailed } from '../utils/errors'
 
 import {
   buildTestArgs,
@@ -19,6 +21,8 @@ import {
  */
 export const loopTests = async (args:TLoopTests) => {
   const {
+    bail,
+    stats,
     suiteId,
     describe,
     testOnly,
@@ -47,6 +51,7 @@ export const loopTests = async (args:TLoopTests) => {
     } = buildTestArgs({ suiteId, testIdx, describe })
 
     let testResult = runResult(test, {
+      stats,
       fullName,
       testPath,
       id: specId,
@@ -78,6 +83,7 @@ export const loopTests = async (args:TLoopTests) => {
 
     const beforeEachResults = await loopHooks({
       test,
+      stats,
       specId,
       suiteId,
       describe,
@@ -105,16 +111,25 @@ export const loopTests = async (args:TLoopTests) => {
         onRetry: onTestRetry,
       })
 
+      // If we get to here, the test passed, so up the passed spec count
+      stats.passedSpecs += 1
+
       testResult = runResult(test, {
+        stats,
         fullName,
         id: specId,
         testPath: testPath,
         passed: result || true,
         action: EResultAction.test,
       })
+
     }
     catch (error) {
+      testsFailed = true
+      stats.failedSpecs += 1
+
       testResult = runResult(test, {
+        stats,
         fullName,
         id: specId,
         testPath: testPath,
@@ -127,11 +142,14 @@ export const loopTests = async (args:TLoopTests) => {
         },
       })
 
-      testsFailed = true
-
-      if(exitOnFailed){
+      const shouldBail = Boolean(bail && stats.failedSpecs >= bail)
+      if(exitOnFailed || shouldBail){
         results.push(testResult)
+        error.testResults = results
         await onSpecDone(testResult)
+
+        exitOnFailed && throwExitOnFailed(error)
+        shouldBail && throwBailError(error, bail)
         break
       }
 
@@ -141,6 +159,7 @@ export const loopTests = async (args:TLoopTests) => {
 
     const afterEachResults = await loopHooks({
       test,
+      stats,
       specId,
       suiteId,
       describe,
