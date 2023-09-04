@@ -12276,8 +12276,10 @@ var ParkinTest = class {
   suiteRetry = 0;
   #onTestRetry;
   #onSuiteRetry;
-  // Default global test timeout is 1hr
-  timeout = 36e5;
+  // Default test timeout to be 5 seconds
+  testTimeout = 5e3;
+  // Default suite test timeout is 1hr
+  suiteTimeout = 36e5;
   #autoClean = true;
   #testOnly = false;
   #abortRun = false;
@@ -12340,11 +12342,11 @@ var ParkinTest = class {
           runStart: (/* @__PURE__ */ new Date()).getTime()
         }
       });
-      const result = this.timeout ? PromiseTimeout({
+      const result = this.suiteTimeout ? PromiseTimeout({
         promise,
-        timeout: this.timeout,
+        timeout: this.suiteTimeout,
         name: this.#root.description,
-        error: `Test Execution failed, the global timeout ${this.timeout}ms was exceeded`
+        error: `Test Execution failed, the suite timeout ${this.suiteTimeout}ms was exceeded`
       }) : promise;
       this.#autoClean && this.clean();
       return result;
@@ -12370,7 +12372,8 @@ var ParkinTest = class {
    * Clears all previously loaded tests and describes
    */
   clean = () => {
-    this.timeout = 36e5;
+    this.testTimeout = 5e3;
+    this.suiteTimeout = 36e5;
     this.#autoClean = true;
     this.#abortRun = false;
     this.#testOnly = false;
@@ -12394,6 +12397,8 @@ var ParkinTest = class {
     timeout,
     testRetry,
     suiteRetry,
+    testTimeout,
+    suiteTimeout,
     onTestRetry,
     onSuiteRetry,
     exitOnFailed,
@@ -12409,8 +12414,14 @@ var ParkinTest = class {
   } = import_jsutils6.noOpObj) => {
     if (onAbort)
       this.#onAbort = onAbort;
-    if ((0, import_jsutils6.isNum)(timeout))
-      this.timeout = timeout;
+    if ((0, import_jsutils6.isNum)(testTimeout))
+      this.testTimeout = testTimeout;
+    else if ((0, import_jsutils6.isNum)(timeout))
+      this.testTimeout = timeout;
+    if ((0, import_jsutils6.isNum)(suiteTimeout))
+      this.suiteTimeout = suiteTimeout;
+    else if ((0, import_jsutils6.isNum)(timeout))
+      this.suiteTimeout = timeout;
     if ((0, import_jsutils6.isNum)(bail))
       this.bail = bail;
     if ((0, import_jsutils6.isNum)(testRetry))
@@ -12520,7 +12531,7 @@ var ParkinTest = class {
    */
   test = (description, action, meta) => {
     let retry = this.testRetry || 0;
-    let timeout = void 0;
+    let timeout = this.testTimeout;
     if ((0, import_jsutils6.isObj)(meta) && !(0, import_jsutils6.exists)(action.metaData) && !(0, import_jsutils6.exists)(action.ParkinMetaData)) {
       action.metaData = meta;
       if (meta == null ? void 0 : meta.timeout)
