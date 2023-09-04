@@ -174,6 +174,8 @@ export type TParkinTestConfig = {
   suiteRetry?:number
   autoClean?:boolean
   description?:string
+  testTimeout?:number
+  suiteTimeout?:number
   exitOnFailed?:boolean
   skipAfterFailed?:boolean
   onAbort?:TParkinTestAbort

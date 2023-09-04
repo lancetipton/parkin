@@ -40,8 +40,10 @@ export class ParkinTest {
   #onTestRetry:TPromiseRetryCB<TRunResult>
   #onSuiteRetry:TPromiseRetryCB<TRunResults>
 
-  // Default global test timeout is 1hr
-  timeout = 3600000
+  // Default test timeout to be 5 seconds
+  testTimeout = 5000
+  // Default suite test timeout is 1hr
+  suiteTimeout = 3600000
   #autoClean = true
   #testOnly = false
   #abortRun = false
@@ -109,12 +111,12 @@ export class ParkinTest {
         },
       })
 
-      const result = this.timeout
+      const result = this.suiteTimeout
         ? PromiseTimeout<TRunResults>({
             promise,
-            timeout: this.timeout,
+            timeout: this.suiteTimeout,
             name: this.#root.description,
-            error: `Test Execution failed, the global timeout ${this.timeout}ms was exceeded`
+            error: `Test Execution failed, the suite timeout ${this.suiteTimeout}ms was exceeded`
           })
         : promise
 
@@ -148,7 +150,8 @@ export class ParkinTest {
    * Clears all previously loaded tests and describes
    */
   clean = () => {
-    this.timeout = 3600000
+    this.testTimeout = 5000
+    this.suiteTimeout = 3600000
     this.#autoClean = true
     this.#abortRun = false
     this.#testOnly = false
@@ -175,6 +178,8 @@ export class ParkinTest {
     timeout,
     testRetry,
     suiteRetry,
+    testTimeout,
+    suiteTimeout,
     onTestRetry,
     onSuiteRetry,
     exitOnFailed,
@@ -189,8 +194,13 @@ export class ParkinTest {
     onSuiteStart,
   }:TParkinTestConfig=noOpObj) => {
 
-    if (onAbort) this.#onAbort = onAbort
-    if (isNum(timeout)) this.timeout = timeout
+    if(onAbort) this.#onAbort = onAbort
+    
+    if(isNum(testTimeout)) this.testTimeout = testTimeout
+    else if(isNum(timeout)) this.testTimeout = timeout
+
+    if(isNum(suiteTimeout)) this.suiteTimeout = suiteTimeout
+    else if(isNum(timeout)) this.suiteTimeout = timeout
 
     if (isNum(bail)) this.bail = bail
     if (isNum(testRetry)) this.testRetry = testRetry
@@ -330,7 +340,7 @@ export class ParkinTest {
   ) => {
 
     let retry:number = this.testRetry || 0
-    let timeout:number = undefined
+    let timeout:number = this.testTimeout
 
     if(isObj(meta) && !exists(action.metaData) && !exists(action.ParkinMetaData)){
       action.metaData = meta

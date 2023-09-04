@@ -23,26 +23,29 @@ describe(`ParkinTest`, () => {
         `run`,
         `test`,
         `xtest`,
-        `timeout`,
         `describe`,
         `afterAll`,
         `beforeAll`,
         `afterEach`,
         `beforeEach`,
+        `testTimeout`,
+        `suiteTimeout`,
       ].map(prop => expect(typeof PTE[prop]).not.toBe('undefined'))
     })
 
     it(`Should allow passing a config object to set option`, () => {
       expect(() => {
         const PTE = new ParkinTest({
-          timeout: 8543,
+          suiteTimeout: 8543,
+          testTimeout: 5000,
           onSpecDone: jest.fn(),
           onSuiteDone: jest.fn(),
           onSpecStart: jest.fn(),
           onSuiteStart: jest.fn(),
           description: `Test Description`,
         })
-        expect(PTE.timeout).toBe(8543)
+        expect(PTE.suiteTimeout).toBe(8543)
+        expect(PTE.testTimeout).toBe(5000)
       }).not.toThrow()
     })
   })
@@ -197,7 +200,7 @@ describe(`ParkinTest`, () => {
       Object.entries({
         type: `string`,
         action: `function`,
-        timeout: `undefined`,
+        timeout: `number`,
         disabled: `function`,
         description: `string`,
       }).map(([ prop, type ]) => {
@@ -246,7 +249,7 @@ describe(`ParkinTest`, () => {
       expect(test.timeout).toBe(2000)
     })
 
-    it(`Should not set a timeout when a timeout is not passed`, () => {
+    it(`Should use the default test timeout when a timeout is not passed`, () => {
       const PTE = new ParkinTest()
       PTE.describe(`describe method`, () => {
         PTE.test(`test method`, () => {})
@@ -255,7 +258,7 @@ describe(`ParkinTest`, () => {
       const parent = PTE.getActiveParent()
       const describeObj = parent.describes[0]
       const test = describeObj.tests[0]
-      expect(test.timeout).toBe(undefined)
+      expect(test.timeout).toBe(PTE.testTimeout)
     })
 
     it(`Should throw an error when the test method is called outside of a describe method`, () => {
@@ -613,25 +616,25 @@ describe(`ParkinTest`, () => {
 
     it(`should allow overriding the existing config and description`, async () => {
       const PTE = new ParkinTest({
-          timeout: 8543,
+          suiteTimeout: 8543,
           description: `Should be overridden`,
       })
       
       PTE.clean = jest.fn()
       await PTE.run({
-        timeout: 3000,
         autoClean: false,
+        suiteTimeout: 3000,
         description: `Override description`,
       })
 
       const runProps = runMock.mock.calls[0][0]
       expect(runProps.root.description).toBe(`Override description`)
-      expect(PTE.timeout).toBe(3000)
+      expect(PTE.suiteTimeout).toBe(3000)
       expect(PTE.clean).not.toHaveBeenCalled()
     })
 
-    it(`should fail when the global timeout finishes before the the run module`, async () => {
-      const PTE = new ParkinTest({ timeout: 10 })
+    it(`should fail when the suite timeout finishes before the the run module`, async () => {
+      const PTE = new ParkinTest({ suiteTimeout: 10 })
       let caught:boolean = false
 
       try {
@@ -640,7 +643,7 @@ describe(`ParkinTest`, () => {
       catch(err){
         caught = true
         expect(err.name).toBe(`TimeoutError`)
-        expect(err.message).toBe(`Test Execution failed, the global timeout 10ms was exceeded`)
+        expect(err.message).toBe(`Test Execution failed, the suite timeout 10ms was exceeded`)
       }
 
       if(!caught)
