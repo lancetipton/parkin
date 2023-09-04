@@ -28,6 +28,7 @@ describe(`ParkinTest`, () => {
         `beforeAll`,
         `afterEach`,
         `beforeEach`,
+        `testTimeout`,
         `suiteTimeout`,
       ].map(prop => expect(typeof PTE[prop]).not.toBe('undefined'))
     })
@@ -199,7 +200,7 @@ describe(`ParkinTest`, () => {
       Object.entries({
         type: `string`,
         action: `function`,
-        timeout: `undefined`,
+        timeout: `number`,
         disabled: `function`,
         description: `string`,
       }).map(([ prop, type ]) => {
@@ -248,7 +249,7 @@ describe(`ParkinTest`, () => {
       expect(test.timeout).toBe(2000)
     })
 
-    it(`Should not set a timeout when a timeout is not passed`, () => {
+    it(`Should use the default test timeout when a timeout is not passed`, () => {
       const PTE = new ParkinTest()
       PTE.describe(`describe method`, () => {
         PTE.test(`test method`, () => {})
@@ -257,7 +258,7 @@ describe(`ParkinTest`, () => {
       const parent = PTE.getActiveParent()
       const describeObj = parent.describes[0]
       const test = describeObj.tests[0]
-      expect(test.timeout).toBe(undefined)
+      expect(test.timeout).toBe(PTE.testTimeout)
     })
 
     it(`Should throw an error when the test method is called outside of a describe method`, () => {

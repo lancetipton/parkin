@@ -40,8 +40,8 @@ export class ParkinTest {
   #onTestRetry:TPromiseRetryCB<TRunResult>
   #onSuiteRetry:TPromiseRetryCB<TRunResults>
 
-  // Default test timeout to be undefined
-  testTimeout:number
+  // Default test timeout to be 5 seconds
+  testTimeout = 5000
   // Default suite test timeout is 1hr
   suiteTimeout = 3600000
   #autoClean = true
