@@ -8,6 +8,7 @@ module.exports = {
   testRunner: 'jest-jasmine2',
   testMatch: [
     '<rootDir>/src/**/__tests__/*.{js,jsx,ts,tsx}',
+    '<rootDir>/plugins/**/__tests__/*.{js,jsx,ts,tsx}',
   ],
   coverageDirectory: "reports/coverage",
   coveragePathIgnorePatterns: [
