@@ -41,4 +41,5 @@ export enum EMaestroCmds {
   doubleTapOn=`doubleTapOn`,
   travel=`travel`,
   waitForAnimationToEnd=`waitForAnimationToEnd`,
+  longPressOn='longPressOn'
 }
