@@ -15,6 +15,7 @@ const globalParkin = path.join(rootDir, `src/global.js`)
 const testEntry = path.join(rootDir, `src/test/index.js`)
 const globalTest = path.join(rootDir, `src/test/global.js`)
 const reportersEntry = path.join(rootDir, `src/bin/reporters/index.js`)
+const pluginsEntry = path.join(rootDir, `plugins/index.js`)
 
 const minify = false
 
@@ -28,40 +29,38 @@ const shared = {
     globalTest,
     parkinEntry,
     globalParkin,
-    reportersEntry
+    reportersEntry,
+    pluginsEntry,
   ],
 }
 
 const cjsBuild = async () => {
   // Build the files with esbuild
-  await esbuild.build({
-    ...shared,
-    outdir: cjsOut,
-    platform: "node",
-    target: ["node16"],
-    plugins: [nodeModulesPolyfillPlugin()]
-  })
-  .catch(() => process.exit(1))
+  await esbuild
+    .build({
+      ...shared,
+      outdir: cjsOut,
+      platform: 'node',
+      target: ['node16'],
+      plugins: [nodeModulesPolyfillPlugin()],
+    })
+    .catch(() => process.exit(1))
 }
 
 const esmBuild = async () => {
   // Build the files with esbuild
-  await esbuild.build({
-    ...shared,
-    format: "esm",
-    outdir: esmOut,
-    splitting: true,
-    target: ["esnext"],
-    define: { global: "window" },
-    plugins: [
-      nodeModulesPolyfillPlugin(),
-      typecheckPlugin(),
-      dtsPlugin(),
-    ]
-  })
-  .catch(() => process.exit(1))
+  await esbuild
+    .build({
+      ...shared,
+      format: 'esm',
+      outdir: esmOut,
+      splitting: true,
+      target: ['esnext'],
+      define: { global: 'window' },
+      plugins: [nodeModulesPolyfillPlugin(), typecheckPlugin(), dtsPlugin()],
+    })
+    .catch(() => process.exit(1))
 }
-
 
 ;(async () => {
   await cjsBuild()
