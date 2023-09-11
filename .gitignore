@@ -194,4 +194,4 @@ build/*.js
 build/*.js.map
 build/*.mjs
 build/*.mjs.map
-docs/parkin/*
+docs/parkin/**
