@@ -46,7 +46,8 @@
   },
   "scripts": {
     "prebuild": "pnpm format && pnpm test && pnpm parkin",
-    "build": "pnpm tsup --config ./configs/tsup.config.ts",
+    "build": "pnpm tsup --config ./configs/tsup.config.ts && pnpm build:copy",
+    "build:copy": "rimraf docs/parkin && mkdir -p docs/parkin && cp -R build/ docs/parkin/",
     "cli:test": "node --enable-source-maps -r esbuild-register src/bin/testCli.ts",
     "clean:full": "pnpm clean && pnpm install",
     "clean": "pnpm clean:lock && pnpm cache clean && rimraf node_modules && npm cache clean --force",
