@@ -14,24 +14,22 @@ const binEntry = path.join(binDir, `parkin.js`)
 
 const cjsBuild = async () => {
   // Build the files with esbuild
-  await esbuild.build({
-    outdir,
-    bundle: true,
-    minify: minify,
-    sourcemap: true,
-    platform: "node",
-    target: ["node16"],
-    entryPoints: [binEntry],
-    external: Object.keys(packConf.dependencies),
-  })
-  .catch(() => process.exit(1))
+  await esbuild
+    .build({
+      outdir,
+      bundle: true,
+      minify: minify,
+      sourcemap: true,
+      platform: 'node',
+      target: ['node16'],
+      entryPoints: [binEntry],
+      external: Object.keys(packConf.dependencies),
+    })
+    .catch(() => process.exit(1))
 }
-
 
 ;(async () => {
   // Remove the existing output dir
   await fs.rm(outdir, { recursive: true, force: true })
   await cjsBuild()
 })()
-
-

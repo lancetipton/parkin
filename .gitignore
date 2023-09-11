@@ -186,3 +186,11 @@ reports/
 src/bin/testCli.ts
 
 .cacheVersion
+
+build/*.d.ts
+build/*.d.mts
+build/*.d.ts.map
+build/*.js
+build/*.js.map
+build/*.mjs
+build/*.mjs.map
