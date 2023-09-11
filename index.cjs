@@ -1,1 +1,1 @@
-module.exports = require('./build/cjs/index.js')
+module.exports = require('./build/index.js')
