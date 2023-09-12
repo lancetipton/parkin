@@ -1,22 +1,21 @@
-import type { TIndexAst } from '../types'
+import type { TIndexAst } from '../../src/types'
 
-import { EStepType, EAstObject } from '../types'
-import { formatAssembled } from './helpers'
+import { Maestro } from './maestro'
+import { EStepType, EAstObject } from '../../src/types'
 import {
   assembleTags,
   assembleStep,
-  assembleRule,
   assembleBlock,
   assembleFeature,
   assembleScenario,
-  assembleBackground,
 } from './assembleParts'
 
 export const fromIndex = (
   indexes:TIndexAst,
+  maestro:Maestro,
 ) => {
 
-  const assembled = indexes.reduce((assembled, item) => {
+  indexes.forEach(item => {
     switch(item.ast.type as string){
       case EStepType.given:
       case EStepType.when:
@@ -25,15 +24,11 @@ export const fromIndex = (
       case EStepType.but:
       case EStepType[`*`]:
       case EAstObject.step: {
-        assembleStep(assembled, item)
+        assembleStep(maestro, item)
         break
       }
       case EAstObject.tags: {
-        assembleTags(assembled, item)
-        break
-      }
-      case EAstObject.rule: {
-        assembleRule(assembled, item)
+        assembleTags(maestro, item)
         break
       }
       case EAstObject.block:
@@ -42,25 +37,20 @@ export const fromIndex = (
       case EAstObject.reason:
       case EAstObject.comment:
       case EAstObject.perspective: {
-        assembleBlock(assembled, item)
+        assembleBlock(maestro, item)
         break
       }
       case EAstObject.feature: {
-        assembleFeature(assembled, item)
+        assembleFeature(maestro, item)
         break
       }
       case EAstObject.scenario: {
-        assembleScenario(assembled, item)
-        break
-      }
-      case EAstObject.background: {
-        assembleBackground(assembled, item)
+        assembleScenario(maestro, item)
         break
       }
     }
 
-    return assembled
   }, [] as string[])
 
-  return formatAssembled(assembled)
+  return maestro
 }

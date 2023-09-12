@@ -1,0 +1,45 @@
+
+export const AfterTag = `@after`
+export const BeforeTag = `@before`
+export const EnvTagPrefix = `@ENV_`
+
+export enum EMaestroCmds {
+  appId=`appId`,
+  name=`name`,
+  env=`env`,
+  tags=`tags`,
+  onFlowStart=`onFlowStart`,
+  onFlowComplete=`onFlowComplete`,
+  assertVisible=`assertVisible`,
+  assertNotVisible=`assertNotVisible`,
+  assertTrue=`assertTrue`,
+  back=`back`,
+  clearKeychain=`clearKeychain`,
+  clearState=`clearState`,
+  copyTextFrom=`copyTextFrom`,
+  evalScript=`evalScript`,
+  eraseText=`eraseText`,
+  extendedWaitUntil=`extendedWaitUntil`,
+  hideKeyboard=`hideKeyboard`,
+  inputText=`inputText`,
+  launchApp=`launchApp`,
+  openLink=`openLink`,
+  pressKey=`pressKey`,
+  pasteText=`pasteText`,
+  repeat=`repeat`,
+  runFlow=`runFlow`,
+  runScript=`runScript`,
+  scroll=`scroll`,
+  scrollUntilVisible=`scrollUntilVisible`,
+  setLocation=`setLocation`,
+  startRecording=`startRecording`,
+  stopApp=`stopApp`,
+  stopRecording=`stopRecording`,
+  swipe=`swipe`,
+  takeScreenshot=`takeScreenshot`,
+  tapOn=`tapOn`,
+  doubleTapOn=`doubleTapOn`,
+  travel=`travel`,
+  waitForAnimationToEnd=`waitForAnimationToEnd`,
+  longPressOn='longPressOn'
+}

@@ -1,9 +1,9 @@
-import type { assemble } from '../assemble'
+import type { Assemble } from '../assemble'
 import type { EAstObject, EStepType } from './helpers.types'
 import type { TParentAst, TFeatureAst, } from './features.types'
 import {TStepAst} from './steps.types'
 
-export type TAssemble = typeof assemble
+export type TAssemble = Assemble
 
 export enum EBlockLoc {
   after=`after`,
