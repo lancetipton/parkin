@@ -47,6 +47,8 @@ const printResult = (
 
   results.forEach((result) => {
 
+    if(!result.describes) return
+
     if((failedOnly || errorOnly) && result.passed) return
  
     if(!hasFailed && result.failed) hasFailed = result.failed

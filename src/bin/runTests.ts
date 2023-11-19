@@ -30,7 +30,8 @@ export const runTests = async (
     const content = await fs.readFile(feature, { encoding: `utf8` })
     const featureAst = PK.parse.feature(content, { worldReplace: false })
 
-    await PK.run(featureAst, runOpts)
+    const resp = await PK.run(featureAst, runOpts)
+    if(!resp) return acc
 
     const responses = await PTE.run({
       description: `Parkin > ${feature}`,

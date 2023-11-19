@@ -7,11 +7,15 @@ import type {
   TRegisterStepsList
 } from '../../types'
 
-
 const fsMock = {readFile: jest.fn()}
 jest.setMock('fs', { promises: fsMock })
+const PKMock = { parse: { feature: jest.fn() }, run: jest.fn() }
+const PTEMock = { run: jest.fn() }
 
-const instanceMock = { getParkin: jest.fn(), getPTE: jest.fn()}
+const instanceMock = {
+  getPTE: jest.fn(() => PTEMock),
+  getParkin: jest.fn(() => PKMock),
+}
 jest.setMock('../instance', instanceMock)
 
 const { runTests } = require('../runTests')
@@ -24,23 +28,27 @@ describe('runTests', () => {
     jest.clearAllMocks()
   })
 
-  it('should return an array of responses', async () => {
+  it('should skip calling PTE run when not tests are registered', async () => {
 
     const features = ['feature1', 'feature2']
     const testConfig = {}
 
     const featureContent = 'Feature: My feature\nScenario: My scenario\nGiven something\nWhen I do something\nThen I expect something\n'
-    const response = {}
 
     fsMock.readFile.mockResolvedValue(featureContent)
-    instanceMock.getParkin.mockReturnValue({ parse: { feature: jest.fn() }, run: jest.fn() })
-    instanceMock.getPTE.mockReturnValue({ run: jest.fn().mockResolvedValue(response) })
 
     const result = await runTests(features, world, steps, testConfig)
+    expect(result).toEqual([])
 
-    expect(result).toEqual([response, response])
-    expect(instanceMock.getParkin).toHaveBeenCalledTimes(2)
     expect(instanceMock.getPTE).toHaveBeenCalledTimes(2)
+    expect(instanceMock.getParkin).toHaveBeenCalledTimes(2)
+
+    const PK = instanceMock.getParkin()
+    expect(PK.run).toHaveBeenCalledTimes(2)
+
+    const PTE = instanceMock.getPTE()
+    expect(PTE.run).not.toHaveBeenCalled()
+
     expect(fsMock.readFile).toHaveBeenCalledTimes(2)
     expect(fsMock.readFile).toHaveBeenNthCalledWith(1, 'feature1', { encoding: 'utf8' })
     expect(fsMock.readFile).toHaveBeenNthCalledWith(2, 'feature2', { encoding: 'utf8' })

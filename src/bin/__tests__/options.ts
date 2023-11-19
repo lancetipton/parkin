@@ -18,6 +18,7 @@ const allowOpts = [
   `disabled`,
   `filter`,
   `name`,
+  `feature`,
   `exitOnFailed`,
   `skipAfterFailed`
 ]

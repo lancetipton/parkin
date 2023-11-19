@@ -11,7 +11,7 @@ import type {
 
 import { Types } from './utils'
 import { runResult } from './runResult'
-import { EResultStatus, EResultAction, ETestType } from '../types'
+import { EResultStatus, EResultAction } from '../types'
 
 type TLoopHooks = {
   test?:TTestTestObj

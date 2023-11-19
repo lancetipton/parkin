@@ -3,6 +3,7 @@ import { EPartMatchTypes } from './parkin.types'
 
 export type TFindOpts = {
   partial?: boolean
+  worldReplace?:boolean
 }
 
 export type TTokenOpts = TFindOpts & {

@@ -145,5 +145,6 @@ export type TStepDoc = {
 }
 
 export type TStepResolveOpts = {
+  worldReplace?:boolean
   [K:string]:any
 }

@@ -2,8 +2,12 @@
 export const options = {
   features: {
     type: `array`,
-    alias: [ `files`, `file`, `fl`, `feature`, `feat`, `ft`],
+    alias: [ `files`, `fls`, `feats`, `fts`],
     description: `Path to a folder that contains the feature files to be run`
+  },
+  feature: {
+    alias: [ `file`, `fl`, `feat`, `fts`],
+    description: `Partial path or name of a feature file to be run`
   },
   defs: {
     type: `array`,
@@ -63,7 +67,7 @@ export const options = {
     alias: [`n`],
     type: `string`,
     example:`--name my-feature`,
-    description: `Specify a name of a specific feature to run. All other features will be skipped`,
+    description: `Specify a name of a specific feature to run (not the file name). All other features will be skipped.`,
   },
   exitOnFailed: {
     type: `bool`,
