@@ -5,10 +5,14 @@ import { ensureArr, flatArr, emptyArr } from '@keg-hub/jsutils'
 import { locsByTypes, fullLoc } from './helpers'
 
 const filterFeatures = async (loc:string, opts:TParkinOpts) => {
-  return await locsByTypes(loc, {
+  const foundFeats = await locsByTypes(loc, {
     ...opts,
     ext: `.feature`
   })
+
+  return opts.feature
+    ? foundFeats.filter(loc => loc.includes(opts.feature))
+    : foundFeats
 }
 
 const featureFromArg = (args:string[]) => {

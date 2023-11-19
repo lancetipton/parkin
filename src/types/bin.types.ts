@@ -1,6 +1,7 @@
 
 export type TParkinOpts = TLoadOpts & {
   name?:string
+  feature?:string
   world?: string
   rootDir?:string
   config?:string

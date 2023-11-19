@@ -17,7 +17,7 @@ describe(`Feature Steps`, () => {
         content: `Test tick data to be parsed`,
       })
       expect(parsedFeature.scenarios[2].steps[0].doc).toEqual({
-        index: 19,
+        index: 22,
         whiteSpace: `      `,
         type: `quote`,
         content: `Test quote data to be parsed\nThat is two lines`,
@@ -38,7 +38,7 @@ describe(`Feature Steps`, () => {
         ],
       })
       expect(parsedFeature.scenarios[3].steps[0].table).toEqual({
-        index: 27,
+        index: 31,
         content: [
           [ `first`, `Tom` ],
           [ `last`, `Jerry` ],
