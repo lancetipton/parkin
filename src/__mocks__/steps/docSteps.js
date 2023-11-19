@@ -10,7 +10,9 @@ export const registerDocSteps = PK => {
   PK.Then(
     'the doc-string data should be {string}',
     jest.fn((docStringData, { world }) => {
-      expect(world.docStringData.split(`\n`)).toEqual(docStringData.split(`\\n`))
+      expect(world.docStringData.split(`\n`)).toEqual(
+        docStringData.split(`\\n`)
+      )
     })
   )
 
@@ -22,19 +24,15 @@ export const registerDocSteps = PK => {
     })
   )
 
-
   PK.Then(
     'the user table should should have user {word}',
     jest.fn((user, { world }) => {
       const found = world.usersTable.find(row => {
-        const [name, email, tag] = row
-        return user === name
-          || user === email
-          || user === tag
+        const [ name, email, tag ] = row
+        return user === name || user === email || user === tag
       })
 
       expect(found).not.toBe(undefined)
     })
   )
-
 }
