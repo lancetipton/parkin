@@ -48512,6 +48512,8 @@ var printResult = (results, opts2 = import_jsutils.emptyObj) => {
   let hasFailed;
   const output = [];
   results.forEach((result) => {
+    if (!result.describes)
+      return;
     if ((failedOnly || errorOnly) && result.passed)
       return;
     if (!hasFailed && result.failed)
