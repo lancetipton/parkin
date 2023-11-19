@@ -61,9 +61,7 @@ export const parseFeature = function (
 
   const features:TFeatureAst[] = []
 
-  const replaceText = opts?.worldReplace === false
-    ? (text || '').toString()
-    : replaceWorld((text || '').toString(), worldCfg)
+  const replaceText = replaceWorld((text || '').toString(), worldCfg, opts?.worldReplace)
 
   const lines = replaceText.split(RX_NEWLINE)
 

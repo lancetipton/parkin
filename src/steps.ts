@@ -120,8 +120,9 @@ export class Steps {
     // Call the matcher to find a matching step definition
     const found = matcher(
       list,
-      replaceWorld(text, this._world),
-      this._world
+      replaceWorld(text, this._world, options?.worldReplace),
+      this._world,
+      options
     )
 
     // If no matching step definition exists, then return false

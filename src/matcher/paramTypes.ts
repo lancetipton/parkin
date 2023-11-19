@@ -50,13 +50,16 @@ const mergeRegex = joinRegex as (...expressions: RegExp[]) => RegExp
  * @returns {*} Found value on the world object or undefined
  */
 const checkWorldValue = (func:TAnyFunc, type:string):TTransformer => {
-  return (arg:string, $world?:TWorldConfig) => {
+  return (arg:string, $world?:TWorldConfig, worldReplace?:boolean) => {
     const hasWorldVal = arg.match(RX_WORLD)
     const hasAliasVal = arg.match(RX_ALIAS)
 
+    if(worldReplace === false && (hasWorldVal || hasAliasVal))
+      return removeQuotes(arg)
+
     // If not world value, just return func response
     if (!isObj($world) || (!hasWorldVal && !hasAliasVal))
-      return matchType(func(arg, $world), type)
+      return matchType(func(arg, $world, worldReplace), type)
 
     // Try to pull from world object
     const worldVal = hasWorldVal
@@ -206,12 +209,13 @@ export const registerParamType = (
 export const convertTypes = (
   matches:string[],
   transformers:TParamTypeModel[],
-  $world:TWorldConfig
+  $world:TWorldConfig,
+  worldReplace?:boolean
 ) => {
   return matches
     .map((item, i) => {
       const paramType = transformers[i] || __paramTypes.any
-      return checkCall(paramType.transformer, item, $world)
+      return checkCall(paramType.transformer, item, $world, worldReplace)
     })
     .filter(exists)
 }

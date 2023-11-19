@@ -8,7 +8,8 @@ export enum EResultAction {
   skipped=`skipped`,
   start=`start`,
   end=`end`,
-  abort=`abort`
+  abort=`abort`,
+  error=`error`
 }
 
 export enum EResultStatus {

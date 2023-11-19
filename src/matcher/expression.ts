@@ -134,6 +134,9 @@ const convertToRegex = (
   match:string,
   opts:TFindOpts=emptyObj
 ) => {
+  let parameter:Array<any>
+  let optional:Array<any>
+
   const paramTypes = getParamTypes()
   const transformers = []
   const regex = runRegexCheck(
@@ -142,20 +145,26 @@ const convertToRegex = (
     (val, ...args) => {
       // Get the expression type
       const type = val.trim().replace(RX_MATCH_REPLACE, '')
-      const isParameter = val.match(RX_PARAMETER)
-      const isOptional = val.match(RX_OPTIONAL)
+      parameter = val.match(RX_PARAMETER)
+      optional = val.match(RX_OPTIONAL)
 
       // Add the transformer for the type to the transformers array
-      isParameter && transformers.push(paramTypes[type] || paramTypes.any)
+      parameter && transformers.push(paramTypes[type] || paramTypes.any)
       // Return the regex
-      return isParameter
+      return parameter
         ? getParamRegex(type, opts?.partial)
-        : isOptional
+        : optional
           ? toAlternateRegex(val)
           : val
     }
   )
-  return { regex, transformers }
+
+  return {
+    regex,
+    optional,
+    parameter,
+    transformers
+  }
 }
 
 /**
@@ -265,7 +274,12 @@ export const findAsRegex = (
 ) => {
   const escaped = escapeStr(definition.match as string)
   const { regex: regexAlts } = checkAlternative(escaped)
-  const { transformers, regex: regexConverted } = convertToRegex(regexAlts, opts)
+  const {
+    optional,
+    transformers,
+    regex: regexConverted
+  } = convertToRegex(regexAlts, opts)
+
   const { regex: regexAnchors } = checkAnchors(regexConverted)
 
   // Then call the regex matcher to get the content
@@ -277,6 +291,7 @@ export const findAsRegex = (
   return {
     found,
     escaped,
+    optional,
     regexAlts,
     transformers,
     regexAnchors,
@@ -305,10 +320,15 @@ export const matchExpression = (
   // So we can short circuit and return the definition
   if (definition.match === text) return { definition, match: [] }
 
-  const { found, transformers } = findAsRegex(definition, text, opts)
+  const {
+    found,
+    optional,
+    transformers,
+  } = findAsRegex(definition, text, opts)
 
   // If no found definition or match, return an empty object
-  if (!found || !found.definition || !found.match) return emptyObj
+  if (!found || !found.definition || (!found.match && !optional))
+    return emptyObj
 
   // get all the parameters, without any type coercion
   const params = extractParameters(
@@ -318,11 +338,12 @@ export const matchExpression = (
     opts
   )
 
-
-  if (!params) return emptyObj
+  // If the definition does not have params,
+  // then just return the matching definition
+  if (!params?.length) return { definition, match: [] }
 
   // Convert the found variables into their type based on the mapped transformers
-  const converted = convertTypes(params, transformers, $world)
+  const converted = convertTypes(params, transformers, $world, opts.worldReplace)
 
   // If the conversion fails, and no variable or not enough variables are returned,
   // Then assume the type does not match, so the step does not match.

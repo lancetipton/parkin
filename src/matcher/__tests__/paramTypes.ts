@@ -206,7 +206,7 @@ describe('paramTypes', () => {
       expect(paramTypes.custom2.transformer).not.toBe(custom2.transformer)
     })
 
-    it('should still call the orginal transformer method when wrapped transformer is called without a world value', () => {
+    it('should still call the original transformer method when wrapped transformer is called without a world value', () => {
       const custom3 = {
         name: 'custom3',
         transformer: jest.fn(),

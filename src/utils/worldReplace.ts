@@ -105,6 +105,8 @@ export const worldReplace = (text:string, world:TWorldConfig) => {
  * Helper to call aliasReplace, and worldReplace in a single call
  *
  */
-export const replaceWorld = (text:string, world:TWorldConfig) => {
-  return worldReplace(aliasReplace(text, world), world)
+export const replaceWorld = (text:string, world:TWorldConfig, replace?:boolean) => {
+  return replace === false
+    ? (text || '').toString()
+    : worldReplace(aliasReplace(text, world), world)
 }
