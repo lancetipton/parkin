@@ -2680,11 +2680,13 @@ var init_paramTypes = __esm({
     ({ WORLD_KEY, ALIAS_WORLD_KEY, ALIAS_REF } = constants);
     mergeRegex = import_jsutils5.joinRegex;
     checkWorldValue = (func, type) => {
-      return (arg, $world) => {
+      return (arg, $world, worldReplace2) => {
         const hasWorldVal = arg.match(RX_WORLD);
         const hasAliasVal = arg.match(RX_ALIAS);
+        if (worldReplace2 === false && (hasWorldVal || hasAliasVal))
+          return removeQuotes(arg);
         if (!(0, import_jsutils5.isObj)($world) || !hasWorldVal && !hasAliasVal)
-          return matchType(func(arg, $world), type);
+          return matchType(func(arg, $world, worldReplace2), type);
         const worldVal = hasWorldVal ? (0, import_jsutils5.get)($world, removeQuotes(arg).replace(`${WORLD_KEY}.`, "")) : (0, import_jsutils5.get)(
           $world,
           removeQuotes(arg).replace(`${ALIAS_REF}`, `${ALIAS_WORLD_KEY}.`)
@@ -2763,10 +2765,10 @@ var init_paramTypes = __esm({
       );
       return __paramTypes;
     };
-    convertTypes = (matches, transformers, $world) => {
+    convertTypes = (matches, transformers, $world, worldReplace2) => {
       return matches.map((item, i2) => {
         const paramType = transformers[i2] || __paramTypes.any;
-        return (0, import_jsutils5.checkCall)(paramType.transformer, item, $world);
+        return (0, import_jsutils5.checkCall)(paramType.transformer, item, $world, worldReplace2);
       }).filter(import_jsutils5.exists);
     };
   }
@@ -2960,6 +2962,8 @@ var init_expression = __esm({
       return regexStr;
     };
     convertToRegex = (match, opts = import_jsutils9.emptyObj) => {
+      let parameter;
+      let optional;
       const paramTypes = getParamTypes();
       const transformers = [];
       const regex = runRegexCheck(
@@ -2967,13 +2971,18 @@ var init_expression = __esm({
         RX_EXPRESSION,
         (val, ...args) => {
           const type = val.trim().replace(RX_MATCH_REPLACE, "");
-          const isParameter = val.match(RX_PARAMETER);
-          const isOptional = val.match(RX_OPTIONAL);
-          isParameter && transformers.push(paramTypes[type] || paramTypes.any);
-          return isParameter ? getParamRegex(type, opts == null ? void 0 : opts.partial) : isOptional ? toAlternateRegex(val) : val;
+          parameter = val.match(RX_PARAMETER);
+          optional = val.match(RX_OPTIONAL);
+          parameter && transformers.push(paramTypes[type] || paramTypes.any);
+          return parameter ? getParamRegex(type, opts == null ? void 0 : opts.partial) : optional ? toAlternateRegex(val) : val;
         }
       );
-      return { regex, transformers };
+      return {
+        regex,
+        optional,
+        parameter,
+        transformers
+      };
     };
     checkAlternative = (match) => {
       const altIndexes = [];
@@ -3027,7 +3036,11 @@ var init_expression = __esm({
     findAsRegex = (definition, text, opts = import_jsutils9.emptyObj) => {
       const escaped = escapeStr(definition.match);
       const { regex: regexAlts } = checkAlternative(escaped);
-      const { transformers, regex: regexConverted } = convertToRegex(regexAlts, opts);
+      const {
+        optional,
+        transformers,
+        regex: regexConverted
+      } = convertToRegex(regexAlts, opts);
       const { regex: regexAnchors } = checkAnchors(regexConverted);
       const found = matchRegex(
         { ...definition, match: regexAnchors },
@@ -3036,6 +3049,7 @@ var init_expression = __esm({
       return {
         found,
         escaped,
+        optional,
         regexAlts,
         transformers,
         regexAnchors,
@@ -3045,8 +3059,12 @@ var init_expression = __esm({
     matchExpression = (definition, text, $world, opts = import_jsutils9.emptyObj) => {
       if (definition.match === text)
         return { definition, match: [] };
-      const { found, transformers } = findAsRegex(definition, text, opts);
-      if (!found || !found.definition || !found.match)
+      const {
+        found,
+        optional,
+        transformers
+      } = findAsRegex(definition, text, opts);
+      if (!found || !found.definition || !found.match && !optional)
         return import_jsutils9.emptyObj;
       const params = extractParameters(
         text,
@@ -3054,9 +3072,9 @@ var init_expression = __esm({
         found.match,
         opts
       );
-      if (!params)
-        return import_jsutils9.emptyObj;
-      const converted = convertTypes(params, transformers, $world);
+      if (!(params == null ? void 0 : params.length))
+        return { definition, match: [] };
+      const converted = convertTypes(params, transformers, $world, opts.worldReplace);
       return converted.length !== params.length ? import_jsutils9.emptyObj : { definition, match: converted };
     };
   }
@@ -3208,8 +3226,8 @@ var init_worldReplace = __esm({
         throwWorldReplace(err, currentMatch);
       }
     };
-    replaceWorld = (text, world) => {
-      return worldReplace(aliasReplace(text, world), world);
+    replaceWorld = (text, world, replace) => {
+      return replace === false ? (text || "").toString() : worldReplace(aliasReplace(text, world), world);
     };
   }
 });
@@ -3395,8 +3413,9 @@ var init_steps = __esm({
         const list = this.list();
         const found = matcher(
           list,
-          replaceWorld(text, this._world),
-          this._world
+          replaceWorld(text, this._world, options2 == null ? void 0 : options2.worldReplace),
+          this._world,
+          options2
         );
         if (!found.match || !found.definition)
           return false;
@@ -4024,7 +4043,7 @@ var init_parseFeature = __esm({
         options2
       );
       const features = [];
-      const replaceText = (opts == null ? void 0 : opts.worldReplace) === false ? (text || "").toString() : replaceWorld((text || "").toString(), worldCfg);
+      const replaceText = replaceWorld((text || "").toString(), worldCfg, opts == null ? void 0 : opts.worldReplace);
       const lines = replaceText.split(RX_NEWLINE);
       let parseError2 = false;
       let feature = featureFactory(false, text);
@@ -15613,8 +15632,12 @@ var init_options = __esm({
     options = {
       features: {
         type: `array`,
-        alias: [`files`, `file`, `fl`, `feature`, `feat`, `ft`],
+        alias: [`files`, `fls`, `feats`, `fts`],
         description: `Path to a folder that contains the feature files to be run`
+      },
+      feature: {
+        alias: [`file`, `fl`, `feat`, `fts`],
+        description: `Partial path or name of a feature file to be run`
       },
       defs: {
         type: `array`,
@@ -15674,7 +15697,7 @@ var init_options = __esm({
         alias: [`n`],
         type: `string`,
         example: `--name my-feature`,
-        description: `Specify a name of a specific feature to run. All other features will be skipped`
+        description: `Specify a name of a specific feature to run (not the file name). All other features will be skipped.`
       },
       exitOnFailed: {
         type: `bool`,
@@ -15862,13 +15885,15 @@ var init_runTests = __esm({
         const PTE = getPTE();
         const content = await import_fs2.promises.readFile(feature, { encoding: `utf8` });
         const featureAst = PK.parse.feature(content, { worldReplace: false });
-        await PK.run(featureAst, runOpts);
+        const resp = await PK.run(featureAst, runOpts);
+        if (!resp)
+          return acc;
         const responses = await PTE.run({
           description: `Parkin > ${feature}`,
           ...testConfig
         });
         if (testConfig == null ? void 0 : testConfig.exitOnFailed)
-          hasFailed = Boolean(responses.find((resp) => resp.failed));
+          hasFailed = Boolean(responses.find((resp2) => resp2.failed));
         return acc.concat(responses);
       }, Promise.resolve([]));
     };
@@ -16069,6 +16094,8 @@ var init_cli = __esm({
       let hasFailed;
       const output = [];
       results.forEach((result) => {
+        if (!result.describes)
+          return;
         if ((failedOnly || errorOnly) && result.passed)
           return;
         if (!hasFailed && result.failed)
@@ -16149,10 +16176,11 @@ var init_getFeatures = __esm({
     import_jsutils42 = __toESM(require_cjs());
     init_helpers3();
     filterFeatures2 = async (loc, opts) => {
-      return await locsByTypes(loc, {
+      const foundFeats = await locsByTypes(loc, {
         ...opts,
         ext: `.feature`
       });
+      return opts.feature ? foundFeats.filter((loc2) => loc2.includes(opts.feature)) : foundFeats;
     };
     featureFromArg = (args) => {
       return args.filter((arg, idx) => {

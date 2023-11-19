@@ -2375,6 +2375,7 @@ var EResultAction = /* @__PURE__ */ ((EResultAction2) => {
   EResultAction2["start"] = `start`;
   EResultAction2["end"] = `end`;
   EResultAction2["abort"] = `abort`;
+  EResultAction2["error"] = `error`;
   return EResultAction2;
 })(EResultAction || {});
 var EResultStatus = /* @__PURE__ */ ((EResultStatus2) => {
@@ -2660,11 +2661,13 @@ var throwAliasReplace = (err, currentMatch) => {
 var { WORLD_KEY, ALIAS_WORLD_KEY, ALIAS_REF } = constants;
 var mergeRegex = import_jsutils5.joinRegex;
 var checkWorldValue = (func, type) => {
-  return (arg, $world) => {
+  return (arg, $world, worldReplace2) => {
     const hasWorldVal = arg.match(RX_WORLD);
     const hasAliasVal = arg.match(RX_ALIAS);
+    if (worldReplace2 === false && (hasWorldVal || hasAliasVal))
+      return removeQuotes(arg);
     if (!(0, import_jsutils5.isObj)($world) || !hasWorldVal && !hasAliasVal)
-      return matchType(func(arg, $world), type);
+      return matchType(func(arg, $world, worldReplace2), type);
     const worldVal = hasWorldVal ? (0, import_jsutils5.get)($world, removeQuotes(arg).replace(`${WORLD_KEY}.`, "")) : (0, import_jsutils5.get)(
       $world,
       removeQuotes(arg).replace(`${ALIAS_REF}`, `${ALIAS_WORLD_KEY}.`)
@@ -2743,10 +2746,10 @@ var registerParamType = (model = import_jsutils5.noOpObj, key = model.name) => {
   );
   return __paramTypes;
 };
-var convertTypes = (matches, transformers, $world) => {
+var convertTypes = (matches, transformers, $world, worldReplace2) => {
   return matches.map((item, i) => {
     const paramType = transformers[i] || __paramTypes.any;
-    return (0, import_jsutils5.checkCall)(paramType.transformer, item, $world);
+    return (0, import_jsutils5.checkCall)(paramType.transformer, item, $world, worldReplace2);
   }).filter(import_jsutils5.exists);
 };
 
@@ -2910,6 +2913,8 @@ var runRegexCheck = (matcher2, testRx, replaceWith) => {
   return regexStr;
 };
 var convertToRegex = (match, opts = import_jsutils9.emptyObj) => {
+  let parameter;
+  let optional;
   const paramTypes = getParamTypes();
   const transformers = [];
   const regex = runRegexCheck(
@@ -2917,13 +2922,18 @@ var convertToRegex = (match, opts = import_jsutils9.emptyObj) => {
     RX_EXPRESSION,
     (val, ...args) => {
       const type = val.trim().replace(RX_MATCH_REPLACE, "");
-      const isParameter = val.match(RX_PARAMETER);
-      const isOptional = val.match(RX_OPTIONAL);
-      isParameter && transformers.push(paramTypes[type] || paramTypes.any);
-      return isParameter ? getParamRegex(type, opts == null ? void 0 : opts.partial) : isOptional ? toAlternateRegex(val) : val;
+      parameter = val.match(RX_PARAMETER);
+      optional = val.match(RX_OPTIONAL);
+      parameter && transformers.push(paramTypes[type] || paramTypes.any);
+      return parameter ? getParamRegex(type, opts == null ? void 0 : opts.partial) : optional ? toAlternateRegex(val) : val;
     }
   );
-  return { regex, transformers };
+  return {
+    regex,
+    optional,
+    parameter,
+    transformers
+  };
 };
 var checkAlternative = (match) => {
   const altIndexes = [];
@@ -2977,7 +2987,11 @@ var extractParameters = (text, stepMatcher, wordMatches, opts = import_jsutils9.
 var findAsRegex = (definition, text, opts = import_jsutils9.emptyObj) => {
   const escaped = escapeStr(definition.match);
   const { regex: regexAlts } = checkAlternative(escaped);
-  const { transformers, regex: regexConverted } = convertToRegex(regexAlts, opts);
+  const {
+    optional,
+    transformers,
+    regex: regexConverted
+  } = convertToRegex(regexAlts, opts);
   const { regex: regexAnchors } = checkAnchors(regexConverted);
   const found = matchRegex(
     { ...definition, match: regexAnchors },
@@ -2986,6 +3000,7 @@ var findAsRegex = (definition, text, opts = import_jsutils9.emptyObj) => {
   return {
     found,
     escaped,
+    optional,
     regexAlts,
     transformers,
     regexAnchors,
@@ -2995,8 +3010,12 @@ var findAsRegex = (definition, text, opts = import_jsutils9.emptyObj) => {
 var matchExpression = (definition, text, $world, opts = import_jsutils9.emptyObj) => {
   if (definition.match === text)
     return { definition, match: [] };
-  const { found, transformers } = findAsRegex(definition, text, opts);
-  if (!found || !found.definition || !found.match)
+  const {
+    found,
+    optional,
+    transformers
+  } = findAsRegex(definition, text, opts);
+  if (!found || !found.definition || !found.match && !optional)
     return import_jsutils9.emptyObj;
   const params = extractParameters(
     text,
@@ -3004,9 +3023,9 @@ var matchExpression = (definition, text, $world, opts = import_jsutils9.emptyObj
     found.match,
     opts
   );
-  if (!params)
-    return import_jsutils9.emptyObj;
-  const converted = convertTypes(params, transformers, $world);
+  if (!(params == null ? void 0 : params.length))
+    return { definition, match: [] };
+  const converted = convertTypes(params, transformers, $world, opts.worldReplace);
   return converted.length !== params.length ? import_jsutils9.emptyObj : { definition, match: converted };
 };
 
@@ -3129,8 +3148,8 @@ var worldReplace = (text, world) => {
     throwWorldReplace(err, currentMatch);
   }
 };
-var replaceWorld = (text, world) => {
-  return worldReplace(aliasReplace(text, world), world);
+var replaceWorld = (text, world, replace) => {
+  return replace === false ? (text || "").toString() : worldReplace(aliasReplace(text, world), world);
 };
 
 // src/steps.ts
@@ -3267,8 +3286,9 @@ var Steps = class {
     const list = this.list();
     const found = matcher(
       list,
-      replaceWorld(text, this._world),
-      this._world
+      replaceWorld(text, this._world, options == null ? void 0 : options.worldReplace),
+      this._world,
+      options
     );
     if (!found.match || !found.definition)
       return false;
@@ -3802,7 +3822,7 @@ var parseFeature = function(text, world, options) {
     options
   );
   const features = [];
-  const replaceText = (opts == null ? void 0 : opts.worldReplace) === false ? (text || "").toString() : replaceWorld((text || "").toString(), worldCfg);
+  const replaceText = replaceWorld((text || "").toString(), worldCfg, opts == null ? void 0 : opts.worldReplace);
   const lines = replaceText.split(RX_NEWLINE);
   let parseError2 = false;
   let feature = featureFactory(false, text);
