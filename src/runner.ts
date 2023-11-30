@@ -15,6 +15,7 @@ import type {
 import {hasTag} from './utils/hasTag'
 import { parseFeature } from './parse'
 import { ETestType, EHookType } from './types'
+import { throwMissingDef } from './utils/errors'
 import { filterFeatures } from './utils/filterFeatures'
 import { getTestMethod, skipTestsOnFail } from './utils/testMethods'
 import {
@@ -115,18 +116,19 @@ const runStep = (
   options:TParkinRunOpts=emptyOpts,
   testMode:boolean
 ) => {
-  const test = getTestMethod(ETestType.test, testMode)
-  const opts = getStepOpts(step, options)
-  const disabled = opts?.disabled || hasTag(step?.tags?.tokens, options?.tags?.disabled)
 
+  const test = getTestMethod(ETestType.test, testMode)
+  const stepOpts = getStepOpts(step, options)
+  const found = stepsInstance.match(step.step, step, stepOpts)
+  const defOpts = found ? found?.definition.meta?.test : emptyObj
+  const opts = {...defOpts, ...stepOpts}
+  const disabled = opts?.disabled || hasTag(step?.tags?.tokens, options?.tags?.disabled)
+  
   const testMethod = async () => {
+    if(!found) return throwMissingDef(step.step)
     if(disabled) return
 
-    return await stepsInstance.resolve(
-      step.step,
-      step,
-      opts
-    )
+    return await found.definition.method(...found.match)
   }
   testMethod.ParkinMetaData = {
     disabled,

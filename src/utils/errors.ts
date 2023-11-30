@@ -183,6 +183,17 @@ export const throwMissingFeatureText = () => {
 }
 
 /**
+ * Throws an error when a feature step does not match a step definition's text
+ * @function
+ * @public
+ * @throws
+ *
+ */
+export const throwMissingDef = (step:string) => {
+  throw new ParkinError(`Matching definition could not be found for step: "${step}"`)
+}
+
+/**
  * Throws an error when a feature step does not match a step definition
  * @function
  * @public
