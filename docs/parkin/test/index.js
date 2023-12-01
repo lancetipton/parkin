@@ -3412,12 +3412,13 @@ var ParkinTest = class {
   test = (description, action, meta) => {
     let retry = this.testRetry || 0;
     let timeout = this.testTimeout;
-    if ((0, import_jsutils6.isObj)(meta) && !(0, import_jsutils6.exists)(action.metaData) && !(0, import_jsutils6.exists)(action.ParkinMetaData)) {
-      action.metaData = meta;
-      if (meta == null ? void 0 : meta.timeout)
-        timeout = meta.timeout;
+    if ((0, import_jsutils6.isObj)(meta)) {
+      if (!(0, import_jsutils6.exists)(action.metaData) && !(0, import_jsutils6.exists)(action.ParkinMetaData))
+        action.metaData = meta;
       if (meta == null ? void 0 : meta.retry)
         retry = meta.retry;
+      if (meta == null ? void 0 : meta.timeout)
+        timeout = meta.timeout;
     } else if ((0, import_jsutils6.isNum)(meta))
       timeout = meta;
     if (!this.#activeParent || this.#activeParent.type === Types.root)

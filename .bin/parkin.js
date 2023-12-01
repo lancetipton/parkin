@@ -696,7 +696,7 @@ var require_noOps_b5f3c7e4 = __commonJS({
       return obj;
     };
     var noOpObj7 = Object.freeze({});
-    var emptyObj11 = noOpObj7;
+    var emptyObj12 = noOpObj7;
     var noPropObj = deepFreeze2({
       content: {}
     });
@@ -705,7 +705,7 @@ var require_noOps_b5f3c7e4 = __commonJS({
     var emptyArr8 = noPropArr2;
     exports.deepFreeze = deepFreeze2;
     exports.emptyArr = emptyArr8;
-    exports.emptyObj = emptyObj11;
+    exports.emptyObj = emptyObj12;
     exports.noOpArr = noOpArr;
     exports.noOpObj = noOpObj7;
     exports.noPropArr = noPropArr2;
@@ -2523,7 +2523,7 @@ var init_patterns = __esm({
 });
 
 // src/utils/errors.ts
-var import_jsutils4, resolveErrMsg, replaceStackMsg, ParkinError, ParkinBailError, ParkinAbortError, RetryError, throwAbortError, throwBailError, throwExitOnFailed, testMethodFill, throwMissingSteps, throwMissingHooks, throwMissingFeatureText, throwNoMatchingStep, throwParamTypeExists, throwFeatureNotAnObj, throwMissingWorldValue, throwInvalidHookType, throwWorldReplace, throwAliasReplace;
+var import_jsutils4, resolveErrMsg, replaceStackMsg, ParkinError, ParkinBailError, ParkinAbortError, RetryError, throwAbortError, throwBailError, throwExitOnFailed, testMethodFill, throwMissingSteps, throwMissingHooks, throwMissingFeatureText, throwInvalidDefParams, throwMissingDef, throwParamTypeExists, throwFeatureNotAnObj, throwMissingWorldValue, throwInvalidHookType, throwWorldReplace, throwAliasReplace;
 var init_errors = __esm({
   "src/utils/errors.ts"() {
     import_jsutils4 = __toESM(require_cjs());
@@ -2634,8 +2634,13 @@ Please ensure ${type} exists before calling the run method!
         `Runner class requires feature text when calling the run method`
       );
     };
-    throwNoMatchingStep = (text) => {
-      throw new ParkinError(text);
+    throwInvalidDefParams = (msg = ``) => {
+      throw new ParkinError(
+        `Malformed step text, could not extract the expected step definition parameters. ${msg}`.trim()
+      );
+    };
+    throwMissingDef = (step) => {
+      throw new ParkinError(`Matching definition could not be found for step: "${step}"`);
     };
     throwParamTypeExists = (name) => {
       throw new ParkinError(`Cannot register param type "${name}". It already exists!`);
@@ -2932,19 +2937,26 @@ var init_globalScope = __esm({
   }
 });
 
-// src/matcher/expression.ts
-var import_jsutils9, escapeStr, runRegexCheck, convertToRegex, checkAlternative, checkAnchors, extractParameters, findAsRegex, matchExpression;
-var init_expression = __esm({
-  "src/matcher/expression.ts"() {
-    init_regex();
-    init_patterns();
-    init_types();
+// src/utils/escapeStr.ts
+var escapeStr;
+var init_escapeStr = __esm({
+  "src/utils/escapeStr.ts"() {
     init_globalScope();
-    import_jsutils9 = __toESM(require_cjs());
-    init_paramTypes();
     escapeStr = (str) => {
       return hasWindow ? str.replace(/[|\\[\]^$+*?.]/g, "\\$&").replace(/-/g, "\\x2d") : str.replace(/[|\\[\]^$+*?.]/g, "\\$&");
     };
+  }
+});
+
+// src/matcher/checkers.ts
+var import_jsutils9, import_jsutils10, runRegexCheck, convertToRegex, checkAlternative, checkAnchors;
+var init_checkers = __esm({
+  "src/matcher/checkers.ts"() {
+    init_regex();
+    init_patterns();
+    import_jsutils9 = __toESM(require_cjs());
+    import_jsutils10 = __toESM(require_cjs());
+    init_paramTypes();
     runRegexCheck = (matcher2, testRx, replaceWith) => {
       if (!testRx.test(matcher2))
         return matcher2;
@@ -2961,7 +2973,7 @@ var init_expression = __esm({
       });
       return regexStr;
     };
-    convertToRegex = (match, opts = import_jsutils9.emptyObj) => {
+    convertToRegex = (match, opts = import_jsutils10.emptyObj) => {
       let parameter;
       let optional;
       const paramTypes = getParamTypes();
@@ -3002,7 +3014,20 @@ var init_expression = __esm({
         final += "$";
       return { regex: final };
     };
-    extractParameters = (text, stepMatcher, wordMatches, opts = import_jsutils9.emptyObj) => {
+  }
+});
+
+// src/matcher/expression.ts
+var import_jsutils11, extractParameters, findAsRegex, parseExpParams, matchExpression;
+var init_expression = __esm({
+  "src/matcher/expression.ts"() {
+    init_regex();
+    init_types();
+    import_jsutils11 = __toESM(require_cjs());
+    init_paramTypes();
+    init_escapeStr();
+    init_checkers();
+    extractParameters = (text, stepMatcher, wordMatches, opts = import_jsutils11.emptyObj) => {
       const parts = getRegexParts(stepMatcher);
       const expectedParamLength = parts.filter(
         (part) => part.type === "parameter" /* parameter */
@@ -3033,7 +3058,7 @@ var init_expression = __esm({
       );
       return opts.partial || expectedParamLength === result.params.length ? result.params : null;
     };
-    findAsRegex = (definition, text, opts = import_jsutils9.emptyObj) => {
+    findAsRegex = (definition, text, opts = import_jsutils11.emptyObj) => {
       const escaped = escapeStr(definition.match);
       const { regex: regexAlts } = checkAlternative(escaped);
       const {
@@ -3042,10 +3067,7 @@ var init_expression = __esm({
         regex: regexConverted
       } = convertToRegex(regexAlts, opts);
       const { regex: regexAnchors } = checkAnchors(regexConverted);
-      const found = matchRegex(
-        { ...definition, match: regexAnchors },
-        text
-      );
+      const found = matchRegex({ ...definition, match: regexAnchors }, text);
       return {
         found,
         escaped,
@@ -3056,7 +3078,26 @@ var init_expression = __esm({
         regexConverted
       };
     };
-    matchExpression = (definition, text, $world, opts = import_jsutils9.emptyObj) => {
+    parseExpParams = ({
+      text,
+      match,
+      $world,
+      definition,
+      transformers,
+      opts = import_jsutils11.emptyObj
+    }) => {
+      const params = extractParameters(
+        text,
+        definition.match,
+        match,
+        opts
+      );
+      if (!(params == null ? void 0 : params.length))
+        return [];
+      const converted = convertTypes(params, transformers, $world, opts.worldReplace);
+      return converted.length !== params.length ? void 0 : converted;
+    };
+    matchExpression = (definition, text, $world, opts = import_jsutils11.emptyObj) => {
       if (definition.match === text)
         return { definition, match: [] };
       const {
@@ -3065,35 +3106,36 @@ var init_expression = __esm({
         transformers
       } = findAsRegex(definition, text, opts);
       if (!found || !found.definition || !found.match && !optional)
-        return import_jsutils9.emptyObj;
-      const params = extractParameters(
+        return import_jsutils11.emptyObj;
+      if (opts.parseParams === false)
+        return { ...found, definition, transformers, optional };
+      const parsed = parseExpParams({
+        opts,
         text,
-        definition.match,
-        found.match,
-        opts
-      );
-      if (!(params == null ? void 0 : params.length))
-        return { definition, match: [] };
-      const converted = convertTypes(params, transformers, $world, opts.worldReplace);
-      return converted.length !== params.length ? import_jsutils9.emptyObj : { definition, match: converted };
+        $world,
+        definition,
+        transformers,
+        match: found.match
+      });
+      return !parsed ? import_jsutils11.emptyObj : { definition, match: parsed };
     };
   }
 });
 
 // src/matcher/matcher.ts
-var import_jsutils10, REGEX_VARIANT, Matcher, matcher;
+var import_jsutils12, REGEX_VARIANT, Matcher, matcher;
 var init_matcher = __esm({
   "src/matcher/matcher.ts"() {
     init_constants();
     init_tokens();
-    import_jsutils10 = __toESM(require_cjs());
+    import_jsutils12 = __toESM(require_cjs());
     init_regex();
     init_paramTypes();
     init_expression();
     ({ REGEX_VARIANT } = constants);
     Matcher = class {
       parkin;
-      options = import_jsutils10.emptyObj;
+      options = import_jsutils12.emptyObj;
       constructor(parkin, options2) {
         this.parkin = parkin;
         this.options = options2;
@@ -3107,7 +3149,7 @@ var init_matcher = __esm({
        */
       find = (text, definitions, $world, opts) => {
         var _a, _b, _c, _d;
-        const defs = definitions || ((_c = (_b = (_a = this.parkin) == null ? void 0 : _a.steps) == null ? void 0 : _b.list) == null ? void 0 : _c.call(_b)) || import_jsutils10.emptyArr;
+        const defs = definitions || ((_c = (_b = (_a = this.parkin) == null ? void 0 : _a.steps) == null ? void 0 : _b.list) == null ? void 0 : _c.call(_b)) || import_jsutils12.emptyArr;
         const world = $world || ((_d = this == null ? void 0 : this.parkin) == null ? void 0 : _d.world) || { $alias: {} };
         return matcher(defs, text, world, opts || this.options);
       };
@@ -3128,7 +3170,7 @@ var init_matcher = __esm({
         wordMatches,
         opts || this.options
       );
-      expression = (def, text, $world, opts = import_jsutils10.emptyObj) => {
+      expression = (def, text, $world, opts = import_jsutils12.emptyObj) => {
         var _a;
         return matchExpression(
           def,
@@ -3142,7 +3184,7 @@ var init_matcher = __esm({
         def,
         opts || this.options
       );
-      expressionFind = (def, text, opts = import_jsutils10.emptyObj) => findAsRegex(
+      expressionFind = (def, text, opts = import_jsutils12.emptyObj) => findAsRegex(
         def,
         text,
         opts || this.options
@@ -3151,9 +3193,9 @@ var init_matcher = __esm({
       types = getParamTypes;
       register = registerParamType;
     };
-    matcher = (definitions, text, $world, opts = import_jsutils10.emptyObj) => {
+    matcher = (definitions, text, $world, opts = import_jsutils12.emptyObj) => {
       if (!text.trim())
-        return import_jsutils10.emptyObj;
+        return import_jsutils12.emptyObj;
       const defLength = definitions.length;
       for (let idx = 0; idx < defLength; idx++) {
         const definition = definitions[idx];
@@ -3163,7 +3205,7 @@ var init_matcher = __esm({
         if (found.match)
           return found;
       }
-      return import_jsutils10.emptyObj;
+      return import_jsutils12.emptyObj;
     };
   }
 });
@@ -3179,11 +3221,11 @@ var init_matcher2 = __esm({
 });
 
 // src/utils/worldReplace.ts
-var import_jsutils11, ALIAS_REF2, WORLD_REF, ALIAS_WORLD_KEY2, WORLD_AT_RUNTIME, ALIAS_REF_AT_RUNTIME, attemptReplace, aliasReplace, worldReplace, replaceWorld;
+var import_jsutils13, ALIAS_REF2, WORLD_REF, ALIAS_WORLD_KEY2, WORLD_AT_RUNTIME, ALIAS_REF_AT_RUNTIME, attemptReplace, aliasReplace, worldReplace, replaceWorld;
 var init_worldReplace = __esm({
   "src/utils/worldReplace.ts"() {
     init_constants();
-    import_jsutils11 = __toESM(require_cjs());
+    import_jsutils13 = __toESM(require_cjs());
     init_errors();
     init_patterns();
     ({
@@ -3194,8 +3236,8 @@ var init_worldReplace = __esm({
       ALIAS_REF_AT_RUNTIME
     } = constants);
     attemptReplace = (match, world, location) => {
-      const replaceWith = (0, import_jsutils11.get)(world, location);
-      return (0, import_jsutils11.isFunc)(replaceWith) ? replaceWith(world, location) : (0, import_jsutils11.exists)(replaceWith) ? replaceWith : match;
+      const replaceWith = (0, import_jsutils13.get)(world, location);
+      return (0, import_jsutils13.isFunc)(replaceWith) ? replaceWith(world, location) : (0, import_jsutils13.exists)(replaceWith) ? replaceWith : match;
     };
     aliasReplace = (text, world) => {
       let currentMatch;
@@ -3232,6 +3274,20 @@ var init_worldReplace = __esm({
   }
 });
 
+// src/utils/buildDefinitionCtx.ts
+var buildDefinitionCtx;
+var init_buildDefinitionCtx = __esm({
+  "src/utils/buildDefinitionCtx.ts"() {
+    buildDefinitionCtx = (world, step, options2) => {
+      const ctx = { step, world };
+      (step == null ? void 0 : step.doc) && (ctx.doc = step == null ? void 0 : step.doc);
+      (step == null ? void 0 : step.table) && (ctx.table = step == null ? void 0 : step.table);
+      options2 && (ctx.options = options2);
+      return ctx;
+    };
+  }
+});
+
 // src/definitions/joinAllDefs.ts
 var joinAllDefs;
 var init_joinAllDefs = __esm({
@@ -3246,23 +3302,23 @@ var init_joinAllDefs = __esm({
 });
 
 // src/definitions/registerFromCall.ts
-var import_jsutils12, REGEX_VARIANT2, EXPRESSION_VARIANT, getContent, stringToRegex, registerFromCall;
+var import_jsutils14, REGEX_VARIANT2, EXPRESSION_VARIANT, getContent, stringToRegex, registerFromCall;
 var init_registerFromCall = __esm({
   "src/definitions/registerFromCall.ts"() {
     init_constants();
-    import_jsutils12 = __toESM(require_cjs());
+    import_jsutils14 = __toESM(require_cjs());
     init_helpers();
     ({ REGEX_VARIANT: REGEX_VARIANT2, EXPRESSION_VARIANT } = constants);
     getContent = (def) => {
       const match = def.variant === REGEX_VARIANT2 ? def.match.toString() : `"${def.match}"`;
-      return `${(0, import_jsutils12.capitalize)(def.type)}(${match}, ${def.method.toString()})`;
+      return `${(0, import_jsutils14.capitalize)(def.type)}(${match}, ${def.method.toString()})`;
     };
     stringToRegex = (str) => {
       const main = str.match(/\/(.+)\/.*/)[1];
       const options2 = str.match(/\/.+\/(.*)/)[1];
       return new RegExp(main, options2);
     };
-    registerFromCall = function(internalType, type, match, method, meta = import_jsutils12.noOpObj) {
+    registerFromCall = function(internalType, type, match, method, meta = import_jsutils14.noOpObj) {
       const variant = match.toString().indexOf("/") === 0 ? REGEX_VARIANT2 : EXPRESSION_VARIANT;
       const formattedMatch = variant === REGEX_VARIANT2 ? stringToRegex(match.toString()) : match.toString();
       const definition = {
@@ -3299,19 +3355,19 @@ var init_tempRegister = __esm({
 });
 
 // src/definitions/registerFromParse.ts
-var import_jsutils13, registerFromParse;
+var import_jsutils15, registerFromParse;
 var init_registerFromParse = __esm({
   "src/definitions/registerFromParse.ts"() {
     init_tempRegister();
-    import_jsutils13 = __toESM(require_cjs());
+    import_jsutils15 = __toESM(require_cjs());
     init_globalScope();
     registerFromParse = function(definitions) {
-      const DEF_TYPES = this.types.map((type) => (0, import_jsutils13.capitalize)(type));
+      const DEF_TYPES = this.types.map((type) => (0, import_jsutils15.capitalize)(type));
       const container = DEF_TYPES.reduce((built, type) => {
         built[type] = [];
         return built;
       }, {});
-      (0, import_jsutils13.eitherArr)(definitions, [definitions]).map((definition) => {
+      (0, import_jsutils15.eitherArr)(definitions, [definitions]).map((definition) => {
         Function(`return (global, require, module, ${DEF_TYPES.join(",")}) => {
           return (function(global) { ${definition} }).call(global, global)
         }`)()(
@@ -3346,15 +3402,16 @@ var init_definitions2 = __esm({
 });
 
 // src/steps.ts
-var import_jsutils14, STEP_TYPES, Steps;
+var import_jsutils16, STEP_TYPES, Steps;
 var init_steps = __esm({
   "src/steps.ts"() {
     init_matcher2();
     init_constants();
+    init_errors();
     init_worldReplace();
     init_helpers();
-    init_errors();
-    import_jsutils14 = __toESM(require_cjs());
+    init_buildDefinitionCtx();
+    import_jsutils16 = __toESM(require_cjs());
     init_definitions2();
     ({ STEP_TYPES } = constants);
     Steps = class {
@@ -3372,7 +3429,7 @@ var init_steps = __esm({
         this.types.map((type) => {
           const internalType = `_${type}`;
           this[internalType] = [];
-          this[(0, import_jsutils14.capitalize)(type)] = (match, method, meta) => {
+          this[(0, import_jsutils16.capitalize)(type)] = (match, method, meta) => {
             return self.register(internalType, type, match, method, meta);
           };
         });
@@ -3404,6 +3461,8 @@ var init_steps = __esm({
       /**
        * Finds a matching step definition from the passed in text
        * Steps must be registered with this instance to be found
+       * Includes helpers to replace the step text with content from the world
+       * And adds the step definition ctx as the last argument passed to the matching def
        * @memberof Steps
        * @function
        * @public
@@ -3419,12 +3478,27 @@ var init_steps = __esm({
         );
         if (!found.match || !found.definition)
           return false;
-        const extObj = { step, world: this._world };
-        (step == null ? void 0 : step.doc) && (extObj.doc = step == null ? void 0 : step.doc);
-        (step == null ? void 0 : step.table) && (extObj.table = step == null ? void 0 : step.table);
-        options2 && (extObj.options = options2);
-        found.match.push(extObj);
+        const ctx = buildDefinitionCtx(this._world, step, options2);
+        found.match.push(ctx);
         return found;
+      };
+      /**
+       * Finds a matching step definition from the passed in text
+       * Steps must be registered with this instance to be found
+       * @memberof Steps
+       * @function
+       * @public
+       *
+       */
+      find = (text, options2) => {
+        const list = this.list();
+        const found = matcher(
+          list,
+          text,
+          this._world,
+          options2
+        );
+        return !found.match || !found.definition ? false : found;
       };
       /**
        * Finds a matching step definition from the passed in list and text can calls it
@@ -3436,9 +3510,7 @@ var init_steps = __esm({
        */
       resolve = (text, step, options2) => {
         const found = this.match(text, step, options2);
-        return found ? found.definition.method(...found.match) : throwNoMatchingStep(
-          `Matching definition could not be found for step: "${text}"`
-        );
+        return found ? found.definition.method(...found.match) : throwMissingDef(text);
       };
       /**
        * Registers a step definition by type based on passed in args
@@ -3448,12 +3520,12 @@ var init_steps = __esm({
        *
        */
       register = (...args) => {
-        return (0, import_jsutils14.isStr)(args[0]) ? registerFromCall.apply(this, args) : registerFromParse.apply(this, args);
+        return (0, import_jsutils16.isStr)(args[0]) ? registerFromCall.apply(this, args) : registerFromParse.apply(this, args);
       };
       add = (...defs) => {
         const definitions = this.list();
         defs.forEach((def) => {
-          const defsObj = (0, import_jsutils14.isArr)(def) || (def == null ? void 0 : def.match) && (def == null ? void 0 : def.uuid) ? (0, import_jsutils14.ensureArr)(def) : def;
+          const defsObj = (0, import_jsutils16.isArr)(def) || (def == null ? void 0 : def.match) && (def == null ? void 0 : def.uuid) ? (0, import_jsutils16.ensureArr)(def) : def;
           Object.values(defsObj).map((def2) => {
             if (!def2.type)
               return console.warn(`A definition type is required when adding a definition`, def2);
@@ -3478,18 +3550,18 @@ var init_steps = __esm({
 });
 
 // src/hooks.ts
-var import_jsutils15, HOOK_TYPES, Hooks;
+var import_jsutils17, HOOK_TYPES, Hooks;
 var init_hooks = __esm({
   "src/hooks.ts"() {
     init_constants();
     init_errors();
-    import_jsutils15 = __toESM(require_cjs());
+    import_jsutils17 = __toESM(require_cjs());
     ({ HOOK_TYPES } = constants);
     Hooks = class {
-      afterAll = import_jsutils15.noOp;
-      beforeAll = import_jsutils15.noOp;
-      afterEach = import_jsutils15.noOp;
-      beforeEach = import_jsutils15.noOp;
+      afterAll = import_jsutils17.noOp;
+      beforeAll = import_jsutils17.noOp;
+      afterEach = import_jsutils17.noOp;
+      beforeEach = import_jsutils17.noOp;
       /**
        * Allowed hook types
        * @memberof Hooks
@@ -3509,7 +3581,7 @@ var init_hooks = __esm({
         this.instance = instance;
         this.types.map((type) => {
           this[type] = (clientHookFn) => {
-            if (!(0, import_jsutils15.isFunc)(clientHookFn))
+            if (!(0, import_jsutils17.isFunc)(clientHookFn))
               return;
             this._registeredHooks[type] = this._registeredHooks[type] || [];
             this._registeredHooks[type].push(clientHookFn);
@@ -3520,7 +3592,7 @@ var init_hooks = __esm({
        * Gets the registered hook callback method based on the passed in type
        */
       getRegistered = (type) => {
-        const foundHooks = this.types.includes(type) ? this._registeredHooks[type] || import_jsutils15.noPropArr : throwInvalidHookType(HOOK_TYPES.join(", "), type);
+        const foundHooks = this.types.includes(type) ? this._registeredHooks[type] || import_jsutils17.noPropArr : throwInvalidHookType(HOOK_TYPES.join(", "), type);
         if (!foundHooks)
           return;
         return foundHooks.length ? async () => {
@@ -3528,24 +3600,24 @@ var init_hooks = __esm({
             await toResolve;
             return await hook(this.instance);
           }, Promise.resolve());
-        } : import_jsutils15.noOp;
+        } : import_jsutils17.noOp;
       };
     };
   }
 });
 
 // src/utils/hasTag.ts
-var import_jsutils16, parseTags, hasTag;
+var import_jsutils18, parseTags, hasTag;
 var init_hasTag = __esm({
   "src/utils/hasTag.ts"() {
-    import_jsutils16 = __toESM(require_cjs());
+    import_jsutils18 = __toESM(require_cjs());
     parseTags = (tags) => {
-      const parsed = (0, import_jsutils16.isStr)(tags) ? tags.match(/([@](\w|-)*)/g) : (0, import_jsutils16.isArr)(tags) ? tags : import_jsutils16.emptyArr;
-      return parsed.filter((tag) => (0, import_jsutils16.isStr)(tag) && tag.startsWith(`@`) && tag.length > 2);
+      const parsed = (0, import_jsutils18.isStr)(tags) ? tags.match(/([@](\w|-)*)/g) : (0, import_jsutils18.isArr)(tags) ? tags : import_jsutils18.emptyArr;
+      return parsed.filter((tag) => (0, import_jsutils18.isStr)(tag) && tag.startsWith(`@`) && tag.length > 2);
     };
-    hasTag = (itemTags = import_jsutils16.emptyArr, compareTags = import_jsutils16.emptyArr) => {
-      const iTags = (0, import_jsutils16.isStr)(itemTags) ? parseTags(itemTags) : (0, import_jsutils16.eitherArr)(itemTags, []);
-      const cTags = (0, import_jsutils16.isStr)(compareTags) ? parseTags(compareTags) : (0, import_jsutils16.eitherArr)(compareTags, []);
+    hasTag = (itemTags = import_jsutils18.emptyArr, compareTags = import_jsutils18.emptyArr) => {
+      const iTags = (0, import_jsutils18.isStr)(itemTags) ? parseTags(itemTags) : (0, import_jsutils18.eitherArr)(itemTags, []);
+      const cTags = (0, import_jsutils18.isStr)(compareTags) ? parseTags(compareTags) : (0, import_jsutils18.eitherArr)(compareTags, []);
       return Boolean(cTags.find((cTag) => iTags.includes(cTag)));
     };
   }
@@ -3567,11 +3639,11 @@ var init_idFromIdx = __esm({
 });
 
 // src/parse/parseStep.ts
-var RX_STEP, RX_GIVEN, RX_WHEN, RX_THEN, RX_AND, RX_BUT, RX_ASTERISK, RX_DOC_QUOTES, RX_DOC_TICKS, RX_DATA_TABLE, RegStepItems, checkDataTable, checkDocString, stepFactory, parseStep;
+var RX_STEP, RX_GIVEN, RX_WHEN, RX_THEN, RX_AND, RX_BUT, RX_ASTERISK, RX_DOC_QUOTES, RX_DOC_TICKS, RX_DATA_TABLE, RX_COMMENT, RegStepItems, findValidLineIdx, getAfterLines, checkDataTable, checkDocString, stepFactory, parseStep;
 var init_parseStep = __esm({
   "src/parse/parseStep.ts"() {
-    init_types();
     init_idFromIdx();
+    init_types();
     init_helpers();
     RX_STEP = /^\s*Step\s*(.*)$/;
     RX_GIVEN = /^\s*Given\s*(.*)$/;
@@ -3583,6 +3655,7 @@ var init_parseStep = __esm({
     RX_DOC_QUOTES = /^\s*?"""\s*?/;
     RX_DOC_TICKS = /^\s*?```\s*?/;
     RX_DATA_TABLE = /^\s*?\|/;
+    RX_COMMENT = /^\s*#(.*)$/;
     RegStepItems = [
       { regex: RX_STEP, type: "step" /* step */ },
       { regex: RX_GIVEN, type: "given" /* given */ },
@@ -3592,12 +3665,29 @@ var init_parseStep = __esm({
       { regex: RX_BUT, type: "but" /* but */ },
       { regex: RX_ASTERISK, type: "*" /* * */ }
     ];
+    findValidLineIdx = (index, lines) => {
+      const line = lines[index];
+      if (!line)
+        return void 0;
+      const notComment = !RX_COMMENT.test(line);
+      const notEmpty = Boolean(line.trim().length);
+      return notComment && notEmpty ? index : findValidLineIdx(index + 1, lines);
+    };
+    getAfterLines = (index, lines) => {
+      const idx = findValidLineIdx(index, lines);
+      return !idx ? {} : {
+        nextIndex: idx,
+        nextLine: lines[idx],
+        afterLines: lines.slice(idx)
+      };
+    };
     checkDataTable = (step, lines, line, index) => {
       if (!RX_DATA_TABLE.test(line))
         return step;
       let tableEnd;
       step.table = {
         index,
+        whitespace: line.split(`|`)[0],
         content: lines.reduce((table, ln) => {
           tableEnd = tableEnd || !RX_DATA_TABLE.test(ln);
           !tableEnd && table.push(
@@ -3613,17 +3703,17 @@ var init_parseStep = __esm({
       return step;
     };
     checkDocString = (step, lines, line, index) => {
-      let docMatch = RX_DOC_QUOTES.test(line) && '"""';
-      docMatch = docMatch || RX_DOC_TICKS.test(line) && "```";
+      let docMatch = RX_DOC_QUOTES.test(line) && '"""' /* quotes */;
+      docMatch = docMatch || RX_DOC_TICKS.test(line) && "```" /* ticks */;
       if (!docMatch)
         return step;
-      const whiteSpace = line.split(docMatch)[0];
-      const spacer = new Array(whiteSpace.length).fill("\\s").join("");
+      const whitespace = line.split(docMatch)[0];
+      const spacer = new Array(whitespace.length).fill("\\s").join("");
       const spacerRegex = new RegExp(`^${spacer}`);
       step.doc = {
         index,
-        whiteSpace,
-        type: docMatch === `"""` ? `quote` : `tick`,
+        whitespace,
+        type: docMatch === '"""' /* quotes */ ? "quote" /* quote */ : "tick" /* tick */,
         // Split the passed in lines on the matching doc-string identifier
         // Then pull the second element from the array
         // Which is the content between the opening and closing doc-string identifiers
@@ -3648,9 +3738,13 @@ var init_parseStep = __esm({
           index: ((_a = parent == null ? void 0 : parent.steps) == null ? void 0 : _a.length) || 0
         })
       };
-      const nextIndex = index + 1;
-      const nextLine = lines[nextIndex];
-      const afterLines = lines.slice(nextIndex);
+      const {
+        nextLine,
+        nextIndex,
+        afterLines
+      } = getAfterLines(index + 1, lines);
+      if (!nextIndex)
+        return step;
       step = checkDataTable(step, afterLines, nextLine, nextIndex);
       step = checkDocString(step, afterLines.join("\n"), nextLine, nextIndex);
       return step;
@@ -3832,11 +3926,11 @@ var init_ensureFeature = __esm({
 });
 
 // src/parse/ensureScenario.ts
-var import_jsutils17, RX_SCENARIO2, RX_EXAMPLE2, scenarioFactory, ensureScenario;
+var import_jsutils19, RX_SCENARIO2, RX_EXAMPLE2, scenarioFactory, ensureScenario;
 var init_ensureScenario = __esm({
   "src/parse/ensureScenario.ts"() {
     init_idFromIdx();
-    import_jsutils17 = __toESM(require_cjs());
+    import_jsutils19 = __toESM(require_cjs());
     init_types();
     init_helpers();
     RX_SCENARIO2 = /^\s*Scenario:(.*)$/;
@@ -3860,7 +3954,7 @@ var init_ensureScenario = __esm({
       if (!hasScenario && !hasExample)
         return scenario;
       const scenarioText = hasScenario ? getRXMatch(line, RX_SCENARIO2, 1) : getRXMatch(line, RX_EXAMPLE2, 1);
-      !(0, import_jsutils17.exists)(scenario.scenario) ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText, void 0, index);
+      !(0, import_jsutils19.exists)(scenario.scenario) ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText, void 0, index);
       !scenario.index && (scenario.index = index);
       scenario.whitespace = getStartWhiteSpace(line);
       if (!hasScenario)
@@ -3878,12 +3972,12 @@ var init_ensureScenario = __esm({
 });
 
 // src/parse/ensureBackground.ts
-var import_jsutils18, RX_BACKGROUND2, backgroundFactory, ensureBackground;
+var import_jsutils20, RX_BACKGROUND2, backgroundFactory, ensureBackground;
 var init_ensureBackground = __esm({
   "src/parse/ensureBackground.ts"() {
     init_types();
     init_idFromIdx();
-    import_jsutils18 = __toESM(require_cjs());
+    import_jsutils20 = __toESM(require_cjs());
     init_helpers();
     RX_BACKGROUND2 = /^\s*Background:(.*)$/;
     backgroundFactory = (background, parent, index) => {
@@ -3901,8 +3995,8 @@ var init_ensureBackground = __esm({
         return background;
       const existingBgText = getRXMatch(line, RX_BACKGROUND2, 1);
       const parent = (rule == null ? void 0 : rule.uuid) ? rule : feature;
-      const backgroundText = (0, import_jsutils18.isStr)(existingBgText) ? existingBgText.trim() : "";
-      (0, import_jsutils18.isBool)(background.background) ? background.background = backgroundText : background = backgroundFactory(backgroundText, parent, index);
+      const backgroundText = (0, import_jsutils20.isStr)(existingBgText) ? existingBgText.trim() : "";
+      (0, import_jsutils20.isBool)(background.background) ? background.background = backgroundText : background = backgroundFactory(backgroundText, parent, index);
       !background.index && (background.index = index);
       !background.uuid && (background.uuid = idFromIdx({
         parent,
@@ -3917,15 +4011,15 @@ var init_ensureBackground = __esm({
 });
 
 // src/parse/ensureMeta.ts
-var import_jsutils19, RX_AS, RX_COMMENT, RX_I_WANT, RX_SO_THAT, RX_IN_ORDER, featureMetaItems, addReason, featureMeta, featureComment, featureEmptyLine;
+var import_jsutils21, RX_AS, RX_COMMENT2, RX_I_WANT, RX_SO_THAT, RX_IN_ORDER, featureMetaItems, addReason, featureMeta, featureComment, featureEmptyLine;
 var init_ensureMeta = __esm({
   "src/parse/ensureMeta.ts"() {
     init_types();
     init_idFromIdx();
-    import_jsutils19 = __toESM(require_cjs());
+    import_jsutils21 = __toESM(require_cjs());
     init_helpers();
     RX_AS = /^\s*As (.*)$/;
-    RX_COMMENT = /^\s*#(.*)$/;
+    RX_COMMENT2 = /^\s*#(.*)$/;
     RX_I_WANT = /^\s*I want (.*)$/;
     RX_SO_THAT = /^\s*So that (.*)$/;
     RX_IN_ORDER = /^\s*In order (.*)$/;
@@ -3938,7 +4032,7 @@ var init_ensureMeta = __esm({
     addReason = (feature, reason, line, index) => {
       if (!reason)
         return;
-      const reasonArr = (0, import_jsutils19.eitherArr)(feature.reason, [feature.reason]);
+      const reasonArr = (0, import_jsutils21.eitherArr)(feature.reason, [feature.reason]);
       reasonArr.push({
         index,
         content: reason,
@@ -3977,9 +4071,9 @@ var init_ensureMeta = __esm({
     };
     featureComment = (feature, line, index) => {
       var _a;
-      if (!RX_COMMENT.test(line))
+      if (!RX_COMMENT2.test(line))
         return false;
-      const comment = line.match(RX_COMMENT)[0];
+      const comment = line.match(RX_COMMENT2)[0];
       feature.comments.push({
         index,
         content: comment.trim(),
@@ -4014,12 +4108,12 @@ var init_ensureMeta = __esm({
 });
 
 // src/parse/parseFeature.ts
-var import_jsutils20, RX_NEWLINE, defWorld, resolveArgs, parseFeature;
+var import_jsutils22, RX_NEWLINE, defWorld, resolveArgs, parseFeature;
 var init_parseFeature = __esm({
   "src/parse/parseFeature.ts"() {
     init_parseStep();
     init_checkTags();
-    import_jsutils20 = __toESM(require_cjs());
+    import_jsutils22 = __toESM(require_cjs());
     init_setActiveParent();
     init_worldReplace();
     init_ensureRule();
@@ -4030,10 +4124,10 @@ var init_parseFeature = __esm({
     RX_NEWLINE = /\r?\n/g;
     defWorld = { $alias: {} };
     resolveArgs = (pWorld, world, options2) => {
-      const isOpts = !options2 && !(world == null ? void 0 : world.$alias) && (0, import_jsutils20.exists)(world == null ? void 0 : world.worldReplace);
+      const isOpts = !options2 && !(world == null ? void 0 : world.$alias) && (0, import_jsutils22.exists)(world == null ? void 0 : world.worldReplace);
       return {
         worldCfg: isOpts ? pWorld : world,
-        opts: isOpts ? world : options2 || import_jsutils20.emptyObj
+        opts: isOpts ? world : options2 || import_jsutils22.emptyObj
       };
     };
     parseFeature = function(text, world, options2) {
@@ -4114,11 +4208,11 @@ var init_parse = __esm({
 });
 
 // src/utils/filterFeatures.ts
-var import_jsutils21, emptyOpts, filterMatch, getFilterOpts, filterChild, filterFeatures;
+var import_jsutils23, emptyOpts, filterMatch, getFilterOpts, filterChild, filterFeatures;
 var init_filterFeatures = __esm({
   "src/utils/filterFeatures.ts"() {
     init_hasTag();
-    import_jsutils21 = __toESM(require_cjs());
+    import_jsutils23 = __toESM(require_cjs());
     emptyOpts = { tags: {}, steps: {} };
     filterMatch = ({
       name,
@@ -4137,21 +4231,21 @@ var init_filterFeatures = __esm({
       var _a;
       const { name } = opts;
       const filterTags = (_a = opts.tags) == null ? void 0 : _a.filter;
-      const tags = (0, import_jsutils21.isStr)(filterTags) ? parseTags(filterTags) : (0, import_jsutils21.eitherArr)(filterTags, []);
+      const tags = (0, import_jsutils23.isStr)(filterTags) ? parseTags(filterTags) : (0, import_jsutils23.eitherArr)(filterTags, []);
       return { name, tags };
     };
     filterChild = ({
       options: options2,
       nameKey,
       children,
-      tags = import_jsutils21.emptyArr
+      tags = import_jsutils23.emptyArr
     }) => {
       return children.filter((child) => {
         var _a;
         return filterMatch({
           options: options2,
           name: child[nameKey],
-          tags: [...((_a = child == null ? void 0 : child.tags) == null ? void 0 : _a.tokens) || import_jsutils21.emptyArr, ...tags]
+          tags: [...((_a = child == null ? void 0 : child.tags) == null ? void 0 : _a.tokens) || import_jsutils23.emptyArr, ...tags]
         });
       });
     };
@@ -4173,7 +4267,7 @@ var init_filterFeatures = __esm({
         }
         const { rules, scenarios, background, ...rest } = feature;
         const copy = { ...rest, rules: [], scenarios: [] };
-        const matchingBackground = (0, import_jsutils21.exists)(background) && filterChild({
+        const matchingBackground = (0, import_jsutils23.exists)(background) && filterChild({
           options: options2,
           nameKey: `background`,
           children: [background],
@@ -4207,18 +4301,18 @@ var init_filterFeatures = __esm({
 });
 
 // src/utils/testMethods.ts
-var import_jsutils22, SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV, logResultToTerminal, getSuiteData, getTestMethod, buildReporter, skipTestsOnFail;
+var import_jsutils24, SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV, logResultToTerminal, getSuiteData, getTestMethod, buildReporter, skipTestsOnFail;
 var init_testMethods = __esm({
   "src/utils/testMethods.ts"() {
     init_types();
     init_constants();
     init_errors();
-    import_jsutils22 = __toESM(require_cjs());
+    import_jsutils24 = __toESM(require_cjs());
     init_globalScope();
     ({ SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV } = constants);
     logResultToTerminal = (result) => {
       const timestamp = (/* @__PURE__ */ new Date()).getTime();
-      (0, import_jsutils22.get)(process, `env.${LOG_JEST_SPEC_ENV}`) && process.stdout.write(
+      (0, import_jsutils24.get)(process, `env.${LOG_JEST_SPEC_ENV}`) && process.stdout.write(
         [
           SPEC_RESULT_LOG,
           JSON.stringify({ ...result, timestamp }),
@@ -4227,7 +4321,7 @@ var init_testMethods = __esm({
       );
     };
     getSuiteData = (suite) => {
-      const description = (0, import_jsutils22.get)(suite, `description`);
+      const description = (0, import_jsutils24.get)(suite, `description`);
       const type = !description ? `Feature` : description.startsWith(`Scenario >`) ? `Scenario` : description.startsWith(`Background >`) ? `Background` : description.startsWith(`Rule >`) ? `Rule` : `Feature`;
       return {
         type: type.toLowerCase(),
@@ -4238,7 +4332,7 @@ var init_testMethods = __esm({
       };
     };
     getTestMethod = (type, testMode) => {
-      return testMode ? import_jsutils22.noOp : global[type] || testMethodFill(type);
+      return testMode ? import_jsutils24.noOp : global[type] || testMethodFill(type);
     };
     buildReporter = (jasmineEnv) => {
       const suites = [];
@@ -4296,57 +4390,76 @@ var init_testMethods = __esm({
 });
 
 // src/runner.ts
-var import_jsutils23, emptyOpts2, getStepOpts, buildTitle, resolveFeatures, runStep, loopSteps, runScenario, runBackground, runRule, Runner;
+var import_jsutils25, emptyOpts2, getStepOpts, buildTitle, resolveFeatures, runStep, loopSteps, runScenario, runBackground, runRule, Runner;
 var init_runner = __esm({
   "src/runner.ts"() {
     init_hasTag();
     init_parse();
     init_types();
+    init_expression();
     init_filterFeatures();
+    init_buildDefinitionCtx();
     init_testMethods();
     init_errors();
-    import_jsutils23 = __toESM(require_cjs());
+    init_errors();
+    import_jsutils25 = __toESM(require_cjs());
     emptyOpts2 = { tags: {}, steps: {} };
     getStepOpts = (step, options2 = emptyOpts2) => {
       var _a, _b;
       const shared = (_a = options2 == null ? void 0 : options2.steps) == null ? void 0 : _a.shared;
       const single = (_b = options2 == null ? void 0 : options2.steps) == null ? void 0 : _b[step == null ? void 0 : step.uuid];
-      return {
-        ...shared,
-        ...single,
-        retry: (single == null ? void 0 : single.retry) || (shared == null ? void 0 : shared.retry) || (options2 == null ? void 0 : options2.retry) || 0,
-        timeout: (single == null ? void 0 : single.timeout) || (shared == null ? void 0 : shared.timeout) || (options2 == null ? void 0 : options2.timeout) || 15e3
-      };
+      const retry = (single == null ? void 0 : single.retry) || (shared == null ? void 0 : shared.retry) || (options2 == null ? void 0 : options2.retry);
+      const timeout = (single == null ? void 0 : single.timeout) || (shared == null ? void 0 : shared.timeout) || (options2 == null ? void 0 : options2.timeout);
+      const joined = { ...shared, ...single };
+      if (retry)
+        joined.retry = retry;
+      if (timeout)
+        joined.timeout = timeout;
+      return joined;
     };
-    buildTitle = (text, type) => {
-      return `${(0, import_jsutils23.capitalize)(type)} > ${text}`;
-    };
+    buildTitle = (text, type) => `${(0, import_jsutils25.capitalize)(type)} > ${text}`;
     resolveFeatures = (data, $world) => {
-      return (0, import_jsutils23.isStr)(data) ? parseFeature(data, $world) : (0, import_jsutils23.isObj)(data) ? [data] : (0, import_jsutils23.isArr)(data) ? data.reduce(
+      return (0, import_jsutils25.isStr)(data) ? parseFeature(data, $world) : (0, import_jsutils25.isObj)(data) ? [data] : (0, import_jsutils25.isArr)(data) ? data.reduce(
         (features, feature) => features.concat(resolveFeatures(feature, $world)),
         []
       ) : throwMissingFeatureText();
     };
     runStep = (stepsInstance, step, options2 = emptyOpts2, testMode) => {
-      var _a, _b, _c;
+      var _a, _b, _c, _d, _e;
       const test = getTestMethod("test" /* test */, testMode);
-      const opts = getStepOpts(step, options2);
-      const disabled = (opts == null ? void 0 : opts.disabled) || hasTag((_a = step == null ? void 0 : step.tags) == null ? void 0 : _a.tokens, (_b = options2 == null ? void 0 : options2.tags) == null ? void 0 : _b.disabled);
+      const stepOpts = getStepOpts(step, options2);
+      const found = stepsInstance.find(step.step, { ...stepOpts, parseParams: false });
+      const defOpts = found ? (_a = found == null ? void 0 : found.definition.meta) == null ? void 0 : _a.test : import_jsutils25.emptyObj;
+      const opts = { ...defOpts, ...stepOpts };
+      const disabled = (opts == null ? void 0 : opts.disabled) || hasTag((_b = step == null ? void 0 : step.tags) == null ? void 0 : _b.tokens, (_c = options2 == null ? void 0 : options2.tags) == null ? void 0 : _c.disabled);
       const testMethod = async () => {
+        if (!found)
+          return throwMissingDef(step.step);
         if (disabled)
           return;
-        return await stepsInstance.resolve(
-          step.step,
-          step,
-          opts
-        );
+        const parsed = parseExpParams({
+          opts,
+          text: step.step,
+          match: found.match,
+          definition: found.definition,
+          $world: stepsInstance._world,
+          transformers: found.transformers
+        });
+        if (!parsed)
+          return throwInvalidDefParams(`
+Step text: "${step.step}"`);
+        const ctx = buildDefinitionCtx(stepsInstance._world, step, opts);
+        parsed.push(ctx);
+        return await found.definition.method(...parsed);
       };
       testMethod.ParkinMetaData = {
         disabled,
-        ...(0, import_jsutils23.pickKeys)(step, [`uuid`, `step`, `index`, `tags`, `type`, `definition`])
+        ...(0, import_jsutils25.pickKeys)(step, [`uuid`, `step`, `index`, `tags`, `type`, `definition`])
       };
-      const last = ((_c = process == null ? void 0 : process.env) == null ? void 0 : _c.JEST_WORKER_ID) !== void 0 ? opts.timeout : opts;
-      return test(`${(0, import_jsutils23.capitalize)(step.type)} ${step.step}`, testMethod, last);
+      const inJest = ((_d = process == null ? void 0 : process.env) == null ? void 0 : _d.JEST_WORKER_ID) !== void 0;
+      const jestOverride = ((_e = process == null ? void 0 : process.env) == null ? void 0 : _e.JEST_FORCE_OVERRIDE) !== void 0;
+      const last = inJest && !jestOverride ? opts.timeout : opts;
+      return test(`${(0, import_jsutils25.capitalize)(step.type)} ${step.step}`, testMethod, last);
     };
     loopSteps = (parent, title, stepsInstance, options2 = emptyOpts2, testMode) => {
       var _a, _b;
@@ -4359,7 +4472,7 @@ var init_runner = __esm({
       };
       describeMethod.ParkinMetaData = {
         disabled,
-        ...(0, import_jsutils23.pickKeys)(parent, [`index`, `uuid`, `tags`, `type`, `background`, `scenario`])
+        ...(0, import_jsutils25.pickKeys)(parent, [`index`, `uuid`, `tags`, `type`, `background`, `scenario`])
       };
       return describe2(title, describeMethod);
     };
@@ -4405,7 +4518,7 @@ var init_runner = __esm({
       };
       describeMethod.ParkinMetaData = {
         disabled,
-        ...(0, import_jsutils23.pickKeys)(
+        ...(0, import_jsutils25.pickKeys)(
           rule,
           [`index`, `uuid`, `tags`, `type`, `rule`]
         )
@@ -4495,7 +4608,7 @@ var init_runner = __esm({
           };
           describeMethod.ParkinMetaData = {
             disabled,
-            ...(0, import_jsutils23.pickKeys)(
+            ...(0, import_jsutils25.pickKeys)(
               feature,
               [`index`, `uuid`, `tags`, `feature`, `type`, `errors`]
             )
@@ -4509,20 +4622,20 @@ var init_runner = __esm({
 });
 
 // src/assemble/helpers.ts
-var import_jsutils24, formatAssembled, addContent, getWhiteSpace, getTextContent;
+var import_jsutils26, formatAssembled, addContent, getWhiteSpace, getTextContent;
 var init_helpers2 = __esm({
   "src/assemble/helpers.ts"() {
-    import_jsutils24 = __toESM(require_cjs());
+    import_jsutils26 = __toESM(require_cjs());
     formatAssembled = (assembled) => {
-      return Array.from(assembled, (line) => (0, import_jsutils24.exists)(line) ? `${line.trimEnd()}
+      return Array.from(assembled, (line) => (0, import_jsutils26.exists)(line) ? `${line.trimEnd()}
 ` : "\n").join("").trimEnd().concat(` `, `
 `);
     };
     addContent = (assembled, content, index) => {
-      !(0, import_jsutils24.exists)(index) || index === false ? assembled.push(content) : (0, import_jsutils24.exists)(assembled[index]) ? assembled.splice(index, 0, content) : assembled[index] = content;
+      !(0, import_jsutils26.exists)(index) || index === false ? assembled.push(content) : (0, import_jsutils26.exists)(assembled[index]) ? assembled.splice(index, 0, content) : assembled[index] = content;
     };
     getWhiteSpace = (ast, parent, def = ``) => {
-      return (0, import_jsutils24.exists)(ast.whitespace) ? ast.whitespace : (0, import_jsutils24.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent == null ? void 0 : parent.whitespace}${def}` : def;
+      return (0, import_jsutils26.exists)(ast.whitespace) ? ast.whitespace : (0, import_jsutils26.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent == null ? void 0 : parent.whitespace}${def}` : def;
     };
     getTextContent = (ast, parent, type, def = ``) => {
       const content = ast[ast.type] || ``;
@@ -4534,10 +4647,11 @@ var init_helpers2 = __esm({
 });
 
 // src/assemble/assembleParts.ts
-var import_jsutils25, assembleFeature, assembleStep, assembleTags, assembleRule, assembleBackground, assembleScenario, assembleBlock;
+var import_jsutils27, assembleFeature, assembleStepDoc, assembleStepTable, assembleStep, assembleTags, assembleRule, assembleBackground, assembleScenario, assembleBlock;
 var init_assembleParts = __esm({
   "src/assemble/assembleParts.ts"() {
-    import_jsutils25 = __toESM(require_cjs());
+    init_types();
+    import_jsutils27 = __toESM(require_cjs());
     init_types();
     init_helpers2();
     assembleFeature = (assembled, { ast, parent }) => {
@@ -4548,19 +4662,56 @@ var init_assembleParts = __esm({
         feature.index
       );
     };
+    assembleStepDoc = (assembled, step) => {
+      const { doc, whitespace: ws } = step;
+      const docPrefix = doc.type === "tick" /* tick */ ? "```" /* ticks */ : '"""' /* quotes */;
+      const whitespace = doc.whitespace ?? getWhiteSpace(doc, step, (0, import_jsutils27.exists)(ws) ? ws : `      `);
+      addContent(assembled, `${whitespace}${docPrefix}`, doc.index);
+      const lines = doc.content.split(`
+`).map((line, idx) => addContent(assembled, `${whitespace}  ${line}`, doc.index + idx + 1));
+      addContent(assembled, `${whitespace}${docPrefix}`, doc.index + lines.length + 1);
+    };
+    assembleStepTable = (assembled, step) => {
+      const { table, whitespace: ws } = step;
+      const whitespace = table.whitespace ?? getWhiteSpace(table, step, (0, import_jsutils27.exists)(ws) ? ws : `      `);
+      const colLengths = {};
+      table.content.forEach((row, idx) => {
+        row.forEach((col, cIdx) => {
+          const ref = `${cIdx}`;
+          const cur = colLengths[ref];
+          const local = col.length;
+          if (!cur || cur < local)
+            colLengths[ref] = local;
+        });
+      });
+      table.content.forEach((row, idx) => {
+        const joined = [];
+        row.forEach((col, cIdx) => {
+          const ref = `${cIdx}`;
+          const cur = colLengths[ref];
+          const local = col.length;
+          if (cur > local) {
+            const diff = cur - local;
+            const add = new Array(diff).fill(" ").join("");
+            joined.push(`${col}${add}`);
+          } else
+            joined.push(col);
+        });
+        addContent(assembled, `${whitespace}| ${joined.join(` | `)} |`, table.index + idx);
+      });
+    };
     assembleStep = (assembled, { ast, parent }) => {
       const step = ast;
       const whitespace = getWhiteSpace(
         step,
         parent,
-        (0, import_jsutils25.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent == null ? void 0 : parent.whitespace}  ` : `    `
+        (0, import_jsutils27.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent == null ? void 0 : parent.whitespace}  ` : `    `
       );
-      const type = step.type !== "step" /* step */ ? (0, import_jsutils25.capitalize)(step.type) : `Step`;
-      addContent(
-        assembled,
-        `${whitespace}${type} ${step.step || ``}`,
-        step.index
-      );
+      const type = step.type !== "step" /* step */ ? (0, import_jsutils27.capitalize)(step.type) : `Step`;
+      const text = `${whitespace}${type} ${step.step || ``}`;
+      addContent(assembled, text, step.index);
+      step.doc && assembleStepDoc(assembled, step);
+      step.table && assembleStepTable(assembled, step);
     };
     assembleTags = (assembled, { ast, parent }) => {
       const tags = ast;
@@ -4619,6 +4770,8 @@ var init_fromIndex = __esm({
     init_assembleParts();
     fromIndex = (indexes) => {
       const assembled = indexes.reduce((assembled2, item) => {
+        if (!item)
+          return assembled2;
         switch (item.ast.type) {
           case "given" /* given */:
           case "when" /* when */:
@@ -4668,11 +4821,11 @@ var init_fromIndex = __esm({
 });
 
 // src/assemble/formatters.ts
-var import_jsutils26, ensureBackgroundFirst, addEmptyLine, formatStory, formatOptions, formatSteps, formatBackground, formatScenarios, formatRules, formatFeature;
+var import_jsutils28, ensureBackgroundFirst, addEmptyLine, formatStory, formatOptions, formatSteps, formatBackground, formatScenarios, formatRules, formatFeature;
 var init_formatters = __esm({
   "src/assemble/formatters.ts"() {
     init_ensureMeta();
-    import_jsutils26 = __toESM(require_cjs());
+    import_jsutils28 = __toESM(require_cjs());
     ensureBackgroundFirst = (parent, opts) => {
       if (!opts.backgroundAfterParent)
         return parent;
@@ -4693,11 +4846,11 @@ var init_formatters = __esm({
       featureEmptyLine(feature, ``, idx + 1);
       return feature;
     };
-    formatStory = (feature, opts = import_jsutils26.emptyObj) => {
+    formatStory = (feature, opts = import_jsutils28.emptyObj) => {
       const { desire, perspective, reason } = feature;
       let lastIdx = feature.index;
       if (reason)
-        (0, import_jsutils26.isArr)(reason) ? (0, import_jsutils26.ensureArr)(reason).forEach((res) => lastIdx = res.index > lastIdx ? res.index : lastIdx) : lastIdx = reason.index;
+        (0, import_jsutils28.isArr)(reason) ? (0, import_jsutils28.ensureArr)(reason).forEach((res) => lastIdx = res.index > lastIdx ? res.index : lastIdx) : lastIdx = reason.index;
       else if (desire)
         lastIdx = desire.index;
       else if (perspective)
@@ -4705,7 +4858,7 @@ var init_formatters = __esm({
       addEmptyLine(feature, lastIdx, opts);
       return feature;
     };
-    formatOptions = (feature, opts = import_jsutils26.emptyObj) => {
+    formatOptions = (feature, opts = import_jsutils28.emptyObj) => {
       const keys = [];
       const {
         removeEmpty,
@@ -4715,7 +4868,7 @@ var init_formatters = __esm({
       } = opts;
       removeEmpty && keys.push(`empty`);
       removeComments && keys.push(`comments`);
-      const updated = (0, import_jsutils26.omitKeys)(feature, keys);
+      const updated = (0, import_jsutils28.omitKeys)(feature, keys);
       if (emptyAfterStory || emptyAfterFeature)
         !emptyAfterStory ? addEmptyLine(updated, updated.index, opts) : formatStory(updated, opts);
       return updated;
@@ -4764,7 +4917,7 @@ var init_formatters = __esm({
       }, []);
       return { ...feature, rules };
     };
-    formatFeature = (feature, opts = import_jsutils26.emptyObj) => {
+    formatFeature = (feature, opts = import_jsutils28.emptyObj) => {
       let updated = formatOptions(feature, opts);
       updated = formatBackground(updated, updated, opts);
       updated = formatRules(updated, opts);
@@ -4775,12 +4928,12 @@ var init_formatters = __esm({
 });
 
 // src/assemble/findIndex.ts
-var import_jsutils27, AstTypeMap, checkBlocks, validateIndex, validObj, validArr, indexFromBlocks, indexFromStory, indexFromBackground, indexFromRule, indexFromScenarios, indexFromSteps, findIndex;
+var import_jsutils29, AstTypeMap, checkBlocks, validateIndex, validObj, validArr, indexFromBlocks, indexFromStory, indexFromBackground, indexFromRule, indexFromScenarios, indexFromSteps, findIndex;
 var init_findIndex = __esm({
   "src/assemble/findIndex.ts"() {
     init_types();
     init_types();
-    import_jsutils27 = __toESM(require_cjs());
+    import_jsutils29 = __toESM(require_cjs());
     AstTypeMap = {
       ...EAstObject,
       ["step" /* step */]: "steps" /* steps */,
@@ -4802,17 +4955,17 @@ var init_findIndex = __esm({
     validateIndex = (feature, index) => {
       return checkBlocks(
         [
-          ...feature.empty || import_jsutils27.emptyArr,
-          ...feature.comments || import_jsutils27.emptyArr
+          ...feature.empty || import_jsutils29.emptyArr,
+          ...feature.comments || import_jsutils29.emptyArr
         ],
         index
       );
     };
     validObj = (child) => {
-      return (0, import_jsutils27.isObj)(child) && (0, import_jsutils27.isNum)(child == null ? void 0 : child.index);
+      return (0, import_jsutils29.isObj)(child) && (0, import_jsutils29.isNum)(child == null ? void 0 : child.index);
     };
     validArr = (childArr) => {
-      return (0, import_jsutils27.isArr)(childArr) && (childArr == null ? void 0 : childArr.length);
+      return (0, import_jsutils29.isArr)(childArr) && (childArr == null ? void 0 : childArr.length);
     };
     indexFromBlocks = ({
       loc,
@@ -4860,7 +5013,7 @@ var init_findIndex = __esm({
     indexFromBackground = (parent, feature) => {
       if (validObj(parent == null ? void 0 : parent.background)) {
         const idx = indexFromSteps(parent.background);
-        if ((0, import_jsutils27.exists)(idx))
+        if ((0, import_jsutils29.exists)(idx))
           return idx;
       }
       return parent === feature ? indexFromStory(feature) : parent.index + 1;
@@ -4882,7 +5035,20 @@ var init_findIndex = __esm({
     };
     indexFromSteps = (parent) => {
       const step = validArr(parent == null ? void 0 : parent.steps) && parent.steps[parent.steps.length - 1];
-      return validObj(step) ? step.index + 1 : (parent == null ? void 0 : parent.index) + 1;
+      if (!validObj(step))
+        return (parent == null ? void 0 : parent.index) + 1;
+      if (step.doc) {
+        const docIdx = step.doc.index;
+        const contentLength = step.doc.content.split(`
+`).length;
+        return docIdx + contentLength + 2;
+      }
+      if (step.table) {
+        const tableIdx = step.table.index;
+        const contentLength = step.table.content.length;
+        return tableIdx + contentLength + 2;
+      }
+      return step.index + 1;
     };
     findIndex = (props) => {
       const {
@@ -4930,25 +5096,25 @@ var init_findIndex = __esm({
 });
 
 // src/assemble/addToIndexes.ts
-var import_jsutils28, addToIndexes;
+var import_jsutils30, addToIndexes;
 var init_addToIndexes = __esm({
   "src/assemble/addToIndexes.ts"() {
     init_findIndex();
-    import_jsutils28 = __toESM(require_cjs());
+    import_jsutils30 = __toESM(require_cjs());
     addToIndexes = (feature, indexes, item, offset) => {
-      const index = (0, import_jsutils28.exists)(item.ast.index) ? item.ast.index : findIndex({
+      const index = (0, import_jsutils30.exists)(item.ast.index) ? item.ast.index : findIndex({
         feature,
         parent: item.parent,
         type: item.ast.type
       });
       const preAmount = offset.reduce((acc, val, idx) => {
-        return idx <= index && (0, import_jsutils28.exists)(val) ? acc + val : acc;
+        return idx <= index && (0, import_jsutils30.exists)(val) ? acc + val : acc;
       }, 0);
       if (!indexes[index] && !preAmount) {
         indexes[index] = item;
         return indexes;
       }
-      offset[index] = (0, import_jsutils28.exists)(offset[index]) ? offset[index] + 1 : 1;
+      offset[index] = (0, import_jsutils30.exists)(offset[index]) ? offset[index] + 1 : 1;
       const newIdx = index + preAmount + 1;
       item.ast.index = index;
       const updatedLen = indexes.length + 1;
@@ -4959,11 +5125,11 @@ var init_addToIndexes = __esm({
 });
 
 // src/assemble/featureToIndexes.ts
-var import_jsutils29, indexSteps, indexScenario, indexRules, indexReason, indexBackground, indexBlocks, indexTags, featureToIndexes;
+var import_jsutils31, indexSteps, indexScenario, indexRules, indexReason, indexBackground, indexBlocks, indexTags, featureToIndexes;
 var init_featureToIndexes = __esm({
   "src/assemble/featureToIndexes.ts"() {
     init_types();
-    import_jsutils29 = __toESM(require_cjs());
+    import_jsutils31 = __toESM(require_cjs());
     init_addToIndexes();
     indexSteps = (feature, indexes, steps, parent, offset) => {
       steps.forEach((step) => {
@@ -4987,7 +5153,7 @@ var init_featureToIndexes = __esm({
       });
     };
     indexReason = (feature, indexes, reason, parent, offset) => {
-      (0, import_jsutils29.isArr)(reason) ? reason.forEach((reason2) => addToIndexes(feature, indexes, { ast: reason2, parent }, offset)) : addToIndexes(feature, indexes, { ast: reason, parent }, offset);
+      (0, import_jsutils31.isArr)(reason) ? reason.forEach((reason2) => addToIndexes(feature, indexes, { ast: reason2, parent }, offset)) : addToIndexes(feature, indexes, { ast: reason, parent }, offset);
     };
     indexBackground = (feature, indexes, background, parent, offset) => {
       addToIndexes(feature, indexes, { ast: background, parent }, offset);
@@ -5072,26 +5238,23 @@ var init_featureToIndexes = __esm({
         offset
       );
       offset = void 0;
-      return indexes.filter((item) => item).map((item, idx) => {
-        item.ast.index = idx;
-        return item;
-      });
+      return indexes.filter((item) => item);
     };
   }
 });
 
 // src/assemble/feature.ts
-var import_jsutils30, assembleFeature2;
+var import_jsutils32, assembleFeature2;
 var init_feature = __esm({
   "src/assemble/feature.ts"() {
     init_fromIndex();
     init_formatters();
     init_featureToIndexes();
     init_errors();
-    import_jsutils30 = __toESM(require_cjs());
-    assembleFeature2 = (toAssemble, opts = import_jsutils30.emptyObj) => {
-      return (0, import_jsutils30.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
-        !(0, import_jsutils30.isObj)(feature) && throwFeatureNotAnObj(feature);
+    import_jsutils32 = __toESM(require_cjs());
+    assembleFeature2 = (toAssemble, opts = import_jsutils32.emptyObj) => {
+      return (0, import_jsutils32.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
+        !(0, import_jsutils32.isObj)(feature) && throwFeatureNotAnObj(feature);
         const updated = formatFeature(feature, opts);
         const indexes = featureToIndexes(updated);
         return fromIndex(indexes);
@@ -5125,11 +5288,11 @@ var init_assemble2 = __esm({
 });
 
 // src/utils/findInFeature.ts
-var import_jsutils31, findInFeature;
+var import_jsutils33, findInFeature;
 var init_findInFeature = __esm({
   "src/utils/findInFeature.ts"() {
     init_types();
-    import_jsutils31 = __toESM(require_cjs());
+    import_jsutils33 = __toESM(require_cjs());
     init_constants();
     findInFeature = (props) => {
       var _a;
@@ -5144,13 +5307,13 @@ var init_findInFeature = __esm({
         child && acc.push(child);
         return acc;
       }, []);
-      return (0, import_jsutils31.get)(feature, loc);
+      return (0, import_jsutils33.get)(feature, loc);
     };
   }
 });
 
 // src/parkin.ts
-var import_jsutils32, STEP_TYPES2, Parkin, PKInstance;
+var import_jsutils34, STEP_TYPES2, Parkin, PKInstance;
 var init_parkin = __esm({
   "src/parkin.ts"() {
     init_steps();
@@ -5162,7 +5325,7 @@ var init_parkin = __esm({
     init_findInFeature();
     init_matcher2();
     init_parse();
-    import_jsutils32 = __toESM(require_cjs());
+    import_jsutils34 = __toESM(require_cjs());
     ({ STEP_TYPES: STEP_TYPES2 } = constants);
     Parkin = class {
       #isInit = false;
@@ -5181,7 +5344,7 @@ var init_parkin = __esm({
       Then;
       Given;
       constructor(world, steps) {
-        (0, import_jsutils32.isObj)(world) && this.init(world, steps);
+        (0, import_jsutils34.isObj)(world) && this.init(world, steps);
       }
       get world() {
         return this.#world;
@@ -5191,12 +5354,12 @@ var init_parkin = __esm({
         this.steps._world = update;
         this.runner._world = update;
       }
-      init = (world = import_jsutils32.noOpObj, steps, warn = true) => {
+      init = (world = import_jsutils34.noOpObj, steps, warn = true) => {
         if (this.#isInit) {
           warn && console.warn(`This instance of parkin has already been initialized!`);
           return;
         }
-        if (!(0, import_jsutils32.isObj)(world.$alias))
+        if (!(0, import_jsutils34.isObj)(world.$alias))
           world.$alias = {};
         this.#isInit = true;
         this.steps = new Steps(world);
@@ -5211,9 +5374,9 @@ var init_parkin = __esm({
         this.assemble = assemble;
         this.paramTypes = { register: registerParamType };
         this.matcher = new Matcher(this);
-        (0, import_jsutils32.isObj)(steps) && this.registerSteps(steps);
+        (0, import_jsutils34.isObj)(steps) && this.registerSteps(steps);
         this.steps.types.map((type) => {
-          this[(0, import_jsutils32.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
+          this[(0, import_jsutils34.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
         });
       };
       /**
@@ -5242,7 +5405,7 @@ var init_parkin = __esm({
         if (doRegister)
           return Object.entries(steps).forEach(([type, typedSteps]) => {
             STEP_TYPES2.includes(type) && Object.entries(typedSteps).forEach(([matcher2, content]) => {
-              this.steps[(0, import_jsutils32.capitalize)(type)](matcher2, ...(0, import_jsutils32.eitherArr)(content, [content]));
+              this.steps[(0, import_jsutils34.capitalize)(type)](matcher2, ...(0, import_jsutils34.eitherArr)(content, [content]));
             });
           });
         else
@@ -14408,30 +14571,30 @@ ${t5}`);
 });
 
 // src/test/utils.ts
-var import_jsutils33, hookTypes, globalTypes, Types, throwError, validateHook, validateRootRun, validateItem, createItem, createDescribe, createRoot;
+var import_jsutils35, hookTypes, globalTypes, Types, throwError, validateHook, validateRootRun, validateItem, createItem, createDescribe, createRoot;
 var init_utils = __esm({
   "src/test/utils.ts"() {
     init_errors();
-    import_jsutils33 = __toESM(require_cjs());
-    hookTypes = (0, import_jsutils33.keyMap)([
+    import_jsutils35 = __toESM(require_cjs());
+    hookTypes = (0, import_jsutils35.keyMap)([
       `beforeAll`,
       `beforeEach`,
       `afterAll`,
       `afterEach`
     ]);
     globalTypes = {
-      ...(0, import_jsutils33.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
+      ...(0, import_jsutils35.keyMap)([`test`, `it`, `xtest`, `xit`, `describe`]),
       ...hookTypes
     };
     Types = {
       ...globalTypes,
-      ...(0, import_jsutils33.keyMap)([`root`])
+      ...(0, import_jsutils35.keyMap)([`root`])
     };
     throwError = (error) => {
       throw new ParkinError(error);
     };
     validateHook = (type, action) => {
-      !(0, import_jsutils33.isFunc)(action) && throwError(
+      !(0, import_jsutils35.isFunc)(action) && throwError(
         `The ${type} method requires a "function" as the first argument`
       );
     };
@@ -14440,13 +14603,13 @@ var init_utils = __esm({
       !root.describes || !root.describes.length && throwError(`No tests have been registered to this ParkinTest instance`);
     };
     validateItem = (type, description, action) => {
-      !(0, import_jsutils33.isStr)(type) && throwError(`Test item type is required as a string`);
-      !(0, import_jsutils33.isFunc)(action) && throwError(
+      !(0, import_jsutils35.isStr)(type) && throwError(`Test item type is required as a string`);
+      !(0, import_jsutils35.isFunc)(action) && throwError(
         `The ${type} method requires a "function" as the second argument`
       );
-      !(0, import_jsutils33.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
+      !(0, import_jsutils35.isStr)(description) && throwError(`The ${type} method requires a "string" as the first argument`);
     };
-    createItem = (type, metadata = import_jsutils33.noOpObj, validate = true) => {
+    createItem = (type, metadata = import_jsutils35.noOpObj, validate = true) => {
       const { description, action } = metadata;
       validate && validateItem(type, description, action);
       return { ...metadata, type };
@@ -14478,11 +14641,11 @@ var init_utils = __esm({
 });
 
 // src/test/runResult.ts
-var import_jsutils34, runResult;
+var import_jsutils36, runResult;
 var init_runResult = __esm({
   "src/test/runResult.ts"() {
     init_types();
-    import_jsutils34 = __toESM(require_cjs());
+    import_jsutils36 = __toESM(require_cjs());
     runResult = (item, {
       id,
       tests,
@@ -14513,9 +14676,9 @@ var init_runResult = __esm({
         result.tests = tests;
       if (describes == null ? void 0 : describes.length)
         result.describes = describes;
-      (0, import_jsutils34.isObj)(failed) && result.failedExpectations.push(failed);
-      (0, import_jsutils34.isObj)(passed) && result.passedExpectations.push(passed);
-      (0, import_jsutils34.isObj)((_a = item == null ? void 0 : item.action) == null ? void 0 : _a.ParkinMetaData) ? result.metaData = (_b = item == null ? void 0 : item.action) == null ? void 0 : _b.ParkinMetaData : (0, import_jsutils34.isObj)((_c = item == null ? void 0 : item.action) == null ? void 0 : _c.metaData) && (result.metaData = (_d = item == null ? void 0 : item.action) == null ? void 0 : _d.metaData);
+      (0, import_jsutils36.isObj)(failed) && result.failedExpectations.push(failed);
+      (0, import_jsutils36.isObj)(passed) && result.passedExpectations.push(passed);
+      (0, import_jsutils36.isObj)((_a = item == null ? void 0 : item.action) == null ? void 0 : _a.ParkinMetaData) ? result.metaData = (_b = item == null ? void 0 : item.action) == null ? void 0 : _b.ParkinMetaData : (0, import_jsutils36.isObj)((_c = item == null ? void 0 : item.action) == null ? void 0 : _c.metaData) && (result.metaData = (_d = item == null ? void 0 : item.action) == null ? void 0 : _d.metaData);
       if (passed || failed)
         result.status = passed ? "passed" /* passed */ : ((_e = result == null ? void 0 : result.metaData) == null ? void 0 : _e.warnOnFailed) ? "warning" /* warning */ : "failed" /* failed */;
       return result;
@@ -14629,10 +14792,10 @@ var init_hooks2 = __esm({
 });
 
 // src/utils/promiseRetry.ts
-var import_jsutils35, loopRetry, PromiseRetry;
+var import_jsutils37, loopRetry, PromiseRetry;
 var init_promiseRetry = __esm({
   "src/utils/promiseRetry.ts"() {
-    import_jsutils35 = __toESM(require_cjs());
+    import_jsutils37 = __toESM(require_cjs());
     init_errors();
     loopRetry = async (opts, orgRetry) => {
       const {
@@ -14654,7 +14817,7 @@ var init_promiseRetry = __esm({
           throw new RetryError(err, opts == null ? void 0 : opts.error, orgRetry);
         const next = { ...opts, retry: retry - 1 };
         onRetry && await (onRetry == null ? void 0 : onRetry(next));
-        delay && await (0, import_jsutils35.wait)(delay);
+        delay && await (0, import_jsutils37.wait)(delay);
         return loopRetry(next, orgRetry);
       }
     };
@@ -15225,14 +15388,14 @@ var init_run = __esm({
 });
 
 // src/test/test.ts
-var import_jsutils36, ParkinTest;
+var import_jsutils38, ParkinTest;
 var init_test = __esm({
   "src/test/test.ts"() {
     init_run();
     init_runResult();
     init_promiseRetry();
     init_promiseTimeout();
-    import_jsutils36 = __toESM(require_cjs());
+    import_jsutils38 = __toESM(require_cjs());
     init_utils();
     ParkinTest = class {
       // Defaults set to 0, is the same as disabled
@@ -15254,19 +15417,19 @@ var init_test = __esm({
       #root = createRoot();
       xit;
       it;
-      #onRunDone = import_jsutils36.noOp;
-      #onRunStart = import_jsutils36.noOp;
-      #onSpecDone = import_jsutils36.noOp;
-      #onSuiteDone = import_jsutils36.noOp;
-      #onSpecStart = import_jsutils36.noOp;
-      #onSuiteStart = import_jsutils36.noOp;
-      #onAbort = import_jsutils36.noOp;
-      afterAll = import_jsutils36.noOp;
-      afterEach = import_jsutils36.noOp;
-      beforeAll = import_jsutils36.noOp;
-      beforeEach = import_jsutils36.noOp;
+      #onRunDone = import_jsutils38.noOp;
+      #onRunStart = import_jsutils38.noOp;
+      #onSpecDone = import_jsutils38.noOp;
+      #onSuiteDone = import_jsutils38.noOp;
+      #onSpecStart = import_jsutils38.noOp;
+      #onSuiteStart = import_jsutils38.noOp;
+      #onAbort = import_jsutils38.noOp;
+      afterAll = import_jsutils38.noOp;
+      afterEach = import_jsutils38.noOp;
+      beforeAll = import_jsutils38.noOp;
+      beforeEach = import_jsutils38.noOp;
       #activeParent = void 0;
-      constructor(config = import_jsutils36.noOpObj) {
+      constructor(config = import_jsutils38.noOpObj) {
         this.#root.description = config.description || `root`;
         this.#addOnly();
         this.#addSkip();
@@ -15276,7 +15439,7 @@ var init_test = __esm({
         this.#activeParent = this.#root;
         this.setConfig(config);
       }
-      run = (config = import_jsutils36.noOpObj) => {
+      run = (config = import_jsutils38.noOpObj) => {
         if (config.description)
           this.#root.description = config.description;
         this.setConfig(config);
@@ -15376,22 +15539,22 @@ var init_test = __esm({
         onRunStart,
         onSpecStart,
         onSuiteStart
-      } = import_jsutils36.noOpObj) => {
+      } = import_jsutils38.noOpObj) => {
         if (onAbort)
           this.#onAbort = onAbort;
-        if ((0, import_jsutils36.isNum)(testTimeout))
+        if ((0, import_jsutils38.isNum)(testTimeout))
           this.testTimeout = testTimeout;
-        else if ((0, import_jsutils36.isNum)(timeout))
+        else if ((0, import_jsutils38.isNum)(timeout))
           this.testTimeout = timeout;
-        if ((0, import_jsutils36.isNum)(suiteTimeout))
+        if ((0, import_jsutils38.isNum)(suiteTimeout))
           this.suiteTimeout = suiteTimeout;
-        else if ((0, import_jsutils36.isNum)(timeout))
+        else if ((0, import_jsutils38.isNum)(timeout))
           this.suiteTimeout = timeout;
-        if ((0, import_jsutils36.isNum)(bail))
+        if ((0, import_jsutils38.isNum)(bail))
           this.bail = bail;
-        if ((0, import_jsutils36.isNum)(testRetry))
+        if ((0, import_jsutils38.isNum)(testRetry))
           this.testRetry = testRetry;
-        if ((0, import_jsutils36.isNum)(suiteRetry))
+        if ((0, import_jsutils38.isNum)(suiteRetry))
           this.suiteRetry = suiteRetry;
         if (onTestRetry)
           this.#onTestRetry = onTestRetry;
@@ -15426,14 +15589,14 @@ var init_test = __esm({
           const item = this.#activeParent.describes[this.#activeParent.describes.length - 1];
           item.only = true;
           this.#describeOnly = true;
-          (0, import_jsutils36.checkCall)(this.#activeParent.hasOnlyChild);
+          (0, import_jsutils38.checkCall)(this.#activeParent.hasOnlyChild);
         };
         this.test.only = (...args) => {
           this.test(...args);
           const item = this.#activeParent.tests[this.#activeParent.tests.length - 1];
           item.only = true;
           this.#testOnly = true;
-          (0, import_jsutils36.checkCall)(this.#activeParent.hasOnlyChild);
+          (0, import_jsutils38.checkCall)(this.#activeParent.hasOnlyChild);
         };
       };
       /**
@@ -15482,7 +15645,7 @@ var init_test = __esm({
         const lastParent = this.#activeParent;
         item.hasOnlyChild = () => {
           item.onlyChild = true;
-          (0, import_jsutils36.checkCall)(lastParent.hasOnlyChild);
+          (0, import_jsutils38.checkCall)(lastParent.hasOnlyChild);
         };
         this.#activeParent = item;
         action();
@@ -15497,13 +15660,14 @@ var init_test = __esm({
       test = (description, action, meta) => {
         let retry = this.testRetry || 0;
         let timeout = this.testTimeout;
-        if ((0, import_jsutils36.isObj)(meta) && !(0, import_jsutils36.exists)(action.metaData) && !(0, import_jsutils36.exists)(action.ParkinMetaData)) {
-          action.metaData = meta;
-          if (meta == null ? void 0 : meta.timeout)
-            timeout = meta.timeout;
+        if ((0, import_jsutils38.isObj)(meta)) {
+          if (!(0, import_jsutils38.exists)(action.metaData) && !(0, import_jsutils38.exists)(action.ParkinMetaData))
+            action.metaData = meta;
           if (meta == null ? void 0 : meta.retry)
             retry = meta.retry;
-        } else if ((0, import_jsutils36.isNum)(meta))
+          if (meta == null ? void 0 : meta.timeout)
+            timeout = meta.timeout;
+        } else if ((0, import_jsutils38.isNum)(meta))
           timeout = meta;
         if (!this.#activeParent || this.#activeParent.type === Types.root)
           throwError(`All ${Types.test} method calls must be called within a ${Types.describe} method`);
@@ -15530,7 +15694,7 @@ var init_test = __esm({
           throwError(
             `All ${Types.test} method calls must be called within a ${Types.describe} method`
           );
-        !(0, import_jsutils36.isStr)(description) && throwError(
+        !(0, import_jsutils38.isStr)(description) && throwError(
           `The ${Types.test} method requires a "string" as the first argument`
         );
         const item = createItem(Types.test, { description, skip: true }, false);
@@ -15549,7 +15713,7 @@ var init_global2 = __esm({
     init_test();
     init_utils();
     init_globalScope();
-    setGlobals2 = (force) => {
+    setGlobals2 = (force, cache = false) => {
       const PTE = new ParkinTest();
       const globalObj = resolveGlobalObj();
       const forceGlobal = force || process.env.PARKIN_TEST_GLOBALS_OVERRIDE;
@@ -15559,9 +15723,22 @@ var init_global2 = __esm({
         globalObj.PTE = PTE;
       if (!globalObj.ParkinTest || forceGlobal)
         globalObj.ParkinTest = ParkinTest;
-      Object.values(globalTypes).map(
-        (name) => (!globalObj[name] || forceGlobal) && (globalObj[name] = PTE[name].bind(PTE))
-      );
+      let globalCache = {};
+      Object.values(globalTypes).map((name) => {
+        if (!globalObj[name] || forceGlobal) {
+          if (cache && globalObj[name])
+            globalCache[name] = globalObj[name];
+          globalObj[name] = PTE[name].bind(PTE);
+        }
+      });
+      if (!cache)
+        return;
+      return () => {
+        Object.values(globalTypes).map((name) => {
+          if (globalCache[name])
+            globalObj[name] = globalCache[name];
+        });
+      };
     };
     setGlobals2();
   }
@@ -15576,16 +15753,16 @@ var init_globals = __esm({
 });
 
 // src/bin/paths.ts
-var import_os, import_path, import_jsutils37, cwd, homeDir, checkRootDir, __RootDir, setRoot, getRoot;
+var import_os, import_path, import_jsutils39, cwd, homeDir, checkRootDir, __RootDir, setRoot, getRoot;
 var init_paths = __esm({
   "src/bin/paths.ts"() {
     import_os = require("os");
     import_path = __toESM(require("path"));
-    import_jsutils37 = __toESM(require_cjs());
+    import_jsutils39 = __toESM(require_cjs());
     cwd = process.cwd();
     homeDir = (0, import_os.homedir)();
     checkRootDir = (rootDir) => {
-      return !(0, import_jsutils37.isStr)(rootDir) ? void 0 : rootDir.startsWith(`/`) ? rootDir : rootDir.startsWith(`~/`) ? import_path.default.join(homeDir, rootDir.replace(`~/`, ``)) : import_path.default.join(cwd, rootDir);
+      return !(0, import_jsutils39.isStr)(rootDir) ? void 0 : rootDir.startsWith(`/`) ? rootDir : rootDir.startsWith(`~/`) ? import_path.default.join(homeDir, rootDir.replace(`~/`, ``)) : import_path.default.join(cwd, rootDir);
     };
     setRoot = (loc, force) => {
       (!__RootDir || force) && (__RootDir = checkRootDir(loc));
@@ -15780,18 +15957,18 @@ var init_dist = __esm({
 });
 
 // src/bin/helpers.ts
-var import_path3, import_jsutils38, locsByTypes, fullLoc;
+var import_path3, import_jsutils40, locsByTypes, fullLoc;
 var init_helpers3 = __esm({
   "src/bin/helpers.ts"() {
     import_path3 = __toESM(require("path"));
-    import_jsutils38 = __toESM(require_cjs());
+    import_jsutils40 = __toESM(require_cjs());
     init_dist();
     init_paths();
     locsByTypes = async (loc, opts) => {
       const { exclude, include, ext, exts } = opts;
       if (!ext && (!exts || !exts.length))
         return [];
-      const extsArr = (0, import_jsutils38.eitherArr)(exts, []);
+      const extsArr = (0, import_jsutils40.eitherArr)(exts, []);
       ext && !extsArr.includes(ext) && extsArr.push(ext);
       const extensions = extsArr.map((ex) => ex.startsWith(`.`) ? ex : `.${ex}`);
       const files = await c(loc, { resolve: true }).toArray();
@@ -15812,17 +15989,17 @@ var init_helpers3 = __esm({
 });
 
 // src/bin/getDefs.ts
-var import_jsutils39, filterDefs, getDefs;
+var import_jsutils41, filterDefs, getDefs;
 var init_getDefs = __esm({
   "src/bin/getDefs.ts"() {
     init_instance();
     init_paths();
-    import_jsutils39 = __toESM(require_cjs());
+    import_jsutils41 = __toESM(require_cjs());
     init_helpers3();
     filterDefs = async (loc, opts) => {
       return await locsByTypes(loc, {
         ...opts,
-        exts: (0, import_jsutils39.flatUnion)([
+        exts: (0, import_jsutils41.flatUnion)([
           opts == null ? void 0 : opts.ext,
           ...(opts == null ? void 0 : opts.exts) || [],
           `.js`,
@@ -15835,7 +16012,7 @@ var init_getDefs = __esm({
       });
     };
     getDefs = async (opts) => {
-      let filesArr = (0, import_jsutils39.ensureArr)(opts.defs || []);
+      let filesArr = (0, import_jsutils41.ensureArr)(opts.defs || []);
       const defs = !filesArr.length ? await filterDefs(getRoot() || cwd, opts) : await filesArr.reduce(async (resolve, loc) => {
         const acc = await resolve;
         const defs2 = await filterDefs(fullLoc(loc), opts);
@@ -15884,7 +16061,7 @@ var init_runTests = __esm({
         const PK = getParkin(world, steps);
         const PTE = getPTE();
         const content = await import_fs2.promises.readFile(feature, { encoding: `utf8` });
-        const featureAst = PK.parse.feature(content, { worldReplace: false });
+        const featureAst = PK.parse.feature(content, { worldReplace: true });
         const resp = await PK.run(featureAst, runOpts);
         if (!resp)
           return acc;
@@ -15901,11 +16078,11 @@ var init_runTests = __esm({
 });
 
 // src/bin/getConfig.ts
-var import_jsutils40, mergeConfig, getConfig;
+var import_jsutils42, mergeConfig, getConfig;
 var init_getConfig = __esm({
   "src/bin/getConfig.ts"() {
     init_helpers3();
-    import_jsutils40 = __toESM(require_cjs());
+    import_jsutils42 = __toESM(require_cjs());
     mergeConfig = (base, override) => {
       const {
         defs: bDefs,
@@ -15932,13 +16109,13 @@ var init_getConfig = __esm({
       return {
         ...baseRest,
         ...ovRest,
-        defs: (0, import_jsutils40.flatUnion)((0, import_jsutils40.ensureArr)(bDefs), (0, import_jsutils40.ensureArr)(defs)),
-        exts: (0, import_jsutils40.flatUnion)((0, import_jsutils40.ensureArr)(bExts), (0, import_jsutils40.ensureArr)(exts)),
-        filter: (0, import_jsutils40.flatUnion)((0, import_jsutils40.ensureArr)(filter), (0, import_jsutils40.ensureArr)(bFilter)),
-        exclude: (0, import_jsutils40.flatUnion)((0, import_jsutils40.ensureArr)(bExclude), (0, import_jsutils40.ensureArr)(exclude)),
-        include: (0, import_jsutils40.flatUnion)((0, import_jsutils40.ensureArr)(bInclude), (0, import_jsutils40.ensureArr)(include)),
-        features: (0, import_jsutils40.flatUnion)((0, import_jsutils40.ensureArr)(bFeatures), (0, import_jsutils40.ensureArr)(features)),
-        disabled: (0, import_jsutils40.flatUnion)((0, import_jsutils40.ensureArr)(disabled), (0, import_jsutils40.ensureArr)(bDisabled))
+        defs: (0, import_jsutils42.flatUnion)((0, import_jsutils42.ensureArr)(bDefs), (0, import_jsutils42.ensureArr)(defs)),
+        exts: (0, import_jsutils42.flatUnion)((0, import_jsutils42.ensureArr)(bExts), (0, import_jsutils42.ensureArr)(exts)),
+        filter: (0, import_jsutils42.flatUnion)((0, import_jsutils42.ensureArr)(filter), (0, import_jsutils42.ensureArr)(bFilter)),
+        exclude: (0, import_jsutils42.flatUnion)((0, import_jsutils42.ensureArr)(bExclude), (0, import_jsutils42.ensureArr)(exclude)),
+        include: (0, import_jsutils42.flatUnion)((0, import_jsutils42.ensureArr)(bInclude), (0, import_jsutils42.ensureArr)(include)),
+        features: (0, import_jsutils42.flatUnion)((0, import_jsutils42.ensureArr)(bFeatures), (0, import_jsutils42.ensureArr)(features)),
+        disabled: (0, import_jsutils42.flatUnion)((0, import_jsutils42.ensureArr)(disabled), (0, import_jsutils42.ensureArr)(bDisabled))
       };
     };
     getConfig = (opts) => {
@@ -16073,15 +16250,15 @@ ${space}${Clrs.red(first)}
 });
 
 // src/bin/reporters/cli/cli.ts
-var import_cli_utils2, import_jsutils41, FailText, PassText, printResult, CLIReporter;
+var import_cli_utils2, import_jsutils43, FailText, PassText, printResult, CLIReporter;
 var init_cli = __esm({
   "src/bin/reporters/cli/cli.ts"() {
     import_cli_utils2 = require("@keg-hub/cli-utils");
-    import_jsutils41 = __toESM(require_cjs());
+    import_jsutils43 = __toESM(require_cjs());
     init_formatters2();
     FailText = (text) => `${import_cli_utils2.Logger.colors.red(`\u2718`)} ${import_cli_utils2.Logger.colors.gray(`-`)} ${text}`;
     PassText = (text) => `${import_cli_utils2.Logger.colors.green(`\u2714`)} ${import_cli_utils2.Logger.colors.gray(`-`)} ${text}`;
-    printResult = (results, opts = import_jsutils41.emptyObj) => {
+    printResult = (results, opts = import_jsutils43.emptyObj) => {
       const {
         errorOnly,
         failedOnly,
@@ -16169,11 +16346,11 @@ var init_reporters = __esm({
 });
 
 // src/bin/getFeatures.ts
-var import_jsutils42, filterFeatures2, featureFromArg, getFeatures;
+var import_jsutils44, filterFeatures2, featureFromArg, getFeatures;
 var init_getFeatures = __esm({
   "src/bin/getFeatures.ts"() {
     init_paths();
-    import_jsutils42 = __toESM(require_cjs());
+    import_jsutils44 = __toESM(require_cjs());
     init_helpers3();
     filterFeatures2 = async (loc, opts) => {
       const foundFeats = await locsByTypes(loc, {
@@ -16192,9 +16369,9 @@ var init_getFeatures = __esm({
       });
     };
     getFeatures = async (opts, args) => {
-      let optsFiles = (0, import_jsutils42.ensureArr)(opts.features || []);
+      let optsFiles = (0, import_jsutils44.ensureArr)(opts.features || []);
       const featureArgs = featureFromArg(args);
-      const options2 = featureArgs.length ? { ...opts, include: (0, import_jsutils42.flatArr)([...(opts == null ? void 0 : opts.include) || import_jsutils42.emptyArr, ...featureArgs]) } : opts;
+      const options2 = featureArgs.length ? { ...opts, include: (0, import_jsutils44.flatArr)([...(opts == null ? void 0 : opts.include) || import_jsutils44.emptyArr, ...featureArgs]) } : opts;
       const filesArr = optsFiles.length || !args.length ? optsFiles : featureArgs;
       if (!filesArr.length) {
         const root = __RootDir || cwd;
@@ -16213,7 +16390,7 @@ var init_getFeatures = __esm({
 
 // src/bin/parkin.ts
 var parkin_exports = {};
-var import_jsutils43, import_args_parse;
+var import_jsutils45, import_args_parse;
 var init_parkin2 = __esm({
   "src/bin/parkin.ts"() {
     init_globals();
@@ -16225,7 +16402,7 @@ var init_parkin2 = __esm({
     init_runTests();
     init_getConfig();
     init_reporters();
-    import_jsutils43 = __toESM(require_cjs());
+    import_jsutils45 = __toESM(require_cjs());
     init_getFeatures();
     import_args_parse = require("@keg-hub/args-parse");
     (async () => {
@@ -16249,7 +16426,7 @@ var init_parkin2 = __esm({
         {
           name: parsed.name,
           timeout: parsed.timeout,
-          tags: (0, import_jsutils43.pickKeys)(parsed, [`disabled`, `filter`])
+          tags: (0, import_jsutils45.pickKeys)(parsed, [`disabled`, `filter`])
         }
       );
       CLIReporter.results(results, {
