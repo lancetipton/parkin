@@ -552,7 +552,7 @@ var require_noOps_b5f3c7e4 = __commonJS({
       return obj;
     };
     var noOpObj5 = Object.freeze({});
-    var emptyObj10 = noOpObj5;
+    var emptyObj11 = noOpObj5;
     var noPropObj = deepFreeze2({
       content: {}
     });
@@ -561,7 +561,7 @@ var require_noOps_b5f3c7e4 = __commonJS({
     var emptyArr6 = noPropArr2;
     exports.deepFreeze = deepFreeze2;
     exports.emptyArr = emptyArr6;
-    exports.emptyObj = emptyObj10;
+    exports.emptyObj = emptyObj11;
     exports.noOpArr = noOpArr;
     exports.noOpObj = noOpObj5;
     exports.noPropArr = noPropArr2;
@@ -2480,8 +2480,13 @@ var throwMissingFeatureText = () => {
     `Runner class requires feature text when calling the run method`
   );
 };
-var throwNoMatchingStep = (text) => {
-  throw new ParkinError(text);
+var throwInvalidDefParams = (msg = ``) => {
+  throw new ParkinError(
+    `Malformed step text, could not extract the expected step definition parameters. ${msg}`.trim()
+  );
+};
+var throwMissingDef = (step) => {
+  throw new ParkinError(`Matching definition could not be found for step: "${step}"`);
 };
 var throwParamTypeExists = (name) => {
   throw new ParkinError(`Cannot register param type "${name}". It already exists!`);
@@ -2724,7 +2729,10 @@ var tokenizeStep = (step, def, opts = import_jsutils7.emptyObj) => {
 };
 
 // src/matcher/matcher.ts
-var import_jsutils10 = __toESM(require_cjs());
+var import_jsutils12 = __toESM(require_cjs());
+
+// src/matcher/expression.ts
+var import_jsutils11 = __toESM(require_cjs());
 
 // src/utils/globalScope.ts
 var import_jsutils8 = __toESM(require_cjs());
@@ -2746,11 +2754,14 @@ var resolveGlobalObj = () => {
   }
 };
 
-// src/matcher/expression.ts
-var import_jsutils9 = __toESM(require_cjs());
+// src/utils/escapeStr.ts
 var escapeStr = (str) => {
   return hasWindow ? str.replace(/[|\\[\]^$+*?.]/g, "\\$&").replace(/-/g, "\\x2d") : str.replace(/[|\\[\]^$+*?.]/g, "\\$&");
 };
+
+// src/matcher/checkers.ts
+var import_jsutils9 = __toESM(require_cjs());
+var import_jsutils10 = __toESM(require_cjs());
 var runRegexCheck = (matcher2, testRx, replaceWith) => {
   if (!testRx.test(matcher2))
     return matcher2;
@@ -2767,7 +2778,7 @@ var runRegexCheck = (matcher2, testRx, replaceWith) => {
   });
   return regexStr;
 };
-var convertToRegex = (match, opts = import_jsutils9.emptyObj) => {
+var convertToRegex = (match, opts = import_jsutils10.emptyObj) => {
   let parameter;
   let optional;
   const paramTypes = getParamTypes();
@@ -2808,7 +2819,9 @@ var checkAnchors = (str) => {
     final += "$";
   return { regex: final };
 };
-var extractParameters = (text, stepMatcher, wordMatches, opts = import_jsutils9.emptyObj) => {
+
+// src/matcher/expression.ts
+var extractParameters = (text, stepMatcher, wordMatches, opts = import_jsutils11.emptyObj) => {
   const parts = getRegexParts(stepMatcher);
   const expectedParamLength = parts.filter(
     (part) => part.type === "parameter" /* parameter */
@@ -2839,7 +2852,7 @@ var extractParameters = (text, stepMatcher, wordMatches, opts = import_jsutils9.
   );
   return opts.partial || expectedParamLength === result.params.length ? result.params : null;
 };
-var findAsRegex = (definition, text, opts = import_jsutils9.emptyObj) => {
+var findAsRegex = (definition, text, opts = import_jsutils11.emptyObj) => {
   const escaped = escapeStr(definition.match);
   const { regex: regexAlts } = checkAlternative(escaped);
   const {
@@ -2848,10 +2861,7 @@ var findAsRegex = (definition, text, opts = import_jsutils9.emptyObj) => {
     regex: regexConverted
   } = convertToRegex(regexAlts, opts);
   const { regex: regexAnchors } = checkAnchors(regexConverted);
-  const found = matchRegex(
-    { ...definition, match: regexAnchors },
-    text
-  );
+  const found = matchRegex({ ...definition, match: regexAnchors }, text);
   return {
     found,
     escaped,
@@ -2862,7 +2872,26 @@ var findAsRegex = (definition, text, opts = import_jsutils9.emptyObj) => {
     regexConverted
   };
 };
-var matchExpression = (definition, text, $world, opts = import_jsutils9.emptyObj) => {
+var parseExpParams = ({
+  text,
+  match,
+  $world,
+  definition,
+  transformers,
+  opts = import_jsutils11.emptyObj
+}) => {
+  const params = extractParameters(
+    text,
+    definition.match,
+    match,
+    opts
+  );
+  if (!(params == null ? void 0 : params.length))
+    return [];
+  const converted = convertTypes(params, transformers, $world, opts.worldReplace);
+  return converted.length !== params.length ? void 0 : converted;
+};
+var matchExpression = (definition, text, $world, opts = import_jsutils11.emptyObj) => {
   if (definition.match === text)
     return { definition, match: [] };
   const {
@@ -2871,24 +2900,25 @@ var matchExpression = (definition, text, $world, opts = import_jsutils9.emptyObj
     transformers
   } = findAsRegex(definition, text, opts);
   if (!found || !found.definition || !found.match && !optional)
-    return import_jsutils9.emptyObj;
-  const params = extractParameters(
+    return import_jsutils11.emptyObj;
+  if (opts.parseParams === false)
+    return { ...found, definition, transformers, optional };
+  const parsed = parseExpParams({
+    opts,
     text,
-    definition.match,
-    found.match,
-    opts
-  );
-  if (!(params == null ? void 0 : params.length))
-    return { definition, match: [] };
-  const converted = convertTypes(params, transformers, $world, opts.worldReplace);
-  return converted.length !== params.length ? import_jsutils9.emptyObj : { definition, match: converted };
+    $world,
+    definition,
+    transformers,
+    match: found.match
+  });
+  return !parsed ? import_jsutils11.emptyObj : { definition, match: parsed };
 };
 
 // src/matcher/matcher.ts
 var { REGEX_VARIANT } = constants;
 var Matcher = class {
   parkin;
-  options = import_jsutils10.emptyObj;
+  options = import_jsutils12.emptyObj;
   constructor(parkin, options) {
     this.parkin = parkin;
     this.options = options;
@@ -2902,7 +2932,7 @@ var Matcher = class {
    */
   find = (text, definitions, $world, opts) => {
     var _a, _b, _c, _d;
-    const defs = definitions || ((_c = (_b = (_a = this.parkin) == null ? void 0 : _a.steps) == null ? void 0 : _b.list) == null ? void 0 : _c.call(_b)) || import_jsutils10.emptyArr;
+    const defs = definitions || ((_c = (_b = (_a = this.parkin) == null ? void 0 : _a.steps) == null ? void 0 : _b.list) == null ? void 0 : _c.call(_b)) || import_jsutils12.emptyArr;
     const world = $world || ((_d = this == null ? void 0 : this.parkin) == null ? void 0 : _d.world) || { $alias: {} };
     return matcher(defs, text, world, opts || this.options);
   };
@@ -2923,7 +2953,7 @@ var Matcher = class {
     wordMatches,
     opts || this.options
   );
-  expression = (def, text, $world, opts = import_jsutils10.emptyObj) => {
+  expression = (def, text, $world, opts = import_jsutils12.emptyObj) => {
     var _a;
     return matchExpression(
       def,
@@ -2937,7 +2967,7 @@ var Matcher = class {
     def,
     opts || this.options
   );
-  expressionFind = (def, text, opts = import_jsutils10.emptyObj) => findAsRegex(
+  expressionFind = (def, text, opts = import_jsutils12.emptyObj) => findAsRegex(
     def,
     text,
     opts || this.options
@@ -2946,9 +2976,9 @@ var Matcher = class {
   types = getParamTypes;
   register = registerParamType;
 };
-var matcher = (definitions, text, $world, opts = import_jsutils10.emptyObj) => {
+var matcher = (definitions, text, $world, opts = import_jsutils12.emptyObj) => {
   if (!text.trim())
-    return import_jsutils10.emptyObj;
+    return import_jsutils12.emptyObj;
   const defLength = definitions.length;
   for (let idx = 0; idx < defLength; idx++) {
     const definition = definitions[idx];
@@ -2958,11 +2988,11 @@ var matcher = (definitions, text, $world, opts = import_jsutils10.emptyObj) => {
     if (found.match)
       return found;
   }
-  return import_jsutils10.emptyObj;
+  return import_jsutils12.emptyObj;
 };
 
 // src/utils/worldReplace.ts
-var import_jsutils11 = __toESM(require_cjs());
+var import_jsutils13 = __toESM(require_cjs());
 var {
   ALIAS_REF: ALIAS_REF2,
   WORLD_REF,
@@ -2971,8 +3001,8 @@ var {
   ALIAS_REF_AT_RUNTIME
 } = constants;
 var attemptReplace = (match, world, location) => {
-  const replaceWith = (0, import_jsutils11.get)(world, location);
-  return (0, import_jsutils11.isFunc)(replaceWith) ? replaceWith(world, location) : (0, import_jsutils11.exists)(replaceWith) ? replaceWith : match;
+  const replaceWith = (0, import_jsutils13.get)(world, location);
+  return (0, import_jsutils13.isFunc)(replaceWith) ? replaceWith(world, location) : (0, import_jsutils13.exists)(replaceWith) ? replaceWith : match;
 };
 var aliasReplace = (text, world) => {
   let currentMatch;
@@ -3007,8 +3037,17 @@ var replaceWorld = (text, world, replace) => {
   return replace === false ? (text || "").toString() : worldReplace(aliasReplace(text, world), world);
 };
 
+// src/utils/buildDefinitionCtx.ts
+var buildDefinitionCtx = (world, step, options) => {
+  const ctx = { step, world };
+  (step == null ? void 0 : step.doc) && (ctx.doc = step == null ? void 0 : step.doc);
+  (step == null ? void 0 : step.table) && (ctx.table = step == null ? void 0 : step.table);
+  options && (ctx.options = options);
+  return ctx;
+};
+
 // src/steps.ts
-var import_jsutils14 = __toESM(require_cjs());
+var import_jsutils16 = __toESM(require_cjs());
 
 // src/definitions/joinAllDefs.ts
 var joinAllDefs = (instance) => {
@@ -3019,18 +3058,18 @@ var joinAllDefs = (instance) => {
 };
 
 // src/definitions/registerFromCall.ts
-var import_jsutils12 = __toESM(require_cjs());
+var import_jsutils14 = __toESM(require_cjs());
 var { REGEX_VARIANT: REGEX_VARIANT2, EXPRESSION_VARIANT } = constants;
 var getContent = (def) => {
   const match = def.variant === REGEX_VARIANT2 ? def.match.toString() : `"${def.match}"`;
-  return `${(0, import_jsutils12.capitalize)(def.type)}(${match}, ${def.method.toString()})`;
+  return `${(0, import_jsutils14.capitalize)(def.type)}(${match}, ${def.method.toString()})`;
 };
 var stringToRegex = (str) => {
   const main = str.match(/\/(.+)\/.*/)[1];
   const options = str.match(/\/.+\/(.*)/)[1];
   return new RegExp(main, options);
 };
-var registerFromCall = function(internalType, type, match, method, meta = import_jsutils12.noOpObj) {
+var registerFromCall = function(internalType, type, match, method, meta = import_jsutils14.noOpObj) {
   const variant = match.toString().indexOf("/") === 0 ? REGEX_VARIANT2 : EXPRESSION_VARIANT;
   const formattedMatch = variant === REGEX_VARIANT2 ? stringToRegex(match.toString()) : match.toString();
   const definition = {
@@ -3060,14 +3099,14 @@ var tempRegister = (parent, type, container) => {
 };
 
 // src/definitions/registerFromParse.ts
-var import_jsutils13 = __toESM(require_cjs());
+var import_jsutils15 = __toESM(require_cjs());
 var registerFromParse = function(definitions) {
-  const DEF_TYPES = this.types.map((type) => (0, import_jsutils13.capitalize)(type));
+  const DEF_TYPES = this.types.map((type) => (0, import_jsutils15.capitalize)(type));
   const container = DEF_TYPES.reduce((built, type) => {
     built[type] = [];
     return built;
   }, {});
-  (0, import_jsutils13.eitherArr)(definitions, [definitions]).map((definition) => {
+  (0, import_jsutils15.eitherArr)(definitions, [definitions]).map((definition) => {
     Function(`return (global, require, module, ${DEF_TYPES.join(",")}) => {
           return (function(global) { ${definition} }).call(global, global)
         }`)()(
@@ -3100,7 +3139,7 @@ var Steps = class {
     this.types.map((type) => {
       const internalType = `_${type}`;
       this[internalType] = [];
-      this[(0, import_jsutils14.capitalize)(type)] = (match, method, meta) => {
+      this[(0, import_jsutils16.capitalize)(type)] = (match, method, meta) => {
         return self.register(internalType, type, match, method, meta);
       };
     });
@@ -3132,6 +3171,8 @@ var Steps = class {
   /**
    * Finds a matching step definition from the passed in text
    * Steps must be registered with this instance to be found
+   * Includes helpers to replace the step text with content from the world
+   * And adds the step definition ctx as the last argument passed to the matching def
    * @memberof Steps
    * @function
    * @public
@@ -3147,12 +3188,27 @@ var Steps = class {
     );
     if (!found.match || !found.definition)
       return false;
-    const extObj = { step, world: this._world };
-    (step == null ? void 0 : step.doc) && (extObj.doc = step == null ? void 0 : step.doc);
-    (step == null ? void 0 : step.table) && (extObj.table = step == null ? void 0 : step.table);
-    options && (extObj.options = options);
-    found.match.push(extObj);
+    const ctx = buildDefinitionCtx(this._world, step, options);
+    found.match.push(ctx);
     return found;
+  };
+  /**
+   * Finds a matching step definition from the passed in text
+   * Steps must be registered with this instance to be found
+   * @memberof Steps
+   * @function
+   * @public
+   *
+   */
+  find = (text, options) => {
+    const list = this.list();
+    const found = matcher(
+      list,
+      text,
+      this._world,
+      options
+    );
+    return !found.match || !found.definition ? false : found;
   };
   /**
    * Finds a matching step definition from the passed in list and text can calls it
@@ -3164,9 +3220,7 @@ var Steps = class {
    */
   resolve = (text, step, options) => {
     const found = this.match(text, step, options);
-    return found ? found.definition.method(...found.match) : throwNoMatchingStep(
-      `Matching definition could not be found for step: "${text}"`
-    );
+    return found ? found.definition.method(...found.match) : throwMissingDef(text);
   };
   /**
    * Registers a step definition by type based on passed in args
@@ -3176,12 +3230,12 @@ var Steps = class {
    *
    */
   register = (...args) => {
-    return (0, import_jsutils14.isStr)(args[0]) ? registerFromCall.apply(this, args) : registerFromParse.apply(this, args);
+    return (0, import_jsutils16.isStr)(args[0]) ? registerFromCall.apply(this, args) : registerFromParse.apply(this, args);
   };
   add = (...defs) => {
     const definitions = this.list();
     defs.forEach((def) => {
-      const defsObj = (0, import_jsutils14.isArr)(def) || (def == null ? void 0 : def.match) && (def == null ? void 0 : def.uuid) ? (0, import_jsutils14.ensureArr)(def) : def;
+      const defsObj = (0, import_jsutils16.isArr)(def) || (def == null ? void 0 : def.match) && (def == null ? void 0 : def.uuid) ? (0, import_jsutils16.ensureArr)(def) : def;
       Object.values(defsObj).map((def2) => {
         if (!def2.type)
           return console.warn(`A definition type is required when adding a definition`, def2);
@@ -3204,13 +3258,13 @@ var Steps = class {
 };
 
 // src/hooks.ts
-var import_jsutils15 = __toESM(require_cjs());
+var import_jsutils17 = __toESM(require_cjs());
 var { HOOK_TYPES } = constants;
 var Hooks = class {
-  afterAll = import_jsutils15.noOp;
-  beforeAll = import_jsutils15.noOp;
-  afterEach = import_jsutils15.noOp;
-  beforeEach = import_jsutils15.noOp;
+  afterAll = import_jsutils17.noOp;
+  beforeAll = import_jsutils17.noOp;
+  afterEach = import_jsutils17.noOp;
+  beforeEach = import_jsutils17.noOp;
   /**
    * Allowed hook types
    * @memberof Hooks
@@ -3230,7 +3284,7 @@ var Hooks = class {
     this.instance = instance;
     this.types.map((type) => {
       this[type] = (clientHookFn) => {
-        if (!(0, import_jsutils15.isFunc)(clientHookFn))
+        if (!(0, import_jsutils17.isFunc)(clientHookFn))
           return;
         this._registeredHooks[type] = this._registeredHooks[type] || [];
         this._registeredHooks[type].push(clientHookFn);
@@ -3241,7 +3295,7 @@ var Hooks = class {
    * Gets the registered hook callback method based on the passed in type
    */
   getRegistered = (type) => {
-    const foundHooks = this.types.includes(type) ? this._registeredHooks[type] || import_jsutils15.noPropArr : throwInvalidHookType(HOOK_TYPES.join(", "), type);
+    const foundHooks = this.types.includes(type) ? this._registeredHooks[type] || import_jsutils17.noPropArr : throwInvalidHookType(HOOK_TYPES.join(", "), type);
     if (!foundHooks)
       return;
     return foundHooks.length ? async () => {
@@ -3249,19 +3303,19 @@ var Hooks = class {
         await toResolve;
         return await hook(this.instance);
       }, Promise.resolve());
-    } : import_jsutils15.noOp;
+    } : import_jsutils17.noOp;
   };
 };
 
 // src/utils/hasTag.ts
-var import_jsutils16 = __toESM(require_cjs());
+var import_jsutils18 = __toESM(require_cjs());
 var parseTags = (tags) => {
-  const parsed = (0, import_jsutils16.isStr)(tags) ? tags.match(/([@](\w|-)*)/g) : (0, import_jsutils16.isArr)(tags) ? tags : import_jsutils16.emptyArr;
-  return parsed.filter((tag) => (0, import_jsutils16.isStr)(tag) && tag.startsWith(`@`) && tag.length > 2);
+  const parsed = (0, import_jsutils18.isStr)(tags) ? tags.match(/([@](\w|-)*)/g) : (0, import_jsutils18.isArr)(tags) ? tags : import_jsutils18.emptyArr;
+  return parsed.filter((tag) => (0, import_jsutils18.isStr)(tag) && tag.startsWith(`@`) && tag.length > 2);
 };
-var hasTag = (itemTags = import_jsutils16.emptyArr, compareTags = import_jsutils16.emptyArr) => {
-  const iTags = (0, import_jsutils16.isStr)(itemTags) ? parseTags(itemTags) : (0, import_jsutils16.eitherArr)(itemTags, []);
-  const cTags = (0, import_jsutils16.isStr)(compareTags) ? parseTags(compareTags) : (0, import_jsutils16.eitherArr)(compareTags, []);
+var hasTag = (itemTags = import_jsutils18.emptyArr, compareTags = import_jsutils18.emptyArr) => {
+  const iTags = (0, import_jsutils18.isStr)(itemTags) ? parseTags(itemTags) : (0, import_jsutils18.eitherArr)(itemTags, []);
+  const cTags = (0, import_jsutils18.isStr)(compareTags) ? parseTags(compareTags) : (0, import_jsutils18.eitherArr)(compareTags, []);
   return Boolean(cTags.find((cTag) => iTags.includes(cTag)));
 };
 
@@ -3286,6 +3340,7 @@ var RX_ASTERISK = /^\s*\*\s*(.*)$/;
 var RX_DOC_QUOTES = /^\s*?"""\s*?/;
 var RX_DOC_TICKS = /^\s*?```\s*?/;
 var RX_DATA_TABLE = /^\s*?\|/;
+var RX_COMMENT = /^\s*#(.*)$/;
 var RegStepItems = [
   { regex: RX_STEP, type: "step" /* step */ },
   { regex: RX_GIVEN, type: "given" /* given */ },
@@ -3295,12 +3350,29 @@ var RegStepItems = [
   { regex: RX_BUT, type: "but" /* but */ },
   { regex: RX_ASTERISK, type: "*" /* * */ }
 ];
+var findValidLineIdx = (index, lines) => {
+  const line = lines[index];
+  if (!line)
+    return void 0;
+  const notComment = !RX_COMMENT.test(line);
+  const notEmpty = Boolean(line.trim().length);
+  return notComment && notEmpty ? index : findValidLineIdx(index + 1, lines);
+};
+var getAfterLines = (index, lines) => {
+  const idx = findValidLineIdx(index, lines);
+  return !idx ? {} : {
+    nextIndex: idx,
+    nextLine: lines[idx],
+    afterLines: lines.slice(idx)
+  };
+};
 var checkDataTable = (step, lines, line, index) => {
   if (!RX_DATA_TABLE.test(line))
     return step;
   let tableEnd;
   step.table = {
     index,
+    whitespace: line.split(`|`)[0],
     content: lines.reduce((table, ln) => {
       tableEnd = tableEnd || !RX_DATA_TABLE.test(ln);
       !tableEnd && table.push(
@@ -3316,17 +3388,17 @@ var checkDataTable = (step, lines, line, index) => {
   return step;
 };
 var checkDocString = (step, lines, line, index) => {
-  let docMatch = RX_DOC_QUOTES.test(line) && '"""';
-  docMatch = docMatch || RX_DOC_TICKS.test(line) && "```";
+  let docMatch = RX_DOC_QUOTES.test(line) && '"""' /* quotes */;
+  docMatch = docMatch || RX_DOC_TICKS.test(line) && "```" /* ticks */;
   if (!docMatch)
     return step;
-  const whiteSpace = line.split(docMatch)[0];
-  const spacer = new Array(whiteSpace.length).fill("\\s").join("");
+  const whitespace = line.split(docMatch)[0];
+  const spacer = new Array(whitespace.length).fill("\\s").join("");
   const spacerRegex = new RegExp(`^${spacer}`);
   step.doc = {
     index,
-    whiteSpace,
-    type: docMatch === `"""` ? `quote` : `tick`,
+    whitespace,
+    type: docMatch === '"""' /* quotes */ ? "quote" /* quote */ : "tick" /* tick */,
     // Split the passed in lines on the matching doc-string identifier
     // Then pull the second element from the array
     // Which is the content between the opening and closing doc-string identifiers
@@ -3351,9 +3423,13 @@ var stepFactory = (parent, type, stepText, lines, line, index) => {
       index: ((_a = parent == null ? void 0 : parent.steps) == null ? void 0 : _a.length) || 0
     })
   };
-  const nextIndex = index + 1;
-  const nextLine = lines[nextIndex];
-  const afterLines = lines.slice(nextIndex);
+  const {
+    nextLine,
+    nextIndex,
+    afterLines
+  } = getAfterLines(index + 1, lines);
+  if (!nextIndex)
+    return step;
   step = checkDataTable(step, afterLines, nextLine, nextIndex);
   step = checkDocString(step, afterLines.join("\n"), nextLine, nextIndex);
   return step;
@@ -3407,7 +3483,7 @@ var checkTags = (line, index) => {
 };
 
 // src/parse/parseFeature.ts
-var import_jsutils20 = __toESM(require_cjs());
+var import_jsutils22 = __toESM(require_cjs());
 
 // src/parse/setActiveParent.ts
 var RX_FEATURE = /^\s*Feature:(.*)$/;
@@ -3503,7 +3579,7 @@ var ensureFeature = (featuresGroup, feature, line, content, index) => {
 };
 
 // src/parse/ensureScenario.ts
-var import_jsutils17 = __toESM(require_cjs());
+var import_jsutils19 = __toESM(require_cjs());
 var RX_SCENARIO2 = /^\s*Scenario:(.*)$/;
 var RX_EXAMPLE2 = /^\s*Example:(.*)$/;
 var scenarioFactory = (scenario, parent, index) => {
@@ -3525,7 +3601,7 @@ var ensureScenario = (feature, rule, scenario, line, index) => {
   if (!hasScenario && !hasExample)
     return scenario;
   const scenarioText = hasScenario ? getRXMatch(line, RX_SCENARIO2, 1) : getRXMatch(line, RX_EXAMPLE2, 1);
-  !(0, import_jsutils17.exists)(scenario.scenario) ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText, void 0, index);
+  !(0, import_jsutils19.exists)(scenario.scenario) ? scenario.scenario = scenarioText : scenario = scenarioFactory(scenarioText, void 0, index);
   !scenario.index && (scenario.index = index);
   scenario.whitespace = getStartWhiteSpace(line);
   if (!hasScenario)
@@ -3541,7 +3617,7 @@ var ensureScenario = (feature, rule, scenario, line, index) => {
 };
 
 // src/parse/ensureBackground.ts
-var import_jsutils18 = __toESM(require_cjs());
+var import_jsutils20 = __toESM(require_cjs());
 var RX_BACKGROUND2 = /^\s*Background:(.*)$/;
 var backgroundFactory = (background, parent, index) => {
   const type = "background" /* background */;
@@ -3558,8 +3634,8 @@ var ensureBackground = (feature, rule, background, line, index) => {
     return background;
   const existingBgText = getRXMatch(line, RX_BACKGROUND2, 1);
   const parent = (rule == null ? void 0 : rule.uuid) ? rule : feature;
-  const backgroundText = (0, import_jsutils18.isStr)(existingBgText) ? existingBgText.trim() : "";
-  (0, import_jsutils18.isBool)(background.background) ? background.background = backgroundText : background = backgroundFactory(backgroundText, parent, index);
+  const backgroundText = (0, import_jsutils20.isStr)(existingBgText) ? existingBgText.trim() : "";
+  (0, import_jsutils20.isBool)(background.background) ? background.background = backgroundText : background = backgroundFactory(backgroundText, parent, index);
   !background.index && (background.index = index);
   !background.uuid && (background.uuid = idFromIdx({
     parent,
@@ -3572,9 +3648,9 @@ var ensureBackground = (feature, rule, background, line, index) => {
 };
 
 // src/parse/ensureMeta.ts
-var import_jsutils19 = __toESM(require_cjs());
+var import_jsutils21 = __toESM(require_cjs());
 var RX_AS = /^\s*As (.*)$/;
-var RX_COMMENT = /^\s*#(.*)$/;
+var RX_COMMENT2 = /^\s*#(.*)$/;
 var RX_I_WANT = /^\s*I want (.*)$/;
 var RX_SO_THAT = /^\s*So that (.*)$/;
 var RX_IN_ORDER = /^\s*In order (.*)$/;
@@ -3587,7 +3663,7 @@ var featureMetaItems = [
 var addReason = (feature, reason, line, index) => {
   if (!reason)
     return;
-  const reasonArr = (0, import_jsutils19.eitherArr)(feature.reason, [feature.reason]);
+  const reasonArr = (0, import_jsutils21.eitherArr)(feature.reason, [feature.reason]);
   reasonArr.push({
     index,
     content: reason,
@@ -3626,9 +3702,9 @@ var featureMeta = (feature, line, index) => {
 };
 var featureComment = (feature, line, index) => {
   var _a;
-  if (!RX_COMMENT.test(line))
+  if (!RX_COMMENT2.test(line))
     return false;
-  const comment = line.match(RX_COMMENT)[0];
+  const comment = line.match(RX_COMMENT2)[0];
   feature.comments.push({
     index,
     content: comment.trim(),
@@ -3664,10 +3740,10 @@ var featureEmptyLine = (feature, line, index) => {
 var RX_NEWLINE = /\r?\n/g;
 var defWorld = { $alias: {} };
 var resolveArgs = (pWorld, world, options) => {
-  const isOpts = !options && !(world == null ? void 0 : world.$alias) && (0, import_jsutils20.exists)(world == null ? void 0 : world.worldReplace);
+  const isOpts = !options && !(world == null ? void 0 : world.$alias) && (0, import_jsutils22.exists)(world == null ? void 0 : world.worldReplace);
   return {
     worldCfg: isOpts ? pWorld : world,
-    opts: isOpts ? world : options || import_jsutils20.emptyObj
+    opts: isOpts ? world : options || import_jsutils22.emptyObj
   };
 };
 var parseFeature = function(text, world, options) {
@@ -3733,7 +3809,7 @@ var parseDefinition = function(text) {
 };
 
 // src/utils/filterFeatures.ts
-var import_jsutils21 = __toESM(require_cjs());
+var import_jsutils23 = __toESM(require_cjs());
 var emptyOpts = { tags: {}, steps: {} };
 var filterMatch = ({
   name,
@@ -3752,21 +3828,21 @@ var getFilterOpts = (opts = emptyOpts) => {
   var _a;
   const { name } = opts;
   const filterTags = (_a = opts.tags) == null ? void 0 : _a.filter;
-  const tags = (0, import_jsutils21.isStr)(filterTags) ? parseTags(filterTags) : (0, import_jsutils21.eitherArr)(filterTags, []);
+  const tags = (0, import_jsutils23.isStr)(filterTags) ? parseTags(filterTags) : (0, import_jsutils23.eitherArr)(filterTags, []);
   return { name, tags };
 };
 var filterChild = ({
   options,
   nameKey,
   children,
-  tags = import_jsutils21.emptyArr
+  tags = import_jsutils23.emptyArr
 }) => {
   return children.filter((child) => {
     var _a;
     return filterMatch({
       options,
       name: child[nameKey],
-      tags: [...((_a = child == null ? void 0 : child.tags) == null ? void 0 : _a.tokens) || import_jsutils21.emptyArr, ...tags]
+      tags: [...((_a = child == null ? void 0 : child.tags) == null ? void 0 : _a.tokens) || import_jsutils23.emptyArr, ...tags]
     });
   });
 };
@@ -3788,7 +3864,7 @@ var filterFeatures = (features, filterOptions = emptyOpts) => {
     }
     const { rules, scenarios, background, ...rest } = feature;
     const copy = { ...rest, rules: [], scenarios: [] };
-    const matchingBackground = (0, import_jsutils21.exists)(background) && filterChild({
+    const matchingBackground = (0, import_jsutils23.exists)(background) && filterChild({
       options,
       nameKey: `background`,
       children: [background],
@@ -3820,11 +3896,11 @@ var filterFeatures = (features, filterOptions = emptyOpts) => {
 };
 
 // src/utils/testMethods.ts
-var import_jsutils22 = __toESM(require_cjs());
+var import_jsutils24 = __toESM(require_cjs());
 var { SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV } = constants;
 var logResultToTerminal = (result) => {
   const timestamp = (/* @__PURE__ */ new Date()).getTime();
-  (0, import_jsutils22.get)(process, `env.${LOG_JEST_SPEC_ENV}`) && process.stdout.write(
+  (0, import_jsutils24.get)(process, `env.${LOG_JEST_SPEC_ENV}`) && process.stdout.write(
     [
       SPEC_RESULT_LOG,
       JSON.stringify({ ...result, timestamp }),
@@ -3833,7 +3909,7 @@ var logResultToTerminal = (result) => {
   );
 };
 var getSuiteData = (suite) => {
-  const description = (0, import_jsutils22.get)(suite, `description`);
+  const description = (0, import_jsutils24.get)(suite, `description`);
   const type = !description ? `Feature` : description.startsWith(`Scenario >`) ? `Scenario` : description.startsWith(`Background >`) ? `Background` : description.startsWith(`Rule >`) ? `Rule` : `Feature`;
   return {
     type: type.toLowerCase(),
@@ -3844,7 +3920,7 @@ var getSuiteData = (suite) => {
   };
 };
 var getTestMethod = (type, testMode) => {
-  return testMode ? import_jsutils22.noOp : globalThis[type] || testMethodFill(type);
+  return testMode ? import_jsutils24.noOp : globalThis[type] || testMethodFill(type);
 };
 var buildReporter = (jasmineEnv) => {
   const suites = [];
@@ -3900,48 +3976,64 @@ var skipTestsOnFail = (testMode) => {
 };
 
 // src/runner.ts
-var import_jsutils23 = __toESM(require_cjs());
+var import_jsutils25 = __toESM(require_cjs());
 var emptyOpts2 = { tags: {}, steps: {} };
 var getStepOpts = (step, options = emptyOpts2) => {
   var _a, _b;
   const shared = (_a = options == null ? void 0 : options.steps) == null ? void 0 : _a.shared;
   const single = (_b = options == null ? void 0 : options.steps) == null ? void 0 : _b[step == null ? void 0 : step.uuid];
-  return {
-    ...shared,
-    ...single,
-    retry: (single == null ? void 0 : single.retry) || (shared == null ? void 0 : shared.retry) || (options == null ? void 0 : options.retry) || 0,
-    timeout: (single == null ? void 0 : single.timeout) || (shared == null ? void 0 : shared.timeout) || (options == null ? void 0 : options.timeout) || 15e3
-  };
+  const retry = (single == null ? void 0 : single.retry) || (shared == null ? void 0 : shared.retry) || (options == null ? void 0 : options.retry);
+  const timeout = (single == null ? void 0 : single.timeout) || (shared == null ? void 0 : shared.timeout) || (options == null ? void 0 : options.timeout);
+  const joined = { ...shared, ...single };
+  if (retry)
+    joined.retry = retry;
+  if (timeout)
+    joined.timeout = timeout;
+  return joined;
 };
-var buildTitle = (text, type) => {
-  return `${(0, import_jsutils23.capitalize)(type)} > ${text}`;
-};
+var buildTitle = (text, type) => `${(0, import_jsutils25.capitalize)(type)} > ${text}`;
 var resolveFeatures = (data, $world) => {
-  return (0, import_jsutils23.isStr)(data) ? parseFeature(data, $world) : (0, import_jsutils23.isObj)(data) ? [data] : (0, import_jsutils23.isArr)(data) ? data.reduce(
+  return (0, import_jsutils25.isStr)(data) ? parseFeature(data, $world) : (0, import_jsutils25.isObj)(data) ? [data] : (0, import_jsutils25.isArr)(data) ? data.reduce(
     (features, feature) => features.concat(resolveFeatures(feature, $world)),
     []
   ) : throwMissingFeatureText();
 };
 var runStep = (stepsInstance, step, options = emptyOpts2, testMode) => {
-  var _a, _b, _c;
+  var _a, _b, _c, _d, _e;
   const test = getTestMethod("test" /* test */, testMode);
-  const opts = getStepOpts(step, options);
-  const disabled = (opts == null ? void 0 : opts.disabled) || hasTag((_a = step == null ? void 0 : step.tags) == null ? void 0 : _a.tokens, (_b = options == null ? void 0 : options.tags) == null ? void 0 : _b.disabled);
+  const stepOpts = getStepOpts(step, options);
+  const found = stepsInstance.find(step.step, { ...stepOpts, parseParams: false });
+  const defOpts = found ? (_a = found == null ? void 0 : found.definition.meta) == null ? void 0 : _a.test : import_jsutils25.emptyObj;
+  const opts = { ...defOpts, ...stepOpts };
+  const disabled = (opts == null ? void 0 : opts.disabled) || hasTag((_b = step == null ? void 0 : step.tags) == null ? void 0 : _b.tokens, (_c = options == null ? void 0 : options.tags) == null ? void 0 : _c.disabled);
   const testMethod = async () => {
+    if (!found)
+      return throwMissingDef(step.step);
     if (disabled)
       return;
-    return await stepsInstance.resolve(
-      step.step,
-      step,
-      opts
-    );
+    const parsed = parseExpParams({
+      opts,
+      text: step.step,
+      match: found.match,
+      definition: found.definition,
+      $world: stepsInstance._world,
+      transformers: found.transformers
+    });
+    if (!parsed)
+      return throwInvalidDefParams(`
+Step text: "${step.step}"`);
+    const ctx = buildDefinitionCtx(stepsInstance._world, step, opts);
+    parsed.push(ctx);
+    return await found.definition.method(...parsed);
   };
   testMethod.ParkinMetaData = {
     disabled,
-    ...(0, import_jsutils23.pickKeys)(step, [`uuid`, `step`, `index`, `tags`, `type`, `definition`])
+    ...(0, import_jsutils25.pickKeys)(step, [`uuid`, `step`, `index`, `tags`, `type`, `definition`])
   };
-  const last = ((_c = process == null ? void 0 : process.env) == null ? void 0 : _c.JEST_WORKER_ID) !== void 0 ? opts.timeout : opts;
-  return test(`${(0, import_jsutils23.capitalize)(step.type)} ${step.step}`, testMethod, last);
+  const inJest = ((_d = process == null ? void 0 : process.env) == null ? void 0 : _d.JEST_WORKER_ID) !== void 0;
+  const jestOverride = ((_e = process == null ? void 0 : process.env) == null ? void 0 : _e.JEST_FORCE_OVERRIDE) !== void 0;
+  const last = inJest && !jestOverride ? opts.timeout : opts;
+  return test(`${(0, import_jsutils25.capitalize)(step.type)} ${step.step}`, testMethod, last);
 };
 var loopSteps = (parent, title, stepsInstance, options = emptyOpts2, testMode) => {
   var _a, _b;
@@ -3954,7 +4046,7 @@ var loopSteps = (parent, title, stepsInstance, options = emptyOpts2, testMode) =
   };
   describeMethod.ParkinMetaData = {
     disabled,
-    ...(0, import_jsutils23.pickKeys)(parent, [`index`, `uuid`, `tags`, `type`, `background`, `scenario`])
+    ...(0, import_jsutils25.pickKeys)(parent, [`index`, `uuid`, `tags`, `type`, `background`, `scenario`])
   };
   return describe2(title, describeMethod);
 };
@@ -4000,7 +4092,7 @@ var runRule = (stepsInstance, rule, background, options = emptyOpts2, testMode) 
   };
   describeMethod.ParkinMetaData = {
     disabled,
-    ...(0, import_jsutils23.pickKeys)(
+    ...(0, import_jsutils25.pickKeys)(
       rule,
       [`index`, `uuid`, `tags`, `type`, `rule`]
     )
@@ -4090,7 +4182,7 @@ var Runner = class {
       };
       describeMethod.ParkinMetaData = {
         disabled,
-        ...(0, import_jsutils23.pickKeys)(
+        ...(0, import_jsutils25.pickKeys)(
           feature,
           [`index`, `uuid`, `tags`, `feature`, `type`, `errors`]
         )
@@ -4102,17 +4194,17 @@ var Runner = class {
 };
 
 // src/assemble/helpers.ts
-var import_jsutils24 = __toESM(require_cjs());
+var import_jsutils26 = __toESM(require_cjs());
 var formatAssembled = (assembled) => {
-  return Array.from(assembled, (line) => (0, import_jsutils24.exists)(line) ? `${line.trimEnd()}
+  return Array.from(assembled, (line) => (0, import_jsutils26.exists)(line) ? `${line.trimEnd()}
 ` : "\n").join("").trimEnd().concat(` `, `
 `);
 };
 var addContent = (assembled, content, index) => {
-  !(0, import_jsutils24.exists)(index) || index === false ? assembled.push(content) : (0, import_jsutils24.exists)(assembled[index]) ? assembled.splice(index, 0, content) : assembled[index] = content;
+  !(0, import_jsutils26.exists)(index) || index === false ? assembled.push(content) : (0, import_jsutils26.exists)(assembled[index]) ? assembled.splice(index, 0, content) : assembled[index] = content;
 };
 var getWhiteSpace = (ast, parent, def = ``) => {
-  return (0, import_jsutils24.exists)(ast.whitespace) ? ast.whitespace : (0, import_jsutils24.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent == null ? void 0 : parent.whitespace}${def}` : def;
+  return (0, import_jsutils26.exists)(ast.whitespace) ? ast.whitespace : (0, import_jsutils26.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent == null ? void 0 : parent.whitespace}${def}` : def;
 };
 var getTextContent = (ast, parent, type, def = ``) => {
   const content = ast[ast.type] || ``;
@@ -4122,7 +4214,7 @@ var getTextContent = (ast, parent, type, def = ``) => {
 };
 
 // src/assemble/assembleParts.ts
-var import_jsutils25 = __toESM(require_cjs());
+var import_jsutils27 = __toESM(require_cjs());
 var assembleFeature = (assembled, { ast, parent }) => {
   const feature = ast;
   addContent(
@@ -4131,19 +4223,56 @@ var assembleFeature = (assembled, { ast, parent }) => {
     feature.index
   );
 };
+var assembleStepDoc = (assembled, step) => {
+  const { doc, whitespace: ws } = step;
+  const docPrefix = doc.type === "tick" /* tick */ ? "```" /* ticks */ : '"""' /* quotes */;
+  const whitespace = doc.whitespace ?? getWhiteSpace(doc, step, (0, import_jsutils27.exists)(ws) ? ws : `      `);
+  addContent(assembled, `${whitespace}${docPrefix}`, doc.index);
+  const lines = doc.content.split(`
+`).map((line, idx) => addContent(assembled, `${whitespace}  ${line}`, doc.index + idx + 1));
+  addContent(assembled, `${whitespace}${docPrefix}`, doc.index + lines.length + 1);
+};
+var assembleStepTable = (assembled, step) => {
+  const { table, whitespace: ws } = step;
+  const whitespace = table.whitespace ?? getWhiteSpace(table, step, (0, import_jsutils27.exists)(ws) ? ws : `      `);
+  const colLengths = {};
+  table.content.forEach((row, idx) => {
+    row.forEach((col, cIdx) => {
+      const ref = `${cIdx}`;
+      const cur = colLengths[ref];
+      const local = col.length;
+      if (!cur || cur < local)
+        colLengths[ref] = local;
+    });
+  });
+  table.content.forEach((row, idx) => {
+    const joined = [];
+    row.forEach((col, cIdx) => {
+      const ref = `${cIdx}`;
+      const cur = colLengths[ref];
+      const local = col.length;
+      if (cur > local) {
+        const diff = cur - local;
+        const add = new Array(diff).fill(" ").join("");
+        joined.push(`${col}${add}`);
+      } else
+        joined.push(col);
+    });
+    addContent(assembled, `${whitespace}| ${joined.join(` | `)} |`, table.index + idx);
+  });
+};
 var assembleStep = (assembled, { ast, parent }) => {
   const step = ast;
   const whitespace = getWhiteSpace(
     step,
     parent,
-    (0, import_jsutils25.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent == null ? void 0 : parent.whitespace}  ` : `    `
+    (0, import_jsutils27.exists)(parent == null ? void 0 : parent.whitespace) ? `${parent == null ? void 0 : parent.whitespace}  ` : `    `
   );
-  const type = step.type !== "step" /* step */ ? (0, import_jsutils25.capitalize)(step.type) : `Step`;
-  addContent(
-    assembled,
-    `${whitespace}${type} ${step.step || ``}`,
-    step.index
-  );
+  const type = step.type !== "step" /* step */ ? (0, import_jsutils27.capitalize)(step.type) : `Step`;
+  const text = `${whitespace}${type} ${step.step || ``}`;
+  addContent(assembled, text, step.index);
+  step.doc && assembleStepDoc(assembled, step);
+  step.table && assembleStepTable(assembled, step);
 };
 var assembleTags = (assembled, { ast, parent }) => {
   const tags = ast;
@@ -4194,6 +4323,8 @@ var assembleBlock = (assembled, { ast, parent }) => {
 // src/assemble/fromIndex.ts
 var fromIndex = (indexes) => {
   const assembled = indexes.reduce((assembled2, item) => {
+    if (!item)
+      return assembled2;
     switch (item.ast.type) {
       case "given" /* given */:
       case "when" /* when */:
@@ -4241,7 +4372,7 @@ var fromIndex = (indexes) => {
 };
 
 // src/assemble/formatters.ts
-var import_jsutils26 = __toESM(require_cjs());
+var import_jsutils28 = __toESM(require_cjs());
 var ensureBackgroundFirst = (parent, opts) => {
   if (!opts.backgroundAfterParent)
     return parent;
@@ -4262,11 +4393,11 @@ var addEmptyLine = (feature, idx, opts) => {
   featureEmptyLine(feature, ``, idx + 1);
   return feature;
 };
-var formatStory = (feature, opts = import_jsutils26.emptyObj) => {
+var formatStory = (feature, opts = import_jsutils28.emptyObj) => {
   const { desire, perspective, reason } = feature;
   let lastIdx = feature.index;
   if (reason)
-    (0, import_jsutils26.isArr)(reason) ? (0, import_jsutils26.ensureArr)(reason).forEach((res) => lastIdx = res.index > lastIdx ? res.index : lastIdx) : lastIdx = reason.index;
+    (0, import_jsutils28.isArr)(reason) ? (0, import_jsutils28.ensureArr)(reason).forEach((res) => lastIdx = res.index > lastIdx ? res.index : lastIdx) : lastIdx = reason.index;
   else if (desire)
     lastIdx = desire.index;
   else if (perspective)
@@ -4274,7 +4405,7 @@ var formatStory = (feature, opts = import_jsutils26.emptyObj) => {
   addEmptyLine(feature, lastIdx, opts);
   return feature;
 };
-var formatOptions = (feature, opts = import_jsutils26.emptyObj) => {
+var formatOptions = (feature, opts = import_jsutils28.emptyObj) => {
   const keys = [];
   const {
     removeEmpty,
@@ -4284,7 +4415,7 @@ var formatOptions = (feature, opts = import_jsutils26.emptyObj) => {
   } = opts;
   removeEmpty && keys.push(`empty`);
   removeComments && keys.push(`comments`);
-  const updated = (0, import_jsutils26.omitKeys)(feature, keys);
+  const updated = (0, import_jsutils28.omitKeys)(feature, keys);
   if (emptyAfterStory || emptyAfterFeature)
     !emptyAfterStory ? addEmptyLine(updated, updated.index, opts) : formatStory(updated, opts);
   return updated;
@@ -4333,7 +4464,7 @@ var formatRules = (feature, opts) => {
   }, []);
   return { ...feature, rules };
 };
-var formatFeature = (feature, opts = import_jsutils26.emptyObj) => {
+var formatFeature = (feature, opts = import_jsutils28.emptyObj) => {
   let updated = formatOptions(feature, opts);
   updated = formatBackground(updated, updated, opts);
   updated = formatRules(updated, opts);
@@ -4342,10 +4473,10 @@ var formatFeature = (feature, opts = import_jsutils26.emptyObj) => {
 };
 
 // src/assemble/featureToIndexes.ts
-var import_jsutils29 = __toESM(require_cjs());
+var import_jsutils31 = __toESM(require_cjs());
 
 // src/assemble/findIndex.ts
-var import_jsutils27 = __toESM(require_cjs());
+var import_jsutils29 = __toESM(require_cjs());
 var AstTypeMap = {
   ...EAstObject,
   ["step" /* step */]: "steps" /* steps */,
@@ -4367,17 +4498,17 @@ var checkBlocks = (blocks, idx) => {
 var validateIndex = (feature, index) => {
   return checkBlocks(
     [
-      ...feature.empty || import_jsutils27.emptyArr,
-      ...feature.comments || import_jsutils27.emptyArr
+      ...feature.empty || import_jsutils29.emptyArr,
+      ...feature.comments || import_jsutils29.emptyArr
     ],
     index
   );
 };
 var validObj = (child) => {
-  return (0, import_jsutils27.isObj)(child) && (0, import_jsutils27.isNum)(child == null ? void 0 : child.index);
+  return (0, import_jsutils29.isObj)(child) && (0, import_jsutils29.isNum)(child == null ? void 0 : child.index);
 };
 var validArr = (childArr) => {
-  return (0, import_jsutils27.isArr)(childArr) && (childArr == null ? void 0 : childArr.length);
+  return (0, import_jsutils29.isArr)(childArr) && (childArr == null ? void 0 : childArr.length);
 };
 var indexFromBlocks = ({
   loc,
@@ -4425,7 +4556,7 @@ var indexFromStory = (feature) => {
 var indexFromBackground = (parent, feature) => {
   if (validObj(parent == null ? void 0 : parent.background)) {
     const idx = indexFromSteps(parent.background);
-    if ((0, import_jsutils27.exists)(idx))
+    if ((0, import_jsutils29.exists)(idx))
       return idx;
   }
   return parent === feature ? indexFromStory(feature) : parent.index + 1;
@@ -4447,7 +4578,20 @@ var indexFromScenarios = (parent, feature) => {
 };
 var indexFromSteps = (parent) => {
   const step = validArr(parent == null ? void 0 : parent.steps) && parent.steps[parent.steps.length - 1];
-  return validObj(step) ? step.index + 1 : (parent == null ? void 0 : parent.index) + 1;
+  if (!validObj(step))
+    return (parent == null ? void 0 : parent.index) + 1;
+  if (step.doc) {
+    const docIdx = step.doc.index;
+    const contentLength = step.doc.content.split(`
+`).length;
+    return docIdx + contentLength + 2;
+  }
+  if (step.table) {
+    const tableIdx = step.table.index;
+    const contentLength = step.table.content.length;
+    return tableIdx + contentLength + 2;
+  }
+  return step.index + 1;
 };
 var findIndex = (props) => {
   const {
@@ -4493,21 +4637,21 @@ var findIndex = (props) => {
 };
 
 // src/assemble/addToIndexes.ts
-var import_jsutils28 = __toESM(require_cjs());
+var import_jsutils30 = __toESM(require_cjs());
 var addToIndexes = (feature, indexes, item, offset) => {
-  const index = (0, import_jsutils28.exists)(item.ast.index) ? item.ast.index : findIndex({
+  const index = (0, import_jsutils30.exists)(item.ast.index) ? item.ast.index : findIndex({
     feature,
     parent: item.parent,
     type: item.ast.type
   });
   const preAmount = offset.reduce((acc, val, idx) => {
-    return idx <= index && (0, import_jsutils28.exists)(val) ? acc + val : acc;
+    return idx <= index && (0, import_jsutils30.exists)(val) ? acc + val : acc;
   }, 0);
   if (!indexes[index] && !preAmount) {
     indexes[index] = item;
     return indexes;
   }
-  offset[index] = (0, import_jsutils28.exists)(offset[index]) ? offset[index] + 1 : 1;
+  offset[index] = (0, import_jsutils30.exists)(offset[index]) ? offset[index] + 1 : 1;
   const newIdx = index + preAmount + 1;
   item.ast.index = index;
   const updatedLen = indexes.length + 1;
@@ -4538,7 +4682,7 @@ var indexRules = (feature, indexes, rules, parent, offset) => {
   });
 };
 var indexReason = (feature, indexes, reason, parent, offset) => {
-  (0, import_jsutils29.isArr)(reason) ? reason.forEach((reason2) => addToIndexes(feature, indexes, { ast: reason2, parent }, offset)) : addToIndexes(feature, indexes, { ast: reason, parent }, offset);
+  (0, import_jsutils31.isArr)(reason) ? reason.forEach((reason2) => addToIndexes(feature, indexes, { ast: reason2, parent }, offset)) : addToIndexes(feature, indexes, { ast: reason, parent }, offset);
 };
 var indexBackground = (feature, indexes, background, parent, offset) => {
   addToIndexes(feature, indexes, { ast: background, parent }, offset);
@@ -4623,17 +4767,14 @@ var featureToIndexes = (feature) => {
     offset
   );
   offset = void 0;
-  return indexes.filter((item) => item).map((item, idx) => {
-    item.ast.index = idx;
-    return item;
-  });
+  return indexes.filter((item) => item);
 };
 
 // src/assemble/feature.ts
-var import_jsutils30 = __toESM(require_cjs());
-var assembleFeature2 = (toAssemble, opts = import_jsutils30.emptyObj) => {
-  return (0, import_jsutils30.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
-    !(0, import_jsutils30.isObj)(feature) && throwFeatureNotAnObj(feature);
+var import_jsutils32 = __toESM(require_cjs());
+var assembleFeature2 = (toAssemble, opts = import_jsutils32.emptyObj) => {
+  return (0, import_jsutils32.eitherArr)(toAssemble, [toAssemble]).map((feature) => {
+    !(0, import_jsutils32.isObj)(feature) && throwFeatureNotAnObj(feature);
     const updated = formatFeature(feature, opts);
     const indexes = featureToIndexes(updated);
     return fromIndex(indexes);
@@ -4649,7 +4790,7 @@ var assemble = {
 };
 
 // src/utils/findInFeature.ts
-var import_jsutils31 = __toESM(require_cjs());
+var import_jsutils33 = __toESM(require_cjs());
 var findInFeature = (props) => {
   var _a;
   const { id, uuid: uuid2, feature } = props;
@@ -4663,11 +4804,11 @@ var findInFeature = (props) => {
     child && acc.push(child);
     return acc;
   }, []);
-  return (0, import_jsutils31.get)(feature, loc);
+  return (0, import_jsutils33.get)(feature, loc);
 };
 
 // src/parkin.ts
-var import_jsutils32 = __toESM(require_cjs());
+var import_jsutils34 = __toESM(require_cjs());
 var { STEP_TYPES: STEP_TYPES2 } = constants;
 var Parkin = class {
   #isInit = false;
@@ -4686,7 +4827,7 @@ var Parkin = class {
   Then;
   Given;
   constructor(world, steps) {
-    (0, import_jsutils32.isObj)(world) && this.init(world, steps);
+    (0, import_jsutils34.isObj)(world) && this.init(world, steps);
   }
   get world() {
     return this.#world;
@@ -4696,12 +4837,12 @@ var Parkin = class {
     this.steps._world = update;
     this.runner._world = update;
   }
-  init = (world = import_jsutils32.noOpObj, steps, warn = true) => {
+  init = (world = import_jsutils34.noOpObj, steps, warn = true) => {
     if (this.#isInit) {
       warn && console.warn(`This instance of parkin has already been initialized!`);
       return;
     }
-    if (!(0, import_jsutils32.isObj)(world.$alias))
+    if (!(0, import_jsutils34.isObj)(world.$alias))
       world.$alias = {};
     this.#isInit = true;
     this.steps = new Steps(world);
@@ -4716,9 +4857,9 @@ var Parkin = class {
     this.assemble = assemble;
     this.paramTypes = { register: registerParamType };
     this.matcher = new Matcher(this);
-    (0, import_jsutils32.isObj)(steps) && this.registerSteps(steps);
+    (0, import_jsutils34.isObj)(steps) && this.registerSteps(steps);
     this.steps.types.map((type) => {
-      this[(0, import_jsutils32.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
+      this[(0, import_jsutils34.capitalize)(type)] = (matcher2, method, meta) => this.steps.register(`_${type}`, type, matcher2, method, meta);
     });
   };
   /**
@@ -4747,7 +4888,7 @@ var Parkin = class {
     if (doRegister)
       return Object.entries(steps).forEach(([type, typedSteps]) => {
         STEP_TYPES2.includes(type) && Object.entries(typedSteps).forEach(([matcher2, content]) => {
-          this.steps[(0, import_jsutils32.capitalize)(type)](matcher2, ...(0, import_jsutils32.eitherArr)(content, [content]));
+          this.steps[(0, import_jsutils34.capitalize)(type)](matcher2, ...(0, import_jsutils34.eitherArr)(content, [content]));
         });
       });
     else

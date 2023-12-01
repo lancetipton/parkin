@@ -8,8 +8,6 @@ import { registerAliasSteps } from './aliasSteps'
 import { registerMultiParamSteps } from './multiParamSteps'
 import { registerMetaSteps } from './metaSteps'
 
-
-
 export const registerMockSteps = PK => {
   // The tests depend on the register order of the definitions
   // Changing the function call order will break the tests

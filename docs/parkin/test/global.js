@@ -12532,12 +12532,13 @@ var ParkinTest = class {
   test = (description, action, meta) => {
     let retry = this.testRetry || 0;
     let timeout = this.testTimeout;
-    if ((0, import_jsutils6.isObj)(meta) && !(0, import_jsutils6.exists)(action.metaData) && !(0, import_jsutils6.exists)(action.ParkinMetaData)) {
-      action.metaData = meta;
-      if (meta == null ? void 0 : meta.timeout)
-        timeout = meta.timeout;
+    if ((0, import_jsutils6.isObj)(meta)) {
+      if (!(0, import_jsutils6.exists)(action.metaData) && !(0, import_jsutils6.exists)(action.ParkinMetaData))
+        action.metaData = meta;
       if (meta == null ? void 0 : meta.retry)
         retry = meta.retry;
+      if (meta == null ? void 0 : meta.timeout)
+        timeout = meta.timeout;
     } else if ((0, import_jsutils6.isNum)(meta))
       timeout = meta;
     if (!this.#activeParent || this.#activeParent.type === Types.root)
@@ -12592,7 +12593,7 @@ var resolveGlobalObj = () => {
 };
 
 // src/test/global.ts
-var setGlobals = (force) => {
+var setGlobals = (force, cache = false) => {
   const PTE = new ParkinTest();
   const globalObj = resolveGlobalObj();
   const forceGlobal = force || process.env.PARKIN_TEST_GLOBALS_OVERRIDE;
@@ -12602,12 +12603,25 @@ var setGlobals = (force) => {
     globalObj.PTE = PTE;
   if (!globalObj.ParkinTest || forceGlobal)
     globalObj.ParkinTest = ParkinTest;
-  Object.values(globalTypes).map(
-    (name) => (!globalObj[name] || forceGlobal) && (globalObj[name] = PTE[name].bind(PTE))
-  );
+  let globalCache = {};
+  Object.values(globalTypes).map((name) => {
+    if (!globalObj[name] || forceGlobal) {
+      if (cache && globalObj[name])
+        globalCache[name] = globalObj[name];
+      globalObj[name] = PTE[name].bind(PTE);
+    }
+  });
+  if (!cache)
+    return;
+  return () => {
+    Object.values(globalTypes).map((name) => {
+      if (globalCache[name])
+        globalObj[name] = globalCache[name];
+    });
+  };
 };
 setGlobals();
-var setParkinTestGlobals = (force = true) => setGlobals(force);
+var setParkinTestGlobals = (force = true, cache = false) => setGlobals(force, cache);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   setParkinTestGlobals

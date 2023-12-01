@@ -10,7 +10,9 @@ export const registerDocSteps = PK => {
   PK.Then(
     'the doc-string data should be {string}',
     jest.fn((docStringData, { world }) => {
-      expect(world.docStringData.split(`\n`)).toEqual(docStringData.split(`\\n`))
+      expect(world.docStringData.split(`\n`)).toEqual(
+        docStringData.split(`\\n`)
+      )
     })
   )
 
