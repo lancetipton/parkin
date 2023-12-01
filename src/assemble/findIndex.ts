@@ -172,7 +172,23 @@ const indexFromSteps = (
   const step = validArr(parent?.steps)
     && parent.steps[parent.steps.length - 1]
 
-  return validObj(step) ? step.index + 1 : parent?.index + 1
+  if(!validObj(step)) return parent?.index + 1
+
+  if(step.doc){
+    const docIdx = step.doc.index
+    const contentLength = step.doc.content.split(`\n`).length
+    // Add 2 because the opening and closing prefixes, i.e. ``` || """
+    return docIdx + contentLength + 2
+  }
+
+  if(step.table){
+    const tableIdx = step.table.index
+    const contentLength = step.table.content.length
+    // Add 2 because the opening and closing prefixes, i.e. ``` || """
+    return tableIdx + contentLength + 2
+  }
+
+  return step.index + 1
 }
 
 /**

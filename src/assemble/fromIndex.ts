@@ -17,6 +17,8 @@ export const fromIndex = (
 ) => {
 
   const assembled = indexes.reduce((assembled, item) => {
+    if(!item) return assembled
+
     switch(item.ast.type as string){
       case EStepType.given:
       case EStepType.when:

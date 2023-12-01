@@ -3,8 +3,8 @@ import type {
   TStepParentAst,
 } from '../types'
 
-import { EStepType } from '../types'
 import { idFromIdx } from './idFromIdx'
+import { EStepType, EDocType } from '../types'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 const RX_STEP = /^\s*Step\s*(.*)$/
@@ -15,11 +15,9 @@ const RX_AND = /^\s*And\s*(.*)$/
 const RX_BUT = /^\s*But\s*(.*)$/
 const RX_ASTERISK = /^\s*\*\s*(.*)$/
 const RX_DOC_QUOTES = /^\s*?"""\s*?/
-const RX_DOC_QUOTES_FULL = /^\s*?"""(\s*?|.*?)*?"""/gm
 const RX_DOC_TICKS = /^\s*?```\s*?/
-const RX_DOC_TICKS_FULL = /^\s*?```(\s*?|.*?)*?```/gm
 const RX_DATA_TABLE = /^\s*?\|/
-const RX_DATA_TABLE_FULL = /^\s*?\|([^\S\r\n]*?|.*)\|/gm
+const RX_COMMENT = /^\s*#(.*)$/
 
 /**
  * Regular expressions and types for matching step keywords
@@ -35,6 +33,30 @@ const RegStepItems = [
   { regex: RX_BUT, type: EStepType.but },
   { regex: RX_ASTERISK, type: EStepType[`*`] },
 ]
+
+
+const findValidLineIdx = (index:number, lines:string[]) => {
+  const line = lines[index]
+  if(!line) return undefined
+
+  const notComment = !RX_COMMENT.test(line)
+  const notEmpty = Boolean(line.trim().length)
+
+  return notComment && notEmpty
+    ? index
+    : findValidLineIdx(index + 1, lines)
+}
+
+const getAfterLines = (index:number, lines:string[]) => {
+  const idx = findValidLineIdx(index, lines)
+  return !idx
+    ? {}
+    : {
+        nextIndex: idx,
+        nextLine: lines[idx],
+        afterLines: lines.slice(idx)
+      }
+}
 
 /**
  * Check for a data table in the in the steps content
@@ -58,6 +80,7 @@ const checkDataTable = (
 
   step.table = {
     index,
+    whitespace: line.split(`|`)[0],
     content: lines.reduce((table, ln) => {
       tableEnd = tableEnd || !RX_DATA_TABLE.test(ln)
       !tableEnd &&
@@ -93,8 +116,8 @@ const checkDocString = (
   line:string,
   index:number
 ) => {
-  let docMatch = RX_DOC_QUOTES.test(line) && '"""'
-  docMatch = docMatch || (RX_DOC_TICKS.test(line) && '```')
+  let docMatch = RX_DOC_QUOTES.test(line) && EDocType.quotes
+  docMatch = docMatch || (RX_DOC_TICKS.test(line) && EDocType.ticks)
 
   if (!docMatch) return step
 
@@ -102,15 +125,14 @@ const checkDocString = (
   // Create a regex white space chars to remove the same amount of white space
   // from the start of each line relative to the doc-string identifier
   // See here for more info => https://cucumber.io/docs/gherkin/reference/
-  const whiteSpace = line.split(docMatch)[0]
-  const spacer = new Array(whiteSpace.length).fill('\\s')
-    .join('')
+  const whitespace = line.split(docMatch)[0]
+  const spacer = new Array(whitespace.length).fill('\\s').join('')
   const spacerRegex = new RegExp(`^${spacer}`)
 
   step.doc = {
     index,
-    whiteSpace,
-    type: docMatch === `"""` ? `quote` : `tick`,
+    whitespace,
+    type: docMatch === EDocType.quotes ? EDocType.quote : EDocType.tick,
     // Split the passed in lines on the matching doc-string identifier
     // Then pull the second element from the array
     // Which is the content between the opening and closing doc-string identifiers
@@ -157,13 +179,13 @@ const stepFactory = (
     }),
   } as TStepAst
 
-  // TODO: Need to add check if next line is empty of a comment
-  // If it is, then need to go to line after that
-  // And use that line for checking data tables and dock strings
-  // Otherwise this will fail unless the table or doc comes directly after the step
-  const nextIndex = index + 1
-  const nextLine = lines[nextIndex]
-  const afterLines = lines.slice(nextIndex)
+  const {
+    nextLine,
+    nextIndex,
+    afterLines
+  } = getAfterLines(index + 1, lines)
+
+  if(!nextIndex) return step
 
   step = checkDataTable(step, afterLines, nextLine, nextIndex)
   step = checkDocString(step, afterLines.join('\n'), nextLine, nextIndex)

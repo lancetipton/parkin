@@ -10,7 +10,7 @@ import { exists } from '@keg-hub/jsutils'
 /**
  * Helper method that calculates the location of an item within the index array
  * Maintains an offset array the keeps track of item locations when duplicate indexes exist
- * If a duplicate it found, the new item is add after the existing item using splice
+ * If a duplicate it found, the new item is added after the existing item using splice
  * It then stores an offset to know how far from the original index an item was moved
  *
  * **IMPORTANT** - This modifies the indexes array and it's items indexes in-place

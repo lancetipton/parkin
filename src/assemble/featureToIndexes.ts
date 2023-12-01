@@ -204,11 +204,9 @@ export const featureToIndexes = (
 
   offset = undefined
 
-  // Remove any empty items, then update their index
-  return indexes
-    .filter(item => item)
-    .map((item, idx) => {
-      item.ast.index = idx
-      return item
-    })
+  // Remove any empty items in the array
+  // Items can be added in a non-linear fashion
+  // So their may be empty items within the array
+  return indexes.filter(item => item)
+
 }

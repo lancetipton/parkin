@@ -142,17 +142,25 @@ export type TStepDefs = {
 
 export type TStepTable = {
   index: number
+  whitespace:string
   content: string[][]
 }
 
 export type TStepDoc = {
   index:number
-  whiteSpace:string
-  type:`quote`|`tick`
+  whitespace:string
   content: string[]
+  type:EDocType|`quote`|`tick`
 }
 
 export type TStepResolveOpts = {
   worldReplace?:boolean
   [K:string]:any
+}
+
+export enum EDocType {
+  tick=`tick`,
+  ticks='```',
+  quotes=`"""`,
+  quote=`quote`,
 }
