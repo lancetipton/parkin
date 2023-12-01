@@ -3,20 +3,21 @@ import type {
   TStepDef,
   TStepMeta,
   TStepDefs,
+  TFindOpts,
   TMatchResp,
   TAddStepDefs,
   TWorldConfig,
   TStepDefMethod,
-  TMatchRespExt,
   TStepResolveOpts,
 } from './types'
 
 import { EStepType } from './types'
 import { matcher } from './matcher'
 import { constants } from './constants'
+import { throwMissingDef } from './utils/errors'
 import { replaceWorld } from './utils/worldReplace'
 import { validateDefinition } from './utils/helpers'
-import { throwNoMatchingStep } from './utils/errors'
+import { buildDefinitionCtx } from './utils/buildDefinitionCtx'
 import { isArr, capitalize, isStr, ensureArr } from '@keg-hub/jsutils'
 import { joinAllDefs, registerFromParse, registerFromCall } from './definitions'
 
@@ -102,20 +103,21 @@ export class Steps {
   /**
    * Finds a matching step definition from the passed in text
    * Steps must be registered with this instance to be found
+   * Includes helpers to replace the step text with content from the world
+   * And adds the step definition ctx as the last argument passed to the matching def
    * @memberof Steps
    * @function
    * @public
    *
    */
-  match = (text:string, step?:TStepAst, options?:TStepResolveOpts) => {
+  match = (
+    text:string,
+    step?:TStepAst,
+    options?:TStepResolveOpts
+  ) => {
     // Join all step types together when finding a match
     // Treat all step definition types as the same when matching to step text
     const list = this.list()
-
-    // TODO: when adding refs to other features / steps to run
-    // Here would be a good place to start
-    // Could parse the text, looking for a $ref to other steps to run
-    // If found, then run those steps instead
 
     // Call the matcher to find a matching step definition
     const found = matcher(
@@ -126,20 +128,39 @@ export class Steps {
     )
 
     // If no matching step definition exists, then return false
-    if (!found.match || !found.definition) return false
+    if(!found.match || !found.definition) return false
 
-    // Add the Step instance's world to the match arguments
-    // Always added as the last argument
-    const extObj:TMatchRespExt = { step, world: this._world }
-
-    // If the doc and table exist, add them to the extObj
-    step?.doc && (extObj.doc = step?.doc)
-    step?.table && (extObj.table = step?.table)
-    options && (extObj.options = options)
-
-    found.match.push(extObj)
+    const ctx = buildDefinitionCtx(this._world, step, options)
+    found.match.push(ctx)
 
     return found as TMatchResp
+  }
+
+  /**
+   * Finds a matching step definition from the passed in text
+   * Steps must be registered with this instance to be found
+   * @memberof Steps
+   * @function
+   * @public
+   *
+   */
+  find = (text:string, options?:TFindOpts) => {
+    // Join all step types together when finding a match
+    // Treat all step definition types as the same when matching to step text
+    const list = this.list()
+
+    // Call the matcher to find a matching step definition
+    const found = matcher(
+      list,
+      text,
+      this._world,
+      options,
+    )
+
+    return !found.match || !found.definition
+      ? false
+      : found
+
   }
 
   /**
@@ -158,9 +179,7 @@ export class Steps {
     // Otherwise throw a no match error
     return found
       ? found.definition.method(...found.match)
-      : throwNoMatchingStep(
-        `Matching definition could not be found for step: "${text}"`
-      )
+      : throwMissingDef(text)
   }
 
   /**

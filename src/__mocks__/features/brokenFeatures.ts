@@ -25,3 +25,12 @@ Feature: Show demo of Goblet Platform
     Scenario:  
   Scenario: Navigate the Goblog
     Given I navigate to "https://www.gobletqa.com"`
+
+
+export const malformedStep = `@broken
+Feature: Steps with multiple params
+  Scenario: Multi-step params
+    I have 3 types of "apples" out of a total of 10
+
+    # The text '3rd' should not be quoted because it's a word, not string
+    And there are 3 "apples" in the '3rd' "barrel"`

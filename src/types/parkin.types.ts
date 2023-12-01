@@ -56,8 +56,10 @@ export type TMatchRespExt = {
 }
 
 export type TNoExtMatchResp = {
-  match?: [...any]
+  match?: any[]
+  optional?:any[]
   definition?:TStepDef
+  transformers?:TParamTypeModel[]
 }
 
 export type TMatchResp = {
@@ -113,6 +115,7 @@ type TParkinRunStepOpts = {
   retry?:number
   timeout?:number
   disabled?: boolean
+  worldReplace?:boolean
   [K:string]:any
 }
 
@@ -136,7 +139,7 @@ export type TParkinRunOpts = {
 
 export type TParkinRun = (
   data:string|string[]|TFeatureAst|TFeatureAst[],
-  options:TParkinRunOpts
+  options?:TParkinRunOpts
 ) => any
 
 export type TRegisterStepsMethod = (

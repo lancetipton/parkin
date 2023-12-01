@@ -5,6 +5,10 @@ import { registerPromiseSteps } from './promiseSteps'
 import { registerBackgroundSteps } from './backgroundSteps'
 import { registerWorldSteps } from './worldSteps'
 import { registerAliasSteps } from './aliasSteps'
+import { registerMultiParamSteps } from './multiParamSteps'
+import { registerMetaSteps } from './metaSteps'
+
+
 
 export const registerMockSteps = PK => {
   // The tests depend on the register order of the definitions
@@ -16,4 +20,6 @@ export const registerMockSteps = PK => {
   registerDocSteps(PK)
   registerWorldSteps(PK)
   registerAliasSteps(PK)
+  registerMultiParamSteps(PK)
+  registerMetaSteps(PK)
 }

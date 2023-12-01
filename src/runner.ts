@@ -15,9 +15,12 @@ import type {
 import {hasTag} from './utils/hasTag'
 import { parseFeature } from './parse'
 import { ETestType, EHookType } from './types'
-import { throwMissingDef } from './utils/errors'
+import { replaceWorld } from './utils/worldReplace'
+import { parseExpParams } from './matcher/expression'
 import { filterFeatures } from './utils/filterFeatures'
+import { buildDefinitionCtx } from './utils/buildDefinitionCtx'
 import { getTestMethod, skipTestsOnFail } from './utils/testMethods'
+import { throwMissingDef, throwInvalidDefParams } from './utils/errors'
 import {
   throwMissingSteps,
   throwMissingHooks,
@@ -46,18 +49,20 @@ const getStepOpts = (
   const shared = options?.steps?.shared
   const single = options?.steps?.[step?.uuid]
 
-  return {
-    ...shared,
-    ...single,
-    retry: single?.retry
-      || shared?.retry
-      || options?.retry
-      || 0,
-    timeout: single?.timeout
-      || shared?.timeout
-      || options?.timeout
-      || 15000
-  }
+  const retry = single?.retry
+    || shared?.retry
+    || options?.retry
+
+  const timeout = single?.timeout
+    || shared?.timeout
+    || options?.timeout
+
+  const joined = {...shared, ...single}
+
+  if(retry) joined.retry = retry
+  if(timeout) joined.timeout = timeout
+
+  return joined
 }
 
 /**
@@ -69,9 +74,7 @@ const getStepOpts = (
  *
  * @returns {string} - Built title
  */
-const buildTitle = (text:string, type:string) => {
-  return `${capitalize(type)} > ${text}`
-}
+const buildTitle = (text:string, type:string) => `${capitalize(type)} > ${text}`
 
 /**
  * Resolves and parses features based on the data type passed in
@@ -119,17 +122,35 @@ const runStep = (
 
   const test = getTestMethod(ETestType.test, testMode)
   const stepOpts = getStepOpts(step, options)
-  const found = stepsInstance.match(step.step, step, stepOpts)
+
+  const found = stepsInstance.find(step.step, {...stepOpts, parseParams: false })
   const defOpts = found ? found?.definition.meta?.test : emptyObj
+
   const opts = {...defOpts, ...stepOpts}
+
   const disabled = opts?.disabled || hasTag(step?.tags?.tokens, options?.tags?.disabled)
-  
+
   const testMethod = async () => {
     if(!found) return throwMissingDef(step.step)
     if(disabled) return
 
-    return await found.definition.method(...found.match)
+    const parsed = parseExpParams({
+      opts,
+      text: step.step,
+      match: found.match,
+      definition: found.definition,
+      $world: stepsInstance._world,
+      transformers: found.transformers,
+    })
+
+    if(!parsed) return throwInvalidDefParams(`\nStep text: "${step.step}"`)
+
+    const ctx = buildDefinitionCtx(stepsInstance._world, step, opts)
+    parsed.push(ctx)
+
+    return await found.definition.method(...parsed)
   }
+
   testMethod.ParkinMetaData = {
     disabled,
     ...pickKeys(step, [ `uuid`, `step`, `index`, `tags`, `type`, `definition`])
@@ -137,7 +158,10 @@ const runStep = (
 
   // Jest only accepts timeout as the last argument
   // So we have to check the environment to know the last argument
-  const last = process?.env?.JEST_WORKER_ID !== undefined
+  const inJest = process?.env?.JEST_WORKER_ID !== undefined
+  const jestOverride = process?.env?.JEST_FORCE_OVERRIDE !== undefined
+  
+  const last = inJest && !jestOverride
     ? opts.timeout
     : opts
 

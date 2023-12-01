@@ -133,6 +133,11 @@ export const matcher = (
   opts:TFindOpts=emptyObj
 ) => {
 
+  // TODO: when adding refs to other features / steps to run
+  // Here would be a good place to start
+  // Could parse the text, looking for a $ref to other steps to run
+  // If found, then run those steps instead
+
   if(!text.trim()) return emptyObj as TNoExtMatchResp
 
   const defLength = definitions.length
