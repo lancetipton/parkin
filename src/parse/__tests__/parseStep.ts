@@ -12,13 +12,13 @@ describe(`Feature Steps`, () => {
       const parsedFeature = parseFeature(docAndDataFeature)[0]
       expect(parsedFeature.scenarios[0].steps[0].doc).toEqual({
         index: 5,
-        whiteSpace: `      `,
+        whitespace: `      `,
         type: `tick`,
         content: `Test tick data to be parsed`,
       })
       expect(parsedFeature.scenarios[2].steps[0].doc).toEqual({
         index: 22,
-        whiteSpace: `      `,
+        whitespace: `      `,
         type: `quote`,
         content: `Test quote data to be parsed\nThat is two lines`,
       })
@@ -30,6 +30,7 @@ describe(`Feature Steps`, () => {
       const parsedFeature = parseFeature(docAndDataFeature)[0]
       expect(parsedFeature.scenarios[1].steps[0].table).toEqual({
         index: 12,
+        whitespace: `      `,
         content: [
           [ `name`, `email`, `tag` ],
           [ `Jon`, `jon@parkin.io`, `@jon` ],
@@ -38,7 +39,8 @@ describe(`Feature Steps`, () => {
         ],
       })
       expect(parsedFeature.scenarios[3].steps[0].table).toEqual({
-        index: 31,
+        index: 30,
+        whitespace: `      `,
         content: [
           [ `first`, `Tom` ],
           [ `last`, `Jerry` ],

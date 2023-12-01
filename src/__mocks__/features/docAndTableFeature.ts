@@ -21,10 +21,10 @@ Feature: docs-and-tables
   Scenario: Parse step with doc-string quotes
     Given I have the following doc-string data using type quote
       """
-      Test quote data to be parsed
-      That is two lines
+        Test quote data to be parsed
+        That is two lines
       """
-    Then the doc-string data should be "Test quote data to be parsed\nThat is two lines"
+    Then the doc-string data should be "$:world.docStringData"
 
   Scenario: Parse step with doc-table-2
     And I provide below information during registration
@@ -32,4 +32,5 @@ Feature: docs-and-tables
       | last  | Jerry                   |
       | phone | 123456789               |
       | email | tomandjerry@cartoon.com |
+
 `

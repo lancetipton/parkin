@@ -67,7 +67,7 @@ describe(`featureToIndexes`, () => {
     })
   })
 
-  it(`should feature.rules and their properties`, () => {
+  it(`should index feature.rules[*] and their properties`, () => {
     expect(indexes[mockFeatToIdx.rules[0].index]).toBeDefined()
     expect(indexes[mockFeatToIdx.rules[0].index]).toEqual({
       parent: mockFeatToIdx,
@@ -93,7 +93,7 @@ describe(`featureToIndexes`, () => {
     })
   })
 
-  it(`should feature.rule[].scenarios`, () => {
+  it(`should index feature.rules[*].scenarios`, () => {
     expect(indexes[mockFeatToIdx.rules[0].scenarios[0].index]).toBeDefined()
     expect(indexes[mockFeatToIdx.rules[0].scenarios[0].index]).toEqual({
       parent: mockFeatToIdx.rules[0],
@@ -113,7 +113,7 @@ describe(`featureToIndexes`, () => {
     })
   })
 
-  it(`should feature.scenarios and their properties`, () => {
+  it(`should index feature.scenarios and their properties`, () => {
     expect(indexes[mockFeatToIdx.scenarios[0].index]).toBeDefined()
     expect(indexes[mockFeatToIdx.scenarios[0].index]).toEqual({
       parent: mockFeatToIdx,

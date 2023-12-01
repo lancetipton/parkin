@@ -183,6 +183,31 @@ export const throwMissingFeatureText = () => {
 }
 
 /**
+ * Throws an error when a feature text is not passed to the Runner class instance
+ * @function
+ * @public
+ * @throws
+ *
+ */
+export const throwInvalidDefParams = (msg:string=``) => {
+  throw new ParkinError(
+    `Malformed step text, could not extract the expected step definition parameters. ${msg}`.trim()
+  )
+}
+
+
+/**
+ * Throws an error when a feature step does not match a step definition's text
+ * @function
+ * @public
+ * @throws
+ *
+ */
+export const throwMissingDef = (step:string) => {
+  throw new ParkinError(`Matching definition could not be found for step: "${step}"`)
+}
+
+/**
  * Throws an error when a feature step does not match a step definition
  * @function
  * @public

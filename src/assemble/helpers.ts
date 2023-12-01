@@ -47,7 +47,11 @@ export const addContent = (
 }
 
 
-export const getWhiteSpace = (ast:TAstType|TBlockAst|TTagsAst, parent:TAstType, def=``) => {
+export const getWhiteSpace = (
+  ast:{whitespace?:string, [key:string]:any},
+  parent:TAstType,
+  def=``
+) => {
   return exists<string>(ast.whitespace)
     ? ast.whitespace
     : exists<string>(parent?.whitespace)

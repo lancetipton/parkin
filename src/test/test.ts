@@ -342,10 +342,13 @@ export class ParkinTest {
     let retry:number = this.testRetry || 0
     let timeout:number = this.testTimeout
 
-    if(isObj(meta) && !exists(action.metaData) && !exists(action.ParkinMetaData)){
-      action.metaData = meta
-      if(meta?.timeout) timeout = meta.timeout
+    if(isObj(meta)){
+
+      if(!exists(action.metaData) && !exists(action.ParkinMetaData))
+        action.metaData = meta
+
       if(meta?.retry) retry = meta.retry
+      if(meta?.timeout) timeout = meta.timeout
     }
     else if(isNum(meta)) timeout = meta
 

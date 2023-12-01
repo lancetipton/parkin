@@ -1,7 +1,8 @@
 import type { TWorldConfig } from './world.types'
 import type { EStepType } from './helpers.types'
 import type { TMatchResp } from './parkin.types'
-import {TTagsAst} from './features.types'
+import type { TTagsAst } from './features.types'
+import type { TTestTestObj } from './test.types'
 
 export type TStepAction = (...args:any[]) => any
 export type TRegisterStepMethod = (step:string, action:TStepAction) => any
@@ -91,18 +92,25 @@ export type TStepMetaExpression = {
   description: string,
 }
 
+export type TStepTestMeta = {
+  retry?:number
+  only?:boolean
+  skip?: boolean
+  timeout?:number
+}
 
 export type TStepMeta = {
   // TO Be Removed once all steps are updated
   race?: boolean
   // TO Be Removed once all steps are updated
 
-  module?:string
   name?:string
   info?:string
+  module?:string
   alias?: string[]
   examples?: string[]
   description?:string
+  test?:TStepTestMeta
   expressions?:TStepMetaExpression[]
 }
 
@@ -134,17 +142,25 @@ export type TStepDefs = {
 
 export type TStepTable = {
   index: number
+  whitespace:string
   content: string[][]
 }
 
 export type TStepDoc = {
   index:number
-  whiteSpace:string
-  type:`quote`|`tick`
+  whitespace:string
   content: string[]
+  type:EDocType|`quote`|`tick`
 }
 
 export type TStepResolveOpts = {
   worldReplace?:boolean
   [K:string]:any
+}
+
+export enum EDocType {
+  tick=`tick`,
+  ticks='```',
+  quotes=`"""`,
+  quote=`quote`,
 }

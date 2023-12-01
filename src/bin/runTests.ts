@@ -28,7 +28,7 @@ export const runTests = async (
     const PTE = getPTE()
 
     const content = await fs.readFile(feature, { encoding: `utf8` })
-    const featureAst = PK.parse.feature(content, { worldReplace: false })
+    const featureAst = PK.parse.feature(content, { worldReplace: true })
 
     const resp = await PK.run(featureAst, runOpts)
     if(!resp) return acc
