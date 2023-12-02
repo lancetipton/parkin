@@ -1,4 +1,4 @@
-import { joinRegex } from '@keg-hub/jsutils'
+import { joinRegex } from '@keg-hub/jsutils/joinRegex'
 
 export const RX_OPTIONAL = /\w*\([^)]*?\)/
 

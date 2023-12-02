@@ -1,7 +1,9 @@
 import type { TFeatureAst } from '../types'
 
 import { dataMappers } from './dataMappers'
-import { deepEqual, exists, isFunc } from '@keg-hub/jsutils'
+import { isFunc } from '@keg-hub/jsutils/isFunc'
+import { exists } from '@keg-hub/jsutils/exists'
+import { deepEqual } from '@keg-hub/jsutils/deepEqual'
 
 type TFeatureKey = keyof TFeatureAst
 type TFeatureProp = TFeatureAst[TFeatureKey]

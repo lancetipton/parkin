@@ -6,7 +6,8 @@ import type {
 
 import { tempRegister } from './tempRegister'
 import { EStepMethodType, EStepType } from '../types'
-import { capitalize, eitherArr } from '@keg-hub/jsutils'
+import { eitherArr } from '@keg-hub/jsutils/eitherArr'
+import { capitalize } from '@keg-hub/jsutils/capitalize'
 import {
   resolveModule,
   resolveRequire,

@@ -1,5 +1,5 @@
 import { expressionDefs } from '../../__mocks__'
-import { isInt } from '@keg-hub/jsutils'
+import { isInt } from '@keg-hub/jsutils/isInt'
 
 jest.resetModules()
 jest.resetAllMocks()

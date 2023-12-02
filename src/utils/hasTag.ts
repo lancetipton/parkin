@@ -1,4 +1,7 @@
-import {eitherArr, emptyArr, isArr, isStr} from "@keg-hub/jsutils"
+import {isStr} from "@keg-hub/jsutils/isStr"
+import {isArr} from "@keg-hub/jsutils/isArr"
+import {emptyArr} from "@keg-hub/jsutils/emptyArr"
+import {eitherArr} from "@keg-hub/jsutils/eitherArr"
 
 /**
  * @return {Array<string>?} A match of all words starting with '@', the tag indicator.

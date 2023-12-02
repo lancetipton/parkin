@@ -4,7 +4,7 @@ import type {
   TRunResultTestMeta
 } from '../types'
 import { EResultStatus } from '../types'
-import { isObj } from '@keg-hub/jsutils'
+import { isObj } from '@keg-hub/jsutils/isObj'
 
 
 /**

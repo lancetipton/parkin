@@ -1,6 +1,9 @@
 import type { TRequire, TModule, TJasmine } from '../types'
 
-import { checkCall, noOpObj, noOp } from '@keg-hub/jsutils'
+
+import { noOp } from '@keg-hub/jsutils/noOp'
+import { emptyObj } from '@keg-hub/jsutils/emptyObj'
+import { checkCall } from '@keg-hub/jsutils/checkCall'
 
 /**
  * Helpers to ensure the right code is run in the right environments
@@ -26,7 +29,7 @@ export const hasJasmine = Boolean(
  *
  */
 export const resolveJasmine = ():TJasmine =>
-  hasJasmine ? checkCall(() => global.jasmine as unknown as TJasmine) : { getEnv: () => noOpObj, testPath: `` }
+  hasJasmine ? checkCall(() => global.jasmine as unknown as TJasmine) : { getEnv: () => emptyObj, testPath: `` }
 
 /**
  * Resolve the module object if it exists
@@ -61,9 +64,9 @@ export const resolveGlobalObj = ():Record<any, any> => {
       ? checkCall(() => window)
       : hasGlobal
         ? checkCall(() => global)
-        : noOpObj
+        : emptyObj
   }
   catch (err) {
-    return noOpObj
+    return emptyObj
   }
 }

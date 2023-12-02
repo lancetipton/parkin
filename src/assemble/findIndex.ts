@@ -8,10 +8,12 @@ import type {
   TBackgroundParentAst,
 } from '../types'
 
-import { EBlockLoc } from '../types'
-import { EStepType, EAstObject } from '../types'
-import { emptyArr, exists, isArr, isObj, isNum } from '@keg-hub/jsutils'
-
+import { isObj } from '@keg-hub/jsutils/isObj'
+import { isArr } from '@keg-hub/jsutils/isArr'
+import { isNum } from '@keg-hub/jsutils/isNum'
+import { exists } from '@keg-hub/jsutils/exists'
+import { emptyArr } from '@keg-hub/jsutils/emptyArr'
+import { EStepType, EAstObject, EBlockLoc } from '../types'
 
 /**
  * Map step and singular types to plural types of the EAstObject enum

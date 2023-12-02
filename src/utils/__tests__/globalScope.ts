@@ -1,5 +1,5 @@
 import * as jsutils from '@keg-hub/jsutils'
-const { noOpObj } = jsutils
+const { emptyObj } = jsutils
 jest.resetModules()
 jest.resetAllMocks()
 jest.clearAllMocks()
@@ -11,6 +11,11 @@ const mockCheckCall = jest.fn((func, ...args) => {
 })
 
 jest.setMock('@keg-hub/jsutils', {
+  ...jsutils,
+  checkCall: mockCheckCall,
+})
+
+jest.setMock('@keg-hub/jsutils/checkCall', {
   ...jsutils,
   checkCall: mockCheckCall,
 })
@@ -33,7 +38,7 @@ describe('globalScope', () => {
       global.window = undefined
       const { resolveGlobalObj } = require('../globalScope')
       const globalObj = resolveGlobalObj()
-      expect(globalObj).toBe(noOpObj)
+      expect(globalObj).toEqual(emptyObj)
       shouldThrow = false
       global.window = orgWin
     })

@@ -1,5 +1,6 @@
-import { givenUuid, thenUuid } from './helpers'
-import { isFloat, isInt, isStr } from '@keg-hub/jsutils'
+import { isInt } from '@keg-hub/jsutils/isInt'
+import { isStr } from '@keg-hub/jsutils/isStr'
+import { isFloat } from '@keg-hub/jsutils/isFloat'
 
 export const definition = `
 Given(/I am on (\S+)$/, async url => {

@@ -1,7 +1,7 @@
 import type { TFailedErrorResult, TRunResults } from '../../../types'
 
 import { Logger } from '@keg-hub/cli-utils'
-import {emptyObj} from '@keg-hub/jsutils'
+import {emptyObj} from '@keg-hub/jsutils/emptyObj'
 
 import {
   Tags,

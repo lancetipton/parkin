@@ -1,4 +1,4 @@
-import {isStr} from '@keg-hub/jsutils'
+import {isStr} from '@keg-hub/jsutils/isStr'
 import { ParkinAbortErrName, ParkinBailErrName } from '../constants'
 import { EHookType, TRunResults } from '../types'
 

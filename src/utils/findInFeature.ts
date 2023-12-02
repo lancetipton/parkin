@@ -1,6 +1,6 @@
 
 import { TFeatureAst, EAstObject, TParentAst, TStepAst } from "../types"
-import { get } from "@keg-hub/jsutils"
+import { get } from "@keg-hub/jsutils/get"
 import { ParentTypes, StepTypes } from '../constants'
 
 type TFindIdInFeature = {id:string, uuid?:never}

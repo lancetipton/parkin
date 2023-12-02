@@ -2,7 +2,7 @@ import type { TFeatureAst, TBlockAst } from '../types'
 
 import { EAstObject } from '../types'
 import { idFromIdx } from './idFromIdx'
-import { eitherArr } from '@keg-hub/jsutils'
+import { eitherArr } from '@keg-hub/jsutils/eitherArr'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 /**

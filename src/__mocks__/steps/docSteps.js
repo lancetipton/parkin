@@ -4,16 +4,16 @@ export const registerDocSteps = PK => {
     jest.fn((docStringType, { world, doc }) => {
       expect(docStringType).toBe(doc.type)
       world.docStringData = doc.content
-    })
+    }),
   )
 
   PK.Then(
     'the doc-string data should be {string}',
     jest.fn((docStringData, { world }) => {
       expect(world.docStringData.split(`\n`)).toEqual(
-        docStringData.split(`\\n`)
+        docStringData.split(`\\n`),
       )
-    })
+    }),
   )
 
   PK.Given(
@@ -21,7 +21,7 @@ export const registerDocSteps = PK => {
     jest.fn(({ table, world }) => {
       expect(table.content).not.toBe(undefined)
       world.usersTable = table.content
-    })
+    }),
   )
 
   PK.Then(
@@ -33,6 +33,6 @@ export const registerDocSteps = PK => {
       })
 
       expect(found).not.toBe(undefined)
-    })
+    }),
   )
 }

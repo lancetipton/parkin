@@ -14,11 +14,14 @@ import type {
 import { EStepType } from './types'
 import { matcher } from './matcher'
 import { constants } from './constants'
+import { isArr } from '@keg-hub/jsutils/isArr'
+import { isStr } from '@keg-hub/jsutils/isStr'
 import { throwMissingDef } from './utils/errors'
 import { replaceWorld } from './utils/worldReplace'
 import { validateDefinition } from './utils/helpers'
+import { ensureArr } from '@keg-hub/jsutils/ensureArr'
+import { capitalize } from '@keg-hub/jsutils/capitalize'
 import { buildDefinitionCtx } from './utils/buildDefinitionCtx'
-import { isArr, capitalize, isStr, ensureArr } from '@keg-hub/jsutils'
 import { joinAllDefs, registerFromParse, registerFromCall } from './definitions'
 
 const { STEP_TYPES } = constants

@@ -2,7 +2,7 @@ jest.resetModules()
 jest.resetAllMocks()
 jest.clearAllMocks()
 import { dataMapperMocks } from '../../__mocks__'
-import { deepMerge } from '@keg-hub/jsutils'
+import { deepMerge } from '@keg-hub/jsutils/deepMerge'
 
 const { dataMappers } = require('../dataMappers')
 

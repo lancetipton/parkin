@@ -11,7 +11,10 @@ import type {
 } from '../types'
 
 import { ParkinError } from '../utils/errors'
-import { keyMap, isFunc, isStr, noOpObj } from '@keg-hub/jsutils'
+import { isStr } from '@keg-hub/jsutils/isStr'
+import { isFunc } from '@keg-hub/jsutils/isFunc'
+import { keyMap } from '@keg-hub/jsutils/keyMap'
+import { emptyObj } from '@keg-hub/jsutils/emptyObj'
 
 /**
  * @type {Object}
@@ -108,7 +111,7 @@ export const validateItem = (
  */
 export const createItem = <T=TTestObj>(
   type:string,
-  metadata:Partial<TTestObj> = noOpObj as TTestObj,
+  metadata:Partial<TTestObj> = emptyObj as TTestObj,
   validate = true
 ) => {
   const { description, action } = metadata

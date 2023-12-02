@@ -6,7 +6,7 @@ export const registerMultiParamSteps = PK => {
       expect(type).not.toBe(undefined)
       expect(totalAmt).not.toBe(undefined)
       expect(ctx).not.toBe(undefined)
-    }
+    },
   )
 
   PK.Then(
@@ -17,6 +17,6 @@ export const registerMultiParamSteps = PK => {
       expect(word2).not.toBe(undefined)
       expect(word3).not.toBe(undefined)
       expect(ctx).not.toBe(undefined)
-    }
+    },
   )
 }

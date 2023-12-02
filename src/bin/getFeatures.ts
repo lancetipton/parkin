@@ -1,8 +1,10 @@
 import type { TParkinOpts } from '../types/bin.types'
 
 import { cwd, rootDir } from './paths'
-import { ensureArr, flatArr, emptyArr } from '@keg-hub/jsutils'
 import { locsByTypes, fullLoc } from './helpers'
+import { flatArr } from '@keg-hub/jsutils/flatArr'
+import { emptyArr } from '@keg-hub/jsutils/emptyArr'
+import { ensureArr } from '@keg-hub/jsutils/ensureArr'
 
 const filterFeatures = async (loc:string, opts:TParkinOpts) => {
   const foundFeats = await locsByTypes(loc, {

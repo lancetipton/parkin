@@ -6,7 +6,7 @@ import type {
 } from '../types'
 
 import { idFromIdx } from './idFromIdx'
-import { exists } from '@keg-hub/jsutils'
+import { exists } from '@keg-hub/jsutils/exists'
 import { EAstObject, EFeatureTypes } from '../types'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 

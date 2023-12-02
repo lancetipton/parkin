@@ -6,8 +6,11 @@ import type {
   TScenarioParentAst,
   TBackgroundParentAst
 } from '../types'
+import { isArr } from '@keg-hub/jsutils/isArr'
+import { omitKeys } from '@keg-hub/jsutils/omitKeys'
+import { emptyObj } from '@keg-hub/jsutils/emptyObj'
+import { ensureArr } from '@keg-hub/jsutils/ensureArr'
 import { featureEmptyLine } from '../parse/ensureMeta'
-import { ensureArr, emptyObj, omitKeys, isArr } from '@keg-hub/jsutils'
 
 export const ensureBackgroundFirst = <T extends TBackgroundParentAst>(parent:T, opts:TAssembleOpts) => {
   if(!opts.backgroundAfterParent) return parent

@@ -8,7 +8,8 @@ import type {
 
 import { parseStep } from './parseStep'
 import { checkTags } from './checkTags'
-import { emptyObj, exists } from '@keg-hub/jsutils'
+import { exists } from '@keg-hub/jsutils/exists'
+import { emptyObj } from '@keg-hub/jsutils/emptyObj'
 import { setActiveParent } from './setActiveParent'
 import { replaceWorld } from '../utils/worldReplace'
 import { ruleFactory, ensureRule } from './ensureRule'

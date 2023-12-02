@@ -12,9 +12,9 @@ import { getWorld } from './getWorld'
 import { runTests } from './runTests'
 import { getConfig } from './getConfig'
 import { CLIReporter } from './reporters'
-import { pickKeys } from '@keg-hub/jsutils'
 import { getFeatures } from './getFeatures'
 import { argsParse } from '@keg-hub/args-parse'
+import { pickKeys } from '@keg-hub/jsutils/pickKeys'
 
 ;(async () => {
 

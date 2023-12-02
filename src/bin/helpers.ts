@@ -1,9 +1,9 @@
 import type { TParkinOpts } from '../types/bin.types'
 
 import path from 'path'
-import { eitherArr } from '@keg-hub/jsutils'
 import { getAllFiles } from 'get-all-files'
 import { getRoot, homeDir, cwd } from './paths'
+import { eitherArr } from '@keg-hub/jsutils/eitherArr'
 
 /**
  * Gets a list of paths based on the passed in options

@@ -7,7 +7,8 @@ import type {
 
 import { EAstObject } from '../types'
 import { idFromIdx } from './idFromIdx'
-import { isStr, isBool } from '@keg-hub/jsutils'
+import { isStr } from '@keg-hub/jsutils/isStr'
+import { isBool } from '@keg-hub/jsutils/isBool'
 import { getRXMatch, getStartWhiteSpace } from '../utils/helpers'
 
 /**

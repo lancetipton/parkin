@@ -7,7 +7,8 @@ import type {
 
 import { EStepType } from '../types'
 import { constants } from '../constants'
-import { capitalize, noOpObj } from '@keg-hub/jsutils'
+import { emptyObj } from '@keg-hub/jsutils/emptyObj'
+import { capitalize } from '@keg-hub/jsutils/capitalize'
 import { strToId, sanitize, validateDefinition } from '../utils/helpers'
 
 const { REGEX_VARIANT, EXPRESSION_VARIANT } = constants
@@ -43,7 +44,7 @@ export const registerFromCall = function (
   type:EStepType,
   match:string,
   method:TStepDefMethod,
-  meta:TStepMeta = noOpObj
+  meta:TStepMeta = emptyObj
 ) {
   
   const variant = match.toString().indexOf('/') === 0 ? REGEX_VARIANT : EXPRESSION_VARIANT

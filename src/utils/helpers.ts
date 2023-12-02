@@ -1,5 +1,7 @@
 import type { TTokenOpts, EPartMatchTypes, TStepDef } from '../types'
-import { uuid, emptyObj, hashString } from '@keg-hub/jsutils'
+
+import { emptyObj } from '@keg-hub/jsutils/emptyObj'
+import { hashString } from '@keg-hub/jsutils/hashString'
 
 
 const cleanDefMatch = (match:string|RegExp) => {

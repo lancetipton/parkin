@@ -17,9 +17,15 @@ import type {
 
 import { run } from './run'
 import { runResult } from './runResult'
+import { noOp } from '@keg-hub/jsutils/noOp'
+import { isStr } from '@keg-hub/jsutils/isStr'
+import { isNum } from '@keg-hub/jsutils/isNum'
+import { isObj } from '@keg-hub/jsutils/isObj'
+import { exists } from '@keg-hub/jsutils/exists'
+import { emptyObj } from '@keg-hub/jsutils/emptyObj'
 import { PromiseRetry } from '../utils/promiseRetry'
+import { checkCall } from '@keg-hub/jsutils/checkCall'
 import { PromiseTimeout } from '../utils/promiseTimeout'
-import { noOp, noOpObj, isStr, checkCall, isNum, isObj, exists } from '@keg-hub/jsutils'
 import {
   Types,
   createRoot,
@@ -29,6 +35,8 @@ import {
   hookTypes,
   validateHook,
 } from './utils'
+
+
 
 type TTestSkipFactory = (description:string, action?:TTestAction, timeout?:number) => void
 
@@ -66,7 +74,7 @@ export class ParkinTest {
   beforeEach:TTestHookMethod = noOp
   #activeParent:TParentTestObj = undefined
 
-  constructor(config:TParkinTestConfig = noOpObj) {
+  constructor(config:TParkinTestConfig = emptyObj) {
     this.#root.description = config.description || `root`
 
     this.#addOnly()
@@ -78,7 +86,7 @@ export class ParkinTest {
     this.setConfig(config)
   }
 
-  run = (config:TParkinTestConfig = noOpObj) => {
+  run = (config:TParkinTestConfig = emptyObj) => {
 
     if (config.description) this.#root.description = config.description
 
@@ -192,7 +200,7 @@ export class ParkinTest {
     onRunStart,
     onSpecStart,
     onSuiteStart,
-  }:TParkinTestConfig=noOpObj) => {
+  }:TParkinTestConfig=emptyObj) => {
 
     if(onAbort) this.#onAbort = onAbort
     

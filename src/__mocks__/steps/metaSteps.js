@@ -9,7 +9,7 @@ export const registerMetaSteps = PK => {
       test: {
         retry: 2,
       },
-    }
+    },
   )
 
   PK.Then(
@@ -21,6 +21,6 @@ export const registerMetaSteps = PK => {
       test: {
         timeout: 60000,
       },
-    }
+    },
   )
 }

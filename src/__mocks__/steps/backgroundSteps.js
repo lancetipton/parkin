@@ -15,7 +15,7 @@ const SCENARIO2_THEN = 'scenario 2 step - Then'
 export const registerBackgroundSteps = PK => {
   PK.Given(`that background exists`, ({ world }) => {
     expect(world.callOrder === undefined || world.callOrder.length === 4).toBe(
-      true
+      true,
     )
     setCallOrder(world, BACKGROUND_GIVEN)
   })
@@ -24,11 +24,11 @@ export const registerBackgroundSteps = PK => {
     `the background steps should be called before each scenario`,
     ({ world }) => {
       expect(world.callOrder.length === 1 || world.callOrder.length === 5).toBe(
-        true
+        true,
       )
       expect(world.callOrder[0]).toBe(BACKGROUND_GIVEN)
       setCallOrder(world, BACKGROUND_THEN)
-    }
+    },
   )
 
   PK.Given(`that this Feature has a background`, ({ world }) => {
@@ -46,7 +46,7 @@ export const registerBackgroundSteps = PK => {
       expect(world.callOrder[1]).toBe(BACKGROUND_THEN)
       expect(world.callOrder[2]).toBe(SCENARIO_GIVEN)
       setCallOrder(world, SCENARIO_THEN)
-    }
+    },
   )
 
   PK.Given(`that a second scenario exists`, ({ world }) => {
@@ -71,6 +71,6 @@ export const registerBackgroundSteps = PK => {
       expect(world.callOrder[4]).toBe(BACKGROUND_GIVEN)
       expect(world.callOrder[5]).toBe(BACKGROUND_THEN)
       expect(world.callOrder[6]).toBe(SCENARIO2_GIVEN)
-    }
+    },
   )
 }

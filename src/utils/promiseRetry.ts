@@ -1,4 +1,4 @@
-import { wait } from "@keg-hub/jsutils"
+import { wait } from "@keg-hub/jsutils/wait"
 import { TPromiseRetry } from "../types"
 import { RetryError, throwAbortError } from './errors'
 

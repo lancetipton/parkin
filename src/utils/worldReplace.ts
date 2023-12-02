@@ -1,7 +1,9 @@
 import type { TWorldConfig } from '../types'
 
 import { constants } from '../constants'
-import { get, isFunc, exists } from '@keg-hub/jsutils'
+import { get } from '@keg-hub/jsutils/get'
+import { exists } from '@keg-hub/jsutils/exists'
+import { isFunc } from '@keg-hub/jsutils/isFunc'
 import { throwWorldReplace, throwAliasReplace } from './errors'
 import {
   RX_WORLD_MATCH,
