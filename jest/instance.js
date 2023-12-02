@@ -1,5 +1,5 @@
 const { Parkin } = require('@ltipton/parkin')
-const { noOpObj } = require('@keg-hub/jsutils/noOpObj')
+const { emptyObj } = require('@keg-hub/jsutils/emptyObj')
 const { deepMerge } = require('@keg-hub/jsutils/deepMerge')
 
 /**
@@ -8,7 +8,7 @@ const { deepMerge } = require('@keg-hub/jsutils/deepMerge')
 let __WORLD = {}
 
 // TODO: figure out a way to load custom world object from the consumer
-global.registerWorld = (world=noOpObj, merge) => {
+global.registerWorld = (world=emptyObj, merge) => {
   __WORLD = merge ? deepMerge(__WORLD, world) : world
 }
 

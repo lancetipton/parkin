@@ -21,7 +21,7 @@ import { findInFeature } from './utils/findInFeature'
 import { Matcher, registerParamType } from './matcher'
 import { parseFeature, parseDefinition } from './parse'
 import { isObj } from '@keg-hub/jsutils/isObj'
-import { noOpObj } from '@keg-hub/jsutils/noOpObj'
+import { emptyObj } from '@keg-hub/jsutils/emptyObj'
 import { eitherArr } from '@keg-hub/jsutils/eitherArr'
 import { capitalize } from '@keg-hub/jsutils/capitalize'
 
@@ -93,7 +93,7 @@ export class Parkin {
   }
 
   init = (
-    world:TWorldConfig = noOpObj as TWorldConfig,
+    world:TWorldConfig = emptyObj as TWorldConfig,
     steps?:TRegisterOrAddStep,
     warn=true
   ) => {

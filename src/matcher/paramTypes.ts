@@ -12,7 +12,7 @@ import { toStr } from '@keg-hub/jsutils/toStr'
 import { isObj } from '@keg-hub/jsutils/isObj'
 import { removeQuotes } from '../utils/helpers'
 import { exists } from '@keg-hub/jsutils/exists'
-import { noOpObj } from '@keg-hub/jsutils/noOpObj'
+import { emptyObj } from '@keg-hub/jsutils/emptyObj'
 import { isQuoted } from '@keg-hub/jsutils/isQuoted'
 import { checkCall } from '@keg-hub/jsutils/checkCall'
 import { equalsNaN } from '@keg-hub/jsutils/equalsNaN'
@@ -175,7 +175,7 @@ export const getParamTypes = () => __paramTypes
  * @return {Object} Registered param types
  */
 export const registerParamType = (
-  model:TParamTypeModel = noOpObj as TParamTypeModel,
+  model:TParamTypeModel = emptyObj as TParamTypeModel,
   key:string=model.name
 ) => {
   if (__paramTypes[key]) return throwParamTypeExists(key)
