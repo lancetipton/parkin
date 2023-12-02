@@ -29,7 +29,7 @@ export const registerWorldSteps = PK => {
     'this path $world.does.not.exist should not be replaced',
     (ctx, notWorld) => {
       expect(notWorld).toBe(undefined)
-    }
+    },
   )
 
   PK.Then('this features status should be {string}', (status, ctx) => {

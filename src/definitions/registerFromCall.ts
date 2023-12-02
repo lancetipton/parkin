@@ -7,7 +7,8 @@ import type {
 
 import { EStepType } from '../types'
 import { constants } from '../constants'
-import { capitalize, noOpObj } from '@keg-hub/jsutils'
+import { noOpObj } from '@keg-hub/jsutils/noOpObj'
+import { capitalize } from '@keg-hub/jsutils/capitalize'
 import { strToId, sanitize, validateDefinition } from '../utils/helpers'
 
 const { REGEX_VARIANT, EXPRESSION_VARIANT } = constants

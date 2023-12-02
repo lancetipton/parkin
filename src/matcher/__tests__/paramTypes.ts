@@ -1,4 +1,5 @@
-import { isArr, typeOf } from '@keg-hub/jsutils'
+import { isArr } from '@keg-hub/jsutils/isArr'
+import { typeOf } from '@keg-hub/jsutils/typeOf'
 
 jest.resetModules()
 jest.resetAllMocks()

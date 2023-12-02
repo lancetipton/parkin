@@ -1,5 +1,6 @@
 const { Parkin } = require('@ltipton/parkin')
-const { deepMerge, noOpObj } = require('@keg-hub/jsutils')
+const { noOpObj } = require('@keg-hub/jsutils/noOpObj')
+const { deepMerge } = require('@keg-hub/jsutils/deepMerge')
 
 /**
  * Global world object cache holder

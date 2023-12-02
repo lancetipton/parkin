@@ -3,8 +3,10 @@ import type { TWorldConfig } from './types'
 
 import { EHookType } from './types'
 import { constants } from './constants'
+import { noOp } from '@keg-hub/jsutils/noOp'
+import { isFunc } from '@keg-hub/jsutils/isFunc'
 import { throwInvalidHookType } from './utils/errors'
-import { isFunc, noPropArr, noOp } from '@keg-hub/jsutils'
+import { noPropArr } from '@keg-hub/jsutils/noPropArr'
 
 const { HOOK_TYPES } = constants
 

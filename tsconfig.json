@@ -17,6 +17,10 @@
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "@keg-hub/jsutils": ["node_modules/@keg-hub/jsutils/build/cjs"],
+      "@keg-hub/jsutils/*": ["node_modules/@keg-hub/jsutils/build/cjs/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "build"]

@@ -1,7 +1,8 @@
 
 import { fullLoc } from './helpers'
 import { TParkinOpts } from "src/types/bin.types"
-import { ensureArr, flatUnion } from '@keg-hub/jsutils'
+import { ensureArr } from '@keg-hub/jsutils/ensureArr'
+import { flatUnion } from '@keg-hub/jsutils/flatUnion'
 
 const mergeConfig = (base:Partial<TParkinOpts>, override:Partial<TParkinOpts>) => {
   const {

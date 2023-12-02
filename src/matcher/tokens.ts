@@ -1,10 +1,10 @@
 import type { TTokenOpts, TStepDef } from '../types'
 
-
 import { getRegexParts } from './regex'
 import { EPartMatchTypes } from '../types'
 import { includePartType } from '../utils/helpers'
-import { joinRegex, emptyObj } from '@keg-hub/jsutils'
+import { emptyObj } from '@keg-hub/jsutils/emptyObj'
+import { joinRegex } from '@keg-hub/jsutils/joinRegex'
 
 import {
   RX_INT,
@@ -25,6 +25,7 @@ export type TMatchTokens = {
 
 const tokenRegex = joinRegex(
   RX_INT,
+  // @ts-ignore
   RX_FLOAT,
   RX_ALT,
   RX_OPTIONAL,

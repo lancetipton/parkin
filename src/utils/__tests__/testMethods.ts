@@ -1,4 +1,4 @@
-import { noOp } from '@keg-hub/jsutils'
+import { noOp } from '@keg-hub/jsutils/noOp'
 import { constants } from '../../constants'
 const { SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV } = constants
 

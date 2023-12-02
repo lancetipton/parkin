@@ -1,7 +1,7 @@
 import { homedir } from 'os'
 
 import path from 'path'
-import { isStr } from '@keg-hub/jsutils'
+import { isStr } from '@keg-hub/jsutils/isStr'
 
 export const cwd = process.cwd()
 export const homeDir = homedir()

@@ -10,8 +10,9 @@ import type {
 } from '../types'
 
 import { EDocType } from '../types'
-import { capitalize, exists } from '@keg-hub/jsutils'
+import { exists } from '@keg-hub/jsutils/exists'
 import { EFeatureTypes, EAstObject } from '../types'
+import { capitalize } from '@keg-hub/jsutils/capitalize'
 import { getTextContent, getWhiteSpace, addContent } from './helpers'
 
 export const assembleFeature = (

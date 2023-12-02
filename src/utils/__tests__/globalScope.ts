@@ -15,6 +15,11 @@ jest.setMock('@keg-hub/jsutils', {
   checkCall: mockCheckCall,
 })
 
+jest.setMock('@keg-hub/jsutils/checkCall', {
+  ...jsutils,
+  checkCall: mockCheckCall,
+})
+
 describe('globalScope', () => {
   describe('resolveGlobalObj', () => {
     it('should return the window object when it exits', () => {
@@ -33,7 +38,7 @@ describe('globalScope', () => {
       global.window = undefined
       const { resolveGlobalObj } = require('../globalScope')
       const globalObj = resolveGlobalObj()
-      expect(globalObj).toBe(noOpObj)
+      expect(globalObj).toEqual(noOpObj)
       shouldThrow = false
       global.window = orgWin
     })

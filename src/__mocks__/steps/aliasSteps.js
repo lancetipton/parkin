@@ -24,14 +24,14 @@ export const registerAliasSteps = PK => {
     (replaced, ctx) => {
       const { world } = ctx
       expect(replaced).toBe(world.$alias.background)
-    }
+    },
   )
 
   PK.And(
     'this path $$doesNotExist alias should not be replaced',
     (ctx, notWorld) => {
       expect(notWorld).toBe(undefined)
-    }
+    },
   )
 
   PK.Then(
@@ -39,7 +39,7 @@ export const registerAliasSteps = PK => {
     (status, ctx) => {
       const { world } = ctx
       expect(status).toBe(world.$alias.status)
-    }
+    },
   )
 
   PK.Then(`world replace should work with an integer {int}`, (data, ctx) => {

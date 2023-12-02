@@ -1,11 +1,7 @@
-import type {
-  TAstType,
-  TTagsAst,
-  TBlockAst,
-} from '../types'
+import type { TAstType } from '../types'
 
-import { exists } from '@keg-hub/jsutils'
 import { EFeatureTypes } from '../types'
+import { exists } from '@keg-hub/jsutils/exists'
 
 /**
  * TODO: Allow passing options here that will format the assembled feature

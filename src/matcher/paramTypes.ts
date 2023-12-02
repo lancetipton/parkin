@@ -7,18 +7,16 @@ import type {
 } from '../types'
 
 import { constants } from '../constants'
+import { get } from '@keg-hub/jsutils/get'
+import { toStr } from '@keg-hub/jsutils/toStr'
+import { isObj } from '@keg-hub/jsutils/isObj'
 import { removeQuotes } from '../utils/helpers'
-import {
-  get,
-  isObj,
-  noOpObj,
-  toStr,
-  exists,
-  isQuoted,
-  checkCall,
-  equalsNaN,
-  joinRegex,
-} from '@keg-hub/jsutils'
+import { exists } from '@keg-hub/jsutils/exists'
+import { noOpObj } from '@keg-hub/jsutils/noOpObj'
+import { isQuoted } from '@keg-hub/jsutils/isQuoted'
+import { checkCall } from '@keg-hub/jsutils/checkCall'
+import { equalsNaN } from '@keg-hub/jsutils/equalsNaN'
+import { joinRegex } from '@keg-hub/jsutils/joinRegex'
 
 import {
   RX_ANY,

@@ -11,7 +11,10 @@ import type {
 } from '../types'
 
 import { ParkinError } from '../utils/errors'
-import { keyMap, isFunc, isStr, noOpObj } from '@keg-hub/jsutils'
+import { isStr } from '@keg-hub/jsutils/isStr'
+import { isFunc } from '@keg-hub/jsutils/isFunc'
+import { keyMap } from '@keg-hub/jsutils/keyMap'
+import { noOpObj } from '@keg-hub/jsutils/noOpObj'
 
 /**
  * @type {Object}

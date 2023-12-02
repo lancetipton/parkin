@@ -1,5 +1,5 @@
 import { globalTypes } from '../utils'
-import { exists } from '@keg-hub/jsutils'
+import { exists } from '@keg-hub/jsutils/exists'
 
 let globalObj = {}
 const resolveGlobalObjMock = jest.fn(() => globalObj)

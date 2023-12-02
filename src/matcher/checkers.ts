@@ -17,9 +17,9 @@ import {
   RX_MATCH_REPLACE,
 } from './patterns'
 
-import { isFunc } from '@keg-hub/jsutils'
-import { emptyObj } from '@keg-hub/jsutils'
 import { getParamTypes } from './paramTypes'
+import { isFunc } from '@keg-hub/jsutils/isFunc'
+import { emptyObj } from '@keg-hub/jsutils/emptyObj'
 
 
 /**

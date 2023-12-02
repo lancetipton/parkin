@@ -7,9 +7,13 @@ import type {
 
 import { EPartMatchTypes } from '../types'
 import { getParamTypes } from './paramTypes'
+import { isStr } from '@keg-hub/jsutils/isStr'
 import { includePartType } from '../utils/helpers'
-import { emptyArr, isStr, emptyObj, getWordEndingAt } from '@keg-hub/jsutils'
+import { emptyArr } from '@keg-hub/jsutils/emptyArr'
+import { emptyObj } from '@keg-hub/jsutils/emptyObj'
+import { getWordEndingAt } from '@keg-hub/jsutils/getWordEndingAt'
 import { RX_OPTIONAL, RX_ALT, RX_PARAMETER, RX_MATCH_REPLACE } from './patterns'
+
 
 
 /**

@@ -13,9 +13,9 @@ import {
 
 
 import { EPartMatchTypes } from '../types'
-import { emptyObj } from '@keg-hub/jsutils'
 import { convertTypes } from './paramTypes'
 import { escapeStr } from '../utils/escapeStr'
+import { emptyObj } from '@keg-hub/jsutils/emptyObj'
 import {
   checkAnchors,
   convertToRegex,

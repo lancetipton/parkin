@@ -7,13 +7,10 @@ import type {
 } from '../types'
 
 import { parseTags } from './hasTag'
-import {
-  isStr,
-  exists,
-  emptyArr,
-  eitherArr,
-} from '@keg-hub/jsutils'
-
+import {isStr} from '@keg-hub/jsutils/isStr'
+import {exists} from '@keg-hub/jsutils/exists'
+import {emptyArr} from '@keg-hub/jsutils/emptyArr'
+import {eitherArr} from '@keg-hub/jsutils/eitherArr'
 
 type TFilterMatch = {
   name?:string,

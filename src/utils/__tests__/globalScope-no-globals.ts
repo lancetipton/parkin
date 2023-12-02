@@ -15,6 +15,11 @@ jest.setMock('@keg-hub/jsutils', {
   checkCall: mockCheckCall,
 })
 
+jest.setMock('@keg-hub/jsutils/checkCall', {
+  ...jsutils,
+  checkCall: mockCheckCall,
+})
+
 describe('globalScope', () => {
   const orgBool = global.Boolean
 
@@ -33,7 +38,7 @@ describe('globalScope', () => {
     it('should return an empty object when global can not be resolved', () => {
       const { resolveGlobalObj } = require('../globalScope')
       const globalObj = resolveGlobalObj()
-      expect(globalObj).toBe(noOpObj)
+      expect(globalObj).toEqual(noOpObj)
     })
   })
 

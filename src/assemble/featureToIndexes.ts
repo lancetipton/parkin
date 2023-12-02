@@ -15,8 +15,9 @@ import type {
 } from '../types'
 
 import { EAstObject } from '../types'
-import { isArr } from '@keg-hub/jsutils'
 import { addToIndexes } from './addToIndexes'
+import { isArr } from '@keg-hub/jsutils/isArr'
+
 
 const indexSteps = (
   feature:TFeatureAst,
@@ -71,8 +72,8 @@ const indexReason = (
   offset:number[]
 ) => {
   isArr<TBlockAst[]>(reason)
-    ? reason.forEach(reason => addToIndexes(feature, indexes, {ast: reason, parent}, offset))
-    : addToIndexes(feature, indexes, {ast: reason, parent}, offset)
+    ? (reason as TBlockAst[]).forEach((res) => addToIndexes(feature, indexes,{ast: res, parent},offset))
+    : addToIndexes(feature, indexes, {ast: reason as TBlockAst, parent}, offset)
 }
 
 const indexBackground = (

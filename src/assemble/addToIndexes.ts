@@ -5,7 +5,7 @@ import type {
 } from '../types'
 
 import { findIndex } from './findIndex'
-import { exists } from '@keg-hub/jsutils'
+import { exists } from '@keg-hub/jsutils/exists'
 
 /**
  * Helper method that calculates the location of an item within the index array

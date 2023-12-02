@@ -3,7 +3,8 @@ import { EAstObject, EResultAction } from '../types'
 
 import { constants } from '../constants'
 import { testMethodFill } from './errors'
-import { noOp, get } from '@keg-hub/jsutils'
+import { get } from '@keg-hub/jsutils/get'
+import { noOp } from '@keg-hub/jsutils/noOp'
 import { hasJasmine, resolveJasmine } from './globalScope'
 const { SPEC_RESULT_LOG, LOG_JEST_SPEC_ENV } = constants
 

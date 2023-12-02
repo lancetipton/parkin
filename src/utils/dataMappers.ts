@@ -8,7 +8,8 @@ import type {
   TStepParentAst,
 } from '../types'
 
-import { deepEqual, flatUnion } from '@keg-hub/jsutils'
+import { deepEqual } from '@keg-hub/jsutils/deepEqual'
+import { flatUnion } from '@keg-hub/jsutils/flatUnion'
 
 
 export const dataMappers = {

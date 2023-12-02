@@ -3,8 +3,9 @@ import type { TRegisterStepsList, TRegisterStepMap, TStepDefs } from '../types'
 
 import { getPK } from './instance'
 import { cwd, getRoot } from './paths'
-import { ensureArr, flatUnion, emptyArr } from '@keg-hub/jsutils'
 import { locsByTypes, fullLoc } from './helpers'
+import { flatUnion } from '@keg-hub/jsutils/flatUnion'
+import { ensureArr } from '@keg-hub/jsutils/ensureArr'
 
 const filterDefs = async (loc:string, opts:TParkinOpts) => {
   return await locsByTypes(loc, {
