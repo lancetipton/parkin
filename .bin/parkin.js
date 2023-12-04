@@ -3023,6 +3023,7 @@ var init_runner = __esm({
     import_isArr3 = __toESM(require_isArr());
     import_isObj2 = __toESM(require_isObj());
     import_isStr7 = __toESM(require_isStr());
+    init_worldReplace();
     import_pickKeys = __toESM(require_pickKeys());
     import_emptyObj11 = __toESM(require_emptyObj());
     init_expression();
@@ -3068,11 +3069,11 @@ var init_runner = __esm({
           return;
         const parsed = parseExpParams({
           opts,
-          text: step.step,
           match: found.match,
           definition: found.definition,
           $world: stepsInstance._world,
-          transformers: found.transformers
+          transformers: found.transformers,
+          text: replaceWorld(step.step, stepsInstance._world)
         });
         if (!parsed)
           return throwInvalidDefParams(`
