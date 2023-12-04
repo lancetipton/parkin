@@ -2726,11 +2726,11 @@ var runStep = (stepsInstance, step, options = emptyOpts2, testMode) => {
       return;
     const parsed = parseExpParams({
       opts,
-      text: step.step,
       match: found.match,
       definition: found.definition,
       $world: stepsInstance._world,
-      transformers: found.transformers
+      transformers: found.transformers,
+      text: replaceWorld(step.step, stepsInstance._world)
     });
     if (!parsed)
       return throwInvalidDefParams(`
