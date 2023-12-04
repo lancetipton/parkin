@@ -18,6 +18,7 @@ import { ETestType, EHookType } from './types'
 import { isArr } from '@keg-hub/jsutils/isArr'
 import { isObj } from '@keg-hub/jsutils/isObj'
 import { isStr } from '@keg-hub/jsutils/isStr'
+import { replaceWorld } from './utils/worldReplace'
 import { pickKeys } from '@keg-hub/jsutils/pickKeys'
 import { emptyObj } from '@keg-hub/jsutils/emptyObj'
 import { parseExpParams } from './matcher/expression'
@@ -134,11 +135,11 @@ const runStep = (
 
     const parsed = parseExpParams({
       opts,
-      text: step.step,
       match: found.match,
       definition: found.definition,
       $world: stepsInstance._world,
       transformers: found.transformers,
+      text: replaceWorld(step.step, stepsInstance._world),
     })
 
     if(!parsed) return throwInvalidDefParams(`\nStep text: "${step.step}"`)
