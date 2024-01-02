@@ -22,7 +22,10 @@ const cjsBuild = async () => {
     platform: "node",
     target: ["node16"],
     entryPoints: [binEntry],
-    external: Object.keys(packConf.dependencies),
+    external: [
+      ...Object.keys(packConf.dependencies),
+      ...Object.keys(packConf.optionalDependencies),
+    ],
   })
   .catch(() => process.exit(1))
 }
