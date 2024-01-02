@@ -1,6 +1,6 @@
 {
   "name": "@ltipton/parkin",
-  "version": "6.5.1",
+  "version": "6.6.1",
   "description": "Parse gherkin features and map them to step definitions",
   "main": "index.cjs",
   "module": "index.js",
@@ -66,8 +66,8 @@
     "format:prettier": "prettier --config ./configs/prettier.config.js --ignore-path .eslintignore --write '**/*.{js,jsx}'",
     "format": "pnpm format:prettier && pnpm format:eslint",
     "prebuild": "pnpm format && pnpm test && pnpm parkin",
-    "postbuild": "pnpm json:rm",
-    "postpublish": "pnpm json:reset",
+    "prepack": "pnpm json:rm",
+    "postpack": "pnpm json:reset",
     "parkin": "node --no-warnings --loader esbuild-register/loader -r esbuild-register src/bin/parkin.ts --features ./features --defs ./defs --world ./world.ts --root ./parkin",
     "test": "NODE_ENV=test jest --detectOpenHandles --no-cache --verbose --config=./configs/jest.config.js --maxWorkers=50%",
     "test:cov": "NODE_ENV=test jest --detectOpenHandles --coverage --no-cache --verbose --config=./configs/jest.config.js --maxWorkers=50%",
