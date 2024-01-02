@@ -3587,7 +3587,7 @@ var addToIndexes = (feature, indexes, item, offset) => {
   }
   offset[index] = (0, import_exists9.exists)(offset[index]) ? offset[index] + 1 : 1;
   const newIdx = index + preAmount + 1;
-  item.ast.index = index;
+  item.ast.index = newIdx;
   const updatedLen = indexes.length + 1;
   newIdx <= updatedLen ? indexes.splice(newIdx, 0, item) : indexes.splice(newIdx, 0, ...Array(newIdx - updatedLen), item);
   return indexes;
