@@ -161,7 +161,7 @@ export const formatFeature = (
   feature:TFeatureAst,
   opts:TAssembleOpts=emptyObj
 ) => {
-  let updated = formatOptions(feature, opts)  
+  let updated = formatOptions(feature, opts)
   updated = formatBackground(updated, updated, opts)
   updated = formatRules(updated, opts)
   updated = formatScenarios(updated, updated, opts)

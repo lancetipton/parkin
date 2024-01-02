@@ -41,6 +41,7 @@ export const addToIndexes = (
     indexes[index] = item
     return indexes
   }
+
   // Otherwise add 1 to the offset and preAmount
   // To account for the current duplicate 
   offset[index] = exists(offset[index]) ? offset[index] + 1 : 1
@@ -52,7 +53,7 @@ export const addToIndexes = (
   const newIdx = index + preAmount + 1
 
   // Update the item to now have a new index
-  item.ast.index = index
+  item.ast.index = newIdx
 
   // Get the length of the current items
   const updatedLen = indexes.length + 1
