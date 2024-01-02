@@ -1,6 +1,8 @@
 import {
   feature,
   parsedFeature,
+  featDupStepIdxs,
+  featDupStepIdxsStr,
   docAndDataFeature,
   featureRulesScenarios,
 } from '../../__mocks__'
@@ -55,6 +57,18 @@ describe(`Assemble Feature`, () => {
     const assembled = assembleFeature(parsed)[0]
 
     expect(docAndDataFeature.trim()).toEqual(assembled.trim())
+  })
+
+  it(`should handle scenario steps with duplicate indexes correctly`, () => {
+
+    const assembled = assembleFeature(featDupStepIdxs, {
+      removeEmpty: true,
+      emptyAfterSteps: true,
+      emptyAfterStory: true,
+      backgroundAfterParent: true
+    })[0]
+
+    expect(assembled.trim()).toEqual(featDupStepIdxsStr.trim())
   })
 
 })
