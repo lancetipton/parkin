@@ -1,6 +1,6 @@
 {
   "name": "@ltipton/parkin",
-  "version": "6.6.0",
+  "version": "6.6.1",
   "description": "Parse gherkin features and map them to step definitions",
   "main": "index.cjs",
   "module": "index.js",
